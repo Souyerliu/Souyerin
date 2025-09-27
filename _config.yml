@@ -4,7 +4,7 @@
 
 # Site
 title: Souyer的博客
-subtitle: Souyerin
+subtitle: Souyer
 description: 这是Souyer的博客。
 keywords: test
 author: Souyer
@@ -13,7 +13,7 @@ timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: souyerin.netlify.app
+url: https://souyerin.netlify.app
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -98,8 +98,8 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: shokax
 
-theme_config:
-  image_server: "https://picsum.photos/1920/1080"
+# theme_config:
+#   image_server: "https://picsum.photos/1920/1080"
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
