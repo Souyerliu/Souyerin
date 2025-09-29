@@ -36,8 +36,8 @@ homeConfig:
     enableNextGradientCover: false # 使用CSS渐变作为上/下一页封面
 
   cateCards:
-    - slug: # 分类 slug
-      cover: # 分类封面
+    - slug: computer-science/Introduction-to-AI # 分类 slug
+      cover: computer-science/Introduction-to-AI/cover.jpg # 分类封面
       
 index_images: []   # 留空，表示不使用远程 URL，走 _data/images.yml
 image_server: ""   # 关闭在线图片
@@ -173,15 +173,15 @@ iconfont: "4415496_59g1326wajd"
 
 menu:
   home: / || home
-  about:
-    default: / || user
-    aboutsite: /about/  || user
-    admiration: /admiration/ || coffee
   archives: /archives/ || list-alt
   categories:
-    default: / || feather
-    life: /categories/life || circle-play
-    study: /categories/study || zhihu
+    default: /categories || feather
+    生活: /categories/life || paw
+    学习: /categories/study || zhihu
+  about:
+    default: /about || user
+    aboutsite: /about/  || user
+    admiration: /admiration/ || coffee
   #friends: /friends/ || heart
 
 # https://twikoo.js.org

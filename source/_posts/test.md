@@ -2,11 +2,10 @@
 title: test
 date: 2025-09-24 23:06:14
 categories:
-  - study
+  - [study]
+  - [life]
 tags:
-  - Injury
-  - Fight
-  - Shocking
+  - test
 ---
 
 # 这是一级标题
