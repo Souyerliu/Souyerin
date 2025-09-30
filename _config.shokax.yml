@@ -38,7 +38,9 @@ homeConfig:
   cateCards:
     - slug: computer-science/Introduction-to-AI # 分类 slug
       cover: computer-science/Introduction-to-AI/cover.jpg # 分类封面
-      
+    - slug: computer-science/CS70 # 分类 slug
+      cover: computer-science/CS70/penguin_and_pigeon.png # 分类封面
+
 index_images: []   # 留空，表示不使用远程 URL，走 _data/images.yml
 image_server: ""   # 关闭在线图片
 
@@ -241,11 +243,12 @@ pagefind: # pagefind 本地搜索 https://pagefind.app/
 # secend value is the name of Font icon.
 social:
   github: https://github.com/yourname || github || "#191717"
+  bilibili: https://space.bilibili.com/474896469 || bilibili || "#61CDE9"
   #gitee: https://gitee.com/yourname || gitee || "#e60026"
   #google: https://plus.google.com/yourname || google
   #twitter: https://twitter.com/yourname || twitter || "#00aff0"
   #zhihu: https://www.zhihu.com/people/yourname || zhihu || "#1e88e5"
-  #music: https://music.163.com/#/user/home?id=yourid || cloud-music || "#e60026"
+  music: https://music.163.com/#/user/home?id=1478960573 || cloud-music || "#e60026"
   #weibo: https://weibo.com/yourname || weibo || "#ea716e"
   #about: https://about.me/yourname || address-card || "#3b5998"
   #email: mailto:foo@xxx.com || envelope || "#55acd5"
@@ -327,15 +330,15 @@ creative_commons:
 
 # bgm
 audio:
+ - title: Souyer的歌单
+   list:
+     - https://music.163.com/#/playlist?id=2257046115
  - title: 列表1
    list:
      - https://music.163.com/#/playlist?id=2943811283
  - title: 列表2
    list:
      - https://music.163.com/#/playlist?id=2031842656
- - title: Souyer的歌单
-   list:
-     - https://music.163.com/#/playlist?id=2257046115
 
 # Algolia Search
 # For more information: https://www.algolia.com
