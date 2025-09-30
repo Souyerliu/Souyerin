@@ -64,25 +64,25 @@ CS70官网：[CS70](https://www.eecs70.org/)
     + 而$P \land \lnot P$总是假命题，称为矛盾(contradiction)
 ### 蕴含(Implication)
   + 最重要也是最微妙的命题式
-  + 形式：$P\longrightarrow Q$(P蕴含Q,相当于“如果P，那么Q”)
+  + 形式：$P\Longrightarrow Q$(P蕴含Q,相当于“如果P，那么Q”)
   + 可以用真值表(Truth table)表示命题的可能值：
-  + | $P$ | $Q$     | $P\longrightarrow Q$ | $\lnot P\lor Q$|
+  + | $P$ | $Q$     | $P\Longrightarrow Q$ | $\lnot P\lor Q$|
     | - | - | ----------- | -----------|
     | F  | F  | T                      |T|
     | F  | T  | T                      |T|
     | T  | F  | F                      |F|
     | T  | T  | T                      |T|
-  + 由真值表可知，$P\longrightarrow Q$为假当且仅当$P$为真且$Q$为假。
+  + 由真值表可知，$P\Longrightarrow Q$为假当且仅当$P$为真且$Q$为假。
   + 当$P$为假时，$Q$无论如何取都不会影响结果的真，这种真称为“空真”(vacuously true)。
-  + 注意到，$P\longrightarrow Q$和 $\lnot P\lor Q$在逻辑上等价(它们的真值表相同)，可记作$P\longrightarrow Q\equiv \lnot P\lor Q$。
+  + 注意到，$P\Longrightarrow Q$和 $\lnot P\lor Q$在逻辑上等价(它们的真值表相同)，可记作$P\Longrightarrow Q\equiv \lnot P\lor Q$。
   + (当然，对于蕴含的真值表还有一种理解方式：将真视为1，将假视为0，“P蕴含Q”的意思就是P的值$\geq$Q的值)
   + 基于蕴含，我们还可以定义以下命题式：
-    + 否命题：$Q\longrightarrow P$;
-    + 逆否命题：$\lnot Q\longrightarrow \lnot P$;
-    + 双向蕴含：$P\longleftrightarrow Q$.
-  + 注意到$P\longrightarrow Q$和它的逆否命题$\lnot Q\longrightarrow \lnot P$的真值表相同，所以二者逻辑等价：
+    + 否命题：$Q\Longrightarrow P$;
+    + 逆否命题：$\lnot Q\Longrightarrow \lnot P$;
+    + 双向蕴含：$P\Longleftrightarrow Q$.
+  + 注意到$P\Longrightarrow Q$和它的逆否命题$\lnot Q\Longrightarrow \lnot P$的真值表相同，所以二者逻辑等价：
     $$
-    P\longrightarrow Q\equiv \lnot Q\longrightarrow \lnot P
+    P\Longrightarrow Q\equiv \lnot Q\Longrightarrow \lnot P
     $$
     + 这一点在证明某些命题时非常有用！
 ## 量词(Quantifiers)

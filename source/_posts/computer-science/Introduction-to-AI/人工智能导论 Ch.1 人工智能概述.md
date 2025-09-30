@@ -1,5 +1,5 @@
 ---
-title: 人工智能导论 第一节 人工智能概述
+title: 人工智能导论 Ch.1 人工智能概述
 date: 2025-09-28 10:18:17
 categories:
   - [study]
@@ -11,7 +11,7 @@ tags:
   - 生成式人工智能
   - 偏见
   - 机器学习
-cover: cover.png
+cover: cover.jpg
 ---
 # 人工智能的基本内涵
 + 在2023年前，谈起人工智能，首先想到：
@@ -146,6 +146,8 @@ cover: cover.png
 
 ## 附：机器学习/人工智能/大模型相关书籍与视频推荐
 **书籍：**  
++ 吴飞 著. 人工智能导论：模型与算法，北京：高等教育出版社，2021
+![model-and-algorithm](model-and-algorithm.png)
 + 张奇、桂韬、郑锐、黄萱菁：大规模语言模型：从理论与实践（第2版），电子工业出版社，2025
 [![llm-book-v2](https://xuanjing-huang.github.io/images/llm2.jpg)](https://intro-llm.github.io/#home)
 + 周志华 著. 机器学习, 北京: 清华大学出版社, 2016年1月. (**西瓜书**)
