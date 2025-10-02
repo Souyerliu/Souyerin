@@ -153,7 +153,7 @@ cover: cover.jpg
 + 周志华 著. 机器学习, 北京: 清华大学出版社, 2016年1月. (**西瓜书**)
 ![machine-learning](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/cover-ml2016.jpg)
 + Ian Goodfellow and Yoshua Bengio and Aaron Courville.Deep Learning,MIT Press,2016.(**花书**)
-[![deep-learning](https://bbs-pic.datacourse.cn/forum/201808/26/143853hzkkm9chj9c59lhk.png)](http://www.deeplearningbook.org)
+[![deep-learning](deep-learning.jpg)](http://www.deeplearningbook.org)
 
 **视频：**  
 [什么是GPT？-by 3blue1brown](https://www.bilibili.com/video/BV13z421U7cs)
