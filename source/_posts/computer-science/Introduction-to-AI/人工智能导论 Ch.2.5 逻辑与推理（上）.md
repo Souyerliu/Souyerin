@@ -1,5 +1,5 @@
 ---
-title: 人工智能导论 Ch.2.5 逻辑与推理
+title: 人工智能导论 Ch.2.5 逻辑与推理（上）
 date: 2025-09-30 11:21:59
 categories: 
   - [study]
@@ -7,16 +7,17 @@ categories:
 tags:
   - 人工智能
   - 逻辑
-  - 因果推断
   - 离散数学
 cover: cover.jpg
 ---
-注：从这一节开始，本笔记内容主要基于[《人工智能导论：模型与算法》（吴飞）](https://www.hep.com.cn/book/show/4603e86d-1627-4c26-849b-ce71123d5142)及其课件撰写。
+注1：从这一节开始，本笔记内容主要基于[《人工智能导论：模型与算法》（吴飞）](https://www.hep.com.cn/book/show/4603e86d-1627-4c26-849b-ce71123d5142)及其课件撰写。
+注2：由于本节内容较多，故分为上下两部分，下部分请见：[人工智能导论 Ch.2.5 逻辑与推理（下）](/2025/10/01/computer-science/Introduction-to-AI/人工智能导论%20Ch.2.5%20逻辑与推理（下）)
+注3：本节概念性较强，涉及比较多的离散数学，概率统计等内容，如果觉得比较困难可以暂时跳过，或先进行相关知识的学习(如CS70)后再回顾。
 # 逻辑与推理是人工智能的核心问题
 + 人类思维活动的一个重要功能是逻辑推理，即通过**演绎和归纳**等手段对现有观测现象进行分析，得出判断。
 + 给人工智能（尤其是大模型）施加逻辑推理的管理可以有效降低其幻觉。
 ## 符号主义人工智能
-+ 在人工智能发展初期，脱胎于逻辑推理的**符号主义人工智能(symbolic AI)**是人工智能研究的一种主流学派。
++ 在人工智能发展初期，脱胎于逻辑推理的 **符号主义人工智能(symbolic AI)** 是人工智能研究的一种主流学派。
 + 在符号主义人工智能中，所有概念均可通过人类可理解的“符号”及符号之间的关系来表示。
   + 例如：如果使用符号$A$来表示对象概念，$IsCar()$来表示某个对象是否为“汽车”，那么$IsCar(A)$表示“$A$是一辆轿车”这样的概念。
   + 注意$IsCar(A)$由对象$A$和$IsCar()$两部分所构成。如果$A$是轿车，则$IsCar(A)$为正确描述，否则为错误描述。
@@ -27,7 +28,7 @@ cover: cover.jpg
 ## 记忆——逻辑推理的核心
 + 包括以下三种记忆：
 + |            |  瞬时记忆（感觉记忆）      | 工作记忆（短时记忆）      | 长时记忆 |
-| ---- | ----------- | ---------- | ---------------- |
+| :----: | :-----------: | :----------: | :----------------: |
 | 获得方式     |   多通道感知           |         直觉、顿悟、因果等推理       | 先验、知识等         |
 | 持续时间     |  $<5 sec$            |         $<30 sec$   | $1 sec \sim lifelong$                 |
 + 关系图：![记忆](memory.jpg)
@@ -39,7 +40,7 @@ cover: cover.jpg
 + 更多有关命题逻辑的解释，大部分可参见CS70 Chapter1相关内容：[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)，这里只进行一些补充：
 1. 双向蕴含（$P\Longleftrightarrow Q$）的真值表：
    + | $P$ | $Q$     | $P\longleftrightarrow Q$ |
-    | - | - | -----------   | 
+    | :-: | :-: | :-----------:   | 
     | F  | F  | T           |
     | F  | T  | F           |
     | T  | F  | F           |
@@ -64,15 +65,15 @@ cover: cover.jpg
      + 已知$\alpha\lor\beta,\alpha\longrightarrow\gamma,\beta\longrightarrow\gamma$三个命题成立,证明命题$\gamma$成立
      + 证明过程：
      + | 编号 | 命题                       | 如何得到                    |
-    | ------------- | ---------------------------- | -------------------------   | 
+    | :-------------: | :----------------------------: | :-------------------------:   | 
     | 1    | $\alpha\lor\beta$     |   第1个条件|
-	  | 2    | $\lnot\alpha\lor\gamma$     |  第2个条件蕴含消除 |
+    | 2    | $\lnot\alpha\lor\gamma$     |  第2个条件蕴含消除 |
     | 3    | $\lnot\beta\lor\gamma$    | 第3个条件蕴含消除   |
-	  | 4    | $\lnot\gamma$    |  假设命题$\gamma$不成立    |
+    | 4    | $\lnot\gamma$    |  假设命题$\gamma$不成立    |
     | 5    |  $\beta\lor\gamma$    |   1和3归结    |
     | 6    |  $\lnot\alpha$    |  2和4归结        |
     | 7    |  $\lnot\beta$    |  3和4归结        |
-	  | 8    |  $\gamma$    |  5和7归结（推出矛盾）  |
+    | 8    |  $\gamma$    |  5和7归结（推出矛盾）  |
      + 结论：假设不成立，命题$\gamma$成立
     + 另外，如果在归结过程中出现命题和它的否命题同时成立，就说明条件无法同时满足（contradiction）。
 4. 命题范式
@@ -142,3 +143,37 @@ cover: cover.jpg
   2. **原子谓词公式(atomic formula)：** 若$P(x_{1},x_{2},\cdots,x_{n})$是$n$元谓词，$t_{1},t_{2},\cdots,t_{n}$是项，那么$P(t_{1},t_{2},\cdots,t_{n})$是原子谓词公式，简称原子公式。
   3. **合式公式(well-formed formula)：**由逻辑联结词和原子公式构成的用于陈述事实的复杂语句，又称谓词公式。
 ### 推理规则
++ 设$A(x)$是谓词公式，$x$和$y$是变元，$a,c$是常量符号，则存在如下谓词逻辑中的推理规则：
+  1. **全称量词消去(Universal Instantiation, UI)**：$(\forall x)A(x)\longrightarrow A(y)$
+  2. **全称量词引入(Universal Generalization, UG)**：$A(y)\longrightarrow (\forall x)A(x)$
+   + 注：这里$y$需为任意变元，不应该有存在量词或其他限制。
+  3. **存在量词消去(Existential Instantiation, EI)**：$(\exists x)A(x)\longrightarrow A(c)$
+   + 注：$c$应为新的常量符号，在之前的逻辑推导中不应出现。 
+  4. **存在量词引入(Existential Generalization, EG)**：$A(a)\longrightarrow (\exists x)A(x)$
++ 具体的一个例子：
+  + 前提：1)每驾飞机或者停在地面或者飞在天空；2)并非每驾飞机都飞在天空
+  + 结论：有些飞机停在地面
+  + 形式化：$plane(x)$：$x$是飞机；$in\_ground(x)$：$x$停在地面；$on_fly(x)$：$x$飞在天空
+    + 已知:$(\forall x)(plane(x)\rightarrow in\_ground(x) \lor on_fly(x)),(\lnot\forall x)(plane(x)\rightarrow on_fly(x))$
+    + 请证明：$(\exists x)(plane(x)\land in\_ground(x))$
+  + 证明：
+    1. $(\lnot\forall x)(plane(x)\rightarrow on_fly(x))$ （已知）
+    2. $(\exists x)\lnot(plane(x)\rightarrow on_fly(x))$ （量词转换）
+    3. $(\exists x)\lnot(\lnot plane(x)\lor on_fly(x))$  （蕴含消除）
+    4. $(\exists x)(plane(x)\land\lnot on_fly(x))$ （反演律）
+    5. $plane(a)\land\lnot on_fly(a)$ （EI）
+    6. $plane(a)$ （由5知）
+    7. $\lnot on_fly(a)$ （由5知）
+    8. $(\forall x)(plane(x)\rightarrow in\_ground(x) \lor on_fly(x))$（已知）
+    9. $plane(a) \rightarrow in\_ground(a) \lor on_fly(a)$（UI）
+    10. $in\_ground(a)\lor on_fly(a)$（由5和9知）
+    11. $in\_ground(a)$（由7和10归结）
+    12. $plane(a) \land in\_ground(a)$（由6和11合取）
+    13. $(\exists x)(plane(x)\land in\_ground(x))$（EG）
+## 专家系统(expert system)
++ 早期人工智能的一个重要分支
++ 构成：知识库+推理机
+  + 对某个领域的自然语言、文本语句等信息进行逻辑化表示(machine readable knowledge)形成知识库；
+  + 对于新的问题，现将其逻辑化（使机器能理解），再输入进推理机中；
+  + 推理机根据知识库和问题进行推理，输出答案。
++ 比较著名的专家系统有智能语音专家系统Siri、智能诊断系统MYCIN等。
