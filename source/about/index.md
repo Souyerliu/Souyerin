@@ -12,10 +12,17 @@ email：zsy142857@126.com
 
 # 目前更新计划：
   + 《人工智能导论》（课内）笔记
-  + UCB CS61A 笔记
-  + UCB CS61B 笔记
-  + 《离散数学与概率论》（UCB CS70）笔记
+  + UCB课程笔记：
+    + CS70
+    + CS61A 
+    + CS61B
+    + DATA 88S
+    + DATA 8
+    + STAT 33B
+    + DATA 131A
+    + DATA 100
   + 李宏毅《机器学习》笔记
+  + Google ML课程学习记录
   + Kaggle SQL教程学习记录
   + 文献阅读记录（包括JASA,JASSB,JMLR...）
   + 未完待续...

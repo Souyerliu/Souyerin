@@ -40,6 +40,8 @@ homeConfig:
       cover: computer-science/Introduction-to-AI/cover.jpg # 分类封面
     - slug: computer-science/CS70 # 分类 slug
       cover: computer-science/CS70/penguin_and_pigeon.png # 分类封面
+    - slug: computer-science/CS61A # 分类 slug
+      cover: computer-science/CS61A/61A-header.png # 分类封面
 
 index_images: []   # 留空，表示不使用远程 URL，走 _data/images.yml
 image_server: ""   # 关闭在线图片
