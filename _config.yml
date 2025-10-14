@@ -69,6 +69,7 @@ default_category: uncategorized
 category_map: 
   计算机科学: computer-science
   人工智能导论: Introduction-to-AI
+  数据科学: data-science
 
 tag_map:
 

@@ -7,7 +7,7 @@ categories:
  - [python] 
 tags: 
  - python
- - Functions
+ - Expressions
 cover: 61A-header.png
 ---
 + 本系列笔记基于CS61A在线Lecture，课件和教材内容进行编写。
