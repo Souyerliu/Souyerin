@@ -1,7 +1,12 @@
 ---
 title: Kaggle SQL入门 学习笔记
 date: 2025-10-15 13:44:52
+categories:
+ - 计算机科学
+ - SQL
 tags:
+ - SQL
+ - BigQuery
 cover: cover.jpg
 ---
 教程链接：<https://www.kaggle.com/learn/intro-to-sql>
@@ -213,6 +218,15 @@ New York-Northern New Jersey-Long Island    25417
 San Francisco-Oakland-Fremont               22710
 Name: count, dtype: int64
 ```
+注：有时同一列中会有大量重复数据，如果我们想要去除重复数据，可以在query中进行修改：
+```python
+query = """
+        SELECT DISTINCT city
+        FROM `bigquery-public-data.openaq.global_air_quality`
+        WHERE country = 'US'
+        """
+```
+这样重复的数据只会出现一次。
 ## 查询多个列
 + 如果需要查询更多的列数据，可以将`SELECT`后的参数进行修改：
 ```python
@@ -253,3 +267,4 @@ safe_query_job = client.query(query, job_config=safe_config)
 # 尝试运行query(会报错并终止运行)
 safe_query_job.to_dataframe()
 ```
+# Group By, Having & Count

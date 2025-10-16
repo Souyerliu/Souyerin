@@ -19,3 +19,13 @@ date: 2025-10-07 17:22:34
   image: https://blog.cuijiacai.com/img/profile.png
   color: #87CEEB
 {% endlinks %}
+
+{% links %}
+- site: 真值表Truth table
+  owner: daidr
+  url: https://tb.daidr.me/
+  desc: 逻辑表达式真值表求解小工具，亲测好用。
+  image: https://tb.daidr.me/icons/favicon.ico
+  color: #C48EE2
+{% endlinks %}
+
