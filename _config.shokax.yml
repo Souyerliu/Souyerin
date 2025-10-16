@@ -42,8 +42,8 @@ homeConfig:
       cover: computer-science/CS70/penguin_and_pigeon.png # 分类封面
     - slug: computer-science/CS61A # 分类 slug
       cover: computer-science/CS61A/61A-header.png # 分类封面
-    - slug: data-science/DATA88S # 分类 slug
-      cover: data-science/DATA88S/data88s.png # 分类封面
+    # - slug: data-science/DATA88S # 分类 slug
+    #   cover: data-science/DATA88S/data88s.png # 分类封面
 
 index_images: []   # 留空，表示不使用远程 URL，走 _data/images.yml
 image_server: ""   # 关闭在线图片
@@ -91,8 +91,8 @@ visitor:
 darkmode: true
 auto_dark: # 自动亮/暗模式
   enable: true #是否开启
-  start: 20 #开始时间
-  end: 7 #结束时间
+  start: 22 #开始时间
+  end: 6 #结束时间
 
 auto_scroll: false
 

@@ -1,0 +1,26 @@
+# language
+zh-CN:
+  # items
+  favicon:
+    show: 祝你幸福。
+    hide: 偶内盖！
+
+zh-HK:
+  favicon:
+    show: 祝你幸福。
+    hide: 偶内盖！
+
+zh-TW:
+  favicon:
+    show: 祝你幸福。
+    hide: 偶内盖！
+
+en:
+  favicon:
+    show: Please!
+    hide: God bless you.
+
+ja:
+  favicon:
+    show: お幸せに。
+    hide: お願い！
