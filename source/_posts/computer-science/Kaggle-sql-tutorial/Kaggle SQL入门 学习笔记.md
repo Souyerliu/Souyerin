@@ -2,8 +2,7 @@
 title: Kaggle SQL入门 学习笔记
 date: 2025-10-15 13:44:52
 categories:
- - 计算机科学
- - SQL
+ - [计算机科学,Kaggle-sql-tutorial]
 tags:
  - SQL
  - BigQuery
@@ -11,7 +10,8 @@ cover: cover.jpg
 ---
 教程链接：<https://www.kaggle.com/learn/intro-to-sql>
 注：本教程使用python语言执行sql语句的相关操作，数据均源于Google BigQuery。
-参考链接：<https://cloud.google.com/python/docs/reference/bigquery/latest/index.html>
+Google BigQuery官方文档：<https://cloud.google.com/python/docs/reference/bigquery/latest/index.html>
+Kaggle上收录的Google BigQuery数据集：<https://www.kaggle.com/datasets?fileType=bigQuery>
 
 # Getting started
 1. 使用以下代码加载BigQuery数据库：
@@ -268,3 +268,206 @@ safe_query_job = client.query(query, job_config=safe_config)
 safe_query_job.to_dataframe()
 ```
 # Group By, Having & Count
++ 这一节，我们将在查询选择特定数据后对数据进行初步统计。
+## COUNT()
++ 顾名思义，这个函数返回就是括号内指定列的数据个数。
++ 使用例：
+```python
+# 获取global_air_quality表格中city列的数据总个数
+query = """
+        SELECT COUNT(city)
+        FROM `bigquery-public-data.openaq.global_air_quality`
+        """
+```
++ 它会输出类似下面这样的表格：
+```python
+        f0_
+0       5594614
+```
++ `COUNT()`是一个典型的聚合函数（多个输入，一个输出）。其他聚合函数包括`SUM()`, `AVG()`, `MIN()`和`MAX()`。
++ 另外，可以看到输出的表格列名是默认的`f0_`，关于如何修改这个名称会在后面叙述。
+## GROUP BY
++ `GROUP BY`函数可以根据指定列内容对数据进行分类（指定列内容相同的数据归为一类），配合`COUNT()`可以对每一组进行数量统计。
+使用例：
+```python
+# 获取global_air_quality表格中每个country的city个数
+query = """
+        SELECT country,COUNT(city)
+        FROM `bigquery-public-data.openaq.global_air_quality`
+        GROUP BY country
+        """
+```
+输出类似如下（输出前5行，下同）：
+```python
+  country    f0_
+0      ME  13466
+1      HR  13428
+2      DK  11190
+3      BA    177
+4      CY   3903
+```
+## GROUP BY ... HAVING
++ `HAVING`在`GROUP BY`的基础上再增加筛选条件（如筛选有指定范围数量数据的组）
++  使用例：
+```python
+query = """
+        SELECT country,COUNT(city)
+        FROM `bigquery-public-data.openaq.global_air_quality`
+        GROUP BY country
+        HAVING COUNT(city)<10000
+        """
+```
+输出类似如下：
+```python
+  country   f0_
+0      AD  2920
+1      BA   177
+2      CY  3903
+3      AR  2620
+4      LU  7072
+```
++ 注意与`WHERE`的区别：`WHERE`是对数据集整体进行筛选（一般在`SELECT...FROM`之后，`GROUP BY`之前），而`HAVING`是在分组后对组的聚合函数（频数，均值，最大值等）进行筛选（在`GROUP BY`之后，`ORDER BY`之前）
+## 改进
++ 上面说到，`f0_`可以进行修改。具体来说，我们可以通过在`COUNT()`后加入`AS XXX(名称)`来重命名列名。例如：
+```python
+query_improved = """
+                 SELECT parent, COUNT(1) AS NumPosts
+                 FROM `bigquery-public-data.hacker_news.full`
+                 GROUP BY parent
+                 HAVING COUNT(1) > 10
+                 """
+```
+这一技巧被称为 **“混叠”(aliasing)** ，后续会详细讲述。
++ 另一方面，如果不确定`COUNT()`括号里面的内容（即不确定计数的列）时，使用`COUNT(1)`或`COUNT(*)`也是一个较好的选择，而且运行速度更快！（这两个与`COUNT(列名)`的区别在于前者考虑了`NULL`值，而后者不考虑）
+## 注意事项
++ 使用`GROUP BY`时，在`SELECT`语句里选择的列名应该都满足下述两者条件之一：
+  + 在`GROUP BY`中；
+  + 在聚合函数（如`COUNT()`）中。
++ 可以理解为，使用`GROUP BY`就相当于对数据进行了压缩，不可避免地会产生一定信息的损失。
++ 另外，由于`GROUP BY`为关键字，所以如果列名中有`by`，`group`，那么就需要再`SELECT`语句中对其加\`\`号，最好再使用`AS`语句进行重命名。
+# Order by
+## ORDER BY
++ `ORDER BY`指令常放在query的最后，用于将前面得到的数据根据一定的规则进行排序。
++ 可以对数进行排序（默认升序），也可以对字符串进行排序（以字母表顺序）
++ 使用例：
+```python
+# 获取global_air_quality表格中的country列，并按字母表排序
+query = """
+        SELECT city,longitude
+        FROM `bigquery-public-data.openaq.global_air_quality`
+        WHERE country = 'US'
+        ORDER BY longitude
+        """
+```
+输出：
+```python
+       city  longitude
+0    BETHEL  -161.7670
+1    BETHEL  -161.7670
+2    BETHEL  -161.7670
+3  Honolulu  -158.0886
+4  Honolulu  -158.0886
+```
+如果需要降序排列，则在`ORDER BY 列名`后加上`DESC`(descending)
+## Dates
++ 在数据库中，日期Date出现非常频繁
++ 在BigQuery中，日期可以以两种方式存储：
+  + **DATE**：格式为年-月-日(YYYY-\[M\]M-\[D\]D)
+    + 例：2025-10-17
+  + **DATETIME**：格式为年-月-日 时:分:秒(YYYY-\[M\]M-\[D\]D HH:mm:ss)
+    + 例：2025-10-17 23:35:23
++ 当我们需要筛选特定日期范围内的数据时，可以直接使用不等号进行日期比较，比如：
+```python
+# 已知trip_start_timestamp是DATETIME格式
+query = """
+        SELECT trip_start_timestamp,trip_miles,trip_seconds
+        FROM `bigquery-public-data.chicago_taxi_trips.taxi_trips`
+        WHERE trip_seconds > 0 and trip_miles > 0 
+              and trip_start_timestamp > "2016-01-01" 
+              and trip_start_timestamp < "2016-04-01"
+        """
+```
+就可以筛选出时间在2016年1月1日到2016年4月1日之间的数据。
+## EXTRACT
++ 在query中使用`EXTRACT`可以获取时间列中的特定元素（如年份，月份等）
++ 使用例（没有合适的数据库，所以直接复制kaggle教程里的了）：
+```python
+query="""
+    SELECT Name, EXTRACT(DAY from Date) AS Day
+    FROM `bigquery-public-data.pet_records.pets_with_date`
+    """
+```
+输出：
+```python
+                Name      Day
+0 Dr. Harris Bonkers      18
+1               Tom       16
+2               Moon      7
+3               Ripley    23
+```
++ 其他可调用日期相关函数详见[文档](https://cloud.google.com/bigquery/docs/reference/legacy-sql?hl=zh-cn#datetimefunctions)
+# With & As
++ 在之前我们提到，使用`AS`语句可以对列名进行重命名。事实上，配合`WITH`，可以将query内的代码模块化，进一步增强可读性。这种模块被称为**公共表表达式(Common Table Expression,CTE)**。
+## 公共表表达式（CTE）
++ 一个典型的CTE形式如下：
+```python
+query = """
+        WITH Seniors AS
+        (
+          SELECT ID, Name
+          FROM'bigquery-public-data.pet_records.pets
+          WHERE Years_old > 5
+        )
+        ...
+        """
+```
++ 这实际上将括号内查询获取的结果保存为一个名为`Seniors`的表格（但不会被query直接输出），以供后续调用，比如：
+```python
+query = """
+        WITH Seniors AS 
+        (
+          SELECT ID, Name
+          FROM'bigquery-public-data.pet_records.pets
+          WHERE Years_old > 5
+        )
+        SELECT ID
+        FROM Seniors
+        """
+```
++ 可以看到，我们可以将创建好的CTE在后续query语句中当作数据集进行使用。这对一些大型SQL项目来说非常有用。而且它还可以提高数据处理的效率。
++ 注：CTE只能在其定义所在的query中使用，所以每次在使用前必须先定义好CTE。
+# Joining Data
++ 有时我们需要的数据来自多个数据集（表格），因而需要合并多个表格。这时我们就可以使用`JOIN`语句。
+## JOIN
++ 我们直接通过一个例子进行阐述（注：以下所有图片与数据均源于Kaggle教程）：
++ 原始表格：
+![origin](origin.png)
++ 可以看到，`owners`表格里的`Pet_ID`与`pets`表格里的`ID`一一对应，因而我们可以将两个表格合并。
++ 代码如下：
+```python
+query="""
+      SELECT p.Name AS Pet_Name, o.Name AS Owner_Name
+      FROM `bigquery-public-data.pet_records.pets` AS p
+      INNER JOIN `bigquery-public-data.pet_records.owners` AS o
+      ON p.ID =o.Pet_ID
+      """
+```
+输出：
++ ![join](join.png)
++ 可以看到，`ON`语句决定了合并两个表格使用的规则。当然，在合并表格前，应该提前明确参考的列数据
++ 另外注意到，我们在这里使用了`INNER JOIN`，这代表着合并后的表格只会取`owners`表格里的`Pet_ID`与`pets`表格里的`ID`相等的行（即如果某个表格里的`ID`在另一个表格中找不到对应编号，那么这条数据就被废除）
+  + 当然也有保留无匹配数据的方式，这会在后续进阶笔记中呈现。
++ 实际上，两个表格的行数不一定相等（可能存在一对多的情况），最终得到的表格的行数应为两个表格行数的较大者（前提是所有数据都能配对）
+# 最后一个技巧：LIKE
++ 在使用`WHERE`筛选字符串数据时，可以用`LIKE`配合`%`进行模糊筛选。
++ 使用例：
+```python
+query = """
+        SELECT id,title,owner_user_id
+        FROM `bigquery-public-data.stackoverflow.posts_questions`
+        WHERE tags LIKE '%bigquery%'
+        """
+```
+这里query会查询`tags`中所有包含`"bigquery"`字段的数据。
+
+[ **恭喜完成SQL入门！おめでとう！** ]{.red}
