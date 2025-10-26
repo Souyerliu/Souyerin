@@ -2,6 +2,7 @@
 title: Kaggle SQL进阶 学习笔记
 date: 2025-10-18 16:57:33
 categories:
+ - study
  - [计算机科学,Kaggle-sql-tutorial]
 tags:
  - SQL
@@ -43,7 +44,7 @@ query="""
     """
 ``` 
 输出结果：
-|Age |
+| Age|
 |:--:|
 |20  |
 |45  |
@@ -243,4 +244,5 @@ query="""
 ## 更多优化策略
 参见[Google BigQuery: The Definitive Guide](https://static1.squarespace.com/static/5530dddfe4b0679504639dc1/t/65e17f819cccca1eeb8a8278/1709277088797/Valliappa+Lakshmanan_+Jordan+Tigani+-+Google+BigQuery_+The+Definitive+Guide_+Data+Warehousing%2C+Analytics%2C+and+Machine+Learning+at+Scale-O%E2%80%99Reilly+Media+%282020%29.pdf)。
 
-[ **再次恭喜！你已经成为SQL高手了！おめでとう！** ]{.green}
+[ **再次恭喜！你已经基本了解SQL的用法了！おめでとう！** ]{.green}
+[ **当然后面还有很长的一段路要走，Keep going！** ]{.green}

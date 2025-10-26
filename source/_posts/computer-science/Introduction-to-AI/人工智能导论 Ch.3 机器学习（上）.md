@@ -173,9 +173,9 @@ $$
 + 线性回归一个明显的问题是对**离群点**（和大多数数据点距离较远的数据点，outlier）非常敏感，导致模型建模不稳定，使结果有偏，为了缓解这个问题（特别是在二分类场景中）带来的影响，可考虑**逻辑斯蒂回归(logistic regression)** 。
 + 逻辑斯蒂回归(logistic regression)就是在回归模型中引入 **sigmoid函数** 的一种非线性回归模型。Logistic回归模型可如下表示：
 $$
-y=\frac{1}{1+e^{-z}}=\frac{1}{1+e^{-(w^Tx+b)}}\quad,\quad\text{其中}y\in(0,1),z=\boldsymbol{w}^T\boldsymbol{x}+\mathrm{b}
+y=\frac{1}{1+e^{-z}}=\frac{1}{1+e^{-(w^Tx+b)}}\quad,\quad\text{其中}y\in(0,1),z=\mathbf{w}^T\mathbf{x}+\mathrm{b}
 $$
-+ 这里$\frac{1}{1+e^{-z}}$是sigmoid函数、$\boldsymbol{x}\in\mathbb{R}^d$是输入数据、$\boldsymbol{w}\in\mathbb{R}^d$和$b\in\mathbb{R}$是回归函数的参数。
++ 这里$\frac{1}{1+e^{-z}}$是sigmoid函数、$\mathbf{x}\in\mathbb{R}^d$是输入数据、$\mathbf{w}\in\mathbb{R}^d$和$b\in\mathbb{R}$是回归函数的参数。
 + ![sigmoid](Logistic-curve.svg)
 + Sigmoid函数的特点：
   + sigmoid函数是单调递增的，其值域为$(0,1)$，因此使sigmoid函数输出可作为概率值。在前面介绍的线性回归中，回归函数的值域一般为$(-\infty,+\infty)$
@@ -184,9 +184,9 @@ $$
 + 逻辑斯蒂回归虽可用于对输入数据和输出结果之间复杂关系进行建模，但由于逻辑斯蒂回归函数的输出具有概率意义，使得逻辑斯蒂回归函数更多用于 **二分类问题**（$y = 1$表示输入数据$x$属于正例，$y = 0$表示输入数据$x$属于负例）\[对于多分类，可以使用softmax函数，原理类似，在此不赘述\]
 + $y=\frac{1}{1+e^{-(w^Tx+b)}}$可用来计算输入数据$x$属于正例的概率,这里$y$理解为输入数据$x$属于正例的概率、$1-y$理解为输入数据$x$为负例的概率，即$p(y = 1\mid x)$。
 + 我们现在对比值$\frac{p}{1-p}$取对数（即$\log\left(\frac{p}{1-p}\right)$）来表示输入数据$x$属于正例的概率。
-  + $\frac{p}{1-p}$ 被称为 **几率(odds)** ,反映了输入数据$\boldsymbol{x}$作为正例的相对可能性。
+  + $\frac{p}{1-p}$ 被称为 **几率(odds)** ,反映了输入数据$\mathbf{x}$作为正例的相对可能性。
   + $\frac{p}{1-p}$ 的 **对数几率(log odds)** 或logit函数可表示为$log\left(\frac{p}{1-p}\right)$。
-+ 显然,可以得到$p(y=1|\boldsymbol{x})=h_\theta(x)=\frac{1}{1+e^{-(\boldsymbol{w}^T\boldsymbol{x}+b)}}$和$p(y=0|\boldsymbol{x})=1-h_\theta(x)=\frac{e^{-(\mathbf{w}^T\mathbf{x}+\mathbf{b})}}{1+e^{-(\mathbf{w}^T\mathbf{x}+\mathbf{b})}}$。$\theta$表示模型参数（$\theta=\{\mathbf{w},b\}$）。于是有：
++ 显然,可以得到$p(y=1|\mathbf{x})=h_\theta(x)=\frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}}$和$p(y=0|\mathbf{x})=1-h_\theta(x)=\frac{e^{-(\mathbf{w}^T\mathbf{x}+\mathbf{b})}}{1+e^{-(\mathbf{w}^T\mathbf{x}+\mathbf{b})}}$。$\theta$表示模型参数（$\theta=\{\mathbf{w},b\}$）。于是有：
 $$
 \mathrm{logit}\left(p(y=1|x)\right)=\log\left(\frac{p(y=1|x)}{p(y=0|x)}\right)=\log\left(\frac{p}{1-p}\right)=w^Tx+b
 $$
@@ -313,3 +313,219 @@ $$
 | 降维方法             | 优化寻找特征向量$w$                  | 优化寻找特征向量$w$        |
 | 目标         | 类内方差小、类间距离大              | 寻找投影后数据之间方差最大的投影方向 |
 | 维度      | LDA降维后所得到维度是与数据样本的类别个数$K$有关   | PCA对高维数据降维后的维数是与原始数据特征维度相关  |
+# Ada Boosting（自适应提升）
++ Ada Boosting(自适应提升)通过 **集成(ensemble)** 手段来达到提升(boosting)算法性能目的，该算法的核心思想是：对于一个复杂的分类任务，可以将其分解为若干子任务，然后将若干子任务完成方法综合，最终完成该复杂任务。
++ 具体而言，是将若干个 **弱分类器(weak classifiers)**（这里指错误率略低于50%的算法） 组合起来，形成一个 **强分类器(strong classifier)** 。（通俗来说就是“三个臭皮匠顶个诸葛亮”）
++ 该算法在1995年由Yoav Freund和Robert Schapire提出（论文：[AdaBoosting](https://www.face-rec.org/algorithms/Boosting-Ensemble/decision-theoretic_generalization.pdf)）
+## 计算学习理论(Computational Learning Theory)
++ 可计算理论关心什么样的问题可以被计算(computable)。一个任务，如果是 **图灵可停机** 的，那么该任务可计算。可学习理论(learnability theory)关心什么样的任务是可以被习得，从而能被算法模型来完成。
++ Leslie Valiant (2010年图灵奖获得者)和其学生Michael Kearns两位学者提出了这个问题并进行了有益探索，逐渐完善了计算学习理论。
+### 霍夫丁不等式(Hoeffding’s inequality)
++ 学习任务：统计某个电视节目在全国的收视率。
++ 方法：不可能去统计整个国家中每个人是否观看电视节目、进而算出收视率。只能抽样一部分人口，然后将抽样人口中观看该电视节目的比例作为该电视节目的全国收视率。
++ 霍夫丁不等式：全国人口中看该电视节目的人口比例（记作$x$）与抽样人口中观看该电视节目的人口比例（记作$y$）满足如下关系：
+$P(|x-y|\geq\epsilon)\leq 2e^{-2N\epsilon^2}$($N$是采样人口总数、$\epsilon \in (0,1)$是所设定的可容忍误差范围)
++ 当$N$足够大时，“全国人口中电视节目收视率”与“样本人口中电视节目收视率”差值超过误差范围$\epsilon$的概率非常小。
+### 概率近似正确(probably approximately correct, PAC)
++ 对于统计电视节目收视率这样的任务，可以通过不同的采样方法（即不同模型）来计算收视率。
++ 每个模型会产生不同的误差。
++ 问题：如果得到完成该任务的若干“弱模型”，是否可以将这些弱模型组合起来，形成一个“强模型”。该“强模型” 产生误差很小呢？这就是概率近似正确（PAC）要回答的问题。
++ 在概率近似正确背景下，有“强可学习模型”和“弱可学习模型”：
+  + **强可学习(strongly learnable)**： 学习模型能够以较高精度对绝大多数样本完成识别分类任务
+  + **弱可学习(weakly learnable)**： 学习模型仅能完成若干部分样本识别与分类，其精度略高于随机猜测。
++ 概率近似正确指出，强可学习和弱可学习是等价的，也就是说，如果已经发现了“弱学习算法”,可将其提升(boosting)为“强学习算法”。Ada Boosting算法就是这样的提升方法。具体而言，Ada Boosting将一系列弱分类器组合起来，构成一个强分类器。
+## Ada Boosting算法
+### 思路描述
+Ada Boosting算法中两个核心问题：
++ 在每个弱分类器学习过程中，如何改变训练数据的权重：提高在上一轮中分类错误样本的权重。
++ 如何将一系列弱分类器组合成强分类器：通过加权多数表决方法来提高分类误差小的弱分类器的权重，让其在最终分类中起到更大作用。同时减少分类误差大的弱分类器的权重，让其在最终分类中仅起到较小作用。
++ 图示：![Ada](Ada.png)
+### 算法描述
+1. 数据样本权重初始化   
+    给定包含$N$个标注数据的训练集合$\Gamma,\Gamma=\{(x_1,y_1),\cdots ,(x_N,y_N)\}$，其中$x_i(1\leq i\leq N)\in X\subseteq \mathbb{R}^n,y_i\in Y=\{-1,1\}$。   
+    Ada Boosting算法将从这些标注数据出发，训练得到一系列弱分类器，并将这些弱分类器线性组合得到一个强分类器。
+    初始化每个训练样本的权重：$D_1=(w_{11},\cdots,w_{1i},\cdots,w_{1N})$,其中$w_{1i}=\frac{1}{N}(1\leq i\leq N)$
+2. 分别训练$M$个基分类器  
+   对$m=1,2,\cdots,M$：  
+   a. 使用具有分布权重$D_m$的训练数据来学习得到第$m$个基分类器（弱分类器）$G_m$：
+   $$
+   G_m(x):X\rightarrow \{-1,1\}
+   $$
+   b. 计算$G_m(x)$在训练数据集上的分类误差：  
+   $$
+   err_m=\sum_{i=1}^N w_{mi}I(G_m(x_i)\neq y_i),I(\cdot)=\left\{
+    \begin{array}{rcl}
+    1     &      & G_m(x_i)\neq y_i\\
+    0     &      & G_m(x_i)= y_i\\
+    \end{array} \right.
+   $$
+   c. 计算弱分类器$G_m(x)$的权重：
+   $$
+   \alpha_m=\frac{1}{2}\ln\frac{1-err_m}{err_m}
+   $$
+   d. 更新训练样本数据的分布权重：  
+   $D_{m+1}=w_{m+1,i}=\frac{w_{m,i}}{Z_m}e^{-\alpha_my_iG_m(x_i)}$，其中$Z_m$是归一化因子以使得$D_{m+1}$为概率分布，$Z_m=\sum_{i=1}^Nw_{m,i}e^{-\alpha_my_iG_m(x_i)}$
+3. 以线性加权形式来组合弱分类器$f(x)$
+   $$
+   f(x)=\sum_{i=1}^M\alpha_mG_m(x)
+   $$
+   得到强分类器$G(x)$
+   $$
+   G(x)=sign(f(x))=sign(\sum_{i=1}^M\alpha_mG_m(x))
+   $$
+### 算法解释
++ 第$m$个弱分类器$G_m(x)$在训练数据集上产生的分类误差等于被错误分类的样本所具有权重的累加。
++ 对于第$m$个弱分类器$G_m(x)$的权重$\alpha_m$：
+  + 当第$m$个弱分类器$G_m(x)$错误率为$1$，代表每个样本分类都出错，则$\alpha_m=\frac{1}{2}\ln\frac{1-err_m}{err_m}\rightarrow -\infty$，故给予第$m$个弱分类器$G_m(x)$很低的权重；
+  + 当第$m$个弱分类器$G_m(x)$错误率为$\frac{1}{2}$，$\alpha_m=\frac{1}{2}\ln\frac{1-err_m}{err_m}=0$。如果错误率$err_m<\frac{1}{2}$，权重$\alpha_m>0$。由此可知权重$\alpha_m$随$err_m$减少而增大，即错误率越小的弱分类器会赋予更大权重；
++ 如果一个弱分类器的分类错误率为$\frac{1}{2}$，可视为其性能仅相当于随机分类效果。
++ 可以把对第$i$个训练样本更新后的样本数据分布权重写为如下分段函数形式：
+  $$
+  w_{m+1,i}=
+  \begin{cases}
+  \frac{w_{m,i}}{Z_m}e^{-\alpha_m}, & G_m(x_i)=y_i \\
+  \frac{w_{m,i}}{Z_m}e^{\alpha_m}, & G_m(x_i)\neq y_i & & 
+  \end{cases}
+  $$
+  可见，如果某个样本无法被第$m$个弱分类器$G_m(x)$分类成功，则需要增大该样本权重，否则减少该样本权重。这样，被错误分类样本会在训练第$m+1$个弱分类器$G_{m+1}$时会被“重点关注” 。  
+  在每一轮学习过程中，Ada Boosting算法均在划重点（重视当前尚未被正确分类的样本）
++ $f(x)$是$M$个弱分类器的加权线性累加。分类能力越强的弱分类器具有更大权重。注意$\alpha_m$累加之和并不等于1。$f(x)$符号决定样本$x$分类为$1$或$-1$。如果$\sum_{i=1}^M\alpha_mG_m(x)$为正，则强分类器$G(x)$将样本$x$
+分类为$1$；否则为$-1$。
+### 从霍夫丁不等式解释Ada Boosting算法
++ 假设有$M$个弱分类器$G_M(1\leq m \leq M)$ ，则$M$个弱分类器线性组合所产生误差满足如下条件：
+  $$
+  P(\sum_{i=1}^MG_m(x)\neq\zeta(x))\leq e^{-\frac{1}{2}M(1-2\epsilon)^2}
+  $$
+  $\zeta(x)$是真实分类函数，$\epsilon\in (0,1)$ 。上式表明，如果所“组合” 弱分类器越多，则学习分类误差呈指数级下降，直至为零。
++ 上述不等式成立有两个前提条件：
+  1) 每个弱分类器产生的误差相互独立； 
+  2) 每个弱分类器的误差率小于50%。因为每个弱分类器均是在同一个训练集上产生，条件1）难以满足。也就说，“准确性（对分类结果而言）”和“差异性（对每个弱分类器而言）”难以同时满足。
++ Ada Boosting采取了序列化学习机制，即一个分类器学习完成之后才会进行下一个分类器的学习，后一个分类器的学习受到前面分类器学习的影响。
+### 优化目标
+Ada Boosting实际是在**最小化指数损失函数(minimization of exponential loss)** :
+$$
+\sum_ie^{-y_if(x_i)}=\sum_ie^{-y_i\sum_{i=1}^M\alpha_mG_m(x_i)}
+$$
+Ada Boost的分类误差上界如下所示：
+$$
+\frac{1}{N}\sum_{i=1}^NI(G(x_i)\neq y_i)\leq\frac{1}{N}\sum_ie^{-y_if(x_i)}=\prod_mZ_m
+$$
+在第$m$次迭代中，Ada Boosting总是趋向于将具有最小误差的学习模型选做本轮生成的弱分类器$G_m$，使得累积误差快速下降。
+## 例子
+略，见《人工智能导论：模型与算法》P141~143。
+# 支持向量机（support vector machine,SVM）
++ 传统识别理论认为，算法模型性能可用从训练样本集所得经验风险（empirical risk）来衡量。经验风险指算法模型在训练样本集中所有数据上所得误差的累加。很显然，经验风险越小，算法模型对训练数据拟合程度越好。在实际中，一味要求经验风险小，往往会造成过拟合问题（over-fitting）。
++ 支持向量机通过 **结构风险最小化（structural risk minimization）** 来解决过学习问题。在样本组成的超空间中，存在多个可将样本分开的超平面(hyper-plane)。但是，在这些超平面中，支持向量机学习算法会去寻找一个最佳超平面，使得每个类别中距离超平面最近的样本点到超平面的最小距离最大。
++ 下图为二类分类问题的最佳分类平面示例：![svm](svm.png)
++ 支持向量机在1995年由Corinna Cortes和Vladimr Vapnik提出（论文：[Support-vector Networks](https://ise.ncsu.edu/wp-content/uploads/sites/9/2022/08/Cortes-Vapnik1995_Article_Support-vectorNetworks.pdf)
+## VC维与结构风险最小化
+在理论上，支持向量机认为：分类器对未知数据（即测试数据）进行分类时所产生的期望风险（expected risk，即真实风险）不是由经验风险单独决定的，而是由两部分组成：
+1) 从训练集合数据所得经验风险（如果经验风险小、期望风险很大，则是过学习）；
+2) 置信风险（confidence risk），它与分类器的$VC$维及训练样本数目有关。
+设$0\leq \eta \leq 1$，Vapnik推导出期望风险$\Re$和经验风险$\Re_{emp}$以$1 − \eta$的概率满足如下关系：
+$$
+\Re\leq\Re_{emp}+\sqrt{\frac{h(log(\frac{2n}{h})+1)-log(\frac{\eta}{4})}{n}}
+$$
+其中，$\sqrt{\frac{h(log(2n/h)+1)-log(\eta/4)}{n}}$叫做 “$VC$置信值”
+，$n$是训练样本个数， $h$是反映学习机复杂程度的$VC$维。因为期望风险$\Re$代表了分类器对未知数据分类推广能力，所以$\Re$越小越好。在上面不等式中，$VC$置信值是$h$的增函数，$\Re_{emp}$是$h$的减函数，于是选择一个折中的$h$值可以使期望风险ℜ达到最小。   
+支持向量机使用结构风险最小化准则来选取$VC$维$h$，使每一类别数据之间的 **分类间隔（Margin）** 最大，最终使实期望风险$\Re$最小。
+### 假设空间的VC维
++ 将$n$个数据分为两类，可以有$2^n$种分法，即可理解成有$2^n$个学习问题。若存在一个假设$\mathscr{H}$（可以理解为映射的集合），能准确无误地将$2^n$种问题进行分类，那么$n$就是$\mathscr{H}$的$VC$维。
++ 一般地，在$r$维空间中，线性决策面的$VC$维为$r+1$。$VC$维就是对假设空间$\mathscr{H}$复杂度的一种度量。当样本数$n$固定时，如果$VC$维越高，则算法模型的复杂性越高。$VC$维越大，通常推广能力越差，置信风险会变大。如果算法模型一味降低经验风险，则会提高模型复杂度，导致$VC$维很高，置信风险大，使得期望风险就大。   
+> 关于为什么在$r$维空间中，线性决策面的$VC$维为$r+1$（粗浅地理解）：在$r$维空间，线性决策面可以理解为一个$r-1$维的超平面；在$r$维空间中，若我们取$r+1$个点且它们不共面（即线性无关），这些点的所有$2^{r+1}$种标记方式，都能被某个超平面分开，因为超平面有$r+1$个自由参数（$r$个权重 + $1$个偏置），所以$r+1$个点的任意标记模式，都可以对应某组参数解。
+
+### 结构风险最小化
++ 通过$VC$理论，可认识到期望风险（即真实风险）$\Re$与经验风险$\Re_{cmp}$之间是有差别的，这个差别项被称为置信风险，它与训练样本个数和模型复杂度都有密切的关系。
++ 用复杂度高的模型去拟合小样本，往往会导致过拟合，因此需要给经验风险 $\Re_{emp}$加上一个惩罚项或者正则化项，以同时考虑经验风险与置信风险。这一思路被称为结构风险最小化。这样，在小样本情况下可取得较好性能。在保证分类精度高（经验风险小）同时，有效降低算法模型$VC$维，可使算法模型在整个样本集上的期望风险得到控制。当训练样本给定时，分类间隔越大，则对应的分类超平面集合的$VC$维就越小。
++ 下图表示了经验风险、期望风险、$VC$置信度、$VC$维、过学习和欠学习的关系：
+![svm-risk](svm-risk.png)
+## 线性可分支持向量机
++ 对于n个训练数据$(x,y)\in D(i=1,\cdots,n)$,记其类别标签为$1$或$-1$
+(即$y_i=1$或$y_i=-1$)分别代表了正样本或负样本。支持向量机从这些训
+练数据出发，寻找一个最优的超平面，其方程为$\mathbf{w}^T\mathbf{x}+b=0$。
++ 这里$\mathbf{w}=(w_1,w_2,…,w_d)$为超平面的法向量，与超平面的方向有关；$b$为偏置项，是一个标量，其决定了超平面与原点之间的距离。对于正样本要求满足$\mathbf{w}^T\mathbf{x}+b\geq0$,对于负样本要求满足$\mathbf{w}^T\mathbf{x}+b<0$。可参考下图：
+![lsvm](linear-svm.png)
++ 样本空间中任意样本$x$到该平面距离可表示为：
+$$
+r=d(\mathbf{w},b,x)=\frac{|\mathbf{w}^T\mathbf{x}+b|}{||\mathbf{w}||_2}\quad(||\mathbf{w}||_2=\sqrt{\mathbf{w}^T\mathbf{w}})
+$$
++ 由于法向量$\mathbf{w}$中的值可按比例任意缩放而不改变法向量方向，使得分类平面不唯一。为此，对$\mathbf{w}$和$b$添加如下约束：
+  $$
+  r_{min_i|\mathbf{w}^Tx_i+b|}=1
+  $$
+  即离超平面最近的正负样本代入超平面方程后其绝对值为$1$。于是对超平面的约束变为：$y_i(\mathbf{w}^Tx_i+b)\geq1$。
++ 两类样本中离分类超平面最近的数据之间的距离可如下计算：
+$$
+\begin{aligned}
+d(w,b) &= 
+\min_{(x_k,y_k=1)} d(w,b,x_k) + \min_{(x_m,y_m=-1)} d(w,b,x_m) \\
+&= \min_{(x_k,y_k=1)} \frac{|w^T x_k + b|}{\|w\|_2} + \min_{(x_m,y_m=-1)} \frac{|w^T x_m + b|}{\|w\|_2} \\
+&= \frac{1}{\|w\|_2}\Big(\min_{(x_k,y_k=1)} |w^T x_k + b| + \min_{(x_m,y_m=-1)} |w^T x_m + b|\Big) \\
+&= \frac{2}{\|w\|_2}
+\end{aligned}
+$$
++ 支持向量机的基本形式就是最大化分类间隔，即在满足约束的条件下找到参数$\mathbf{w}$和$b$使得$\gamma$最大，即等价于：
+$$
+\begin{aligned}
+ & \min_{\mathbf{w},b}\frac{||\mathbf{w}||^2}{2}=\min_{\mathbf{w},b}\frac{1}{2}\mathbf{w}^T\mathbf{w} \\
+ & \mathrm{s.t.}y_i(\mathbf{w}^Tx_i+b)\geq1,i=1,2,...,n
+\end{aligned}
+$$
+## 松弛变量，软间隔与hinge损失函数
++ 先前介绍中假设所有训练样本数据是线性可分，即存在一个线性超平面能将不同类别样本完全隔开，这种情况称为“硬间隔”（hard margin），与硬间隔相对的是“软间隔”（soft margin）。软间隔指允许部分错分给定的训练样本。
++ 在软间隔情况下，算法在使得每个类别中距离超平面最近样本到超平面的最小距离最大的同时，还应促使不满足约束条件的样本数目尽可能少，因此目标函数可表示如下：
+  $$
+  \begin{gathered}
+  \min_{\mathbf{w},b}\frac{1}{2}\mathbf{w}^T\mathbf{w}+c\times\sum_{i=1}^n[y_i\neq sign(\mathbf{w}^T\mathbf{x}_i+b)] \\
+  s.t.y_i(\mathbf{w}^T\mathbf{x}_i+b)\geq1\ for\ correct\ \mathbf{x}_i \\
+  y_i(\mathbf{w}^T\mathbf{x}_i+b)\geq-\infty\ for\ incorrect\ \mathbf{x}_i
+  \end{gathered}
+  $$
+  这里$c$为常数，$[y_i\neq sign(\mathbf{w}^T\mathbf{x}_i+b)]$为指示函数。
++ 然而上述目标函数难以直接求解。为此，引入hinge损失函数：
+$$
+\min_{\mathbf{w},b}\frac{1}{2}\mathbf{w}^T\mathbf{w}+c\times\sum_{i=1}^n\max(0,1-y_i(\mathbf{w}^Tx_i+b))
+$$  
+很显然，所有被正确分类的数据存在$y_i(\mathbf{w}^Tx_i+b)\geq 1$，因此在hinge损失函数作用下，这些被正确分类数据的hinge损失$\max\left(0,1-y_i(\mathbf{w}^Tx_i+b)\right)=0$。于是，hinge函数只会记录分类错误数据的损失。
++ 记$\xi_i=\max\left(0,1-y_i(w^Tx_i+b)\right)$（$\xi_i$被称为第$i$个变量的“松弛变量”，slack variables），显然$\xi_i\geq0$。每一个样本对应一个松弛变量，用来表示该样本被分类错误所产生的损失。于是，可将上式重写为：
+  $$
+  \begin{gathered}
+  \min_{\mathbf{w},b}\frac{1}{2}\mathbf{w}^{T}\mathbf{w}+c\times\sum_{i=1}^{n}\xi_{i} \\
+  \text{s.t.}\quad y_{i}(\mathbf{w}^{T}x_{i}+b)\geq 1-\xi_{i}  \\
+  \xi_{i}\geq 0,\,i=1,2,...,n
+  \end{gathered}
+  $$
+  这就是最常见的“软间隔支持向量机”需要优化的目标函数(也被称为原问题，prime problem)。
++ 具体求解此目标函数需要用到拉格朗日乘子，这里不过多展开。
+## 核函数(用于解决线性不可分的情况)
++ 在现实任务中，原始样本空间并不一定是线性可分的，对于这样的问题，可将样本中原始空间映射到一个更加高维的特征空间中去，使得样本在这个特征空间中高概率线性可分。如果原始空间是有限维，那么一定存在一个高维特征空间使样本可分。
++ 常见的核函数如下，这里不多展开：
+
+| 常见核函数             | 表达式                |
+| :---------------------------: | :------------------------: |
+| 线性     |  $\kappa(x_i,x_j)=x_ix_j$     |
+| 多项式  |  $\kappa(x_i,x_j)=\left(\gamma x_ix_j+c\right)^n$ |
+| Radial basis function | $\kappa(x_i,x_j)=e^{-\frac{\|\|x_i-x_j\|\|^2}{2\sigma^2}}$|
+|  Sigmoid |   $\kappa(x_i,x_j)=\tanh(\gamma x_ix_j+c)$     |
+# 生成学习模型
++ 本章介绍的监督学习可以分为判别式学习(discriminative learning)
+和生成学习(generative learning),之前所介绍的方法都是判别式学习。
+这一小节主要来介绍生成学习。
++ 生成学习方法从数据中学习联合概率分布$P(X,C)$（其中$X=\{x_1,x_2,\cdots,x_n\}$代表n个样本数据，$C=\{c_1,c_2,\cdots,c_n\}(c_i\in C)$代表每个样本所对应的类别标签的集合），然后求出条件概率分布$P(C|X)$作为预测模型，即$P(c_i|x)=\frac{P(x,c_i)}{P(x)}$。
++ 当然由于$P(x,c_i)$一般难以求解，因此通过如下方法来求解联合概率分布$P(x,c_i)$：
+$$
+P(\boldsymbol{x},c_i)=\underbrace{P(\boldsymbol{x}|c_i)}_{\text{似然概率}}\times\underbrace{P(c_i)}_{\text{先验概率}}\Rightarrow \underbrace{P(c_i|\boldsymbol{x})}_{\text{后验概率}}=\frac{\underbrace{P(x,c_i)}_{\text{联合概率}}}{P(x)}=\frac{\underbrace{P(x|c_i)}_{\text{似然概率}}\times\underbrace{P(c_i)}_{\text{先验概率}}}{P(x)}
+$$
++ 对于每个类别而言，每个输入数据$x$的概率$P(x)$是一样的，因此可
+将$P(x)$从上式中去掉，于是可得到后验概率的如下计算方法：
+$$
+\underbrace{P(c_i|\boldsymbol{x})}_{\text{后验概率}}=\underbrace{P(x|c_i)}_{\text{似然概率}}\times\underbrace{P(c_i)}_{\text{先验概率}}
+$$
++ 这个式子就是著名的贝叶斯公式。似然概率显然“编码”了输入数据被类别模型产生的关系。
++ 与生成学习方法不同，判别式方法由数据直接学习决策函数$f_\theta$或者条件概率分布$P(c_i|x)$来作为预测的模型。如果直接来学习决策函数$f_\theta$,则不涉及与样本数据有关的概率计算，直接从底层特征出发来得到类别输出(如支持向量机、回归分析和Ada boosting等)。
++ 常见的生成学习模型有隐马尔可夫模型、隐狄利克雷分布(latent dirichlet allocation，LDA)等。
+# 小结
++ 从数据中学习概念或模式形成判断和决策能力是机器学习的一个基本目标。监督学习从标注数据出发，学习得到一个映射函数，将原始输出映射到语义任务空间，架构起了“从底层特征到高层语义”的“桥梁”。
++ 监督学习需要依赖于标注大数据来进行学习，难以利用无标注数据。如何形成数据依赖灵活，且在学习过程中有效利用知识或先验，是监督学习今后发展的重要方向。同时，一个任务是否可以被学习(learnability)仍然是学术界的热点和难点。
+
+更多机器学习内容请见无监督学习。（!!byd内容怎么那么多!!）
