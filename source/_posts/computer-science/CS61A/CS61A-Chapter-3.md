@@ -74,10 +74,17 @@ False
 True
 >>> not True
 False
+>>> True or 114514 # 这个例子比较特殊
+114514
+>>> 33 or 16
+33
+>>> print(10) or "" # 这个例子比较cheeky
+10
+""
 ```
 + 注意在计算这些逻辑表达式时，并不一定会计算所有的表达式（被称为 **“短路”short-circuiting** ）：
-  + 计算`<left> and <right>`时，如果`<left>`值为真，则立即返回真；
-  + 计算`<left> or <right>`时，如果`<left>`值为假，则立即返回假；
+  + 计算`<left> and <right>`时，如果`<left>`值为真，则返回`<right>`的值，否则返回`<left>`的值；
+  + 计算`<left> or <right>`时，如果`<left>`值为假，则返回`<left>`的值，否则返回`<right>`的值。
 + 返回布尔值的函数通常名称以`is`开头，如`isprime`。
 ## 迭代(Iteration)
 + 有时，程序需要重复执行相同的语句，提高计算的效率
