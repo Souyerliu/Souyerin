@@ -8,7 +8,7 @@ date: 2025-10-07 17:22:34
   url: https://cosx.org/
   desc: 一个旨在推广与应用统计学知识的网站和社区。
   image: https://cosx.org/img/logo.png
-  color: #8C1F22
+  color: "#8C1F22"
 {% endlinks %}
 
 {% links %}
@@ -17,7 +17,7 @@ date: 2025-10-07 17:22:34
   url: https://blog.cuijiacai.com/
   desc: 使用了他提供的教程建立了个人博客，在此感谢。
   image: https://blog.cuijiacai.com/img/profile.png
-  color: #87CEEB
+  color: "#87CEEB"
 {% endlinks %}
 
 {% links %}
@@ -26,6 +26,14 @@ date: 2025-10-07 17:22:34
   url: https://tb.daidr.me/
   desc: 逻辑表达式真值表求解小工具，亲测好用。
   image: https://tb.daidr.me/icons/favicon.ico
-  color: #C48EE2
+  color: "#C48EE2"
 {% endlinks %}
 
+{% links %}
+- site: 真值表Truth table
+  owner: daidr
+  url: https://tool.chipdebug.com/wavedrom/
+  desc: 基于javascript的时序电路波形图绘制工具。
+  image: https://tool.chipdebug.com/wavedrom/images/logo-512-maskable.png
+  color: "#141414"
+{% endlinks %}

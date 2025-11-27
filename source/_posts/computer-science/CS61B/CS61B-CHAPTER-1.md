@@ -10,9 +10,9 @@ tags:
 cover: 61B-header.png
 ---
 本系列笔记基于官网发布的slides，videos，textbook以及B站Lecture视频编写。
-CS61B官网（2025 Fall）：[CS 61B Fall 2025](https://fa25.datastructur.es/)
-CS61B Lecture（2024 Spring）：[CS61B Lecture sp24](https://www.bilibili.com/video/BV1hJ4m1M7ZA/)
-注：本课程使用的编程语言为Java，但是否熟悉这个语言对学习此课程影响不大。（个人认为它相当于C++去掉C）
+CS61B官网（2025 Fall）：[CS 61B Fall 2025](https://fa25.datastructur.es/)    
+CS61B Lecture（2024 Spring）：[CS61B Lecture sp24](https://www.bilibili.com/video/BV1hJ4m1M7ZA/)    
+注：本课程使用的编程语言为Java，但是否熟悉这个语言对学习此课程影响不大。（个人认为它相当于C++去掉C）    
 关于Java的安装配置，可参考：[Java开发环境配置教程](https://www.runoob.com/java/java-environment-setup.html)。!!如果你和我一样使用的是vscode，并且电脑上已经安装了java版minecraft，那么只需要在vscode中安装对应的java插件就行（）!!
 但为了更好理解本课程，下面给出一些Java的基本语法。!!其实笔者也是第一次学QAQ!!{.bulr}
 # Getting started - Introduction of Java
@@ -100,3 +100,6 @@ public class LargerDemo {
   + 数据结构（和一部分软件工程）
   + 算法与软件工程
 + 另外，本课程非常注重实践，所以会有大量的作业，实验与项目。（之后可能会考虑放一些自己做的在博客里）
+
++ 补充：关于学习路线，引用B站用户“适嘉”的评论作为参考：
+> 数据结构推荐18，然后第四节课的list听25fall新增了循环列表；渐进分析之后都可以，因为变化不大，可以听21的视频因为我觉得课堂效果没有那么好，想听课堂版可以采用25fall的live版，因为是josh讲的，sp25下半部分是大佐讲的，当然大佐思路也挺清晰，不过目前fa25 up还没有搬运，油管有；作业推荐数据结构18+sp24补充fa25的stack和comparator以及21的gitlet；剩下就都做sp24的就行，18还有一个bear map，也可以做一下，核心作业还是sp24
