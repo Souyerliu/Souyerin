@@ -30,7 +30,7 @@ date: 2025-10-07 17:22:34
 {% endlinks %}
 
 {% links %}
-- site: 真值表Truth table
+- site: Wavedrom
   owner: daidr
   url: https://tool.chipdebug.com/wavedrom/
   desc: 基于javascript的时序电路波形图绘制工具。

@@ -15,8 +15,8 @@ cover: cover.jpg
 # 知识图谱推理(Graph reasoning)
 ## 知识图谱的基本概念
 + 知识图谱可视为包含多种关系的图。在图中，每个节点是一个实体（如人名、地名、事件和活动等），任意两个节点之间的边表示这两个节点之间存在的关系。
-+ 一般而言，可将知识图谱中任意两个相连节点及其连接边表示成一个**三元组($triplet$)**，即($left_node, relation, right_node$)。
-+ 知识图谱中存在连线的两个实体可表达为形如\<$left_node, relation, right_node$\>的三元组形式，这种三元组也可以表示为**一阶逻辑(firstorder logic,FOL)**的形式，从而为基于知识图谱的推理创造了条件。
++ 一般而言，可将知识图谱中任意两个相连节点及其连接边表示成一个**三元组(triplet)**，即($left_{node}, relation, right_{node}$)。
++ 知识图谱中存在连线的两个实体可表达为形如\<$left_{node}, relation, right_{node}$\>的三元组形式，这种三元组也可以表示为 **一阶逻辑(firstorder logic,FOL)** 的形式，从而为基于知识图谱的推理创造了条件。
   + 例如从\<奥巴马，出生地，夏威夷\>和<夏威夷，属于，美国\>两个三元组，可推理得到<奥巴马，国籍，美国\>。
 + 可利用一阶谓词来表达刻画知识图谱中节点之间存在的关系，如下图中形如<$James,Couple,David$\>的关系可用一阶逻辑的形式来描述，即$Couple(James,David)$。
 + $Couple(x,y)$是一阶谓词,$Couple$是图中实体之间具有的关系，$x$和$y$是谓词变量。![Graph](graph.png)
