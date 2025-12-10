@@ -31,9 +31,18 @@ date: 2025-10-07 17:22:34
 
 {% links %}
 - site: Wavedrom
-  owner: daidr
+  owner: Aliaksei Chapyzhenka
   url: https://tool.chipdebug.com/wavedrom/
-  desc: 基于javascript的时序电路波形图绘制工具。
+  desc: 基于javascript的时序电路波形图绘制工具，好用滴很。
   image: https://tool.chipdebug.com/wavedrom/images/logo-512-maskable.png
   color: "#141414"
+{% endlinks %}
+
+{% links %}
+- site: ECNU·驿站
+  owner: zeyi
+  url: https://myecnu.org/
+  desc: 软院同学制作的ECNU学习资源集合。
+  image: https://avatars.githubusercontent.com/u/229353891?s=400&u=402f153bc2eeeeb04db6bb419dd231173dd0b045&v=4
+  color: "#cc002c"
 {% endlinks %}

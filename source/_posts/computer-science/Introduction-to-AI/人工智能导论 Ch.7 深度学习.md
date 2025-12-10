@@ -1,5 +1,5 @@
 ---
-title: 人工智能导论 Ch.4 深度学习
+title: 人工智能导论 Ch.7 深度学习
 date: 2025-11-12 19:00:43
 categories: 
   - [study]
