@@ -1,5 +1,5 @@
 ---
-title: 人工智能导论 代码集合(Ch.1~Ch.6)
+title: 人工智能导论 代码集合(Ch.1~Ch.7)
 date: 2025-12-06 22:46:00
 categories: 
   - [study]
@@ -11,7 +11,6 @@ cover: cover.jpg
 老师还是听劝，终于把代码端了上来!!有没有用另说!!   
 笔者进行了一番品鉴，取其精华，汇总于此，以作参考（部分运行结果请参考所附链接，使用了在线python IDE）   
 另外，笔者认为，就目前阶段而言，不必掌握所有代码的细节，知道应该调用哪个库解决即可（去查官方文档！）
-代码范围截至深度学习前，深度学习及之后的大模型代码后面会另开一篇展示
 # Ch.2 人工智能数据基础
 ## 数据相似性度量
 以下算法用于比较预测值与真实值间的差异：
@@ -1018,3 +1017,91 @@ Component 2:
 ```
 ![EM-likelihood](EM-likelihood.png)
 ![GMM](GMM.png)
+
+# 深度学习
+## 误差反向传播（BP）
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+def sigmoid(x):
+    return 1/ (1 +np.exp(-1 * x))
+
+def d_sigmoid(x):
+    s = sigmoid(x)
+    return s*(np.ones(s.shape)- s)
+
+def mean_square_loss(s,y):
+    return np.sum(np.square(s- y) / 2)
+
+def d_mean_square_loss(s, y):
+    return s - y
+
+def forward(w1,w2,b1,b2,X,y):
+    # 输入层到隐藏层
+    y1=np.matmul(X,w1)+b1 # [2，3]
+    z1=sigmoid(y1) # [2，3]
+    # 隐藏层到输出层
+    y2 = np.matmul(z1,w2)+ b2 # [2，2]
+    z2 =sigmoid(y2) # [2，2]
+    # 求均方差损失
+    loss = mean_square_loss(z2,y)
+    return y1,z1,y2,z2,loss
+
+def backward_update(epochs,lr=0.01):
+    np.random.seed(42)  # 保证每次运行一致，可删
+    X = np.random.rand(2, 2)       # 输入：2 个样本，每个 2 维
+    y = np.random.randint(0, 2, 2) # 标签：0/1 二分类
+    W1 = np.random.randn(2, 3) * 0.1   # 输入层 → 隐藏层 (2×3)
+    b1 = np.zeros(3)                   # 隐藏层偏置 (3,)
+    W2 = np.random.randn(3, 2) * 0.1   # 隐藏层 → 输出层 (3×2)
+    b2 = np.zeros(2)  
+    loss_list = []
+    epoch_list = []
+    #先进行一次前向传播
+    y1,z1,y2,z2,loss = forward(W1,W2,b1,b2,X,y)
+    for i in range(epochs):
+        # 求得隐藏层的学习信号（损失函数导数乘激活函数导数）
+        ds2 =d_mean_square_loss(z2,y)*d_sigmoid(y2)
+        # 根据上面推导结果式子（2.4不看学习率）--->（学习信号乘隐藏层z1的输出结果），注意形状需要转置
+        dW2 =np.matmul(z1.T,ds2)
+        # 对隐藏层的偏置梯度求和（式子2.6），注意是对列求和
+        db2 = np.sum(ds2,axis=0)
+        # 式子（2.5)前两个元素相乘
+        dx = np.matmul(ds2,W2.T)
+        # 对照式子(2.3)
+        ds1=d_sigmoid(y1)* dx
+        # 式子(2.5）
+        dW1 = np.matmul(X.T,ds1)
+        # 对隐藏层的偏置梯度求和（式子2.7），注意是对列求和
+        db1 = np.sum(ds1,axis=0)
+        # 参数更新
+        W1 = W1- lr * dW1
+        b1 = b1- lr * db1
+        W2 = W2- lr * dW2
+        b2 = b2- lr * db2
+        y1,z1,y2,z2,loss = forward(W1,W2,b1,b2,X,y)
+        loss_list.append(loss)
+        epoch_list.append(i)
+        #每隔100次打印一次损失
+        if i%100==0:
+            print('第%d批次'%(i/100))
+            print('当前损失为:{:.4f}'.format(loss))
+            print(z2)
+            #sigmoid激活函数将结果大于0.5的值分为正类，小于0.5的值分为负类
+            z2[z2 > 0.5] = 1
+            z2[z2 < 0.5] = 0
+            print(z2)
+    plt.figure(figsize=(8, 5))
+    plt.plot(epoch_list, loss_list)
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.title("Training Loss Curve")
+    plt.grid(True)
+    plt.show()
+
+
+if __name__=='__main__':
+    backward_update(epochs=50001,lr=0.01)
+```
+损失曲线图：
+![loss](loss.png)
