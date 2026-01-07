@@ -24,7 +24,7 @@ cover: cover.jpg
   + 转化为逻辑形式即为：已知$(\forall x)(\forall y)(\forall z)(Mother(z,y)\land Couple(x,z)\longrightarrow Father(x,y))$，如何通过推理得到$Father(David,Ann)$？这就到了归纳推理的范畴。
 + 更多关于知识图谱的概念解释可参见[南京大学-人工智能导论](https://www.lamda.nju.edu.cn/guolz/introai-slides-2024/lec6.pdf)
 ## 归纳学习：归纳逻辑程序设计（inductive logic programming,ILP）
-+ **归纳逻辑程序设计（ILP）**是机器学习和逻辑程序设计交叉领域的研究内容。
++ **归纳逻辑程序设计（ILP）** 是机器学习和逻辑程序设计交叉领域的研究内容。
 + ILP使用一阶谓词逻辑进行知识表示，通过修改和扩充逻辑表达式对现有知识归纳，完成推理任务。
 + 作为ILP的代表性方法，**一阶归纳学习FOIL(First Order Inductive Learner)** 通过**序贯覆盖**实现规则推理。
 ### FOIL(First Order Inductive Learner)

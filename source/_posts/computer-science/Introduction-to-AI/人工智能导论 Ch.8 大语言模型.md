@@ -7,6 +7,7 @@ categories:
 tags:
   - 人工智能
   - 深度学习
+  - 大语言模型
 cover: cover.jpg
 ---
 # 神经机器翻译（NMT）——语言模型的基石
@@ -73,7 +74,7 @@ $$
   1. Encoder   
    + 首先，文本先通过词元化(Tokenization)+Embedding转化为向量，输入到第一个Self-Attention层中，再通过三个矩阵$W_Q,W_K,W_V$（这些矩阵通过数据训练不断更新）对每个向量进行变换，分别得到向量$q_i,k_i,v_i$，如下图所示：![vectors](transformer_self_attention_vectors.png)   
    + 得到三个向量后，对于每个token，模型会计算其他token对当前token的注意力分数（通过其他token的向量$k$与当前token的向量$q$点乘得到）；  
-   + 接下来，对注意力分数先除以$\sqrt{d_k}$以防止数值过大可能导致的梯度消失，再使用softmax转化为$0$到$1$之间的概率权重（可以预见当前token对于自身的softmax权重往往最大）；    
+   + 接下来，对注意力分数先除以$\sqrt{d_k}$以防止数值过大可能导致的梯度消失（以及使注意力分数更接近$0$，这样经过softmax后概率区分更明显），再使用softmax转化为$0$到$1$之间的概率权重（可以预见当前token对于自身的softmax权重往往最大）；    
    + 然后，将softmax得到的权重与原始向量相乘，再将所有结果相加，最终得到一个新的向量，并输入到前向传播层中。上述的这些过程示意图如下：   
     ![output](self-attention-output.png)   
    + 当然，实际操作中，这些向量都是以拼接而成的矩阵形式呈现，那么我们就可以再次写出下面这个公式：$\operatorname*{Attention}(Q,K,V)=\operatorname*{softmax}(\frac{QK^T}{\sqrt{d_k}})V$

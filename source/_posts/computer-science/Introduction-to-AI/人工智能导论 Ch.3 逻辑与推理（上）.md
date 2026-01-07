@@ -141,7 +141,7 @@ cover: cover.jpg
      + 若$f(x_{1},x_{2},\cdots,x_{n})$是$n$元函数符号，$t_{1},t_{2},\cdots,t_{n}$是项，那么$f(t_{1},t_{2},\cdots,t_{n})$是项；
      + 有限次数地使用上述规则产生的符号串是项。
   2. **原子谓词公式(atomic formula)：** 若$P(x_{1},x_{2},\cdots,x_{n})$是$n$元谓词，$t_{1},t_{2},\cdots,t_{n}$是项，那么$P(t_{1},t_{2},\cdots,t_{n})$是原子谓词公式，简称原子公式。
-  3. **合式公式(well-formed formula)：**由逻辑联结词和原子公式构成的用于陈述事实的复杂语句，又称谓词公式。
+  3. **合式公式(well-formed formula)：** 由逻辑联结词和原子公式构成的用于陈述事实的复杂语句，又称谓词公式。
 ### 推理规则
 + 设$A(x)$是谓词公式，$x$和$y$是变元，$a,c$是常量符号，则存在如下谓词逻辑中的推理规则：
   1. **全称量词消去(Universal Instantiation, UI)**：$(\forall x)A(x)\longrightarrow A(y)$

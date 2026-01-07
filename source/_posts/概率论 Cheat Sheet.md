@@ -310,7 +310,7 @@ cover: folder.png
     $$
     p(x)=\left\{
               \begin{aligned}
-              \frac{\lambda}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x},&\hspace{1em} x>0 \\
+              \frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x},&\hspace{1em} x>0 \\
               0,&\hspace{1em} x\leq 0.
               \end{aligned}
               \right.
@@ -559,7 +559,7 @@ cover: folder.png
       $$
       其中
       $$
-      a=\frac{x-\mu_1}{\sigma_1},b=\frac{x-\mu_2}{\sigma_2},c=\sqrt{1-\rho^2}
+      a=\frac{x-\mu_1}{\sigma_1},b=\frac{y-\mu_2}{\sigma_2},c=\sqrt{1-\rho^2}
       $$
 5. 高维正态分布
    + 记为：设$d$为随机向量$\mathbf{X}=(X_1,\cdots,X_d)^T$，向量$\mathbf{x}=(x_1,\cdots,x_d)^T$
@@ -752,7 +752,7 @@ cover: folder.png
   其中$E$为$(h_1\mathbf{X},\cdots,h_n\mathbf{X})$的值域，$J$为坐标变换的雅格比行列式：
   $$
   J=\frac{\partial(x_1,\cdots,x_n)}{\partial(y_1,\cdots,y_n)}=\left|
-    \begin{array}{ccc}
+    \begin{array}{cccc}
     \frac{\partial x_1}{\partial y_1} & \frac{\partial x_1}{\partial y_2} & \cdots & \frac{\partial x_1}{\partial y_n}\\
     \frac{\partial x_2}{\partial y_1} & \frac{\partial x_2}{\partial y_2} & \cdots & \frac{\partial x_2}{\partial y_n}\\
     \cdots & \cdots & \cdots & \cdots\\
@@ -815,7 +815,7 @@ cover: folder.png
     + 若$(X,Y)\sim N(\mu_1,\sigma_1^2;\mu_2,\sigma_2^2;\rho)$，则 $$
       $$
       \Sigma=\left(
-        \begin{array}{ccc}
+        \begin{array}{cc}
         \sigma_1^2 & \rho\sigma_1\sigma_2\\
         \rho\sigma_1\sigma_2 & \sigma_2^2
         \end{array}
@@ -902,7 +902,7 @@ cover: folder.png
   E(X\mid Y=y)=\left\{
     \begin{aligned}
     &\sum_i x_iP(X=x_i\mid Y=y),& \text{离散情形}\\
-    &\int_{-\infty}^\infty xp_{X\mid Y}(x\mid y),& \text{连续情形}
+    &\int_{-\infty}^\infty xp_{X\mid Y}(x\mid y)dx,& \text{连续情形}
     \end{aligned}
     \right.
   $$
@@ -940,3 +940,301 @@ cover: folder.png
 + 类似有$\mathrm{Var}(X\mid Y)$为$Y$的函数
 + 条件方差公式：$\mathrm{Var}X=E(\mathrm{Var}(X\mid Y))+\mathrm{Var}(E(X\mid Y))$（证明略）
 # 极限理论
+## 随机变量序列的收敛性
+1. 几乎处处收敛（依概率$1$收敛）
+   + 定义：若随机变量序列$\{X_n,n\geq 1\}$满足
+      $$
+      P(\lim_{n\to\infty}X_n=X)=1
+      $$
+     则称$\{X_n,n\geq 1\}$几乎处处收敛到$X$（记为$X_n\stackrel{a.s.}{\longrightarrow}X$）
+   + 样本点角度定义：
+      $$
+      P(\{\omega:\lim_{n\to\infty} X_n(\omega)=X(\omega)\})=1
+      $$
+      即满足$X_n(\omega)\nrightarrow X(\omega)\hspace{0.5em}(n\to\infty)$的$\omega$发生的概率为$0$
+2. 依概率收敛
+   + 定义：若$\forall\epsilon>0,$
+      $$
+      \lim_{n\to\infty}P(|X_n-X|\geq\epsilon)=0
+      $$
+      则称$\{X_n,n\geq 1\}$依概率收敛到$X$（记为$X_n\stackrel{P}{\longrightarrow}X$）
+   + 与几乎处处收敛的区别：“几乎处处收敛”针对随机变量取值取极限，而“依概率收敛”针对随机变量偏离的概率求极限
+3. 依分布收敛
+   + 定义：设随机变量$X_n$的分布函数为$F_n(x)$，随机变量$X$的分布函数为$F(x)$，如果对于$F(x)$的任意连续点$x$，有
+      $$
+      \lim_{n\to\infty}F_n(x)=F(x)
+      $$
+      则称$\{X_n,n\geq 1\}$依分布收敛到$X$（记为$X_n\stackrel{F}{\longrightarrow}X$），也称$\{F_n,n\geq 1\}$弱收敛于$F$（记为$F_n\stackrel{w}{\longrightarrow}F$）
+### 性质
+1. 几乎处处收敛性质
+   + 下面四个条件等价：
+      $$
+      \begin{gather}
+      X_n\stackrel{a.s.}{\longrightarrow}X\\
+      P(\bigcup_{k=1}^\infty\bigcap_{n=1}^\infty\bigcup_{m=n}^\infty\{|X_m-X|\geq\frac{1}{k}\})=0\\
+      \forall\epsilon>0,P(\bigcap_{n=1}^\infty\bigcup_{m=n}^\infty\{|X_m-X|\geq\epsilon\})=0\\
+      \forall\epsilon>0,\lim_{n\to\infty}P(\bigcup_{m=n}^\infty\{|X_m-X|\geq\epsilon\})=0
+      \end{gather}
+      $$
+   + Borel-Cantelli引理：设$\{A_n,n\geq 1\}$为$(\Omega,\mathcal{F},P)$中的随机事件列，记
+      $$
+      \{A_n,i.o.\}=\bigcap_{n=1}^\infty\bigcup_{m=n}^\infty A_m
+      $$
+      表示为“事件$A_n$发生无穷多次”（infinity often），那么：
+      + 若$\sum_{n=1}^\infty P(A_n)<\infty$，则$P(A_n,i.o.)=0$；
+      + 若$\{A_n,n\geq 1\}$为相互独立的事件列，且$\sum_{n=1}^\infty p(A_n)=\infty$，则$P(A_n,i.o.)=1$
+   + 那么由引理可得：
+     + 若$\forall\epsilon>0,\sum_{n=1}^\infty P(|X_n-X|\geq\epsilon)<\infty$，则$X_n\stackrel{a.s.}{\longrightarrow}X$；
+     + 若$\{X_n,n\geq 1\}$为相互独立的随机变量序列，$c$为常数，则
+      $$
+      X_n\stackrel{a.s.}{\longrightarrow}c\Longleftrightarrow \forall\epsilon>0,\sum_{n=1}^\infty P(|X_n-c|\geq\epsilon)<\infty
+      $$
+2. 依概率收敛性质
+   + 若随机变量序列$\{X_n,n\geq 1\}$满足$\lim_{n\to\infty}EX_n^2=0$，则$X_n\stackrel{P}{\longrightarrow}0$（可使用马尔科夫不等式证明）
+   + 计算：设$X_n\stackrel{P}{\longrightarrow}X,Y_n\stackrel{P}{\longrightarrow}Y$，则
+      $$
+      \begin{aligned}
+      X_n+Y_n\stackrel{P}{\longrightarrow}X+Y\\
+      X_nY_n\stackrel{P}{\longrightarrow}XY
+      \end{aligned}
+      $$
+   + 判别：若$X_n\stackrel{P}{\longrightarrow}X$，则
+     + 设$f$为定义在$\mathbb{R}$上的连续函数，则$f(X_n)\stackrel{P}{\longrightarrow}f(X)$；
+     + $$
+        lim_{n\to\infty}E(\frac{|X_n-X|}{1+|X_n-X|})=0
+       $$
+3. 依分布收敛性质
+   + Slutsky定理：若$X_n\stackrel{d}{\longrightarrow}X,Y_n\stackrel{P}{\longrightarrow}c$（$c$为常数），则
+     + $X_n+Y_n\stackrel{d}{\longrightarrow}X+c$；
+     + $X_nY_n\stackrel{d}{\longrightarrow}cX$
+     + $c\neq 0,Y_n\neq 0$时，$\frac{X_n}{Y_n}\stackrel{d}{\longrightarrow}\frac{X}{c}$
+### 三种收敛之间的关系
+1. $X_n\stackrel{a.s.}{\longrightarrow}X$蕴含$X_n\stackrel{P}{\longrightarrow}X$，反之不成立
+2. $X_n\stackrel{P}{\longrightarrow}X\Longleftrightarrow$对每个子列$\{X_{n_k},k\geq 1\}$，存在子子列$\{X_{n_{k_j}},j\geq 1\}$满足$X_{n_{k_j}}\stackrel{a.s.}{\longrightarrow}X$
+3. $X_n\stackrel{P}{\longrightarrow}X$蕴含$X_n\stackrel{d}{\longrightarrow}X$，反之不成立
+4. 设$c$为一个常数，则$X_n\stackrel{d}{\longrightarrow}c$蕴含$X_n\stackrel{P}{\longrightarrow}c$
+## 特征函数
++ 前提概念：
+  + 复值随机变量：设$X,Y$为$(\Omega,\mathcal{F},P)$上的实值随机变量，则称$Z=X+iY$为复值随机变量（若$EX,EY$存在，则称$EZ=EX+iEY$为$Z$的数学期望）；
+  + $Z$的共轭随机变量：$\overline{Z}=X-iY$；
+  + $Z$的模：$|Z|=\sqrt{|X|^2+|Y|^2}$；
+  + 独立性：设$Z_1=X_1+iY_1,Z_2=X_2+iY_2$，若$X_1,Y_1$分别与$X_2,Y_2$相互独立，则称$Z_1$与$Z_2$相互独立。
+    + 另一种形式：若$X$与$Y$相互独立，则$e^{iX}$与$e^{iY}$相互独立
++ 定义：设$X$为随机变量，其分布函数为$F$，则称复值函数
+  $$
+  f(t)=Ee^{itX}=E[\cos(tX)+i\sin(tX)]=E[\cos(tX)]+iE[\sin(tX)]
+  $$
+  为$X$（或$F$）的特征函数。
+  + 任何随机变量（或概率分布）的特征函数均存在（因为$|e^{itX}|=1<\infty$）
++ 常见分布特征函数：
+  |分布|特征函数|
+  |:--:|:-----:|
+  |$b(1,p)$|$pe^{it}+1-p$|
+  |$Ge(p)$|$\frac{pe^{it}}{1-(1-p)e^{it}}$|
+  |$P(\lambda)$|$e^{\lambda(e^{it}-1)}$|
+  |$U(0,1)$|$\left\{\begin{aligned}&\frac{e^{it-1}}{it},&t\neq 0\\&1,&t=0\end{aligned}\right.$|
+  |$Exp(\lambda)$|$\frac{\lambda}{\lambda-it}$|
+  |$N(0,1)$|$e^{-\frac{t^2}{2}}$|
+### 特征函数的性质
+1. $f(0)=1,|f(t)|\leq 1$
+2. $f(-t)=\overline{f(t)}$（共轭）
+3. 设$a,b$为常数，$Y=aX+b$，则$f_Y(t)=e^{ibt}f_X(at)$
+4. 若$X$与$Y$相互独立，则$f_{X+Y}(t)=f_X(t)f_Y(t)$ !!比卷积公式好记!!
+5. 特征函数与矩的关系：若随机变量$X$的$k$阶矩$\mu_k=EX^k$存在，则$\forall j,1\leq j\leq k,f(t)$的$j$阶导数存在，且
+   $$
+   f^{(j)}(0)=i^j\mu_j
+   $$
++ 定理1：设$f(t)$为随机变量$X$的特征函数，则$f(t)$非负定，即对于任意正整数$n$，取任意$n$个复数$z_1,\cdots,z_n$与$n$个实数$t_1,\cdots,t_n$，有
+  $$
+  \sum_{i,j=1}^n f(t_i-t_j)z_i\overline{z_j}>0
+  $$
++ 定理2（唯一性定理）：概率分布由其特征函数唯一确定。设$f$为分布函数$F$的特征函数，则
+  $$
+  F(x)=\lim_{y\to-\infty}\lim_{T\to\infty}\int_{-T}^T\frac{e^{-ity}-e^{-itx}}{i\cdot 2\pi t}f(t)dt
+  $$
+  （这一公式也被称为逆转公式）
++ 定理3（连续性定理）：
+  + 设$X_n\stackrel{d}{\longrightarrow}X, f_n(n\geq 1)$为$X_n$的特征函数，$f$为$X$的特征函数，则$\lim_{n\to\infty}f_n(t)=f(t),t\in\mathbb{R}$；
+  + 设$f$在$0$点连续，$\lim_{n\to\infty}f_n(t)=f(t)$对任意$t\in\mathbb{R}$成立，则$X_n\stackrel{d}{\longrightarrow}X$（$X_n,X$同上）
+    + 注：上面条件中$f$在$0$点连续是为了保证$\lim_{n\to\infty}f_n(t)$为分布函数。
+### 多维随机变量的特征函数
++ 定义：设$\mathbf{X}=(X_1,\cdots,X_d)^T$为$d$维随机变量，则称
+  $$
+  f(t_1,\cdots,t_d)=Ee^{i\mathbf{t}^T\mathbf{X}}=E\operatorname*{exp}\{i\sum_{i=1}^dt_iX_i\}
+  $$
+  为$\mathbf{X}$的特征函数，这里$\mathbf{t}=(t_1,\cdots,t_d)^T\in\mathbb{R}^d$
++ 例：设$(X,Y)$服从二维正态分布$N(0,1;0,1;\rho)$，则$(X,Y)$的特征函数为
+  $$
+  f(t_1,t_2)=E\operatorname*{exp}[i(t_1X+t_2Y)]=\operatorname*{exp}\{-\frac{t_1^2+t_2^2+2\rho t_1t_2}{2}\}
+  $$
+### 矩母函数（特征函数的实数版本）
++ 定义：设$X$为一随机变量，对于$t\in\mathbb{R}$使得$E[e^{tX}]<\infty$，则称
+  $$
+  M_X(t)=E[e^{tX}]
+  $$
+  为$X$的矩母函数。
++ 注：矩母函数不一定对所有$t\in\mathbb{R}$均存在（比特征函数条件更严格）
++ 若$\mathbf{X}=(X_1,\cdots,X_d)^T$为$d$维随机变量，则称
+  $$
+  M_X(\mathbf{t})=Ee^{\mathbf{t}^T\mathbf{X}}=E\operatorname*{exp}\{\sum_{i=1}^dt_iX_i\}
+  $$
+  为$\mathbf{X}$的特征函数，这里$\mathbf{t}=(t_1,\cdots,t_d)^T\in\mathbb{R}^d$
++ 性质：
+  1. 若随机变量$X$与$Y$相互独立，则$M_{X+Y}(t)=M_X(t)M_Y(t)$（与特征函数相同）
+  2. 与原点矩的关系（基于泰勒展开）：$M_X^{(n)}(t)=E[X^ne^{tX}]\Longrightarrow M_X^{(n)}(0)=E[X^n]=\mu_n$
+  3. 与中心矩的关系：设$\mu=EX,M_{X-\mu}(t)=E[e^{t(X-\mu)}]=e^{-\mu}M_X(t)$，则
+      $M_{X-\mu}^{(n)}(t)=E[(X-\mu)^ne^{t(X-\mu)}]\Longrightarrow M_{X-\mu}^{(n)}(0)=E[(X-\mu)^n]=\nu_n$
++ 常见分布矩母函数：
+  |分布|特征函数|
+  |:--:|:-----:|
+  |$b(n,p)$|$(pe^{t}+1-p)^n$|
+  |$Ge(p)$|$\frac{pe^{it}}{1-(1-p)e^{it}}$|
+  |$P(\lambda)$|$e^{\lambda(e^{t}-1)}$|
+  |$Exp(\lambda)$|$\frac{\lambda}{\lambda-t},\forall t<\lambda$|
+  |$N(0,1)$|$e^{\frac{t^2}{2}}$|
+## 大数定律
+1. **伯努利大数定律**
+    + 设一次试验中事件$A$发生的概率为$p$，记$S_n$为$n$次独立实验中事件$A$的发生次数，则$n\to\infty$时，
+      $$
+      \frac{S_n}{n}\stackrel{P}{\longrightarrow}p
+      $$
+2. **（弱）大数定律**
+    + 定义：对于随机变量序列$\{X_n,n\geq 1\}$，若存在数列$\{a_n,n\geq 1\}$与$\{b_n,n\geq 1\}$（$\{b_n\}$单调增且趋于无穷），且有$n\to\infty$时，
+      $$
+      \frac{S_n-a_n}{b_n}\stackrel{P}{\longrightarrow}0
+      $$
+      其中$S_n=\sum_{k=1}^nX_k$.则称$X_n$满足（弱）大数定律。
+    + 注1：如无特别说明，一般取$a_n=ES_n,b_n=n$，即
+      $$
+      \frac{S_n-ES_n}{n}\stackrel{P}{\longrightarrow}0
+      $$
+    + 注2：若$\{X_n\}$独立同分布，上式也等价于
+      $$
+      \lim_{n\to\infty}P(|\frac{\sum_{k=1}^nX_k}{n}-EX_1|\geq\epsilon)=0
+      $$
+      （伯努利大数定律就是$X_k\sim b(1,p)$的情形）
+2. 其他大数定律（均对于随机变量序列$\{X_n,n\geq 1\}$，并设$S_n=\sum_{k=1}^nX_k$，满足下述条件之一即满足（弱）大数定律）
+    + **切比雪夫大数定律**：$\{X_n,n\geq 1\}$两两不相关，且$\{\mathrm{Var}X_n\}$一致有界；
+    + **马尔科夫大数定律**：马尔科夫条件成立，即$\lim_{n\to\infty}\frac{\mathrm{Var}S_n}{n^2}=0$；
+    + **辛钦大数定律**：$\{X_n,n\geq 1\}$独立同分布且$EX_1$存在。
++ 相互关系：
+  + 伯努利大数定律是切比雪夫大数定律的特例；切比雪夫大数定律是马尔科夫大数定律的推论（前者成立，后者一定成立）；马尔科夫大数定律可以由切比雪夫不等式推得：
+  $$
+  P(|\frac{S_n-ES_n}{n}|\geq \epsilon)=P(|S_n-ES_n|\geq n\epsilon)\leq\frac{\mathrm{Var}S_n}{n^2\epsilon^2}\to 0(n\to\infty)
+  $$
+  + 辛钦大数定律可以用特征函数的连续性定理证明
+### （弱）大数定律的应用
++ 蒙特卡洛法计算定积分：
+  $$
+  \begin{aligned}
+  I=\int_0^1f(x)dx&=\int_0^1f(x)\cdot 1dx\\
+  &=E(f(X))\hspace{1em}(X\sim U(0,1))\\
+  &=EY\hspace{1em}(Y=F(X))
+  \end{aligned}
+  $$
+  故可以在$(0,1)$中随机生成$n$个均匀分布的随机数$x_1,\cdots,x_n$，再由大数定律，
+  $$
+  I\approx\frac{1}{n}\sum_{k=1}^nf(x_k)
+  $$
+### 更一般的大数定律（不要求数学期望存在）
++ 设$\{X_n,n\geq 1\}$为相互独立的随机变量序列，对任意$n\geq 1$，记
+  $$
+  Y_{n,k}=\left\{
+    \begin{aligned}
+    &X_k,& |X_k|\leq n\\
+    &0,& |X_k|>n
+    \end{aligned}
+  \right.
+  $$
+  另记$a_n=\sum_{k=1}^nEY_{n,k},S_n=\sum_{k=1}^nX_k$，若$n\to\infty$时，
+  $$
+  \begin{aligned}
+  &\sum_{k=1}^nP(|X_k|>n)\to 0\\
+  &\frac{1}{n^2}\sum_{k=1}^nEY_{n,k}^2\to 0
+  \end{aligned}
+  $$
+  则有
+  $$
+  \frac{S_n-a_n}{n}\stackrel{P}{\longrightarrow}0
+  $$
+  即$\{X_n,n\geq 1\}$满足大数定律。
++ 利用这一构造，也可以证明辛钦大数定律（略）。
+### 强大数定律
++ 定义：对于随机变量序列$\{X_n,n\geq 1\}$，若存在数列$\{a_n,n\geq 1\}$与$\{b_n,n\geq 1\}$（$\{b_n\}$单调增且趋于无穷），且有$n\to\infty$时，
+  $$
+  \frac{S_n-a_n}{b_n}\stackrel{a.s.}{\longrightarrow}0
+  $$
+  其中$S_n=\sum_{k=1}^nX_k$.则称$X_n$满足强大数定律。
+  + 特别地，当$\{X_n,n\geq 1\}$独立同分布，且数学期望$EX_1=\mu$存在，则有：$n\to\infty$时，
+  $$
+  \frac{S_n}{n}\stackrel{a.s.}{\longrightarrow}\mu
+  $$
+## 中心极限定理
++ 与大数定律的区别：大数定律研究的是随机变量和的均值与和的期望的关系；而中心极限定理研究的是随机变量和的分布与正态分布的关系
++ 定义：设$\{X_n,n\geq 1\}$为随机变量序列，$S_n=\sum_{k=1}^n,n\geq 1$，若数学期望$ES_n$与方差$\mathrm{Var}S_n$均存在，且
+  $$
+  S^*_n=\frac{S_n-ES_n}{\sqrt{\mathrm{Var}S_n}}
+  $$
+  依分布收敛于标准正态分布$N(0,1)$，则称$\{X_n,n\geq 1\}$满足中心极限定理。
++ 性质：若$\{X_n,n\geq 1\}$满足中心极限定理，则对任意$x\in\mathbb{R}$，
+  $$
+  \lim_{n\to\infty}P(\frac{S_n-ES_n}{\sqrt{\mathrm{Var}S_n}}\leq x)=\Phi(x)
+  $$
+  其中$\Phi$为标准正态分布$N(0,1)$的分布函数。
++ **Lindeberg-Lévy中心极限定理**：设$\{X_n,n\geq 1\}$为独立同分布的随机变量序列，数学期望为$\mu$，方差为$\sigma^2$，则$\{X_n,n\geq 1\}$满足中心极限定理。
+  + 可用于近似计算概率：
+    $$
+    P(a\leq\sum_{k=1}^nX_n\leq b)\approx\Phi(\frac{b-n\mu}{\sigma\sqrt{n}})-\Phi(\frac{a-n\mu}{\sigma\sqrt{n}})
+    $$
+    （提示：$S_n$均值为$n\mu$，方差为$n\sigma^2$）
++ **DeMoivre-Laplace中心极限定理**：设$Y_n$服从二项分布$b(n,p)$，则
+  $$
+  \lim_{n\to\infty}P(\frac{Y_n-np}{\sqrt{np(1-p)}}\leq y)=\Phi(y)
+  $$
+  其中$\Phi$为标准正态分布$N(0,1)$的分布函数。
+  + 注：由于二项分布为离散分布，正态分布为连续分布，故用正态分布近似二项分布时，需要做以下修正：
+    $$
+    \begin{aligned}
+    P(k_1\leq Y_n\leq k_2)&=P(k_1-0.5<Y_n<k_2+0.5)\\
+    &\approx\Phi(\frac{k_2+0.5-np}{\sqrt{np(1-p)}})-\Phi(\frac{k_1-0.5-np}{\sqrt{np(1-p)}})
+    \end{aligned}
+    $$
++ 三类应用：已知$n$和$y$，求概率；已知$n$和概率，求$y$；已知$y$和概率，求$n$。（具体见题目分类汇编）
++ 中心极限定理比直接用切比雪夫不等式作近似计算精度更好。
+### 独立不同分布情形（仅作了解）
++ **Lindeberg-Feller条件**：对于独立的随机变量序列$\{X_n,n\geq 1\}$，若$EX_n=\mu_n,\mathrm{Var}X_n=\sigma_n^2<\infty$，记$s_n=\sqrt{\sum_{i=1}^n\sigma_i^2}$，若$\forall\epsilon>0$，
+  $$
+  \frac{1}{s_n^2}\sum_{i=1}^n E(X_i-\mu_i)^2\cdot 1_{\{|X_i-\mu_i|>\epsilon s_n\}}\to 0\hspace{1em}(n\to\infty)  
+  $$
+  则称$\{X_n,n\geq 1\}$满足Lindeberg-Feller条件。
++ **Lindeberg-Feller中心极限定理**：若独立随机变量序列$\{X_n,n\geq 1\}$满足Lindeberg-Feller条件，则对任意$x\in\mathbb{R}$，
+  $$
+  \lim_{n\to\infty}P\left(\frac{\sum_{i=1}^n(X_i-\mu_i)}{S_n}\leq x\right)=\Phi(x)
+  $$
++ **Lyapunov定理**：对于独立的随机变量序列$\{X_n,n\geq 1\}$，$EX_n=\mu_n,\mathrm{Var}X_n=\sigma_n^2<\infty$，记$s_n=\sqrt{\sum_{i=1}^n\sigma_i^2}$，若存在$\delta>0$，满足
+  $$
+  \lim_{n\to\infty}\frac{1}{s_n^{2+\delta}}\sum_{i=1}^n E|X_i-\mu_i|^{2+\delta}=0,
+  $$
+  则对任意$x\in\mathbb{R}$，
+  $$
+  \lim_{n\to\infty}P\left(\frac{\sum_{i=1}^n(X_i-\mu_i)}{S_n}\leq x\right)=\Phi(x)
+  $$
+  + 注：这里$\delta$常取$1$或$2$。
+  + 推论（**伯努利分布的中心极限定理**）：若独立随机变量序列$\{X_n,n\geq 1\}$满足$\forall n\geq 1,X_n\sim b(1,p_n)$，记$Y_n=\frac{\sum_{i=1}^n(X_i-p_i)}{\sqrt{\sum_{i=1}^np_i(1-p_i)}}$，若$\sum_{i=1}^\infty p_i(1-p_i)=\infty$，则对任意$x\in\mathbb{R}$，
+    $$
+    \lim_{n\to\infty}P(Y_n\leq x)=\Phi(x)
+    $$
+### Delta方法（也仅作了解）
++ **Delta定理**：设$\{Y_n,n\geq 1\}$为随机变量序列，$F^*$为连续的分布函数，$\theta$为实数，数列$\{a_n,n\geq 1\}$满足$0<a_n\uparrow\infty$，且使得
+  $$
+  a_n(Y_n-\theta)\stackrel{d}{\longrightarrow}F^*,
+  $$
+  若$\alpha(\theta)$为$\theta$的函数，且有连续导函数$\alpha'(\theta)\neq 0$，则
+  $$
+  \frac{a_n(\alpha(Y_n)-\alpha(\theta))}{\alpha'(\theta)}\stackrel{d}{\longrightarrow}F^*
+  $$
+  即$\frac{a_n(\alpha(Y_n)-\alpha(\theta))}{\alpha'(\theta)}$与$a_n(Y_n-\theta)$具有相同渐近分布$F^*$。
+  + 推论：设随机变量序列$\{X_n,n\geq 1\}$独立同分布，具有数学期望$\mu$和方差$\sigma^2$，记$\overline{X_n}=\frac{1}{n}\sum_{k=1}^nX_k$.设$\alpha(\mu)$为$\mu$的函数且有连续的导函数$\alpha'(\mu)\neq 0$，则
+    $$
+    \frac{\sqrt{n}}{\sigma\cdot\alpha'(\mu)}(\alpha(\overline{X_n})-\alpha(\mu))\stackrel{d}{\longrightarrow}N(0,1).
+    $$
