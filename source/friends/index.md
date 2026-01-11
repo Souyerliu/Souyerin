@@ -9,36 +9,35 @@ date: 2025-10-07 17:22:34
   desc: 一个旨在推广与应用统计学知识的网站和社区。
   image: https://cosx.org/img/logo.png
   color: "#8C1F22"
-{% endlinks %}
 
-{% links %}
 - site: 爱扑bug的熊
   owner: cuijiacai
   url: https://blog.cuijiacai.com/
   desc: 使用了他提供的教程建立了个人博客，在此感谢。
   image: https://blog.cuijiacai.com/img/profile.png
   color: "#87CEEB"
-{% endlinks %}
 
-{% links %}
-- site: 真值表Truth table
-  owner: daidr
-  url: https://tb.daidr.me/
-  desc: 逻辑表达式真值表求解小工具，亲测好用。
-  image: https://tb.daidr.me/icons/favicon.ico
-  color: "#C48EE2"
-{% endlinks %}
+- site: zkz098's blog
+  owner: zkz098
+  url: https://www.kaitaku.xyz/
+  desc: Shokax创始人，膜拜~
+  image: https://www.kaitaku.xyz/assets/avatar.webp
+  color: "#ed7e83"
 
-{% links %}
+- site: 卡诺图求解器
+  owner: KMap-Solver
+  url: https://karnaughmapsolver.com/zh
+  desc: 不止求解卡诺图，数电好帮手。
+  image: https://karnaughmapsolver.com/favicon.ico
+  color: "#Fa9B57"
+
 - site: Wavedrom
   owner: Aliaksei Chapyzhenka
-  url: https://tool.chipdebug.com/wavedrom/
+  url: https://wavedrom.com/editor.html
   desc: 基于javascript的时序电路波形图绘制工具，好用滴很。
-  image: https://tool.chipdebug.com/wavedrom/images/logo-512-maskable.png
+  image: https://wavedrom.com/images/favicon.ico
   color: "#141414"
-{% endlinks %}
 
-{% links %}
 - site: ECNU·驿站
   owner: zeyi
   url: https://myecnu.org/

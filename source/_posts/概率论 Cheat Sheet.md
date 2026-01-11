@@ -719,7 +719,7 @@ cover: folder.png
    + 注：指数分布不具有可加性
 4. 正态分布的可加性
    + 设$(X,Y)$服从二维正态分布$N(\mu_1,\sigma_1;\mu_2,\sigma_2^2;\rho)$，则$Z=X+Y\sim N(\mu_1+\mu_2,\sigma_1^2+\sigma_2^2+2\rho\sigma_1\sigma_2)$.
-   + 推论：若$X\sim N(\mu_1,\sigma_1^2),Y\sim N(\mu_2,\sigma_2^2)$，且相互独立，则$X\pm Y\sim N(\mu_1+\mu_2,\sigma_1^2+\sigma_2^2)$
+   + 推论：若$X\sim N(\mu_1,\sigma_1^2),Y\sim N(\mu_2,\sigma_2^2)$，且相互独立，则$X\pm Y\sim N(\mu_1\pm\mu_2,\sigma_1^2+\sigma_2^2)$
    + 正态分布的线性性：若$X_i\sim N(\mu_i,\sigma_i^2),i=1,2,\cdots,n$且相互独立，$\alpha_i$为任意常数，则
    $$
    \alpha_1X_1+\alpha_2X_2+\cdots+\alpha_nX_n\sim N(\alpha_1\mu_1+\cdots+\alpha_nX_N,\alpha_1^2\sigma_1^2+\cdots+\alpha_n^2\sigma_n^2)
@@ -938,7 +938,16 @@ cover: folder.png
   $$
   为$Y=y$时$X$的条件方差（也为$y$的函数）
 + 类似有$\mathrm{Var}(X\mid Y)$为$Y$的函数
-+ 条件方差公式：$\mathrm{Var}X=E(\mathrm{Var}(X\mid Y))+\mathrm{Var}(E(X\mid Y))$（证明略）
++ 条件方差公式：$\mathrm{Var}X=E(\mathrm{Var}(X\mid Y))+\mathrm{Var}(E(X\mid Y))$
+  + 简单证明（基于重期望公式）：
+    $$
+    \begin{aligned}
+      &E(\mathrm{Var}(X\mid Y))+\mathrm{Var}(E(X\mid Y))\\
+      &=E[E(X^2\mid Y)-(E(X\mid Y))^2]+E[(E(X\mid Y))^2]-[E[E(X\mid Y)]]^2\\
+      &=E[E(X^2\mid Y)]-[E[E(X\mid Y)]]^2\\
+      &=EX^2-(EX)^2=\mathrm{Var}X
+    \end{aligned}
+    $$
 # 极限理论
 ## 随机变量序列的收敛性
 1. 几乎处处收敛（依概率$1$收敛）
