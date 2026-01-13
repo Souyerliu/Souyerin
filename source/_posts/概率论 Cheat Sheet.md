@@ -973,7 +973,7 @@ cover: folder.png
       $$
       \lim_{n\to\infty}F_n(x)=F(x)
       $$
-      则称$\{X_n,n\geq 1\}$依分布收敛到$X$（记为$X_n\stackrel{F}{\longrightarrow}X$），也称$\{F_n,n\geq 1\}$弱收敛于$F$（记为$F_n\stackrel{w}{\longrightarrow}F$）
+      则称$\{X_n,n\geq 1\}$依分布收敛到$X$（记为$X_n\stackrel{d}{\longrightarrow}X$或$X_n\stackrel{L}{\longrightarrow}X$），也称$\{F_n,n\geq 1\}$弱收敛于$F$（记为$F_n\stackrel{w}{\longrightarrow}F$）
 ### 性质
 1. 几乎处处收敛性质
    + 下面四个条件等价：
@@ -1093,8 +1093,8 @@ cover: folder.png
   2. 与原点矩的关系（基于泰勒展开）：$M_X^{(n)}(t)=E[X^ne^{tX}]\Longrightarrow M_X^{(n)}(0)=E[X^n]=\mu_n$
   3. 与中心矩的关系：设$\mu=EX,M_{X-\mu}(t)=E[e^{t(X-\mu)}]=e^{-\mu}M_X(t)$，则
       $M_{X-\mu}^{(n)}(t)=E[(X-\mu)^ne^{t(X-\mu)}]\Longrightarrow M_{X-\mu}^{(n)}(0)=E[(X-\mu)^n]=\nu_n$
-+ 常见分布矩母函数：
-  |分布|特征函数|
++ 常见分布矩母函数（基本就是特征函数把$it$换成了$t$）：
+  |分布|矩母函数|
   |:--:|:-----:|
   |$b(n,p)$|$(pe^{t}+1-p)^n$|
   |$Ge(p)$|$\frac{pe^{it}}{1-(1-p)e^{it}}$|
