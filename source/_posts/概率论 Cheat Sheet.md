@@ -654,7 +654,7 @@ cover: folder.png
   $$
 + 定理2：设随机变量$X$的概率密度函数为$p_X(x)$，函数$y=f(x)$严格单调，且其反函数$x=h(y)$连续可导，则随机变量$Y=f(X)$的概率密度函数为：
   $$
-  P_Y(y)=\left\{
+  p_Y(y)=\left\{
     \begin{aligned}
     &p_X(h(y))\cdot|h'(y)|,& y\in E\\
     &0,& \mathrm{otherwise}.
@@ -1210,7 +1210,7 @@ cover: folder.png
     $$
 + 三类应用：已知$n$和$y$，求概率；已知$n$和概率，求$y$；已知$y$和概率，求$n$。（具体见题目分类汇编）
 + 中心极限定理比直接用切比雪夫不等式作近似计算精度更好。
-### 独立不同分布情形（仅作了解）
+### *独立不同分布情形（仅作了解）
 + **Lindeberg-Feller条件**：对于独立的随机变量序列$\{X_n,n\geq 1\}$，若$EX_n=\mu_n,\mathrm{Var}X_n=\sigma_n^2<\infty$，记$s_n=\sqrt{\sum_{i=1}^n\sigma_i^2}$，若$\forall\epsilon>0$，
   $$
   \frac{1}{s_n^2}\sum_{i=1}^n E(X_i-\mu_i)^2\cdot 1_{\{|X_i-\mu_i|>\epsilon s_n\}}\to 0\hspace{1em}(n\to\infty)  
@@ -1233,7 +1233,7 @@ cover: folder.png
     $$
     \lim_{n\to\infty}P(Y_n\leq x)=\Phi(x)
     $$
-### Delta方法（也仅作了解）
+### *Delta方法（也仅作了解）
 + **Delta定理**：设$\{Y_n,n\geq 1\}$为随机变量序列，$F^*$为连续的分布函数，$\theta$为实数，数列$\{a_n,n\geq 1\}$满足$0<a_n\uparrow\infty$，且使得
   $$
   a_n(Y_n-\theta)\stackrel{d}{\longrightarrow}F^*,
