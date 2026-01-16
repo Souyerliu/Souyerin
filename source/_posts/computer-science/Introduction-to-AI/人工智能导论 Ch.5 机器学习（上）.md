@@ -61,7 +61,7 @@ cover: cover.jpg
                 \end{cases}$
   + 平方损失函数：$Loss(y_i, f(x_i)) = (y_i - f(x_i))^2$
   + 绝对损失函数：$Loss(y_i, f(x_i)) = |y_i - f(x_i)|$
-  + 对数（似然）损失函数：$Loss(y_i, P(y_i|x_i)) = -logP(y_i|x_i)$
+  + 对数（似然）损失函数：$Loss(y_i, P(y_i|x_i)) = -\log P(y_i|x_i)$
 ### 经验风险与期望风险
 + **经验风险(empirical risk)** ：训练集中数据产生的损失。经验风险越小说明学习模型对训练数据拟合程度越好。
 + **期望风险(expected risk)** ：当测试集中存在无穷多数据时产生的损失。期望风险越小，学习所得模型越好。
@@ -76,19 +76,19 @@ cover: cover.jpg
 + 由于现实中训练样本数目有限，用经验风险估计期望风险并不理想（$P(x,y)$不容易计算），要对经验风险进行一定的约束。
 ### 过拟合(over-fitting)与欠拟合(under-fitting)
 + 模型泛化能力与经验风险、期望风险的关系：
-| 经验风险 | 期望风险 | 模型泛化能力 |
-|:---:|:---:|:---:|
-| 小（训练集上表现好） | 小（测试集上表现好） | 泛化能力强 |
-| 小（训练集上表现好） | 大（测试集上表现不好） | 过学习（模型过于复杂） |
-| 大（训练集上表现不好） | 大（测试集上表现不好） | 欠学习 |
-| 大（训练集上表现不好） | 小（测试集上表现好） | “神仙算法” 或“黄梁美梦” |
+  | 经验风险 | 期望风险 | 模型泛化能力 |
+  |:---:|:---:|:---:|
+  | 小（训练集上表现好） | 小（测试集上表现好） | 泛化能力强 |
+  | 小（训练集上表现好） | 大（测试集上表现不好） | **过学习**（模型过于复杂） |
+  | 大（训练集上表现不好） | 大（测试集上表现不好） | **欠学习** |
+  | 大（训练集上表现不好） | 小（测试集上表现好） | “神仙算法” 或“黄梁美梦” |
 + 如何判断模型过拟合/欠拟合？
   + 在训练/测试过程中输出$Loss$函数值，综合判断。
-+ 如何防止欠拟合？
++ 如何防止欠拟合（减小经验风险）？
   + 换性能更强的模型；
   + 给当前模型喂更多数据；
   + 调整损失函数。
-+ 如何防止过拟合？
++ 如何防止过拟合（减少期望风险）？
   + 见下文。
 ### 结构风险最小化(structural risk minimization)
 + 经验风险最小化：仅反映了局部数据
@@ -100,7 +100,7 @@ cover: cover.jpg
     + 这样可以在最小化经验风险与降低模型复杂度之间寻找平衡
   + 也可以使用$L1$范数正则化(LASSO正则化)：$\min_{f\in\Phi}\frac{1}{n}\sum_{i=1}^nLoss(y_i,f(x_i))+\lambda\|w\|_1$
     + 其中：
-      + $|w|_1 = \sum_{j=1}^d |w_j|$ 是模型参数$w$的$L1$范数
+      + $\|w\|_1 = \sum_{j=1}^d |w_j|$ 是模型参数$w$的$L1$范数
       + $\lambda > 0$ 是正则化强度参数
       + $w$ 是模型的权重向量
     + 这样可以让数据稀疏化，以降低过拟合/欠拟合风险
@@ -111,8 +111,8 @@ cover: cover.jpg
    + 判别模型关心在给定输入数据下，预测该数据的输出是什么。
    + 典型判别模型包括回归模型、神经网络、支持向量机和Ada boosting等。
 2. 生成模型
-   + 生成模型从数据中学习联合概率分布$P(X,Y)$（通过似然概率$P(Y|X)$和类概率$P(Y)$的乘积来求取）：
-     + $P(Y|X)=\frac{P(X,Y)}{P(X)}$或者$P(Y|X)=\frac{P(X|Y)\times P(Y)}{P(X)}$ (注：似然概率$P(Y|X)$为计算导致样本$X$出现的模型参数值)
+   + 生成模型从数据中学习联合概率分布$P(X,Y)$（通过似然概率$P(X|Y)$和类概率$P(Y)$的乘积来求取）：
+     + $P(Y|X)=\frac{P(X,Y)}{P(X)}$或者$P(Y|X)=\frac{P(X|Y)\times P(Y)}{P(X)}$ (注：似然概率$P(X|Y)$为计算导致样本$X$出现的模型参数值)
    + 典型方法为贝叶斯方法、隐马尔可夫链
    + 授之于鱼、不如授之于“渔”
    + 联合分布概率$P(X,Y)$或似然概率$P(X|Y)$求取很困难
@@ -132,22 +132,25 @@ cover: cover.jpg
 + 目标：寻找一组$a$和$b$，使得误差总和$L(a,b)=\sum_{i=1}^n(y_i-a\times x_i-b)^2$值最小。在线性回归中，解决如此目标的方法叫 **最小二乘法**。
 + 一般而言，要使函数具有最小值，可对$L(a,b)$的参数$a$和$b$分别求导，令其导数值为零，再求取参数$a$和$b$的取值。
   + 具体推导过程：
-  $$\begin{gathered}
-    \frac{\partial L(a,b)}{\partial a}=\sum_{i=1}^n2(y_i-ax_i-b)(-x_i)=0 
-    \text{将}b=\bar{y}-a\bar{x}(\bar{y}=\frac{\sum_{i=1}^ny_i}{n},\bar{x}=\frac{\sum_{i=1}^nx_i}{n})\text{代入上式} 
-    \to\sum_{i=1}^n(y_i-ax_i-\bar{y}+a\bar{x})(x_i)=0 
-    \to\sum_{i=1}^n(y_ix_i-ax_ix_i-\bar{y}x_i+a\bar{x}x_i)=0 
-    \to\sum_{i=1}^n(y_ix_i-\bar{y}x_i)-a\sum_{i=1}^n(x_ix_i-\bar{x}x_i)=0 
-    \to(\sum_{i=1}^nx_iy_i-n\bar{x}\bar{y})-a(\sum_{i=1}^nx_ix_i-n\bar{x}^2)=0 
-    \to a=\frac{\sum_{i=1}^nx_iy_i-n\bar{x}\bar{y}}{\sum_{i=1}^nx_ix_i-n\bar{x}^2}
-    \end{gathered}
-    \begin{aligned}
-    & \frac{\partial L(a,b)}{\partial b}=\sum_{i=1}^n2(y_i-ax_i-b)(-1)=0 
-    & \to\sum_{i=1}^n(y_i-ax_i-b)=0 
-    & \to\sum_{i=1}^n(y_i)-a\sum_{i=1}^nx_i-\sum_{i=1}^nb=0 
-    & \to n\overline{y}-an\overline{x}-nb=0 
+  $$
+  \begin{aligned}
+    &\frac{\partial L(a,b)}{\partial a}=\sum_{i=1}^n2(y_i-ax_i-b)(-x_i)=0 \\
+    &\text{将}b=\bar{y}-a\bar{x}(\bar{y}=\frac{\sum_{i=1}^ny_i}{n},\bar{x}=\frac{\sum_{i=1}^nx_i}{n})\text{代入上式：} \\
+    &\to\sum_{i=1}^n(y_i-ax_i-\bar{y}+a\bar{x})(x_i)=0 \\
+    &\to\sum_{i=1}^n(y_ix_i-ax_ix_i-\bar{y}x_i+a\bar{x}x_i)=0\\
+    &\to\sum_{i=1}^n(y_ix_i-\bar{y}x_i)-a\sum_{i=1}^n(x_ix_i-\bar{x}x_i)=0 \\
+    &\to(\sum_{i=1}^nx_iy_i-n\bar{x}\bar{y})-a(\sum_{i=1}^nx_ix_i-n\bar{x}^2)=0 \\
+    &\to a=\frac{\sum_{i=1}^nx_iy_i-n\bar{x}\bar{y}}{\sum_{i=1}^nx_ix_i-n\bar{x}^2}
+  \end{aligned}
+  $$
+  $$
+  \begin{aligned}
+    & \frac{\partial L(a,b)}{\partial b}=\sum_{i=1}^n2(y_i-ax_i-b)(-1)=0 \\
+    & \to\sum_{i=1}^n(y_i-ax_i-b)=0 \\
+    & \to\sum_{i=1}^n(y_i)-a\sum_{i=1}^nx_i-\sum_{i=1}^nb=0 \\
+    & \to n\overline{y}-an\overline{x}-nb=0 \\
     & \to b=\overline{y}-a\overline{x}
-    \end{aligned}
+  \end{aligned}
   $$
 + 可以看出：只要给出了训练样本$(x_i, y_i) (i =1,\cdots,n)$,我们就可以从训练样本出发，建立一个线性回归方程，使得对训练样本数据而言，该线性回归方程预测的结果与样本标注结果之间的差值和最小。
 ### 多元线性回归
@@ -178,7 +181,7 @@ $$
 + 线性回归一个明显的问题是对**离群点**（和大多数数据点距离较远的数据点，outlier）非常敏感，导致模型建模不稳定，使结果有偏，为了缓解这个问题（特别是在二分类场景中）带来的影响，可考虑**逻辑斯蒂回归(logistic regression)** 。
 + 逻辑斯蒂回归(logistic regression)就是在回归模型中引入 **sigmoid函数** 的一种非线性回归模型。Logistic回归模型可如下表示：
 $$
-y=\frac{1}{1+e^{-z}}=\frac{1}{1+e^{-(w^Tx+b)}}\quad,\quad\text{其中}y\in(0,1),z=\mathbf{w}^T\mathbf{x}+\mathrm{b}
+y=\frac{1}{1+e^{-z}}=\frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+\mathrm{b})}}\quad,\quad\text{其中}y\in(0,1),z=\mathbf{w}^T\mathbf{x}+\mathrm{b}
 $$
 + 这里$\frac{1}{1+e^{-z}}$是sigmoid函数、$\mathbf{x}\in\mathbb{R}^d$是输入数据、$\mathbf{w}\in\mathbb{R}^d$和$b\in\mathbb{R}$是回归函数的参数。
 + ![sigmoid](Logistic-curve.svg)
@@ -190,14 +193,14 @@ $$
 + $y=\frac{1}{1+e^{-(w^Tx+b)}}$可用来计算输入数据$x$属于正例的概率,这里$y$理解为输入数据$x$属于正例的概率、$1-y$理解为输入数据$x$为负例的概率，即$p(y = 1\mid x)$。
 + 我们现在对比值$\frac{p}{1-p}$取对数（即$\log\left(\frac{p}{1-p}\right)$）来表示输入数据$x$属于正例的概率。
   + $\frac{p}{1-p}$ 被称为 **几率(odds)** ,反映了输入数据$\mathbf{x}$作为正例的相对可能性。
-  + $\frac{p}{1-p}$ 的 **对数几率(log odds)** 或logit函数可表示为$log\left(\frac{p}{1-p}\right)$。
-+ 显然,可以得到$p(y=1|\mathbf{x})=h_\theta(x)=\frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}}$和$p(y=0|\mathbf{x})=1-h_\theta(x)=\frac{e^{-(\mathbf{w}^T\mathbf{x}+\mathbf{b})}}{1+e^{-(\mathbf{w}^T\mathbf{x}+\mathbf{b})}}$。$\theta$表示模型参数（$\theta=\{\mathbf{w},b\}$）。于是有：
+  + $\frac{p}{1-p}$ 的 **对数几率(log odds)** 或logit函数可表示为$\log\left(\frac{p}{1-p}\right)$。
++ 显然,可以得到$p(y=1|\mathbf{x})=h_\theta(x)=\frac{1}{1+e^{-(\mathbf{w}^T\mathbf{x}+b)}}$和$p(y=0|\mathbf{x})=1-h_\theta(x)=\frac{e^{-(\mathbf{w}^T\mathbf{x}+\mathrm{b})}}{1+e^{-(\mathbf{w}^T\mathbf{x}+\mathrm{b})}}$。$\theta$表示模型参数（$\theta=\{\mathbf{w},b\}$）。于是有：
 $$
-\mathrm{logit}\left(p(y=1|x)\right)=\log\left(\frac{p(y=1|x)}{p(y=0|x)}\right)=\log\left(\frac{p}{1-p}\right)=w^Tx+b
+\mathrm{logit}\left(p(y=1|x)\right)=\log\left(\frac{p(y=1|x)}{p(y=0|x)}\right)=\log\left(\frac{p}{1-p}\right)=\mathbf{w}^T\mathbf{x}+b
 $$
 + 如果输入数据𝒙属于正例的概率大于其属于负例的概率，即$p(y = 1\mid x)>0.5$，则输入数据𝒙可被判断属于正例。这一结果等价于$\frac{p(y=1|x)}{p(y=0|x)}>1$，即
-$\log\left(\frac{p(y=1|x)}{p(y=0|x)}\right)>\log1=0$，也就是$\mathbf{w}^T\mathbf{x}+\mathbf{b}>0$成立。
-+ 从这里可以看出，logistic回归是一个线性模型。在预测时，可以计算线性函数$\mathbf{w}^T\mathbf{x}+\mathbf{b}$取值是否大于$0$来判断输入数据$x$的类别归属
+$\log\left(\frac{p(y=1|x)}{p(y=0|x)}\right)>\log1=0$，也就是$\mathbf{w}^T\mathbf{x}+b>0$成立。
++ 从这里可以看出，logistic回归是一个线性模型。在预测时，可以计算线性函数$\mathbf{w}^T\mathbf{x}+b$取值是否大于$0$来判断输入数据$x$的类别归属
 # 决策树
 + 决策树是一种通过 **树形结构** 来进行分类的方法。在决策树中，树形结构中每个非叶子节点表示对分类目标在某个属性上的一个判断，每个分支代表基于该属性做出的一个判断，最后树形结构中每个叶子节点代表一种分类结果，所以决策树可以看作是一系列以叶子节点为输出的 **决策规则（Decision Rules）**
 + 例子：(虽然下面这图是个梗图，但也可以看作一种决策树)![chart](wd40.jpg)
@@ -214,22 +217,22 @@ $$
 ## 信息增益
 + 得到信息熵后，就可以计算基于某种属性对样本集进行划分后的信息增益，公式如下：
 $$
-Gain(D,A)=Ent(D)-\sum_{i=1}^n\frac{|D_i|}{|D|}Ent(D_i)
+\mathrm{Gain}(D,A)=\mathrm{Ent}(D)-\sum_{i=1}^n\frac{|D_i|}{|D|}\mathrm{Ent}(D_i)
 $$
 + 信息增益可以看作是在一定条件下，信息复杂度（不确定性）的减少程度
 + 我们可以通过比较不同属性信息增益的高低来选择最佳属性对原样本集进行划分，得到最大的“纯度”。如果划分后的不同子样本集都只存在同类样本，那么停止划分。
 ## 构建决策树：信息增益率
 + 一般而言，信息增益偏向选择分支多的属性,这在一些场合容易导致模型过拟合。为了解决这个问题，一个直接的想法是对分支过多进行惩罚，这就是另外一个“纯度”
 衡量指标，信息增益率的核心思想。
-+ 为了衡量信息增益率，我们需要计算划分行为本身带来的信息$info$:
++ 为了衡量信息增益率，我们需要计算划分行为本身带来的信息$\mathrm{info}$:
 $$
-info=-\sum_{i=1}^n\frac{|D_i|}{|D|}\log_2\frac{|D_i|}{|D|}
+\mathrm{info}=-\sum_{i=1}^n\frac{|D_i|}{|D|}\log_2\frac{|D_i|}{|D|}
 $$
-由此可得信息增益率$Gain-ratio$计算公式：
+由此可得信息增益率$\mathrm{Gain-ratio}$计算公式：
 $$
-Gain-ratio=\frac{Gain(D,A)}{info}
+\mathrm{Gain-ratio}=\frac{\mathrm{Gain}(D,A)}{\mathrm{info}}
 $$
-+ 另一种计算更简易的度量指标是如下的$Gini$系数：
++ 另一种计算更简易的度量指标是如下的$\mathrm{Gini}$系数：
 $$
 \mathrm{Gini}(\mathrm{D})=1-\sum_{k=1}^Kp_k^2
 $$
@@ -238,84 +241,84 @@ $$
 + 线性判别分析是一种基于监督学习的降维方法，也称为Fisher线性判别分析（fisher's discriminant analysis,FDA）
 + 对于一组具有标签信息的高维数据样本，LDA利用其类别信息，将其线性投影到一个低维空间上，在低维空间中同一类别样本尽可能靠近，不同类别样本尽可能彼此远离。（即“类内方差小，类间间隔大”）
 ## 符号定义
-+ 假设样本集为$D=\{(x_1,y_1),(x_2,y_2),(x_3,y_3),\cdots,x_N,y_N\}$，样本$x_i\in\mathbb{R}^d$的类别标签为$y_i$。其中，$y_i$的取值范围是${\mathcal{C}_1,\mathcal{C}_2,\cdots,\mathcal{C}_K}$，即一共有$K$类样本。
++ 假设样本集为$D=\{(x_1,y_1),(x_2,y_2),(x_3,y_3),\cdots,(x_N,y_N)\}$，样本$x_i\in\mathbb{R}^d$的类别标签为$y_i$。其中，$y_i$的取值范围是$\{\mathcal{C}_1,\mathcal{C}_2,\cdots,\mathcal{C}_K\}$，即一共有$K$类样本。
 + 定义$X$为所有样本构成集合、$N_i$为第$i$个类别所包含样本个数、$X_i$为第$i$类样本的集合、$m$为所有样本的均值向量、$m_i$为第$i$类样本的均值向量。$\sum_i$为第$i$类样本的协方差矩阵，其定义为：
 $$
 \textstyle\sum_i=\sum\limits_{x\in X_i} (x-m_i)(x-m_i)^T
 $$
 ## 二分类问题
-+ 分析$K=2$的情况。此时训练样本归属于$\mathcal{C}_1$和$\mathcal{C}_2$，通过以下线性函数投影到一维空间上：$y(x)=w^Tx (w\in\mathbb{R}^n)$
++ 分析$K=2$的情况。此时训练样本归属于$\mathcal{C}_1$和$\mathcal{C}_2$，通过以下线性函数投影到一维空间上：$y(x)=\mathbf{w}^Tx (\mathbf{w}\in\mathbb{R}^n)$
 + 投影之后类别$\mathcal{C}_1$的协方差矩阵$s_1$为：
 $$
-s_1=\sum_{x\in\mathcal{C}_1}\left(w^Tx-w^Tm_1\right)^2=w^T\sum_{x\in\mathcal{C}_1}[(x-m_1)(x-m_1)^T]w
+s_1=\sum_{x\in\mathcal{C}_1}\left(\mathbf{w}^Tx-\mathbf{w}^Tm_1\right)^2=\mathbf{w}^T\sum_{x\in\mathcal{C}_1}[(x-m_1)(x-m_1)^T]\mathbf{w}
 $$
 同理可得到投影之后类别$\mathcal{C}_2$的协方差矩阵$s_2$。
-+ 投影后两个协方差矩阵$s_1$和$s_2$分别为$w^T\sum_1w$和$w^T\sum_2w$。$s_1$和$s_2$可用来衡量同一类别数据样本之间“分散程度”。为了使得归属于同一类别的样本数据在投影后的空间中尽可能靠近，需要最小化$s_1+s_2$取值。
++ 投影后两个协方差矩阵$s_1$和$s_2$分别为$\mathbf{w}^T\sum_1\mathbf{w}$和$\mathbf{w}^T\sum_2\mathbf{w}$。$s_1$和$s_2$可用来衡量同一类别数据样本之间“分散程度”。为了使得归属于同一类别的样本数据在投影后的空间中尽可能靠近，需要最小化$s_1+s_2$取值。
 + 在投影之后的空间中，归属于两个类别的数据样本中心可分别如下计算：
 $$
-m_1=w^Tm_1,\quad m_2=w^Tm_2
+m_1=\mathbf{w}^Tm_1,\quad m_2=\mathbf{w}^Tm_2
 $$
 + 这样，就可以通过$\|m_2-m_1\|_2^2$来衡量不同类别之间的距离。为了使得归属于不同类别的样本数据在投影后空间中尽可能彼此远离，需要最大化$\|m_2-m_1\|_2^2$的取值。
-+ 同时考虑上面两点，就得到了需要最大化的目标$J(w)$，定义如下：
++ 同时考虑上面两点，就得到了需要最大化的目标$J(\mathbf{w})$，定义如下：
 $$
-J(w)=\frac{\|m_2-m_1\|_2^2}{s_1+s_2}
+J(\mathbf{w})=\frac{\|m_2-m_1\|_2^2}{s_1+s_2}
 $$
-把上述式子右边改写成与$w$相关的式子：
+把上述式子右边改写成与$\mathbf{w}$相关的式子：
 $$
-J(w)=\frac{\left\|w^T(m_2-m_1)\right\|_2^2}{w^T\Sigma_1w+w^T\Sigma_2w}=\frac{w^T(m_2-m_1)(m_2-m_1)^Tw}{w^T(\Sigma_1+\Sigma_2)w}=\frac{w^TS_bw}{w^TS_ww}
+J(\mathbf{w})=\frac{\left\|\mathbf{w}^T(m_2-m_1)\right\|_2^2}{\mathbf{w}^T\Sigma_1\mathbf{w}+\mathbf{w}^T\Sigma_2\mathbf{w}}=\frac{\mathbf{w}^T(m_2-m_1)(m_2-m_1)^T\mathbf{w}}{\mathbf{w}^T(\Sigma_1+\Sigma_2)\mathbf{w}}=\frac{\mathbf{w}^TS_b\mathbf{w}}{\mathbf{w}^TS_\mathbf{w}\mathbf{w}}
 $$
 其中，$S_b$称为 **类间散度矩阵(between-class scatter matrix)** ，即衡量两个类别均值点之间的“分离”程度，可定义如下：
 $$
 S_b = (m_2 − m_1)(m_2 − m_1)^T
 $$
-$S_w$则称为 **类内散度矩阵(within-class scatter matrix)** ，即衡量每个类别中数据点的“分离”程度，可定义如下：
+$S_\mathbf{w}$则称为 **类内散度矩阵(within-class scatter matrix)** ，即衡量每个类别中数据点的“分离”程度，可定义如下：
 $$
-S_w=\textstyle\sum_1+\textstyle\sum_2
+S_\mathbf{w}=\textstyle\sum_1+\textstyle\sum_2
 $$
-由于$J(w)$的分子和分母都是关于$w$的二项式，因此最后的解只与$w$的方向有关，与$w$的长度无关，因此可令分母$w^TS_ww = 1$，然后用拉格朗日乘子法来求解这个问题。
+由于$J(\mathbf{w})$的分子和分母都是关于$\mathbf{w}$的二项式，因此最后的解只与$\mathbf{w}$的方向有关，与$\mathbf{w}$的长度无关，因此可令分母$\mathbf{w}^TS_\mathbf{w}\mathbf{w} = 1$，然后用拉格朗日乘子法来求解这个问题。
 + 对应拉格朗日函数为：
 $$
-L(w)=w^TS_bw-\lambda(w^TS_ww-1)
+L(\mathbf{w})=\mathbf{w}^TS_b\mathbf{w}-\lambda(\mathbf{w}^TS_\mathbf{w}\mathbf{w}-1)
 $$
-对$w$求偏导并使其求导结果为零，可得$S_w^{-1}S_bw=\lambda w$。由此可见，$\lambda$和$w$分别是$S_w^{-1}S_b$的特征根和特征向量，$S_w^{-1}S_bw=\lambda w$ 也被称为 **Fisher线性判别（Fisher linear discrimination）** 。令实数$\lambda_w=\left(m_2-m_1\right)^\mathrm{T}w$，则可得：
+对$\mathbf{w}$求偏导并使其求导结果为零，可得$S_\mathbf{w}^{-1}S_b\mathbf{w}=\lambda \mathbf{w}$。由此可见，$\lambda$和$\mathbf{w}$分别是$S_\mathbf{w}^{-1}S_b$的特征根和特征向量，$S_\mathbf{w}^{-1}S_b\mathbf{w}=\lambda \mathbf{w}$ 也被称为 **Fisher线性判别（Fisher linear discrimination）** 。令实数$\lambda_\mathbf{w}=\left(m_2-m_1\right)^\mathrm{T}\mathbf{w}$，则可得：
 $$
-S_w^{-1}S_bw=S_w^{-1}(m_2-m_1)\times\lambda_w=\lambda w
+S_\mathbf{w}^{-1}S_b\mathbf{w}=S_\mathbf{w}^{-1}(m_2-m_1)\times\lambda_\mathbf{w}=\lambda \mathbf{w}
 $$
-由于对$w$的放大和缩小操作不影响结果，因此可约去上式中的未知数$\lambda$和$\lambda_w$，得到：$w=S_w^{-1}(m_2-m_1)$
+由于对$\mathbf{w}$的放大和缩小操作不影响结果，因此可约去上式中的未知数$\lambda$和$\lambda_\mathbf{w}$，得到：$\mathbf{w}=S_\mathbf{w}^{-1}(m_2-m_1)$
 ## 多分类问题
 + 假设$n$个原始高维数据所构成的类别种类为$K$、每个原始数据被投影映射到低维空间中的维度为$r$。
-+ 令投影矩阵$W=w_1, 𝒘_2, \cdots , w_r$ ，可知$W$是一个$n\times r$矩阵。于是，$W^Tm_i$为第$i$类样本数据中心在低维空间的投影结果，$W^Tm_iW$为第$i$类样本
++ 令投影矩阵$\mathbf{W}=\mathbf{w}_1, \mathbf{w}_2, \cdots , \mathbf{w}_r$ ，可知$\mathbf{W}$是一个$n\times r$矩阵。于是，$\mathbf{W}^Tm_i$为第$i$类样本数据中心在低维空间的投影结果，$\mathbf{W}^Tm_i\mathbf{W}$为第$i$类样本
 数据协方差在低维空间的投影结果。
-+ 类内散度矩阵$S_w$重新定义如下：
++ 类内散度矩阵$S_\mathbf{w}$重新定义如下：
 $$
-S_w=\sum_{i=1}^K\Sigma_i\text{,其中}\Sigma_i=\sum_{x\in class}i(x-m_i)(x-m_i)^T
+S_\mathbf{w}=\sum_{i=1}^K\Sigma_i\text{,其中}\Sigma_i=\sum_{x\in class}i(x-m_i)(x-m_i)^T
 $$
 在上式中，$m_i$是第$i$个类别中所包含样本数据的均值。
 + 类间散度矩阵$S_b$重新定义如下：
 $$
 S_b=\sum_{i=1}^K\frac{N_i}{N}(\boldsymbol{m}_i-\boldsymbol{m})(\boldsymbol{m}_i-\boldsymbol{m})^T
 $$
-+ 将多类LDA映射投影方向的优化目标$J(W)$改为：
++ 将多类LDA映射投影方向的优化目标$J(\mathbf{W})$改为：
 $$
-J(W)=\frac{\prod_{diag}W^TS_bW}{\prod_{diag}W^TS_wW}
+J(\mathbf{W})=\frac{\prod_{diag}\mathbf{W}^TS_b\mathbf{W}}{\prod_{diag}\mathbf{W}^TS_\mathbf{w}\mathbf{W}}
 $$
 其中，$\prod_{diag}\mathbb{A}$为矩阵$\mathbb{A}$主对角元素的乘积。
-+ 继续对$J(W)$进行变形：
++ 继续对$J(\mathbf{W})$进行变形：
 $$
-J(W)=\frac{\prod_{diag}W^TS_bW}{\prod_{diag}W^TS_wW}=\frac{\prod_{i=1}^rw_i^TS_bw_i}{\prod_{i=1}^rw_i^TS_ww_i}=\prod_{i=1}^r\frac{w_i^TS_bw_i}{w_i^TS_ww_i}
+J(\mathbf{W})=\frac{\prod_{diag}\mathbf{W}^TS_b\mathbf{W}}{\prod_{diag}\mathbf{W}^TS_\mathbf{w}\mathbf{W}}=\frac{\prod_{i=1}^r\mathbf{w}_i^TS_b\mathbf{w}_i}{\prod_{i=1}^r\mathbf{w}_i^TS_\mathbf{w}\mathbf{w}_i}=\prod_{i=1}^r\frac{\mathbf{w}_i^TS_b\mathbf{w}_i}{\mathbf{w}_i^TS_\mathbf{w}\mathbf{w}_i}
 $$
-显然需要使乘积式子中每个$\frac{w_i^TS_bw_i}{w_i^TS_ww_i}$取值最大，这就是二分类问题的求解目标，即每一个$w_i$都是$S_w^{-1}S_bW=\lambda W$的一个解。
+显然需要使乘积式子中每个$\frac{\mathbf{w}_i^TS_b\mathbf{w}_i}{\mathbf{w}_i^TS_\mathbf{w}\mathbf{w}_i}$取值最大，这就是二分类问题的求解目标，即每一个$\mathbf{w}_i$都是$S_\mathbf{w}^{-1}S_b\mathbf{W}=\lambda \mathbf{W}$的一个解。
 ## 线性判别分析的降维步骤
 + 对线性判别分析的降维步骤描述如下：
   1. 计算数据样本集中每个类别样本的均值
-  2. 计算类内散度矩阵$S_W$和类间散度矩阵$S_b$
-  3. 根据$S_w^{-1}S_bW=\lambda W$来求解$S_w^{-1}S_b$所对应前$r$个最大特征值所对应特征向量$(w_1, w_2, \cdots , w_r)$ ，构成矩阵$W$
-  4. 通过矩阵$W$将每个样本映射到低维空间，实现特征降维。
+  2. 计算类内散度矩阵$S_\mathbf{W}$和类间散度矩阵$S_b$
+  3. 根据$S_\mathbf{w}^{-1}S_b\mathbf{W}=\lambda \mathbf{W}$来求解$S_\mathbf{w}^{-1}S_b$所对应前$r$个最大特征值所对应特征向量$(\mathbf{w}_1, \mathbf{w}_2, \cdots , \mathbf{w}_r)$ ，构成矩阵$\mathbf{W}$
+  4. 通过矩阵$\mathbf{w}$将每个样本映射到低维空间，实现特征降维。
 ## 与主成分分析法的异同
 |           | 线性判别分析        | 主成分分析 |
 | :--------: | :--------------: | :---------------: |
 | 是否需要样本标签          | 监督学习          | 无监督学习       |
-| 降维方法             | 优化寻找特征向量$w$                  | 优化寻找特征向量$w$        |
+| 降维方法             | 优化寻找特征向量$\mathbf{w}$                  | 优化寻找特征向量$\mathbf{w}$        |
 | 目标         | 类内方差小、类间距离大              | 寻找投影后数据之间方差最大的投影方向 |
 | 维度      | LDA降维后所得到维度是与数据样本的类别个数$K$有关   | PCA对高维数据降维后的维数是与原始数据特征维度相关  |
 # Ada Boosting（自适应提升）
@@ -429,9 +432,9 @@ $$
 2) 置信风险（confidence risk），它与分类器的$VC$维及训练样本数目有关。
 设$0\leq \eta \leq 1$，Vapnik推导出期望风险$\Re$和经验风险$\Re_{emp}$以$1 − \eta$的概率满足如下关系：
 $$
-\Re\leq\Re_{emp}+\sqrt{\frac{h(log(\frac{2n}{h})+1)-log(\frac{\eta}{4})}{n}}
+\Re\leq\Re_{emp}+\sqrt{\frac{h(\log(\frac{2n}{h})+1)-\log(\frac{\eta}{4})}{n}}
 $$
-其中，$\sqrt{\frac{h(log(2n/h)+1)-log(\eta/4)}{n}}$叫做 “$VC$置信值”
+其中，$\sqrt{\frac{h(\log(2n/h)+1)-\log(\eta/4)}{n}}$叫做 “$VC$置信值”
 ，$n$是训练样本个数， $h$是反映学习机复杂程度的$VC$维。因为期望风险$\Re$代表了分类器对未知数据分类推广能力，所以$\Re$越小越好。在上面不等式中，$VC$置信值是$h$的增函数，$\Re_{emp}$是$h$的减函数，于是选择一个折中的$h$值可以使期望风险ℜ达到最小。   
 支持向量机使用结构风险最小化准则来选取$VC$维$h$，使每一类别数据之间的 **分类间隔（Margin）** 最大，最终使实期望风险$\Re$最小。
 ### 假设空间的VC维
@@ -462,11 +465,11 @@ $$
 + 两类样本中离分类超平面最近的数据之间的距离可如下计算：
 $$
 \begin{aligned}
-d(w,b) &= 
-\min_{(x_k,y_k=1)} d(w,b,x_k) + \min_{(x_m,y_m=-1)} d(w,b,x_m) \\
-&= \min_{(x_k,y_k=1)} \frac{|w^T x_k + b|}{\|w\|_2} + \min_{(x_m,y_m=-1)} \frac{|w^T x_m + b|}{\|w\|_2} \\
-&= \frac{1}{\|w\|_2}\Big(\min_{(x_k,y_k=1)} |w^T x_k + b| + \min_{(x_m,y_m=-1)} |w^T x_m + b|\Big) \\
-&= \frac{2}{\|w\|_2}
+d(\mathbf{w},b) &= 
+\min_{(x_k,y_k=1)} d(\mathbf{w},b,x_k) + \min_{(x_m,y_m=-1)} d(\mathbf{w},b,x_m) \\
+&= \min_{(x_k,y_k=1)} \frac{|\mathbf{w}^T x_k + b|}{\|\mathbf{w}\|_2} + \min_{(x_m,y_m=-1)} \frac{|\mathbf{w}^T x_m + b|}{\|\mathbf{w}\|_2} \\
+&= \frac{1}{\|\mathbf{w}\|_2}\Big(\min_{(x_k,y_k=1)} |\mathbf{w}^T x_k + b| + \min_{(x_m,y_m=-1)} |\mathbf{w}^T x_m + b|\Big) \\
+&= \frac{2}{\|\mathbf{w}\|_2}
 \end{aligned}
 $$
 + 支持向量机的基本形式就是最大化分类间隔，即在满足约束的条件下找到参数$\mathbf{w}$和$b$使得$\gamma$最大，即等价于：
@@ -482,7 +485,7 @@ $$
   $$
   \begin{gathered}
   \min_{\mathbf{w},b}\frac{1}{2}\mathbf{w}^T\mathbf{w}+c\times\sum_{i=1}^n[y_i\neq sign(\mathbf{w}^T\mathbf{x}_i+b)] \\
-  s.t.y_i(\mathbf{w}^T\mathbf{x}_i+b)\geq1\ for\ correct\ \mathbf{x}_i \\
+  s.t.\hspace{1em}y_i(\mathbf{w}^T\mathbf{x}_i+b)\geq1\ for\ correct\ \mathbf{x}_i \\
   y_i(\mathbf{w}^T\mathbf{x}_i+b)\geq-\infty\ for\ incorrect\ \mathbf{x}_i
   \end{gathered}
   $$

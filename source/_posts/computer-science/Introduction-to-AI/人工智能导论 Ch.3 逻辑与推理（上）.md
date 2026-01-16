@@ -19,8 +19,8 @@ cover: cover.jpg
 ## 符号主义人工智能
 + 在人工智能发展初期，脱胎于逻辑推理的 **符号主义人工智能(symbolic AI)** 是人工智能研究的一种主流学派。
 + 在符号主义人工智能中，所有概念均可通过人类可理解的“符号”及符号之间的关系来表示。
-  + 例如：如果使用符号$A$来表示对象概念，$IsCar()$来表示某个对象是否为“汽车”，那么$IsCar(A)$表示“$A$是一辆轿车”这样的概念。
-  + 注意$IsCar(A)$由对象$A$和$IsCar()$两部分所构成。如果$A$是轿车，则$IsCar(A)$为正确描述，否则为错误描述。
+  + 例如：如果使用符号$A$来表示对象概念，$\mathrm{IsCar}()$来表示某个对象是否为“汽车”，那么$\mathrm{IsCar}(A)$表示“$A$是一辆轿车”这样的概念。
+  + 注意$\mathrm{IsCar}(A)$由对象$A$和$\mathrm{IsCar}()$两部分所构成。如果$A$是轿车，则$\mathrm{IsCar}(A)$为正确描述，否则为错误描述。
 + 符号主义人工智能方法基于如下假设：
   + 可通过逻辑方法来对符号及其关系进行计算，实现逻辑推理，解析符号所描述内容是否正确。
 + **Neuro-symbolic(神经符号)**：将神经网络和符号主义人工智能相结合的混合AI，可以将神经网络与符号主义的优势相结合。
@@ -62,7 +62,7 @@ cover: cover.jpg
      + (特别地，当$\gamma$为恒假命题时转化为单项消解或单项归结)
      + 一般形式：$\alpha_{1}\lor\alpha_{2}\lor\cdots\alpha_{n},\lnot\beta (\beta = \alpha_{k},1\leq k \leq n)\longrightarrow \alpha_{1}\lor\alpha_{2}\lor\cdots\lor\alpha_{k-1}\lor\alpha_{k+1}\lor\cdots\lor\alpha_{n}$
    + 应用例：
-     + 已知$\alpha\lor\beta,\alpha\longrightarrow\gamma,\beta\longrightarrow\gamma$三个命题成立,证明命题$\gamma$成立
+     + 已知$\alpha\lor\beta,\alpha\Longrightarrow\gamma,\beta\Longrightarrow\gamma$三个命题成立,证明命题$\gamma$成立
      + 证明过程：
      + | 编号 | 命题                       | 如何得到                    |
     | :-------------: | :----------------------------: | :-------------------------:   | 
@@ -113,20 +113,20 @@ cover: cover.jpg
     + $P$是谓词，$x$是个体词，故称为变量，$x$的具体取值叫个体常项。比如$P(0.1)$和$P(0.02)$使得谓词为假。
     + 个体的取值范围为**个体域**。
   + 一般用大写字母$P,Q,R$等来表示谓词。上述$P(x)$描述了是否存在一个数，这个数小于自身平方这种关系。
-  + 谓词中可以有若干个个体变量，如father(x,y)表示x是y父亲。
+  + 谓词中可以有若干个个体变量，如$\mathrm{father}(x,y)$表示$x$是$y$父亲。
   + $P(x)$是一元谓词（包含一个个体），$P(x_{1},x_{2}\cdots x_{n})$被称为n元谓词（包含若干个体）。
   + **谓词与函数的区别：**
     + 函数中个体变元用个体常量（来自定义域）代入后结果仍是[个体（值域）]{.red}，如定义函数$f(x)=x+10$，则$f(2)=12$
-    + 谓词中个体变元用个体常量带入后就变成了命题，如$car(x)$($x$是车)这个谓词中$x$用吉普车代替，则$car$(吉普车)是命题。
+    + 谓词中个体变元用个体常量带入后就变成了命题，如$\mathrm{car}(x)$（$x$是车）这个谓词中$x$用吉普车代替，则$\mathrm{car}(\text{吉普车})$是命题。
     + 函数是从定义域到值域的映射；谓词是从定义域到$\{True,False\}$的映射。
 ### 量词
   + **量词**包括全称量词和存在量词。
-  1. **全称量词(universal quantifier,$\forall$)：**
-    + 全称量词用符号$\forall$表示，表示一切的、凡是的、所有的、每一个等。
-    + $\forall x$表示定义域中的所有个体，$\forall x,P(x)$表示定义域中的所有个体具有性质$P$
+  1. **全称量词(universal quantifier,$\forall$)：**   
+     + 全称量词用符号$\forall$表示，表示一切的、凡是的、所有的、每一个等。
+     + $\forall x$表示定义域中的所有个体，$\forall x,P(x)$表示定义域中的所有个体具有性质$P$
   2. **存在量词(existential quantifier,$\exists$)：**
-    + 存在量词用符号$\exists$表示，表示存在、有一个、某些等。
-    + $\exists x$表示定义域中存在一个或若干个个体，$\exists x,P(x)$表示定义域中存在一个个体或若干个体具有性质$P$。
+     + 存在量词用符号$\exists$表示，表示存在、有一个、某些等。
+     + $\exists x$表示定义域中存在一个或若干个个体，$\exists x,P(x)$表示定义域中存在一个个体或若干个体具有性质$P$。
 ### 约束变元与自由变元
   1. **约束变元：** 在全称量词或存在量词的约束条件下的变量符号称为约束变元。
   2. **自由变元：** 不受全称量词或存在量词约束的变量符号称为自由变元。
@@ -151,25 +151,25 @@ cover: cover.jpg
    + 注：$c$应为新的常量符号，在之前的逻辑推导中不应出现。 
   4. **存在量词引入(Existential Generalization, EG)**：$A(a)\longrightarrow (\exists x)A(x)$
 + 具体的一个例子：
-  + 前提：1)每驾飞机或者停在地面或者飞在天空；2)并非每驾飞机都飞在天空
+  + 前提：1)每架飞机或者停在地面或者飞在天空；2)并非每驾飞机都飞在天空
   + 结论：有些飞机停在地面
-  + 形式化：$plane(x)$：$x$是飞机；$in\_ground(x)$：$x$停在地面；$on_fly(x)$：$x$飞在天空
-    + 已知:$(\forall x)(plane(x)\rightarrow in\_ground(x) \lor on_fly(x)),(\lnot\forall x)(plane(x)\rightarrow on_fly(x))$
-    + 请证明：$(\exists x)(plane(x)\land in\_ground(x))$
+  + 形式化：$\mathrm{plane}(x)$：$x$是飞机；$\mathrm{in}\_\mathrm{ground}(x)$：$x$停在地面；$\mathrm{on}\_\mathrm{fly}(x)$：$x$飞在天空
+    + 已知:$(\forall x)(\mathrm{plane}(x)\rightarrow \mathrm{in}\_\mathrm{ground}(x) \lor \mathrm{on}\_\mathrm{fly}(x)),(\lnot\forall x)(\mathrm{plane}(x)\rightarrow \mathrm{on}\_\mathrm{fly}(x))$
+    + 请证明：$(\exists x)(\mathrm{plane}(x)\land \mathrm{in}\_\mathrm{ground}(x))$
   + 证明：
-    1. $(\lnot\forall x)(plane(x)\rightarrow on_fly(x))$ （已知）
-    2. $(\exists x)\lnot(plane(x)\rightarrow on_fly(x))$ （量词转换）
-    3. $(\exists x)\lnot(\lnot plane(x)\lor on_fly(x))$  （蕴含消除）
-    4. $(\exists x)(plane(x)\land\lnot on_fly(x))$ （反演律）
-    5. $plane(a)\land\lnot on_fly(a)$ （EI）
-    6. $plane(a)$ （由5知）
-    7. $\lnot on_fly(a)$ （由5知）
-    8. $(\forall x)(plane(x)\rightarrow in\_ground(x) \lor on_fly(x))$（已知）
-    9. $plane(a) \rightarrow in\_ground(a) \lor on_fly(a)$（UI）
-    10. $in\_ground(a)\lor on_fly(a)$（由5和9知）
-    11. $in\_ground(a)$（由7和10归结）
-    12. $plane(a) \land in\_ground(a)$（由6和11合取）
-    13. $(\exists x)(plane(x)\land in\_ground(x))$（EG）
+    1. $(\lnot\forall x)(\mathrm{plane}(x)\rightarrow \mathrm{on}\_\mathrm{fly}(x))$ （已知）
+    2. $(\exists x)\lnot(\mathrm{plane}(x)\rightarrow \mathrm{on}\_\mathrm{fly}(x))$ （量词转换）
+    3. $(\exists x)\lnot(\lnot \mathrm{plane}(x)\lor \mathrm{on}\_\mathrm{fly}(x))$  （蕴含消除）
+    4. $(\exists x)(\mathrm{plane}(x)\land\lnot \mathrm{on}\_\mathrm{fly}(x))$ （反演律）
+    5. $\mathrm{plane}(a)\land\lnot \mathrm{on}\_\mathrm{fly}(a)$ （EI）
+    6. $\mathrm{plane}(a)$ （由5知）
+    7. $\lnot \mathrm{on}\_\mathrm{fly}(a)$ （由5知）
+    8. $(\forall x)(\mathrm{plane}(x)\rightarrow \mathrm{in}\_\mathrm{ground}(x) \lor \mathrm{on}\_\mathrm{fly}(x))$（已知）
+    9. $\mathrm{plane}(a) \rightarrow \mathrm{in}\_\mathrm{ground}(a) \lor \mathrm{on}\_\mathrm{fly}(a)$（UI）
+    10. $\mathrm{in}\_\mathrm{ground}(a)\lor \mathrm{on}\_\mathrm{fly}(a)$（由6和9知）
+    11. $\mathrm{in}\_\mathrm{ground}(a)$（由7和10归结）
+    12. $\mathrm{plane}(a) \land \mathrm{in}\_\mathrm{ground}(a)$（由6和11合取）
+    13. $(\exists x)(\mathrm{plane}(x)\land \mathrm{in}\_\mathrm{ground}(x))$（EG）
 ## 专家系统(expert system)
 + 早期人工智能的一个重要分支
 + 构成：知识库+推理机

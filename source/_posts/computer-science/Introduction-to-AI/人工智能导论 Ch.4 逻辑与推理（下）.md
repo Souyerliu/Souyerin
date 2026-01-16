@@ -15,13 +15,13 @@ cover: cover.jpg
 # 知识图谱推理(Graph reasoning)
 ## 知识图谱的基本概念
 + 知识图谱可视为包含多种关系的图。在图中，每个节点是一个实体（如人名、地名、事件和活动等），任意两个节点之间的边表示这两个节点之间存在的关系。
-+ 一般而言，可将知识图谱中任意两个相连节点及其连接边表示成一个**三元组(triplet)**，即($left_{node}, relation, right_{node}$)。
-+ 知识图谱中存在连线的两个实体可表达为形如\<$left_{node}, relation, right_{node}$\>的三元组形式，这种三元组也可以表示为 **一阶逻辑(firstorder logic,FOL)** 的形式，从而为基于知识图谱的推理创造了条件。
++ 一般而言，可将知识图谱中任意两个相连节点及其连接边表示成一个**三元组(triplet)**，即($\mathrm{left}_\mathrm{node}, \mathrm{relation},\mathrm{right}_\mathrm{node}$)。
++ 知识图谱中存在连线的两个实体可表达为形如\<$\mathrm{left}_\mathrm{node}, \mathrm{relation},\mathrm{right}_\mathrm{node}$\>的三元组形式，这种三元组也可以表示为 **一阶逻辑(firstorder logic,FOL)** 的形式，从而为基于知识图谱的推理创造了条件。
   + 例如从\<奥巴马，出生地，夏威夷\>和<夏威夷，属于，美国\>两个三元组，可推理得到<奥巴马，国籍，美国\>。
-+ 可利用一阶谓词来表达刻画知识图谱中节点之间存在的关系，如下图中形如<$James,Couple,David$\>的关系可用一阶逻辑的形式来描述，即$Couple(James,David)$。
-+ $Couple(x,y)$是一阶谓词,$Couple$是图中实体之间具有的关系，$x$和$y$是谓词变量。![Graph](graph.png)
-+ 从图中已有关系可推知$David$和$Ann$具有父女关系，但这一关系在图中初始图（无红线）中并不存在，是需要推理的目标。
-  + 转化为逻辑形式即为：已知$(\forall x)(\forall y)(\forall z)(Mother(z,y)\land Couple(x,z)\longrightarrow Father(x,y))$，如何通过推理得到$Father(David,Ann)$？这就到了归纳推理的范畴。
++ 可利用一阶谓词来表达刻画知识图谱中节点之间存在的关系，如下图中形如<$\mathrm{James},\mathrm{Couple},\mathrm{David}$\>的关系可用一阶逻辑的形式来描述，即$\mathrm{Couple}(\mathrm{James},\mathrm{David})$。
++ $\mathrm{Couple}(x,y)$是一阶谓词,$\mathrm{Couple}$是图中实体之间具有的关系，$x$和$y$是谓词变量。![Graph](graph.png)
++ 从图中已有关系可推知$\mathrm{David}$和$\mathrm{Ann}$具有父女关系，但这一关系在图中初始图（无红线）中并不存在，是需要推理的目标。
+  + 转化为逻辑形式即为：已知$(\forall x)(\forall y)(\forall z)(\mathrm{Mother}(z,y)\land\mathrm{Couple}(x,z)\longrightarrow \mathrm{Father}(x,y))$，如何通过推理得到$\mathrm{Father}(\mathrm{David},\mathrm{Ann})$？这就到了归纳推理的范畴。
 + 更多关于知识图谱的概念解释可参见[南京大学-人工智能导论](https://www.lamda.nju.edu.cn/guolz/introai-slides-2024/lec6.pdf)
 ## 归纳学习：归纳逻辑程序设计（inductive logic programming,ILP）
 + **归纳逻辑程序设计（ILP）** 是机器学习和逻辑程序设计交叉领域的研究内容。
@@ -88,11 +88,11 @@ cover: cover.jpg
 + 一般而言，因果图都是有向无环图（directed acyclic graphs, DAG），可用于描述数据的生成机制。这样描述变量联合分布或者数据生成机制的模型，被称为 **“贝叶斯网络”（Bayesian network）。**
 + 与结构因果模型结合使用效果更佳
 + 在因果图中，若变量$Y$是另一个变量$X$的孩子，则$X$是$Y$的直接原因；若$Y$是$X$的后代（可能隔好几代），则$X$是$Y$的潜在原因。
-+ 联合概率分布：对于任意的有向无环图模型，模型中$d$个变量的联合概率分布由每个节点与其父节点之间条件概率$P(child|parents)$的乘积给出：
++ 联合概率分布：对于任意的有向无环图模型，模型中$d$个变量的联合概率分布由每个节点与其父节点之间条件概率$P(\mathrm{child}|\mathrm{parents})$的乘积给出：
 $$
 P(x_{1},x_{2},\cdots,x_{d})=\prod_{j=1}^d P(x_{j}|x_{pa(j)})
 $$
-  + 其中，$x_{pa(j)}$表示节点$x_j$的父节点集合（所有指向$x_{j}$的节点）。这里包含了变量之间某种普遍成立的独立性假设。
+  + 其中，$x_{pa(j)}$表示节点$x_j$的父节点集合（所有指向$x_{j}$的节点），如果$x_j$没有父节点则概率为$P(x_j)$。这里包含了变量之间某种普遍成立的独立性假设。
 + 基本结构：![DAG](DAG.png)
     1. 链结构（chain）
          + 链是因果图的一种基本结构。它包含三个节点两条边，其中一条边由第一个节点指向第二个节点，另一条边由第二个节点指向第三个节点。
@@ -108,7 +108,7 @@ $$
          + 分连也是因果图的一种基本结构。它包含三个节点两条边，两条边分别由第一个节点指向第二个节点和第三个节点。
          + ![fork](fork.png)
          + 在分连结构中，给定$Z$时，$X$和$Y$的联合概率：
-           + $P(X,Y|Z)=\frac{P(X,Y,Z)}{P(Z)}=\frac{P(X)P(Z|X)P(Y|Z)}{P(Z)}=P(X|Z)P(Y|Z)$
+           + $P(X,Y|Z)=\frac{P(X,Y,Z)}{P(Z)}=\frac{P(Z)P(X|Z)P(Y|Z)}{P(Z)}=P(X|Z)P(Y|Z)$
            + 即在分连图$X\longleftarrow Z\longrightarrow Y$中， $X$和$Y$在给定$Z$时条件独立。
          + 定理：**(分连中的条件独立性)** 若变量$Z$是变量$X$和$Y$的共同原因，且$X$到$Y$只有一条路径，则在给定$Z$时，$X$和$Y$条件独立。
     3. 汇连结构（collider）

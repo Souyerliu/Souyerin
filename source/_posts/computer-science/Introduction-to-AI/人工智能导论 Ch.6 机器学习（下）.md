@@ -45,9 +45,9 @@ cover: cover.jpg
 ## 另一个视角：最小化每个类簇的方差
 + 方差：用来计算变量（观察值）与样本平均值之间的差异：
   $$
-  \arg\min_G\sum_{i=1}^k\sum_{x\in G_i}||x-G_i||^2=\arg\min_G\sum_{i=1}^k|G_i|VarG_i
+  \arg\min_G\sum_{i=1}^k\sum_{x\in G_i}||x-G_i||^2=\arg\min_G\sum_{i=1}^k|G_i|\mathrm{Var}(G_i)
   $$
-  其中$\operatorname*{var}(G_i)=\sum_{x\in G_i}||x-G_i||^2$为第$i$个类簇的方差
+  其中$\operatorname*{Var}(G_i)=\sum_{x\in G_i}||x-G_i||^2$为第$i$个类簇的方差
 + 欧氏距离与方差量纲相同
 + 最小化每个类簇方差将使得最终聚类结果中每个聚类集合中所包含数据呈现出来差异性最小。
 ## K均值聚类算法的不足
@@ -58,17 +58,7 @@ cover: cover.jpg
 # 主成分分析(Principle Component Analysis,PCA)
 + 主成分分析是一种特征降维方法，即“化繁为简”
 ## 前置概念：方差，协方差与相关系数
-+ 这里不过多赘述，直接给出相应的公式（在概率论与数理统计中均有涉及）
-+ 方差（描述了样本数据的波动程度）：$\mathrm{Var}(X)=\frac{1}{n}\sum_{i=1}^n(x_i-\mu)^2$，其中$\mu=\sum_{i=1}^nx_i$
-+ 协方差（衡量两个变量之间的相关度）：$\mathrm{cov}(X,Y)=\frac{1}{n}\sum_{i=1}^n(x_i-E(X))(y_i-E(Y))$，其中$E(X)$和$E(Y)$分别为$X$和$Y$的样本均值：$E(X)=\sum_{i=1}^nx_i,E(Y)=\sum_{i=1}^ny_i$    
-  当协方差$\mathrm{cov}(X,Y)>0$时，称$X$与$Y$正相关；  
-  当协方差$\mathrm{cov}(X,Y)<0$时，称$X$与$Y$负相关；  
-  当协方差$\mathrm{cov}(X,Y)=0$时，称$X$与$Y$不相关（线性意义下）
-+ 皮尔逊相关系数（刻画两个变量之间的线性相关程度）：$\mathrm{corr}(X,Y)=\frac{Cov(X,Y)}{\sqrt{Var(X)Var(Y)}}=\frac{Cov(X,Y)}{\sigma_x\sigma_y}$
-  + 相关性质：
-  + $|\mathrm{corr}(X,Y)|\leq 1$，且取等号的充要条件为存在常数$a$和$b$,使得$Y=aX+b$；$\mathrm{corr}(X,Y)=\mathrm{corr}(Y,X)$
-  + $\mathrm{corr}(X,Y)=0$表示变量$X$和$Y$之间不存在线性相关关系（但可能存在其他非线性相关的关系）
-  + 注意相关性(correlation)与独立性(independence)的区别：“不相关”是一个比“独立”要弱的概念，即独立一定不相关，但是不相关不一定相互独立（可能存在其他复杂的关联关系）。独立指两个变量彼此之间不相互影响。
++ 详见[概率论Cheat Sheet](/2025/12/18/%E6%A6%82%E7%8E%87%E8%AE%BA%20Cheat%20Sheet/#%E5%8D%8F%E6%96%B9%E5%B7%AE)。
 ## 算法动机：保证样本投影后方差最大
 + 在降维之中，需要尽可能将数据向方差最大方向进行投影，使得数据所蕴含信息没有丢失，彰显个性。
 + 主成分分析思想是将$n$维特征数据映射到$l$维空间（$n\gg l$），去除原始数据之间的冗余性（通过去除相关性手段达到这一目的）。
@@ -106,6 +96,7 @@ cover: cover.jpg
 + 非负矩阵分解（non-negative matrix factorization, NMF）
 + 多维尺度法(Metric multidimensional scaling, MDS) 
 + 局部线性嵌入（Locally Linear Embedding, LLE）   
+
 这里不多赘述。
 # 主成分分析应用1：特征人脸方法
 ## 算法动机
@@ -125,8 +116,9 @@ cover: cover.jpg
   示意图如下：
   原始图像（源自ORL Database of Faces，kaggle链接：[kaggle-ORL](https://www.kaggle.com/datasets/tavarez/the-orl-database-for-training-and-testing)）
   ![faceset](faceset.jpg)
-  特征图像（[**比较猎奇，谨慎观看**]{.red}）：
+  +++ 特征图像（[**比较猎奇，谨慎观看**]{.red}）：
   ![特征人脸图像](eigenface.png)
+  +++
 ## 基于特征人脸的降维
 + 将每幅人脸分别与每个特征人脸做矩阵乘法，得到一个相关系数
 + 每幅人脸得到$l$个相关系数$\Longrightarrow$每幅人脸从$1024$维约减到$l$维
@@ -139,7 +131,7 @@ cover: cover.jpg
 ## 算法动机
 + 潜在语义分析是一种从海量文本数据中学习单词-单词、单词-文档以及文档-文档之间隐性关系，进而得到文档和单词表达特征的方法。
 + 该方法的基本思想是综合考虑某些单词在哪些文档中同时出现，以此来决定该词语的含义与其他的词语的相似度。
-+ 潜在语义分析思想：潜在语义分析先构建一个单词-文档（term-document）矩阵A，进而寻找该矩阵的低秩逼近（low rank approximation）[Markovsky 2012]，来挖掘单词-单词、单词-文档以及文档-文档之间的关联关系。
++ 潜在语义分析思想：潜在语义分析先构建一个单词-文档（term-document）矩阵A，进而寻找该矩阵的低秩逼近（low rank approximation）（[Markovsky 2012](https://imarkovs.github.io/book/book2e-2x1.pdf)），来挖掘单词-单词、单词-文档以及文档-文档之间的关联关系。
 ## 算法步骤
 1. 计算单词-文档矩阵$\mathbf{A}$
 2. 对单词-文档矩阵进行奇异值分解
@@ -168,13 +160,9 @@ cover: cover.jpg
   $$
   可见，最大后验估计与最大似然估计相比，增加了⼀项与$\Theta$相关的先验概率$P(\Theta)$。
 ### 比较
-+ 无论是最大似然估计算法或者是最大后验估计算法，都是充分利用已有
-数据，在参数模型确定（只是参数值未知）情况下，对所优化目标中的
-参数求导，令导数为$0$，求取模型的参数值。
-+ 在解决一些具体问题时，难以事先就将模型确定下来，然后利用数据来
-求取模型中的参数值。在这样情况下，无法直接利用最大似然估计算法
-或者最大后验估计算法来求取模型参数。
-+ 为解决这一问题，我们采用期望最大化算法（由Dempster,Laird和Rubin于1977年提出，论文链接：[EM-algorithm](https://www.ece.iastate.edu/~namrata/EE527_Spring08/Dempster77.pdf)）
++ 无论是最大似然估计算法或者是最大后验估计算法，都是充分利用已有数据，在参数模型确定（只是参数值未知）情况下，对所优化目标中的参数求导，令导数为$0$，求取模型的参数值。
++ 在解决一些具体问题时，难以事先就将模型确定下来，然后利用数据来求取模型中的参数值。在这样情况下，无法直接利用最大似然估计算法或者最大后验估计算法来求取模型参数。
++ 为解决这一问题，我们采用期望最大化算法（由Dempster，Laird和Rubin于1977年提出，论文链接：[EM-algorithm](https://www.ece.iastate.edu/~namrata/EE527_Spring08/Dempster77.pdf)）
 ## 期望最大化（expectation maximization, EM）
 + EM算法是⼀种重要的用于解决含有隐变量（latent variable）问题的参数估计方法。
 + EM算法分为求取期望（E步骤，expectation）和期望最大化（M步骤，maximization）两个步骤。
@@ -189,7 +177,7 @@ cover: cover.jpg
 | **3** | H  | T  | H  | H  | H  | H  | H  | T  | H  | H  |
 | **4** | H  | T  | H  | T  | T  | T  | H  | H  | T  | T  |
 | **5** | T  | H  | H  | H  | T  | H  | H  | H  | T  | H  |
-从这十轮观测数据出发，计算硬币A或硬币B被投掷为正面的概率。记硬币A或硬币B被投掷为正面的概率为$\theta=\{\theta_A, \theta_B\}$
+从这十轮观测数据出发，计算硬币$A$或硬币$B$被投掷为正面的概率。记硬币$A$或硬币$B$被投掷为正面的概率为$\theta=\{\theta_A, \theta_B\}$
 ### 求取期望（E步骤，Expectation）
 初始化每⼀轮中硬币$A$和硬币$B$投掷为正面的概率为$\widehat\Theta_A^{(0)}=0.60$和$\widehat\Theta_B^{(0)}=0.50$。基于“$HTTTHHTHTH$”这10次投掷结果，由硬币$A$投掷所得概率为：
 $$
@@ -248,13 +236,13 @@ $$
 $$
 P(z|\Theta)=
 \begin{cases}
-\lambda & if \hspace{0.3em}z=H \\
-1-\lambda & if\hspace{0.3em}z=T & & 
+\lambda & \mathrm{if} \hspace{0.3em}z=H \\
+1-\lambda & \mathrm{if}\hspace{0.3em}z=T & & 
 \end{cases}
 P(x|z,\Theta)=
 \begin{cases}
-p_1^h(1-p_1)^t & if\hspace{0.3em}z=H \\
-p_2^h(1-p_2)^t & if\hspace{0.3em}z=T & & 
+p_1^h(1-p_1)^t & \mathrm{if}\hspace{0.3em}z=H \\
+p_2^h(1-p_2)^t & \mathrm{if}\hspace{0.3em}z=T & & 
 \end{cases}
 $$
 + 在硬币$0$掷出正面后，选择硬币$1$投掷三次所得“反正反”这一结果的概率如下计算：

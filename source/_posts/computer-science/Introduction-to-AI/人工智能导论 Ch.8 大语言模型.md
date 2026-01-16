@@ -155,6 +155,6 @@ ChatGPT脱胎于GPT-3，是GPT-3的最大号模型经过更进一步的训练而
 + 参考链接：   
 [机器翻译、Transformer与大模型](https://gair-nlp.github.io/cs2916/assets/files/lecture04-77ede8af63d20b89a1507d4c456a91cc.pdf)   
 [LLM-Book Transformer模型](https://github.com/LLMBook-zh/LLMBook-zh.github.io/blob/main/slides/%E7%AC%AC%E4%BA%8C%E8%AF%BE%20%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84/2.1%20Transformer%E6%A8%A1%E5%9E%8B.pdf)
-【注：笔者才发现老师课上用的PPT一模一就是这两个的缝合doge】   
+【注：笔者才发现老师课上用的PPT就是这两个的缝合doge】   
 [GPT-3 overview](https://dzlab.github.io/ml/2020/07/25/gpt3-overview/)   
 [拆解追溯 GPT-3.5 各项能力的起源](https://zhuanlan.zhihu.com/p/607522540)   
