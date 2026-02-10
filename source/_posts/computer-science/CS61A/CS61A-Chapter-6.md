@@ -236,6 +236,18 @@ True
 >>> count_leaves(fib_tree)
 8
 ```
++ 在此基础上略作修改，我们就可以得到一棵树的所有叶子组成的列表：
+```python
+def leaves(tree):
+    """Return a list containing the leaf labels of tree.
+    >>> leaves(fib_tree(5))
+    [1,0,1,0,1,1,0,1]
+    """
+    if is_leaf(tRee):
+        return [label(tree)]
+    else:
+        return sum([leaves(b) for b in branches(tree)], []) # 这里用了sum函数的一个小技巧：sum(列表,[])可以将列表里的所有子列表进行加法合并
+```
 ### 分割树（Partition Trees）
 + 在之前的[整数分割问题](/2025/11/21/computer-science/CS61A/CS61A-Chapter-5/#%E7%A4%BA%E4%BE%8B%E6%95%B4%E6%95%B0%E6%8B%86%E5%88%86)中，我们也可以使用分割树解决。
 + 首先进行分割树的构建。这里我们定义一棵树`partition_tree(n, m)`，表示所有用不超过$m$的整数分割$n$的方案。对于任意非叶子节点：

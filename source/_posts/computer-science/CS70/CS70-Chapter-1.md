@@ -17,10 +17,11 @@ cover: penguin_and_pigeon.png
 2. 计算机可以通过学习并与这个世界交互（机器学习，数据分析，机器人...）   
    + 这些都与**概率论(Probability)** 有关。
 
-注：本系列主要基于CS70官网Notes和2015版Lecture编写。
-CS70官网：[CS70](https://www.eecs70.org/)
-2015版Lecture：[CS70_2015](https://www.bilibili.com/video/BV1e1421r74V/)
-2019版Lecture(供参考)：[CS70_2019](https://www.bilibili.com/video/BV1Kq4y1k7gz)
+注：本系列主要基于CS70官网Notes和2015版Lecture编写。  
+CS70官网：[CS70](https://www.eecs70.org/)  
+2015版Lecture：[CS70_2015](https://www.bilibili.com/video/BV1e1421r74V/)  
+~~2019版Lecture(供参考)：[CS70_2019](https://www.bilibili.com/video/BV1Kq4y1k7gz)~~  
+2025 Fall版Lecture：[CS70 fall 2025](https://www.bilibili.com/video/BV1UsiiBBEqp/)（2026.2.8补充：终于有最新版了，可喜可贺）
 
 # 课程前置知识：集合与数学符号(Review of Sets and Mathematical Notation)
 （概念略，因为高中数学与高等数学完全覆盖，在此只列出一些符号表示）~~权当latex练习~~

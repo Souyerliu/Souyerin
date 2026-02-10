@@ -166,9 +166,9 @@ def extended_gcd(x,y):
     $$
     且
     $$
-    x\equiv(\sum_{i=1}^ka_ib_i)(\operatorname*{mod}N),\hspace{1em}N=\prod_{i=1}^kn_i,\hspace{0.3em}b_i=\frac{N}{n_i}(\frac{N}{n_i})_{n_i}^{-1}
+    x\equiv\left(\sum_{i=1}^ka_ib_i\right)(\operatorname*{mod}N),\hspace{1em}N=\prod_{i=1}^kn_i,\hspace{0.3em}b_i=\frac{N}{n_i}\left(\frac{N}{n_i}\right)_{n_i}^{-1}
     $$
-    其中$(\frac{N}{n_i})_{n_i}^{-1}$表示$\frac{N}{n_i}$模$n_i$的乘法逆。
+    其中$\left(\dfrac{N}{n_i}\right)_{n_i}^{-1}$表示$\dfrac{N}{n_i}$模$n_i$的乘法逆。
   + 这里$b_i(\operatorname*{mod}n_j)$的取值只可能为$1$（当$i=j$）与$0$（当$i\neq j$）因此，如果将$x$看成一个$k$维向量（第$i$个元素为$x\hspace{0.3em}(\operatorname*{mod}n_i)$），那么$b_i$就可以看成第$i$个元素为$1$，其余元素均为$0$的基向量，而$x$为$b_1,\cdots,b_k$的线性组合（所以$b_1,\cdots,b_k$乘以任意倍数均满足方程）
 + 证明$x$的唯一性与上面的二元情况类似，就不再赘述了。
 + 最后，我们注意到如果用$(x_a,x_b)$表示$x$（$x_a=x(\operatorname*{mod}n),x_b=x(\operatorname*{mod}m)$），用$(y_a,y_b)$表示$y$，那么就可以用$(x_a+y_a,y_a+y_b)$表示$x+y$（即$x_a+y_a,y_a+y_b$可以唯一确定$x+y$）。对于乘法也是类似，$(x_ay_a,x_by_b)$可以唯一表示$xy$。因此$\{0,1,\cdots,mn-1\}$与$\{0,1,\cdots,m-1\}\times\{0,1,\cdots,n-1\}$形成了一个同构（环同构）。
