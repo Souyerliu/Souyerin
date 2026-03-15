@@ -38,7 +38,7 @@ cover: ./cover.jpg
      * 如果一台机器能够与人类开展对话而不能被辨别出机器身份，那么这台机器就具有智能。
 ## 人工智能的诞生（1956）
    * 达特茅斯人工智能夏季研究项目（达特茅斯工作坊）
-  ![1956_Dartmouth_conference](./人工智能导论%20Ch.1%20人工智能概述/dartmuth.png)
+  ![1956_Dartmouth_conference](./Intro-to-AI-Chapter-1/dartmuth.png)
 ## 第一次AI热潮：推论搜索期(60－70年代)
    * 强化学习，游戏训练（贪吃蛇，俄罗斯方块...）
    * 第一次工智能浪潮，主要围绕推论和搜索来解决特定问题，但是在日常生活中没有什么用处。
@@ -51,7 +51,7 @@ cover: ./cover.jpg
    * 但人工智能仍然局限于一些特定领域，无法完成一些跨领域任务 
 ## 第四次AI热潮：生成式人工智能期（2020－）
    * 人工智能模型： 从鉴别，预测到生成
-  ![LLM timeline](./人工智能导论%20Ch.1%20人工智能概述/GPTtimeline.png)
+  ![LLM timeline](./Intro-to-AI-Chapter-1/GPTtimeline.png)
    * 已经能够进行一些推理任务（图片推理，视频推理，文献总结...）以及完成一些考试任务
 
 # 人工智能发展面临的挑战
@@ -144,13 +144,13 @@ cover: ./cover.jpg
 ## 附：机器学习/人工智能/大模型相关书籍与视频推荐
 **书籍：**  
 + 吴飞 著. 人工智能导论：模型与算法，北京：高等教育出版社，2021
-![model-and-algorithm](./人工智能导论%20Ch.1%20人工智能概述/model-and-algorithm.png)
+![model-and-algorithm](./Intro-to-AI-Chapter-1/model-and-algorithm.png)
 + 张奇、桂韬、郑锐、黄萱菁：大规模语言模型：从理论与实践（第2版），电子工业出版社，2025
 [![llm-book-v2](https://xuanjing-huang.github.io/images/llm2.jpg)](https://intro-llm.github.io/#home)
 + 周志华 著. 机器学习, 北京: 清华大学出版社, 2016年1月. (**西瓜书**)
 ![machine-learning](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/cover-ml2016.jpg)
 + Ian Goodfellow and Yoshua Bengio and Aaron Courville.Deep Learning,MIT Press,2016.(**花书**)
-[![deep-learning](./人工智能导论%20Ch.1%20人工智能概述/deep-learning.jpg)](http://www.deeplearningbook.org)
+[![deep-learning](./Intro-to-AI-Chapter-1/deep-learning.jpg)](http://www.deeplearningbook.org)
 
 **视频：**  
 [什么是GPT？-by 3blue1brown](https://www.bilibili.com/video/BV13z421U7cs)

@@ -10,7 +10,7 @@ quiz: true
 ---
 > **说明**：以下题目主要来自许忠好《初等概率论》习题/课后作业题/期中考试题等，仅供参考。  
 > 其中部分题目难度较大，作为拓展 or 附加题。（源自某23级学长）
-1. **概率空间典型题目：** !!由于shokax的特性，必须这样设置!! {.quiz}
+1. **概率空间典型题目：** {.quiz}
 {.options}
 1. 事件$A$与$B$相互独立的充要条件为$P(A\mid B)=P(A)$ {.quiz .false}
    > 必要性不成立：若事件$A$与$B$相互独立，则$P(B)$可能为$0$，此时$P(A\mid B)$无意义。
@@ -334,7 +334,7 @@ quiz: true
     >  &=\frac{\iint_{g(x,y)<0}f(x,y)p(x,y)dxdy}{\iint_{g(x,y)<0}p(x,y)dxdy}
     >  \end{aligned}
       $$
-    > 求解方法2：先求解条件分布，再求解条件数学期望。!!不推荐这么做!!
+    > 求解方法2：先求解条件分布，再求解条件数学期望。<Spoiler title="你知道的太多了">不推荐这么做</Spoiler>
     >  $$
     >  \begin{aligned}
     >  P(f(X,Y)\leq t\mid g(X,Y)<0)&=\frac{P(f(X,Y)\leq t,g(X,Y)<0)}{P(g(X,Y)<0)}\\
@@ -384,7 +384,7 @@ quiz: true
     >  $$
       X\mid Y=y\sim N(\mu_1+\rho\frac{\sigma_1}{\sigma_2}(y-\mu_2),(1-\rho^2)\sigma_1^2),\hspace{1em}E(X\mid Y=y)=\mu_1+\rho\frac{\sigma_1}{\sigma_2}(y-\mu_2).
        $$
-10. 设$X\sim N(\mu,\sigma^2)$，$\Phi(x)$为标准正态分布的分布函数，求$E(\Phi(X))$=[$\Phi(\frac{\mu}{\sqrt{\sigma^2+1}})$]{.gap}。!!据学长所言，这道题深受某许姓教授喜爱!!  {.quiz .fill}
+10. 设$X\sim N(\mu,\sigma^2)$，$\Phi(x)$为标准正态分布的分布函数，求$E(\Phi(X))$=[$\Phi(\frac{\mu}{\sqrt{\sigma^2+1}})$]{.gap}。<Spoiler title="你知道的太多了">据学长所言，这道题深受某许姓教授喜爱</Spoiler>  {.quiz .fill}
     > 法1：设$X$的概率密度函数为$p(x)$，则
     > $$
       \begin{aligned}

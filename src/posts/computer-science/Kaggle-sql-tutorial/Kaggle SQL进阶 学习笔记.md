@@ -143,7 +143,7 @@ query="""
       """
 ```
 具体而言，就是先用`UNNEST()`将数据平铺，并重命名为新的表格，再用`.`进行嵌套数据的访问。
-+ !!以C语言的数据结构理解，nested data就是结构体，repeated data就是数组，那么nested and repeated data就是结构体数组!!
+> 以C语言的数据结构理解，nested data就是结构体，repeated data就是数组，那么nested and repeated data就是结构体数组。
 # Writing Efficient Queries
 + 有时，我们需要大量地重复调用query，或者用query获取规模较大的数据集。此时query的处理效率就比较重要了。
 + 因此，这一节我们主要叙述一些query的优化。我们使用的优化指标包括：

@@ -113,9 +113,9 @@ cover: ./cover.jpg
 + 可将每个特征向量还原为$32\times 32$的人脸图像，称之为特征人脸，因此可得到$l$个特征人脸。
   示意图如下：
   原始图像（源自ORL Database of Faces，kaggle链接：[kaggle-ORL](https://www.kaggle.com/datasets/tavarez/the-orl-database-for-training-and-testing)）
-  ![faceset](./人工智能导论%20Ch.6%20机器学习（下）/faceset.jpg)
+  ![faceset](./Intro-to-AI-Chapter-6/faceset.jpg)
   +++ 特征图像（[**比较猎奇，谨慎观看**]{.red}）：
-  ![特征人脸图像](./人工智能导论%20Ch.6%20机器学习（下）/eigenface.png)
+  ![特征人脸图像](./Intro-to-AI-Chapter-6/eigenface.png)
   +++
 ## 基于特征人脸的降维
 + 将每幅人脸分别与每个特征人脸做矩阵乘法，得到一个相关系数

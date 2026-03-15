@@ -6,7 +6,7 @@ tags:
   - 人工智能
 cover: ./cover.jpg
 ---
-老师还是听劝，终于把代码端了上来!!有没有用另说!!   
+老师还是听劝，终于把代码端了上来~~有没有用另说~~
 笔者进行了一番品鉴，取其精华，汇总于此，以作参考（部分运行结果请参考所附链接，使用了在线python IDE）   
 另外，笔者认为，就目前阶段而言，不必掌握所有代码的细节，知道应该调用哪个库解决即可（去查官方文档！）
 # Ch.2 人工智能数据基础
@@ -163,10 +163,10 @@ w is:  1.5933633756656984
 b is: -8.5604260548949
 cost is:  117.28701351904957
 ```
-![regression](./人工智能导论%20代码集合（Ch.1~Ch.7）/regression.png)
+![regression](./Intro-to-AI-Code-Ch1to7/regression.png)
 ## 决策树
 基于下述数据，对银行是否给予贷款建立决策树模型（使用[sklearn.tree.DecisionTreeClassifier](https://scikit-learn.cn/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html)）：
-![case](./人工智能导论%20代码集合（Ch.1~Ch.7）/case.png)
+![case](./Intro-to-AI-Code-Ch1to7/case.png)
 ```python
 import pandas as pd
 from sklearn import tree
@@ -240,7 +240,7 @@ plt.show()
 ```
 数据集的整体信息熵为： 0.9402859586706309
 ```
-![decisiontree](./人工智能导论%20代码集合（Ch.1~Ch.7）/decisiontree.png)
+![decisiontree](./Intro-to-AI-Code-Ch1to7/decisiontree.png)
 ## 线性判别分析LDA
 1. numpy手搓版（以iris数据集为例）（[lda_with_numpy](https://onecompiler.com/python/446va4rrw)）：
 ```python
@@ -340,7 +340,7 @@ Confusion Matrix:
  [ 0 15  0]
  [ 0  0 15]]
 ```
-![lda](./人工智能导论%20代码集合（Ch.1~Ch.7）/lda.png)
+![lda](./Intro-to-AI-Code-Ch1to7/lda.png)
 
 ## Ada Boosting（自适应提升）
 使用sklearn.ensmble的[AdaBoostClassifier](https://scikit-learn.cn/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html)（[Adaboosting](https://onecompiler.com/python/446vbqwhm)）：
@@ -554,7 +554,7 @@ plt.show()
 ```
 
 输出结果：
-![kmeans](./人工智能导论%20代码集合（Ch.1~Ch.7）/kmeans.png)
+![kmeans](./Intro-to-AI-Code-Ch1to7/kmeans.png)
 
 ## 主成分分析PCA
 1. 手搓版（[pca](https://python-fiddle.com/saved/57394eeb-cc3b-4243-b7f2-4e25271deacc)）
@@ -664,7 +664,7 @@ plt.show()
 单个样本 x_1 降维验证：
 原始 x_1 维度: (5,) → 降维后 y_1 维度: (1, 2)
 ```
-![pca](./人工智能导论%20代码集合（Ch.1~Ch.7）/pca.png)
+![pca](./Intro-to-AI-Code-Ch1to7/pca.png)
 
 ### 应用：特征人脸方法
 ```python
@@ -727,7 +727,7 @@ plt.tight_layout()
 plt.show()
 ```
 结果：
-![eigenface](./人工智能导论%20代码集合（Ch.1~Ch.7）/eigenface.png)
+![eigenface](./Intro-to-AI-Code-Ch1to7/eigenface.png)
 
 # 潜在语义分析LSA
 ```python
@@ -1013,8 +1013,8 @@ Component 2:
 [[0.43147839 0.46232308]
  [0.46232308 0.60313388]]
 ```
-![EM-likelihood](./人工智能导论%20代码集合（Ch.1~Ch.7）/EM-likelihood.png)
-![GMM](./人工智能导论%20代码集合（Ch.1~Ch.7）/GMM.png)
+![EM-likelihood](./Intro-to-AI-Code-Ch1to7/EM-likelihood.png)
+![GMM](./Intro-to-AI-Code-Ch1to7/GMM.png)
 
 # 深度学习
 ## 误差反向传播（BP）
@@ -1102,4 +1102,4 @@ if __name__=='__main__':
     backward_update(epochs=50001,lr=0.01)
 ```
 损失曲线图：
-![loss](./人工智能导论%20代码集合（Ch.1~Ch.7）/loss.png)
+![loss](./Intro-to-AI-Code-Ch1to7/loss.png)

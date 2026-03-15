@@ -37,8 +37,8 @@ cover: ./penguin_and_pigeon.png
   + 然后有$b+c=(q_{1}+q_{2})a$，又因为整数集加法封闭，有$q_{1}+q_{2} \in \mathbb{Z}$
   + 于是得到$a|(b+c)$，正是我们想要得到的结论。
   + 那么在证明中，$a,b,c$的“$\forall$”性如何体现呢？实际上，在证明过程中，$a,b,c$都没有被赋予特定的值，所以它们自然就是任意的！
-+ 有时，我们想要证明$P(x)\Longleftrightarrow Q(x)$，那么就需要证明以下两个命题都成立：$P(x)\Longrightarrow Q(x)$和$Q(x)\Longrightarrow P(x)$
-  + !!这有点像数学证明中的充分性必要性证明!!
++ 有时，我们想要证明$P(x)\Longleftrightarrow Q(x)$，那么就需要证明以下两个命题都成立：$P(x)\Longrightarrow Q(x)$和$Q(x)\Longrightarrow P(x)$   
+  <Spoiler title="个人理解">这有点像数学证明中的充分性必要性证明</Spoiler>
 # 利用逆否命题证明(Proof by Contraposition)
 + 在[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)中，我们已经知道$P\Longrightarrow Q$和$\lnot Q\Longrightarrow \lnot P$等价
 + 而有时，证明$\lnot Q\Longrightarrow \lnot P$要比直接证明$P\Longrightarrow Q$容易得多

@@ -14,10 +14,10 @@ cover: ./cover.jpg
 ## 知识图谱的基本概念
 + 知识图谱可视为包含多种关系的图。在图中，每个节点是一个实体（如人名、地名、事件和活动等），任意两个节点之间的边表示这两个节点之间存在的关系。
 + 一般而言，可将知识图谱中任意两个相连节点及其连接边表示成一个**三元组(triplet)**，即($\mathrm{left}_\mathrm{node}, \mathrm{relation},\mathrm{right}_\mathrm{node}$)。
-+ 知识图谱中存在连线的两个实体可表达为形如\<$\mathrm{left}_\mathrm{node}, \mathrm{relation},\mathrm{right}_\mathrm{node}$\>的三元组形式，这种三元组也可以表示为 **一阶逻辑(firstorder logic,FOL)** 的形式，从而为基于知识图谱的推理创造了条件。
-  + 例如从\<奥巴马，出生地，夏威夷\>和<夏威夷，属于，美国\>两个三元组，可推理得到<奥巴马，国籍，美国\>。
-+ 可利用一阶谓词来表达刻画知识图谱中节点之间存在的关系，如下图中形如<$\mathrm{James},\mathrm{Couple},\mathrm{David}$\>的关系可用一阶逻辑的形式来描述，即$\mathrm{Couple}(\mathrm{James},\mathrm{David})$。
-+ $\mathrm{Couple}(x,y)$是一阶谓词,$\mathrm{Couple}$是图中实体之间具有的关系，$x$和$y$是谓词变量。![Graph](./人工智能导论%20Ch.4%20逻辑与推理（下）/graph.png)
++ 知识图谱中存在连线的两个实体可表达为形如($\mathrm{left}_\mathrm{node}, \mathrm{relation},\mathrm{right}_\mathrm{node}$)的三元组形式，这种三元组也可以表示为 **一阶逻辑(firstorder logic,FOL)** 的形式，从而为基于知识图谱的推理创造了条件。
+  + 例如从(奥巴马，出生地，夏威夷)和(夏威夷，属于，美国)两个三元组，可推理得到(奥巴马，国籍，美国)。
++ 可利用一阶谓词来表达刻画知识图谱中节点之间存在的关系，如下图中形如($\mathrm{James},\mathrm{Couple},\mathrm{David}$)的关系可用一阶逻辑的形式来描述，即$\mathrm{Couple}(\mathrm{James},\mathrm{David})$。
++ $\mathrm{Couple}(x,y)$是一阶谓词,$\mathrm{Couple}$是图中实体之间具有的关系，$x$和$y$是谓词变量。![Graph](./Intro-to-AI-Chapter-4/graph.png)
 + 从图中已有关系可推知$\mathrm{David}$和$\mathrm{Ann}$具有父女关系，但这一关系在图中初始图（无红线）中并不存在，是需要推理的目标。
   + 转化为逻辑形式即为：已知$(\forall x)(\forall y)(\forall z)(\mathrm{Mother}(z,y)\land\mathrm{Couple}(x,z)\longrightarrow \mathrm{Father}(x,y))$，如何通过推理得到$\mathrm{Father}(\mathrm{David},\mathrm{Ann})$？这就到了归纳推理的范畴。
 + 更多关于知识图谱的概念解释可参见[南京大学-人工智能导论](https://www.lamda.nju.edu.cn/guolz/introai-slides-2024/lec6.pdf)
@@ -27,7 +27,7 @@ cover: ./cover.jpg
 + 作为ILP的代表性方法，**一阶归纳学习FOIL(First Order Inductive Learner)** 通过**序贯覆盖**实现规则推理。
 ### FOIL(First Order Inductive Learner)
 + 参见[南京大学-人工智能导论](https://www.lamda.nju.edu.cn/guolz/introai-slides-2024/lec6.pdf#page=24)
-+ !!byd老师直接跳过不讲了，我也看不懂呜呜呜（以后有机会再补）!!
+> byd老师直接跳过不讲了，我也看不懂呜呜呜（以后有机会再补）
 ### 其他知识图谱推理方法
 + 路径排序推理算法（PRA）
 + 基于分布式表示的知识推理（如TransE）
@@ -91,11 +91,11 @@ $$
 P(x_{1},x_{2},\cdots,x_{d})=\prod_{j=1}^d P(x_{j}|x_{pa(j)})
 $$
   + 其中，$x_{pa(j)}$表示节点$x_j$的父节点集合（所有指向$x_{j}$的节点），如果$x_j$没有父节点则概率为$P(x_j)$。这里包含了变量之间某种普遍成立的独立性假设。
-+ 基本结构：![DAG](./人工智能导论%20Ch.4%20逻辑与推理（下）/DAG.png)
++ 基本结构：![DAG](./Intro-to-AI-Chapter-4/DAG.png)
     1. 链结构（chain）
          + 链是因果图的一种基本结构。它包含三个节点两条边，其中一条边由第一个节点指向第二个节点，另一条边由第二个节点指向第三个节点。
          + 条件独立性分析：在链式图$X\longrightarrow Z\longrightarrow Y$中， $X$和$Y$在给定$Z$时条件独立。
-      ![chain](./人工智能导论%20Ch.4%20逻辑与推理（下）/chain.png)
+      ![chain](./Intro-to-AI-Chapter-4/chain.png)
         + 数学推导：
         $$
         P(X,Y|Z)=\frac{P(X,Y,Z)}{P(Z)}=\frac{P(X)P(Z|X)P(Y|Z)}{P(Z)}=P(X|Z)P(Y|Z)
@@ -104,14 +104,14 @@ $$
         + 定理：**(链中的条件独立性)** 对于变量$X$和$Y$，若$X$和$Y$之间只有一条单向的路径，变量$Z$是 **截断(intercept)** 该路径的集合中的任一变量，则在给定$Z$时，$X$和$Y$条件独立。
     2. 分连结构（叉结构，fork）
          + 分连也是因果图的一种基本结构。它包含三个节点两条边，两条边分别由第一个节点指向第二个节点和第三个节点。
-         + ![fork](./人工智能导论%20Ch.4%20逻辑与推理（下）/fork.png)
+         + ![fork](./Intro-to-AI-Chapter-4/fork.png)
          + 在分连结构中，给定$Z$时，$X$和$Y$的联合概率：
            + $P(X,Y|Z)=\frac{P(X,Y,Z)}{P(Z)}=\frac{P(Z)P(X|Z)P(Y|Z)}{P(Z)}=P(X|Z)P(Y|Z)$
            + 即在分连图$X\longleftarrow Z\longrightarrow Y$中， $X$和$Y$在给定$Z$时条件独立。
          + 定理：**(分连中的条件独立性)** 若变量$Z$是变量$X$和$Y$的共同原因，且$X$到$Y$只有一条路径，则在给定$Z$时，$X$和$Y$条件独立。
     3. 汇连结构（collider）
         + 汇连(又叫碰撞)也是因果图的一种基本结构。它包含三个节点两条边，两条边分别由第一个节点和第二个节点指向第三个节点。
-      ![collider](./人工智能导论%20Ch.4%20逻辑与推理（下）/collider.png)
+      ![collider](./Intro-to-AI-Chapter-4/collider.png)
         + 在汇连图$X\longrightarrow Z\longleftarrow Y$中， $X$和$Y$在给定$Z$时条件相关。（推导留给读者）
         + 可以这样理解：给定$Z$，当$X$的取值发生变化时，为了保证$Z$的取值不变，$Y$的取值也一定会发生变化，因而给定$Z$时，$Y$和$X$是相关的。
         + 定理：**(汇连中的条件独立性)** 若变量$Z$是变量$X$和$Y$的汇连节点，且$X$到$Y$只有一条路径，则$X$和$Y$相互独立，但在给定$Z$或$Z$的后代时，$X$和$Y$是相关的。
@@ -145,4 +145,4 @@ $$
 # 总结
 逻辑与推理具有一定的区别。逻辑本身不承载推理的使命，而是研究什么是推理以及提出一些一般性的原则来保证推理结果的正确性，如归结法等。推理的方法有很多种，如演绎推理、归纳推理和因果推理等，在实际任务中，一般是多种推理方法叠加协同，完成特定任务。
 
-!!wc完全没想到这一节有恁多内容，快累死了......!!{.bulr}
+> wc完全没想到这一节有恁多内容，快累死了......

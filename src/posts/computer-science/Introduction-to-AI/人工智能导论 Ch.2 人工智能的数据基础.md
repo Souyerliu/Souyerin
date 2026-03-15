@@ -34,11 +34,11 @@ cover: ./cover.jpg
 # 数据类型与表示
 ## 图像的数据表示
   1. 0-1 表示
-    ![binary_image](./人工智能导论%20Ch.2%20人工智能的数据基础/binary_image.png)
+    ![binary_image](./Intro-to-AI-Chapter-2/binary_image.png)
   2. 灰度表示
-    ![grey_scale](./人工智能导论%20Ch.2%20人工智能的数据基础/grey_scale_image.jpg)
+    ![grey_scale](./Intro-to-AI-Chapter-2/grey_scale_image.jpg)
   3. RGB 表示
-    ![RGB](./人工智能导论%20Ch.2%20人工智能的数据基础/RGB_image.png)
+    ![RGB](./Intro-to-AI-Chapter-2/RGB_image.png)
 ## 文本的数据表示
 * 如何比较两个文档的相似性？
 * 将相同的单词进行统计与编码(详见下“文本数据”)
@@ -46,13 +46,13 @@ cover: ./cover.jpg
 + 音频要素：时间&频率
 + 采样、量化与编码
 + 得到二进制流
-![PCM](./人工智能导论%20Ch.2%20人工智能的数据基础/audio.png)
+![PCM](./Intro-to-AI-Chapter-2/audio.png)
 
 ## 什么是数据（集）？
 1. 数据集包含（数据）**对象objects**和对象的**属性attribute**
 2. 对象：也称为记录，包括数据点data point，模式patterm，事件event，案例case，样本sample，观测observation或实体entity.
 3. 属性：刻画对象的基本特性，它因对象而异，或随时间变化，也称为特征feature或变量variable。（特征组合可构成对象的画像）
-  * ![objects](./人工智能导论%20Ch.2%20人工智能的数据基础/objects_and_attributions.png)
+  * ![objects](./Intro-to-AI-Chapter-2/objects_and_attributions.png)
  **注：有时属性也可以作为对象（如在属性描述表格中）**
 ## 属性与属性值
 1. 属性被赋予的数字或者符号称为属性值（attribute values）
@@ -136,7 +136,7 @@ cover: ./cover.jpg
 * 数据结构（Data Structure）：相互之间存在一种或多种特定关系的数据元素的集合
   * “特定关系”：数据元素间的**逻辑关系**或**逻辑结构**
   * 数据结构在计算机中的表示称为数据的**物理结构（存储结构）**
-  * ![Data_structure](./人工智能导论%20Ch.2%20人工智能的数据基础/data_structure.png)
+  * ![Data_structure](./Intro-to-AI-Chapter-2/data_structure.png)
 1. 线性结构
   * 说明：在此类文档管理的数学模型中，计算机处理的对象之间通常存在着一种最简单的线性关系，该数学模型称为线性模型。
   * 一般会进行线性运算
@@ -154,7 +154,7 @@ cover: ./cover.jpg
   + 最小相异度为0
   + 无上限
 + 简单属性间的相似度与相异度
-  + ![simdis](./人工智能导论%20Ch.2%20人工智能的数据基础/simdissingle.jpg)
+  + ![simdis](./Intro-to-AI-Chapter-2/simdissingle.jpg)
   + 说明：p和q是两个数据对象的属性值。
 
 # 数据预处理
@@ -217,7 +217,7 @@ $$
    + ***KL散度（衡量两个概率分布的差异性**）$D_{\text{KL}}(P \parallel Q) = \sum_{x \in \mathcal{X}} P(x) \log \frac{P(x)}{Q(x)}$
      + 在强化学习PPO模型中使用KL散度惩罚可以保证训练的稳定性（相关论文：[PPO](https://arxiv.org/pdf/1707.06347)）
 2. 相关性可视化
-  ![visual](./人工智能导论%20Ch.2%20人工智能的数据基础/correlations-1.png)
+  ![visual](./Intro-to-AI-Chapter-2/correlations-1.png)
 3. 相似度计算的问题
 + 当属性具有不同的**尺度**或**相关**时如何计算相似度？
   + 例如：在欧氏距离中，当使用‘年龄’和‘收入’这两个属性度量人的相似性，显然‘收入’占主导作用
@@ -254,22 +254,22 @@ $\mathbf{\Sigma}$为多维随机变量$x,y$的协方差矩阵：$\Sigma_{ij} = \
    + 显示单个属性值的分布情况
    + 如果是分类属性，每个值在一个箱中.
    + 如果是连续属性，将值域划分成等宽箱
-   + 例：![histogram](./人工智能导论%20Ch.2%20人工智能的数据基础/Black_cherry_tree_histogram.svg)
+   + 例：![histogram](./Intro-to-AI-Chapter-2/Black_cherry_tree_histogram.svg)
    + 三维直方图：显示两个属性值的联合分布情况
-   + 例：![3Dhistogram](./人工智能导论%20Ch.2%20人工智能的数据基础/3Dhistogram.png)
+   + 例：![3Dhistogram](./Intro-to-AI-Chapter-2/3Dhistogram.png)
 2. **盒状图（boxplot）**
-  ![boxplot](./人工智能导论%20Ch.2%20人工智能的数据基础/boxplot-1.jpg)
+  ![boxplot](./Intro-to-AI-Chapter-2/boxplot-1.jpg)
 3. **饼图（pie chart）**
-  ![piechart](./人工智能导论%20Ch.2%20人工智能的数据基础/pie.png)
+  ![piechart](./Intro-to-AI-Chapter-2/pie.png)
 4. **累计分布函数图 CDF**
    + ⼀个累计分布函数显示点⼩于该值的概率
-  ![CDF](./人工智能导论%20Ch.2%20人工智能的数据基础/CDF.png)
+  ![CDF](./Intro-to-AI-Chapter-2/CDF.png)
 5. **散布图（散点图，scatter diagram）**
    + 使用数据对象两个属性值x和y作为坐标值，每个数据对象都作为平面上的一个点
    + 用途：
      + 图形化地显示两个属性之间的关系
      + 当类标号给出时，可以利用散布图考查两个属性将类分开的程度
-   + 例：![scatterplot](./人工智能导论%20Ch.2%20人工智能的数据基础/Iris_dataset_scatterplot.svg)
+   + 例：![scatterplot](./Intro-to-AI-Chapter-2/Iris_dataset_scatterplot.svg)
 6. **等高线图（contour line plot）**
    + 对于某些三维数据，两个属性指定平面上的位置，而第三个属性具有连续值。
    + 常见例子：地面位置的海拔高度
@@ -278,7 +278,7 @@ $\mathbf{\Sigma}$为多维随机变量$x,y$的协方差矩阵：$\Sigma_{ij} = \
    + 常⽤于绘制函数曲⾯
    + 图略
 8. **矢量场图（vector field）**
-   ![vectorplot](./人工智能导论%20Ch.2%20人工智能的数据基础/VectorPlot_1000.png)
+   ![vectorplot](./Intro-to-AI-Chapter-2/VectorPlot_1000.png)
 9. **高维数据可视化——矩阵图**
     + 将矩阵用图形的方式表现出来
     + 如果类标号已知，则重新排列数据矩阵的次序，使得某个类的所有对象聚集在一起
@@ -306,16 +306,16 @@ $\mathbf{\Sigma}$为多维随机变量$x,y$的协方差矩阵：$\Sigma_{ij} = \
 # 数据管理与操作案例（以鸢尾花iris数据集为例）
 以下图片均直接来自于PPT~~绝对不是因为我懒~~
 1. Iris数据集的数据矩阵
-   ![iris_data](./人工智能导论%20Ch.2%20人工智能的数据基础/iris_data.png)
+   ![iris_data](./Intro-to-AI-Chapter-2/iris_data.png)
 2. Iris数据集的相关矩阵
-   ![iris_cor](./人工智能导论%20Ch.2%20人工智能的数据基础/iris_correlation.png)
+   ![iris_cor](./Intro-to-AI-Chapter-2/iris_correlation.png)
 3. 平行坐标系Parallel Coordinates
    + 每个属性是一个坐标轴
    + 每个坐标轴之间是平行的，而不是正交的
    + 每个对象用一条线表示，而不是一个点
-   + ![parallel](./人工智能导论%20Ch.2%20人工智能的数据基础/parallel_coordinates.png)
+   + ![parallel](./Intro-to-AI-Chapter-2/parallel_coordinates.png)
 4. 星形坐标
-   ![star](./人工智能导论%20Ch.2%20人工智能的数据基础/star.png)
+   ![star](./Intro-to-AI-Chapter-2/star.png)
 5. Chenoff脸
-   ![chenoff](./人工智能导论%20Ch.2%20人工智能的数据基础/Chernoff.png)
+   ![chenoff](./Intro-to-AI-Chapter-2/Chernoff.png)
 + **星形坐标和Chenoff脸均适用于高维数据可视化**

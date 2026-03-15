@@ -49,7 +49,7 @@ export default defineConfig({
   brand: {
     title: "Souyer's Blog",
     subtitle: "Souyer的博客",
-    logo: "✨",
+    logo: "",
   },
   cover: {
     enable: true,

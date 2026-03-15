@@ -10,6 +10,6 @@
 }
 
 .md .spoiler:hover {
-  background: transparent;
+  /*background: transparent;*/
   color: var(--text-color);
 }

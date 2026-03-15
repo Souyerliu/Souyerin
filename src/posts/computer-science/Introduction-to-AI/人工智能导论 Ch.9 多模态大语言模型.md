@@ -20,11 +20,11 @@ cover: ./cover.jpg
 + 那么能否像Transformer一样直接抛弃传统神经网络架构，而使用纯Self-Attention进行图像（以及音频、视频等多模态）处理呢？
 + 注意：图像与文字不同，没有明显的时序特征，因而无法直接像自然语言处理那样直接将图像数据传入编码器中。那么应该怎么做呢？
 + 2020年，谷歌的研究团队在论文[An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/pdf/2010.11929)，提出如下结构图：
-![ViT](./人工智能导论%20Ch.9%20多模态大语言模型/ViT.png)
+![ViT](./Intro-to-AI-Chapter-9/ViT.png)
 + 具体而言，这一模型将图像转化为一个$16\times 16$的patch序列，再将其展平为一个长度为$256$的向量，对其进行线性映射（高维转低维，为进入Encoder做准备），然后加入位置编码，送入Encoder中。另外，在位置编码的过程中，还会单独设立一个分类向量(Class Token)，用于储存图像的整体信息（如果是图像分类任务则可直接用于分类预测）
 + 注意到，在ViT模型中，只使用了Transformer的编码器，并没有使用解码器，这是因为ViT架构的主要任务是进行图像分类。当然，如果最后需要进行图像生成或文本生成，那就需要再加Decoder。
 # ChatGPT之前的视觉语言预训练
-+ 注：从本节开始，笔记内容主要根据以下课件进行编写：[从多模态联合预训练到多模态大语言模型：架构、训练、评测、趋势概览](http://fudan-disc.com/resource/users/zywei/file/2023-12-03-%E9%AD%8F%E5%BF%A0%E9%92%B0-%E5%A4%9A%E6%A8%A1%E6%80%81%E8%9E%8D%E5%90%88%E7%9A%84%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%A1%86%E6%9E%B6%E5%92%8C%E8%AF%84%E6%B5%8B-%E5%A4%8D%E6%97%A6%E5%A4%A7%E5%AD%A6.pdf)!!hhh老师又偷懒了!!
++ 注：从本节开始，笔记内容主要根据以下课件进行编写：[从多模态联合预训练到多模态大语言模型：架构、训练、评测、趋势概览](http://fudan-disc.com/resource/users/zywei/file/2023-12-03-%E9%AD%8F%E5%BF%A0%E9%92%B0-%E5%A4%9A%E6%A8%A1%E6%80%81%E8%9E%8D%E5%90%88%E7%9A%84%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%A1%86%E6%9E%B6%E5%92%8C%E8%AF%84%E6%B5%8B-%E5%A4%8D%E6%97%A6%E5%A4%A7%E5%AD%A6.pdf)~~hhh老师又偷懒了~~
 ## 视觉—语言模态研究的整体框架
 + 底层模态：
   + 视觉层：像素$\Longrightarrow$区域$\Longrightarrow$图片$\Longrightarrow$相册（视频）
@@ -56,7 +56,7 @@ cover: ./cover.jpg
 当前事件的原因，后续时间片的事件。   
 
 总关系图如下：
-![Vl](./人工智能导论%20Ch.9%20多模态大语言模型/Visual-language.png)
+![Vl](./Intro-to-AI-Chapter-9/Visual-language.png)
 ## 训练-推理统一的多模态预训练框架
 + [VL-BART](https://arxiv.org/pdf/2112.06825) 和 [OFA](https://arxiv.org/pdf/2202.03052) 将所有的任务改造成序列到序列（Seq2Seq）的格式
 + 在预训练阶段收集多个任务的样本（多模态、视觉模态、文本）
@@ -78,13 +78,13 @@ cover: ./cover.jpg
   + 需要将其它模态信息对齐到大语言模型的语义空间
 ### 大视觉语言模型的通用解决方案（开源）
 + 使用大语言模型（LLMs）作为骨干+视觉编码器，并通过多模态数据进行生成式预训练+指令微调。示意图如下：
-![LVLM](./人工智能导论%20Ch.9%20多模态大语言模型/LVLM.png)
+![LVLM](./Intro-to-AI-Chapter-9/LVLM.png)
 + 训练步骤：
   1. 预训练
     + 让视觉表征对齐到大预言模型的语义空间
     + 使用图片-文本对进行语义对齐，如：图片描述生成任务
     + 通过自回归语言模型进行训练，最大化生成目标的似然概率
-    + 示意图：![training](./人工智能导论%20Ch.9%20多模态大语言模型/training.png)
+    + 示意图：![training](./Intro-to-AI-Chapter-9/training.png)
   2. 指令微调
     + 指令数据集构建
       + 基于现有有标注数据集合
@@ -111,7 +111,7 @@ cover: ./cover.jpg
     + 用一个固定大小的 latent space，反复“感知”高维输入。
     + 例：Lynx,Multimodal-GPT,mPLUG-Owl
 + 下面介绍LLaVA连接模块（论文：[LLaVA](https://arxiv.org/pdf/2304.08485)）：
-  + 示意图：![LLaVA](./人工智能导论%20Ch.9%20多模态大语言模型/LLaVA.png)
+  + 示意图：![LLaVA](./Intro-to-AI-Chapter-9/LLaVA.png)
   + 在这个模块中，视觉与语言数据作为输入，在通过一个矩阵将数据映射到另一个维度，输入进大模型中，最终得到输出；
   + 关于模型的Loss如何优化（预训练方式）：冻结视觉编码器和大语言模型的权重，并且最大化生成目标的似然概率（直接使用LLM的自回归交叉熵损失）
   + 指令微调阶段：
@@ -138,7 +138,7 @@ cover: ./cover.jpg
 ## MME：一个系统化的多模态大模型评测基准
 + 论文：[MME](https://arxiv.org/pdf/2306.13394)
 + 涉及感知和认知，一共包括14个子任务
-+ 问题二元形式化：让模型回答 yes [Y] 或 no [N]，示例：![MME](./人工智能导论%20Ch.9%20多模态大语言模型/MME.png)
++ 问题二元形式化：让模型回答 yes [Y] 或 no [N]，示例：![MME](./Intro-to-AI-Chapter-9/MME.png)
 + 评价策略：
   1. **让模型回答“yes”或“no”**
      + 指令包括两部分，分别是一个简明的问题和一个描述“Please answer yes or no.”
