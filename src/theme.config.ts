@@ -143,7 +143,7 @@ export default defineConfig({
     },
   },
   nyxPlayer: {
-    enable: true,
+    enable: false,
     preset: "shokax",
     darkModeTarget: ':root[data-theme="dark"]',
     urls: [
