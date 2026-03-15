@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Footer from "@/components/footer/Footer.astro";
+import Widgets from "@/components/footer/Widgets.svelte";
+
+interface WidgetsConfig {
+  randomPosts?: boolean;
+  recentComments?: boolean;
+  recentCommentsLimit?: number;
+}
+
+interface Props {
+  posts: CollectionEntry<"posts">[];
+  widgetsConfig?: WidgetsConfig;
+  commentsEnabled?: boolean;
+  walineServerURL?: string;
+  footerConfig?: any;
+  siteName: string;
+  author?: string;
+}
+
+const {
+  posts,
+  widgetsConfig = {},
+  commentsEnabled = false,
+  walineServerURL = "",
+  footerConfig = {},
+  siteName,
+  author = "",
+} = Astro.props;
+---
+
+<div id="main" class="pjax layout-main-column">
+  <slot />
+  <footer id="footer">
+    <div class="inner">
+      <div class="widgets">
+        <Widgets
+          client:visible
+          posts={posts}
+          enableRandomPosts={widgetsConfig.randomPosts !== false}
+          enableRecentComments={widgetsConfig.recentComments && commentsEnabled}
+          recentCommentsLimit={widgetsConfig.recentCommentsLimit || 6}
+          walineServerURL={walineServerURL}
+        />
+      </div>
+      <Footer config={footerConfig} {siteName} {author} />
+    </div>
+  </footer>
+</div>

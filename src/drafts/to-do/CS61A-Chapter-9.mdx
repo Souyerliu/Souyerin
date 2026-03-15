@@ -1,0 +1,306 @@
+---
+title: CS61A Chapter 9
+date: 2026-02-24 09:53:43
+categories: [计算机科学,CS61A] 
+tags: 
+ - python
+cover: ./61A-header.png
+---
+# 面向对象编程（Object-oriented Programming,OOP）
++ 面向对象编程是一种程序的组织方法，其综合了之前提到的[抽象屏障](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E6%8A%BD%E8%B1%A1%E5%B1%8F%E9%9A%9Cabstraction-barriers)，[调度字典](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E8%B0%83%E5%BA%A6%E5%AD%97%E5%85%B8dispatch-dictionaries)以及[局部状态](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E5%B1%80%E9%83%A8%E7%8A%B6%E6%80%81local-state)的思想。
++ 具体而言，在面向对象编程中，对象可以理解为程序中的Agents（代理），各自维护自身的状态（属性Attributes）与行为（方法Methods）。不同对象之间通过调用方法实现通信（交互与计算）。对象不仅能传递消息，还可以从对应的类中继承特征，共享类的行为。
+## 类与对象（Objects and Classes）
++ 之前我们已经简单介绍了类与对象的基本概念（见[Chapter 7](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E5%AF%B9%E8%B1%A1objects)），这里我们再作进一步阐释：
++ 类可以看作一种模版，而对象就是基于这个模版（类）生成的实例。前面提到，python中所有的值都是其对应类（包括内置类与自定义类）实例化后的对象。类定义了该类的对象之间共享的属性与方法。
++ 下面我们再用之前的[bank account](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E5%B1%80%E9%83%A8%E7%8A%B6%E6%80%81local-state)的例子说明（当然这里我们不再使用之前定义的高阶函数，而直接使用类与对象）：
+  + 对于一个银行账户（类），我们希望其有一个可变值`balance`（余额），同时具有`withdraw`和`deposit`两个方法（对应取款与存款），同时能够返回账户的名称`holder`（以区分不同的对象）。
+  + 假设我们已经定义好了一个`Account`类（具体实现后面会给出），那么我们就可以通过传入账户名参数创建新的对象（也称为实例化类）：
+    ```python
+    >>> a = Account('Iroha')
+    ```
+  + 对象的属性由对象名-值对（name-value pair）表示，通过点表达式访问。属性分为两种：属于某个具体对象，由该对象单独保存的是**实例属性（instance attributes）**；而属于类本身，由所有对象共享的是**类属性（class attributes）**。对于这个例子而言，银行账户名和账户余额都是实例属性，具体访问方法：
+    ```python
+    >>> a.holder
+    'Kirk'
+    >>> a.balance
+    0
+    ```
+    > 注：实例属性在一些编程语言中也称为*字段(fields)*，*属性(properties)*或者*实例变量(instance variables)*。
+ + 方法是对对象进行操作或执行特定于对象的计算的函数，其可以接收传入的参数，对对象的其他属性进行操作，并返回所需要的值（当然这些功能都不是必需的）。比如这个例子里的`withdraw`方法：
+    ```python
+    >>> a.deposit(15)
+    15
+    >>> a.withdraw(10)  # withdraw 方法返回扣除后的余额
+    5
+    >>> a.balance       # 余额属性发生改变
+    5
+    >>> a.withdraw(10)
+    'Insufficient funds'
+    ```
+    由此可以看出，对象的方法与对象的属性之间可以相互作用。
+## 定义类（Defining Classes）
++ 在python中，类使用`class`语句进行定义，基本格式为：
+  ```python
+  class <name>:
+    <suite>
+  ```
+  在`<suite>`中可以设置类的属性（赋值语句或`def`语句）。
++ 类通常通过操作实例属性（对象的name-value对）进行组织设计。具体而言，其通过初始化对象的方法（即下面的`__init__`方法）明确其实例属性（如定义属性初始值）。
++ `<suite>`里的`def`语句可以为类的对象定义新方法。其中，初始化对象的方法在python中有特定的名称：`__init__`，也称为类的构造函数（constructor）。比如上面的`Account`类的定义：
+  ```python
+  >>> class Account:
+        def __init__(self, account_holder):
+            self.balance = 0
+            self.holder = account_holder
+  ```
+  其中`__init__`函数的第一个参数`self`对应创建的`Account`对象（如上面的`a`），而第二个参数`account_holder`则对应调用类进行实例化（创建对象）时传入的参数（如上面的`Iroha`）。
+    > 注：第一个参数命名为`self`是python代码的惯例约定。下面方法的参数命名同理。
+  + 类似地，我们也可以定义类的其他方法（如`withdraw`和`deposit`）：
+  ```python
+  >>> class Account:
+        def __init__(self, account_holder):
+            self.balance = 0
+            self.holder = account_holder
+        def deposit(self, amount):
+            self.balance = self.balance + amount
+            return self.balance
+        def withdraw(self, amount):
+            if amount > self.balance:
+                return 'Insufficient funds'
+            self.balance = self.balance - amount
+            return self.balance
+  ```
+  虽然方法的定义方法与函数没有区别，但在代码执行时其作为属性被绑定，故调用时同样使用点表达式（将对象传入`self`以获取对象的各属性值）。使用例如下：
+  ```python
+  >>> iroha_account = Account('Iroha')
+  >>> iroha_account.deposit(100)
+  100
+  >>> iroha_account.withdraw(90)
+  10
+  >>> iroha_account.withdraw(90)
+  'Insufficient funds'
+  >>> iroha_account.holder
+  'Iroha'
+  ```
++ 对象的独立身份（Identity）：每一个由类实例化的对象都是独立的，即它们的实例属性互不影响：
+  ```python
+  >>> b = Account('Kaguya')
+  >>> b.balance = 200
+  >>> [acc.balance for acc in (a, b)]
+  [0, 200]
+  ```
+  可以用`is`与`is not`判断两个名称是否指向同一个对象：
+  ```python
+  >>> a is a
+  True
+  >>> a is not b
+  True
+  >>> c = a
+  >>> c is a
+  True
+  ```
+  当且仅当调用类进行实例化（如上面的`Account('Iroha')`）时，才会创建新对象。
+## 消息传递与点表达式（Message Passing and Dot Expressions）
++ 在类中定义的方法和实例属性是面向对象编程的两个基本元素。这两个概念在传递数据值的消息中复制了调度字典的大部分行为，而且都使用点表达式进行实现。
++ 消息传递的核心在于根据与抽象类型相关的信息对数据值执行对应的行为。python中使用的点表达式进行消息传递的优点在于，它可以直接和其他功能（如赋值）进行结合，不需要另外编写消息以获取或修改属性值。
++ 点表达式的标准形式如下（~~虽然已经见过很多遍了~~）：
+  ```python
+  <expression>.<name>
+  ```
+  其中`<expression>`可以是复杂的表达式（如实例化类/对象列表元素等），但`<name>`必须是简单的名称（即类中已有的属性名或方法名）
++ 当然，我们也可以用`getattr`函数获取对象属性值（类似调度字典，与点表达式等价）：
+  ```python
+  >>> getattr(iroha_account, 'balance')
+  10
+  ```
+  还可以用`hasattr`检查对象是否有给定的属性：
+  ```python
+  >>> hasattr(iroha_account, 'deposit')
+  True
+  ```
++ 方法与函数：在对象上调用方法时，对象本身就作为方法的参数（`self`）传递给方法，而方法的剩余参数则另外传递。python对方法与函数二者进行了区分：
+  ```python
+  >>> type(Account.deposit) # 类的属性（函数类型）
+  <class 'Function'>
+  >>> type(iroha_account.deposit) # 对象的属性（方法类型）
+  <class 'method'>
+  ```
+  相应的，我们就可以用两种方式调用方法：
+  ```python
+  >>> Account.deposit(iroha_account, 1001)    # 函数 deposit 接受2个参数
+  1011
+  >>> iroha_account.deposit(1000)             # 方法 deposit 接受1个参数
+  2011
+  ```
+  如果使用`getattr`的话，如下所示：
+  ```python
+  >>> f = getattr(Account, 'deposit')
+  >>> f(iroha_account, 50)   # 必须显式传入对象
+  2061
+  >>> m = getattr(iroha_account, 'deposit')
+  >>> m(50)   # 等价于 iroha_account.deposit(50)
+  2111
+  ```
++ 命名约定：在python中，类名常使用驼峰命名法（CamelCase，即每个单词首字母大写，且没有下划线），而方法则用下划线分隔的小写单词命名。
++ 另外，有时类中的一些实例属性与方法用于内部维护，不希望用户访问或调用，在python中这些属性与方法名称一般以下划线开头作为标记。
+## 类属性（Class Attributes）
++ 如前文所述，类属性与实例属性不同，它在给定类的所有对象之间共享，不与类的任何单个实例相关联。比如，上面的银行账户例子中，可以假设银行的存款利率是由银行账户共享的。
++ 类属性由类中的赋值语句创建（在方法定义之外）。在其他语言中，类属性也称为类变量（class variables）或静态变量（static variables）。示例如下：
+  ```python
+  >>> class Account:
+        interest = 0.02            # 类属性
+        def __init__(self, account_holder):
+            self.balance = 0
+            self.holder = account_holder
+        # 在这里定义更多的方法
+  ```
+  由类实例化的任意对象都可以访问类属性：
+  ```python
+  >>> iroha_account = Account('Iroha')
+  >>> kaguya_account = Account('Kaguya')
+  >>> iroha_account.interest
+  0.02
+  >>> kaguya_account.interest
+  0.02
+  ```
+  当然，类属性也可以进行修改，这会改变所有对象对应的属性值：
+  ```python
+  >>> Account.interest = 0.04 # 这里<expression>为类名
+  >>> iroha_account.interest
+  0.04
+  >>> kaguya_account.interest
+  0.04
+  ```
++ 关于属性名称的问题：在python中，点表达式通过以下步骤进行运算：
+    1. 基于点表达式左侧的`<expression>`，生成对应的对象。
+    2. 点表达式右侧的`<name>`先尝试与该对象的实例属性匹配；如果存在具有该名称的属性，则返回属性值。
+    3. 如果实例属性中没有`<name>`，则在类中查找`<name>`，生成类属性。
+    4. 如果属性是函数，则返回该名称绑定的方法，否则返回属性值。
+  > 可以看出，实例属性的优先级比类属性高。（更多细微差别会在后面类继承中讨论）
++ 关于属性赋值的问题：如果实例属性有与类属性完全相同的名称，那么改变类属性值不会影响到同名实例属性值，反之亦然。具体示例如下：
+  ```python
+  >>> kaguya_account.interest = 0.08 # 自动在对象中创建interest实例属性
+  >>> iroha_account.interest # 不影响其他对象的同名类属性值
+  0.04
+  >>> print(iroha_account.__dict__) # 可查看当前对象的所有实例属性值
+  {'balance': 2111, 'holder': 'Iroha'}
+  >>> print(kaguya_account.__dict__) 
+  {'balance': 200, 'holder': 'Kaguya', 'interest': 0.08}
+
+  >>> Account.interest = 0.05     # 改变类属性
+  >>> spock_account.interest      # 实例属性发生变化（该实例中没有和类属性同名称的实例属性）
+  0.05
+  >>> kirk_account.interest       # 如果实例中存在和类属性同名的实例属性，则改变类属性，不会影响实例属性
+  0.08
+  ```
+## 继承（Inheritance）
++ 在面向对象编程中，我们常常会发现两个类之间存在一定的关联度（在某些属性上相似），其中一个类往往是另一个类的特殊情况。此时我们就可以利用继承表示它们的关系。
++ 比如，在上面的银行账户例子中，我们可以另外设立一个活期账户类，其每次取款时额外收取一定量手续费，同时利率更低。具体使用形式如下：
+  ```python
+  >>> ch = CheckingAccount('Iroha')
+  >>> ch.interest     # 活期账户设置更低的利率
+  0.01
+  >>> ch.deposit(20)  # 存款方法与Account类相同
+  20
+  >>> ch.withdraw(5)  # 取款增加1美元手续费
+  14
+  ```
+  在OOP术语中，称`Account`为`CheckingAccount`的**基类（base class）**，`CheckingAccount`为`Account`的**子类（subclass）**。
+  > 有时基类也称父类（parent class）或超类（superclass），子类又称孩子类（child class）。
++ 子类继承基类的属性，而在子类的`<suite>`里只会写与基类不同的属性或方法，其他属性或方法默认与基类一致。
++ 继承本身代表了一种is-a关系（即“从一般到特殊”），这和has-a关系（即“从整体到部分”）不同：比如上面的例子中，活期账户 is a 账户的特殊情形，可以用继承实现；而银行 has a 一组账户列表，这就需要用实例属性体现。!!可能比较抽象，理解大概意思即可!!
+### 继承的使用
++ 先给出完整的`Account`类的实现：
+  ```python
+  >>> class Account:
+        """一个余额非零的银行账户"""
+        interest = 0.02
+        def __init__(self, account_holder):
+            self.balance = 0
+            self.holder = account_holder
+        def deposit(self, amount):
+            """向账户中存款，并返回变化后的余额"""
+            self.balance = self.balance + amount
+            return self.balance
+        def withdraw(self, amount):
+            """从账户中取款，并返回变化后的余额"""
+            if amount > self.balance:
+                return 'Insufficient funds'
+            self.balance = self.balance - amount
+            return self.balance
+  ```
++ 然后基于此，我们就可以实现`CheckingAccount`类：
+  ```python
+  >>> class CheckingAccount(Account): # 将基类（或结果为基类的表达式）放在子类后面的括号里
+        """取款会扣除手续费的账户"""
+        withdraw_charge = 1
+        interest = 0.01
+        def withdraw(self, amount):
+            return Account.withdraw(self, amount + self.withdraw_charge)
+  ```
+  这里我们引入了一个新的类属性`withdraw_charge`代表取款手续费，并修改了利率，同时定义新的`withdraw`方法。其他属性与方法和`Account`一样。
++ 在实际使用中，对`CheckingAccount`对象调用`deposit`方法时会先在`CheckingAccount`中查找对应的实例属性（方法），然后查找对应的类属性，最后才会向上查找基类的属性或方法（类似一个递归的过程，直到找到最上级的基类）。
++ 当然，在找到对应的属性（方法）后，其还是会绑定到当前类的实例中，使用当前实例的属性值（而不是基类的属性值）
++ 在上面的例子中，`CheckingAccount`类的`withdraw`方法调用了基类`Account`的`withdraw`方法，只是更改了参数。注意：这里使用`self.withdraw_charge`而不是`CheckingAccount.withdraw_charge`是为了避免当`CheckingAccount`作为基类被继承时使用`withdraw`方法无法直接更改参数（可能有新的`withdraw_charge`）。
+### 对象接口（Object Interface）
++ 在面向对象编程中，不同的类共享相同的属性名称非常常见，此时就可以用对象接口统一表示同名属性与方法的集合。比如，上面的所有帐户类都必须具有采用数值参数的`deposit`和`withdraw`方法，以及`balance`属性。`Account`类和`CheckingAccount`类都实现这一接口。
++ 在python中，接口共享主要通过继承的方式实现，而在其他语言中（如Java），则需要显示声明接口的实现（使用`implements`与`interface`关键字，这会在CS61B中详细介绍）。
++ 另外，在编写代码时，我们倾向于只假设对象的属性，而不假设对象具体属于哪种类，这样可以使代码更加健壮。这可以看成是一种对象抽象。
++ 比如下面这个函数：
+  ```python
+  >>> def deposit_all(winners, amount=5):
+        for account in winners:
+            account.deposit(amount)         # 这里调用的是实例 account 的 deposit 方法
+  ```
+  它不考虑实例`account`属于哪个类，只要求其拥有`deposit`方法（接口），方法的具体实现可以不同。
++ 如果使用特定的类方法，那么就会破坏抽象屏障，导致代码的健壮性减弱：
+  ```python
+  >>> def deposit_all(winners, amount=5):
+        for account in winners:
+            Account.deposit(account, amount)   # 这里调用的是类 Account 中的 deposit 方法
+  ```
+  更多内容将会在之后进行讨论。
+### 多继承（Multiple Inheritance）
++ Python 支持子类从多个基类继承属性，下面同样通过银行账户的例子说明：
++ 假设现在又设置了一种存款账户类`SavingAcccount`，实现如下：
+  ```python
+  >>> class SavingsAccount(Account):
+        deposit_charge = 2 # 账户在存款时收取手续费
+        def deposit(self, amount):
+            return Account.deposit(self, amount - self.deposit_charge)
+  ```
+  现在我们尝试将活期账户与存款账户的方法进行结合，同时将初始存款设为1美元。具体实现如下：
+  ```python
+  >>> class AsSeenOnTVAccount(CheckingAccount, SavingsAccount):
+        def __init__(self, account_holder):
+            self.holder = account_holder
+            self.balance = 1           # 赠送的 1 美元
+  ```
+  这样我们就实现了结合的功能。具体使用如下：
+  ```python
+  >>> such_a_deal = AsSeenOnTVAccount("Yachiyo")
+  >>> such_a_deal.balance
+  1
+  >>> such_a_deal.deposit(20)            # 调用 SavingsAccount 的 deposit 方法，会产生 2 $的存储费用
+  19
+  >>> such_a_deal.withdraw(5)            # 调用 CheckingAccount 的 withdraw 方法，产生 1 $的取款费用。
+  13
+  >>> such_a_deal.deposit_charge
+  2
+  >>> such_a_deal.withdraw_charge
+  1
+  ```
+  上面访问`deposit_charge`与`withdraw_charge`属性都没有歧义。但如果我们访问的属性（方法）在多个类中有相同的名称（如`withdraw`），那程序如何处理呢？
++ 实际上，python会基于从子类到基类，同一类层根据继承时从左到右的顺序进行查询。如查询`withdraw`时，顺序为：`AsSeenOnTVAccount, CheckingAccount, SavingsAccount, Account, object`。
++ 关于继承查找的顺序，不同语言的方案可能不同。python使用[C3 Method Resolution Order (MRO)](https://python-history.blogspot.com/2010/06/method-resolution-order.html)算法来决定查找的顺序。我们也可以对类使用`.mro()`方法确定：
+  ```python
+  >>> [c.__name__ for c in AsSeenOnTVAccount.mro()]
+  ['AsSeenOnTVAccount', 'CheckingAccount', 'SavingsAccount', 'Account', 'object']
+  ```
+## 总结：对象的角色（类与对象的作用）
+> 这里笔者就直接用中译版的内容了!!实则懒得自己写doge!!
++ Python 的对象系统旨在方便和灵活地实现数据抽象和消息传递。类、方法、继承和点表达式的特殊语法都使我们能够在程序中形式化对象的概念，从而提高我们组织大型程序的能力。换句话说，Python 的对象系统提供了一种方便而灵活的方法来创建和操作对象，使程序员能够更好地组织和管理复杂的程序。
++ 程序中的每个对象封装和管理程序状态的某些部分，每个类语句定义实现程序整体逻辑的某些部分的函数，并通过抽象屏障强制设定大型程序不同方面之间的边界。
++ 面向对象编程非常适合用于模拟由独立但相互作用部分构成的系统。例如，不同用户在社交网络中进行交互，不同角色在游戏中进行交互，不同形状的物体在物理模拟中进行交互。在表示这样的系统时，程序中的对象通常可以自然地映射到被建模系统中的对象，而类则代表它们的类型和关系。
++ 另一方面，类可能不是实现某些抽象的最佳机制。函数抽象能更自然地表示输入和输出之间的关系。函数式编程提供了另一种有效地组织程序逻辑的方法，使得程序员能够更好地处理和维护程序。在某些情况下，使用函数式编程方法可能比使用面向对象编程更自然和有效。
++ 学会识别何时引入新类，而不是新函数，以简化或模块化程序，是软件工程中一项重要的设计技能，值得认真关注。

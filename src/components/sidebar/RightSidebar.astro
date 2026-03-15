@@ -1,0 +1,698 @@
+---
+import { getT } from "@/i18n";
+import themeConfig from "@/theme.config";
+import type { CollectionEntry } from "astro:content";
+import { sample } from "es-toolkit/array";
+import SidebarCalendarPlaceholder from "./SidebarCalendarPlaceholder.astro";
+import AnnouncementContent from "@/content/announcement.md";
+
+interface Props {
+  config?: {
+    order?: Array<
+      | "announcement"
+      | "search"
+      | "calendar"
+      | "recentMoments"
+      | "randomPosts"
+      | "tagCloud"
+    >;
+    search?: boolean;
+    calendar?: boolean;
+    recentMoments?: boolean;
+    randomPosts?: boolean;
+    tagCloud?: boolean;
+    announcement?: boolean;
+  };
+  posts?: CollectionEntry<"posts">[];
+  moments?: CollectionEntry<"moments">[];
+  tagCloudItems?: Array<{
+    name: string;
+    count: number;
+    fontSize: number;
+    color: string;
+    href: string;
+  }>;
+}
+
+const {
+  config = {},
+  posts = [],
+  moments = [],
+  tagCloudItems = [],
+} = Astro.props;
+
+const locale = (themeConfig.locale as "zh-CN" | "en") || "zh-CN";
+const t = getT(locale);
+
+const showSearch = config.search === true;
+const showCalendar = config.calendar !== false;
+const showRecentMoments = config.recentMoments === true;
+const showRandomPosts = config.randomPosts === true;
+const showTagCloud = config.tagCloud === true;
+const showAnnouncement = config.announcement === true;
+
+const defaultCardOrder = [
+  "announcement",
+  "search",
+  "calendar",
+  "recentMoments",
+  "randomPosts",
+  "tagCloud",
+] as const;
+type RightSidebarCardKey = (typeof defaultCardOrder)[number];
+
+const configuredCardOrder = Array.isArray(config.order) ? config.order : [];
+const normalizedCardOrder = [
+  ...configuredCardOrder.filter(
+    (key, index, array) =>
+      defaultCardOrder.includes(key as RightSidebarCardKey) &&
+      array.indexOf(key) === index,
+  ),
+  ...defaultCardOrder.filter((key) => !configuredCardOrder.includes(key)),
+];
+
+const latestMoments = moments.slice(0, 1).map((moment) => ({
+  id: moment.id,
+  href: "/moments/",
+  date: moment.data.date,
+  excerpt: String(moment.body || "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim(),
+}));
+
+const sampledPost = showRandomPosts ? sample(posts) : undefined;
+const shuffledPosts = sampledPost
+  ? [
+      {
+        id: sampledPost.id,
+        href: `/posts/${sampledPost.id}/`,
+        title: sampledPost.data.title,
+        description:
+          sampledPost.data.description || String(sampledPost.body || ""),
+      },
+    ]
+  : [];
+
+function formatMomentDate(date: Date): string {
+  return date.toLocaleDateString(locale, {
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength)}...`;
+}
+
+const hasSearchContent = showSearch;
+const hasCalendarContent = showCalendar;
+const hasRecentMomentsContent = showRecentMoments && latestMoments.length > 0;
+const hasRandomPostsContent = showRandomPosts && shuffledPosts.length > 0;
+const hasTagCloudContent = showTagCloud && tagCloudItems.length > 0;
+const hasAnnouncementContent = showAnnouncement;
+const hasRenderedContent =
+  hasAnnouncementContent ||
+  hasSearchContent ||
+  hasCalendarContent ||
+  hasRecentMomentsContent ||
+  hasRandomPostsContent ||
+  hasTagCloudContent;
+---
+
+<aside
+  class="layout-extra-column"
+  aria-label="secondary sidebar"
+  data-extra-sidebar
+>
+  <div class="layout-extra-column__inner">
+    {
+      normalizedCardOrder.map((cardKey) => {
+        if (cardKey === "announcement" && hasAnnouncementContent) {
+          return (
+            <section class="extra-card">
+              <div class="extra-card__head">
+                <div>
+                  <p class="extra-card__eyebrow">
+                    {t("sidebar.announcement.subtitle")}
+                  </p>
+                  <h3>{t("sidebar.announcement.title")}</h3>
+                </div>
+                <span class="extra-card__icon i-ri-megaphone-line" />
+              </div>
+
+              <div class="extra-markdown">
+                <AnnouncementContent />
+              </div>
+            </section>
+          );
+        }
+
+        if (cardKey === "search" && hasSearchContent) {
+          return (
+            <section class="extra-card">
+              <div class="extra-card__head">
+                <div>
+                  <p class="extra-card__eyebrow">
+                    {t("sidebar.search.subtitle")}
+                  </p>
+                  <h3>{t("sidebar.search.title")}</h3>
+                </div>
+                <span class="extra-card__icon i-ri-search-line" />
+              </div>
+
+              <button
+                type="button"
+                class="extra-search-trigger"
+                data-open-global-search
+              >
+                <span class="extra-search-trigger__text">
+                  {t("sidebar.search.action")}
+                </span>
+                <span class="extra-search-trigger__icon i-ri-arrow-right-line" />
+              </button>
+            </section>
+          );
+        }
+
+        if (cardKey === "calendar" && hasCalendarContent) {
+          return <SidebarCalendarPlaceholder />;
+        }
+
+        if (cardKey === "recentMoments" && hasRecentMomentsContent) {
+          return (
+            <section class="extra-card">
+              <div class="extra-card__head">
+                <div>
+                  <p class="extra-card__eyebrow">
+                    {t("sidebar.moments.subtitle")}
+                  </p>
+                  <h3>{t("sidebar.moments.title")}</h3>
+                </div>
+                <span class="extra-card__icon i-ri-chat-quote-line" />
+              </div>
+
+              <ul class="extra-list">
+                {latestMoments.map((moment) => (
+                  <li class="extra-list__item">
+                    <a href={moment.href} class="extra-list__link">
+                      <span class="extra-list__meta">
+                        {formatMomentDate(moment.date)}
+                      </span>
+                      <span class="extra-list__title">
+                        {truncateText(
+                          moment.excerpt || t("moments.noContent"),
+                          38,
+                        )}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        }
+
+        if (cardKey === "randomPosts" && hasRandomPostsContent) {
+          return (
+            <section class="extra-card">
+              <div class="extra-card__head">
+                <div>
+                  <p class="extra-card__eyebrow">
+                    {t("sidebar.randomPosts.subtitle")}
+                  </p>
+                  <h3>{t("sidebar.randomPosts.title")}</h3>
+                </div>
+                <span class="extra-card__icon i-ri-shuffle-line" />
+              </div>
+
+              <ul class="extra-list">
+                {shuffledPosts.map((post) => (
+                  <li class="extra-list__item">
+                    <a href={post.href} class="extra-list__link">
+                      <span class="extra-list__title">
+                        {truncateText(post.title, 26)}
+                      </span>
+                      <span class="extra-list__desc">
+                        {truncateText(post.description, 42)}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        }
+
+        if (cardKey === "tagCloud" && hasTagCloudContent) {
+          return (
+            <section class="extra-card">
+              <div class="extra-card__head">
+                <div>
+                  <p class="extra-card__eyebrow">
+                    {t("sidebar.tagCloud.subtitle")}
+                  </p>
+                  <h3>{t("sidebar.tagCloud.title")}</h3>
+                </div>
+                <span class="extra-card__icon i-ri-price-tag-3-line" />
+              </div>
+
+              <div class="extra-tag-cloud">
+                {tagCloudItems.map((tag) => (
+                  <a
+                    href={tag.href}
+                    class="extra-tag-cloud__item"
+                    style={`font-size: ${tag.fontSize}px; color: ${tag.color};`}
+                    title={`${tag.name} (${tag.count})`}
+                  >
+                    #{tag.name}
+                  </a>
+                ))}
+              </div>
+
+              <a href="/tags/" class="extra-card__footer-link">
+                {t("sidebar.tagCloud.browseAll")}
+              </a>
+            </section>
+          );
+        }
+
+        return null;
+      })
+    }
+
+    {
+      !hasRenderedContent && (
+        <section class="extra-empty-card">
+          <div class="extra-empty-card__head">
+            <div>
+              <p class="extra-empty-card__eyebrow">
+                {t("sidebar.extra.subtitle")}
+              </p>
+              <h3>{t("sidebar.extra.title")}</h3>
+            </div>
+            <span class="extra-empty-card__icon i-ri-layout-right-2-line" />
+          </div>
+          <p class="extra-empty-card__text">{t("sidebar.extra.empty")}</p>
+        </section>
+      )
+    }
+  </div>
+</aside>
+
+<script is:inline>
+  (() => {
+    const registryKey = "__hyacineRightSidebarAffix";
+    const previous = window[registryKey];
+
+    if (previous?.cleanup) {
+      previous.cleanup();
+    }
+
+    const roots = Array.from(document.querySelectorAll("[data-extra-sidebar]"));
+    const searchTriggers = Array.from(
+      document.querySelectorAll("[data-open-global-search]"),
+    );
+    const rootEntries = roots
+      .map((root) => {
+        const inner = root.querySelector(".layout-extra-column__inner");
+
+        if (!(inner instanceof HTMLElement)) {
+          return null;
+        }
+
+        return { root, inner };
+      })
+      .filter((entry) => entry !== null);
+
+    if (roots.length === 0) {
+      return;
+    }
+
+    const headerElements = [
+      document.querySelector("#imgs"),
+      document.querySelector("#nav"),
+      document.querySelector("#waves"),
+    ].filter((element) => element instanceof HTMLElement);
+
+    const computeHeaderHeight = () => {
+      let headerHeight = 0;
+
+      headerElements.forEach((element) => {
+        headerHeight += element.offsetHeight;
+      });
+
+      return headerHeight;
+    };
+
+    let cachedHeaderHeight = computeHeaderHeight();
+    let frameId = 0;
+
+    const sync = () => {
+      frameId = 0;
+
+      const shouldAffix =
+        window.scrollY > cachedHeaderHeight - 260 && window.innerWidth >= 1440;
+
+      rootEntries.forEach(({ root, inner }) => {
+        root.classList.toggle("affix", shouldAffix);
+
+        if (!shouldAffix) {
+          if (root.style.minHeight) {
+            root.style.minHeight = "";
+          }
+
+          return;
+        }
+
+        const nextMinHeight = `${inner.offsetHeight}px`;
+        if (root.style.minHeight !== nextMinHeight) {
+          root.style.minHeight = nextMinHeight;
+        }
+      });
+    };
+
+    const scheduleSync = () => {
+      if (frameId !== 0) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(sync);
+    };
+
+    const refreshHeaderHeight = () => {
+      cachedHeaderHeight = computeHeaderHeight();
+      scheduleSync();
+    };
+
+    const resizeObserver =
+      typeof ResizeObserver === "function"
+        ? new ResizeObserver((entries) => {
+            const shouldRefreshHeaderHeight = entries.some((entry) =>
+              headerElements.includes(entry.target),
+            );
+
+            if (shouldRefreshHeaderHeight) {
+              refreshHeaderHeight();
+              return;
+            }
+
+            scheduleSync();
+          })
+        : undefined;
+
+    headerElements.forEach((element) => {
+      resizeObserver?.observe(element);
+    });
+    rootEntries.forEach(({ inner }) => {
+      resizeObserver?.observe(inner);
+    });
+
+    const onScroll = () => scheduleSync();
+    const onResize = () => refreshHeaderHeight();
+    const onSearchOpen = () => {
+      const searchButton = document.querySelector("#search");
+
+      if (searchButton instanceof HTMLElement) {
+        searchButton.click();
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    searchTriggers.forEach((trigger) => {
+      trigger.addEventListener("click", onSearchOpen);
+    });
+    scheduleSync();
+
+    window[registryKey] = {
+      cleanup() {
+        if (frameId !== 0) {
+          window.cancelAnimationFrame(frameId);
+        }
+
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onResize);
+        resizeObserver?.disconnect();
+        searchTriggers.forEach((trigger) => {
+          trigger.removeEventListener("click", onSearchOpen);
+        });
+      },
+    };
+  })();
+</script>
+
+<style>
+  .layout-extra-column__inner {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .extra-card,
+  .extra-empty-card {
+    background:
+      linear-gradient(180deg, var(--grey-0) 0%, var(--grey-1) 100%) no-repeat,
+      var(--grey-0);
+    border: 0.0625rem solid var(--grey-3);
+    border-radius: 1rem;
+    box-shadow: 0 1rem 1.75rem -1.25rem var(--box-bg-shadow);
+    overflow: hidden;
+    padding: 1rem;
+  }
+
+  .extra-card__head,
+  .extra-empty-card__head {
+    align-items: flex-start;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    margin-bottom: 0.875rem;
+  }
+
+  .extra-card__eyebrow,
+  .extra-empty-card__eyebrow {
+    color: var(--grey-5);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .extra-card h3,
+  .extra-empty-card h3 {
+    color: var(--grey-8);
+    font-size: 1.125rem;
+    margin: 0;
+  }
+
+  .extra-card__icon,
+  .extra-empty-card__icon {
+    align-items: center;
+    background: var(--nav-bg);
+    border-radius: 999px;
+    color: var(--grey-8);
+    display: inline-flex;
+    font-size: 1rem;
+    justify-content: center;
+    min-height: 2rem;
+    min-width: 2rem;
+  }
+
+  .extra-list {
+    display: grid;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .extra-list__item + .extra-list__item {
+    border-top: 0.0625rem dashed var(--grey-3);
+  }
+
+  .extra-list__link {
+    color: inherit;
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.65rem 0;
+    text-decoration: none;
+    transition:
+      transform 0.25s ease,
+      color 0.25s ease;
+  }
+
+  .extra-list__link:hover {
+    color: var(--color-pink);
+    transform: translateX(0.2rem);
+  }
+
+  .extra-list__meta {
+    color: var(--color-orange);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .extra-list__title {
+    color: var(--grey-7);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .extra-list__desc {
+    color: var(--grey-5);
+    font-size: 0.75rem;
+    line-height: 1.65;
+  }
+
+  .extra-search-trigger {
+    align-items: center;
+    background: linear-gradient(135deg, var(--nav-bg), var(--grey-0));
+    border: 0.0625rem solid var(--grey-3);
+    border-radius: 0.85rem;
+    color: var(--grey-7);
+    cursor: pointer;
+    display: flex;
+    font: inherit;
+    justify-content: space-between;
+    padding: 0.85rem 0.95rem;
+    transition:
+      border-color 0.25s ease,
+      color 0.25s ease,
+      transform 0.25s ease;
+    width: 100%;
+  }
+
+  .extra-search-trigger:hover {
+    border-color: var(--color-pink);
+    color: var(--color-pink);
+    transform: translateY(-0.0625rem);
+  }
+
+  .extra-search-trigger__text {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .extra-search-trigger__icon {
+    font-size: 1rem;
+  }
+
+  .extra-search-hint {
+    color: var(--grey-5);
+    font-size: 0.75rem;
+    line-height: 1.7;
+    margin: 0.75rem 0 0;
+  }
+
+  .extra-tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .extra-tag-cloud__item {
+    align-items: center;
+    background: color-mix(in srgb, var(--grey-0) 82%, transparent);
+    border: 0.0625rem solid var(--grey-2);
+    border-radius: 999px;
+    display: inline-flex;
+    line-height: 1.2;
+    max-width: 100%;
+    padding: 0.35rem 0.65rem;
+    text-decoration: none;
+    transition:
+      border-color 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .extra-tag-cloud__item:hover {
+    border-color: currentColor;
+    transform: translateY(-0.0625rem);
+  }
+
+  .extra-card__footer-link {
+    color: var(--color-blue);
+    display: inline-flex;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+
+  .extra-card__footer-link:hover {
+    color: var(--color-pink);
+  }
+
+  .extra-markdown {
+    color: var(--grey-6);
+    font-size: 0.825rem;
+    line-height: 1.75;
+  }
+
+  .extra-markdown :global(p) {
+    margin: 0 0 0.75rem;
+  }
+
+  .extra-markdown :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .extra-markdown :global(ul) {
+    margin: 0;
+    padding-left: 1.15rem;
+  }
+
+  .extra-markdown :global(li) {
+    margin: 0.45rem 0;
+  }
+
+  .extra-markdown :global(li::marker) {
+    color: var(--color-blue);
+  }
+
+  .extra-markdown :global(strong) {
+    color: var(--grey-7);
+  }
+  .extra-empty-card__text {
+    color: var(--grey-5);
+    font-size: 0.875rem;
+    line-height: 1.9;
+    margin: 0;
+    padding-top: 0.875rem;
+    position: relative;
+  }
+
+  .extra-empty-card__text::before {
+    background: linear-gradient(90deg, var(--grey-3) 0%, var(--grey-1-a0) 100%);
+    content: "";
+    height: 0.0625rem;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  :global(:root[data-theme="dark"]) .extra-empty-card {
+    box-shadow: var(--shadow-dark-elevated);
+  }
+
+  :global(:root[data-theme="dark"]) .extra-card {
+    box-shadow: var(--shadow-dark-elevated);
+  }
+
+  :global(:root[data-theme="dark"]) .extra-card__icon,
+  :global(:root[data-theme="dark"]) .extra-empty-card__icon {
+    color: var(--grey-9);
+  }
+
+  :global(:root[data-theme="dark"]) .extra-list__title {
+    color: var(--grey-7);
+  }
+</style>

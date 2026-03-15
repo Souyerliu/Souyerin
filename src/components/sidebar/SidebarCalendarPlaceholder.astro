@@ -1,0 +1,183 @@
+---
+import { getT } from "@/i18n";
+import themeConfig from "@/theme.config";
+
+const locale = (themeConfig.locale as "zh-CN" | "en") || "zh-CN";
+const t = getT(locale);
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const today = now.getDate();
+const monthStart = new Date(year, month, 1);
+const firstWeekday =
+  locale === "zh-CN" ? (monthStart.getDay() + 6) % 7 : monthStart.getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+const weekdayBase =
+  locale === "zh-CN" ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
+const weekdayFormatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+const weekdays = weekdayBase.map((day) => {
+  // 2026-02-01 是星期日，这里仅用于 Intl.DateTimeFormat weekday 本地化格式化，
+  // 与实际日历渲染的 year/month 无关
+  const date = new Date(2026, 2, 1 + ((day + 7) % 7));
+  return weekdayFormatter.format(date);
+});
+
+const cells: Array<{ day: number | null; isToday: boolean }> = [];
+
+for (let index = 0; index < firstWeekday; index += 1) {
+  cells.push({ day: null, isToday: false });
+}
+
+for (let day = 1; day <= daysInMonth; day += 1) {
+  cells.push({
+    day,
+    isToday: day === today,
+  });
+}
+
+while (cells.length % 7 !== 0) {
+  cells.push({ day: null, isToday: false });
+}
+
+const monthLabel = new Intl.DateTimeFormat(locale, {
+  year: "numeric",
+  month: "long",
+}).format(monthStart);
+---
+
+<section class="calendar-card">
+  <div class="card-head">
+    <h3>{t("sidebar.calendar.title")}</h3>
+    <span class="badge">{monthLabel}</span>
+  </div>
+
+  <div class="calendar-grid" aria-hidden="true">
+    {weekdays.map((label) => <span class="weekday">{label}</span>)}
+    {
+      cells.map(({ day, isToday }) => (
+        <span class:list={["date", { today: isToday, empty: day === null }]}>
+          {day ?? ""}
+        </span>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .calendar-card {
+    background:
+      linear-gradient(180deg, var(--grey-0) 0%, var(--grey-1) 100%) no-repeat,
+      var(--grey-0);
+    border: 0.0625rem solid var(--grey-3);
+    border-radius: 1rem;
+    box-shadow: 0 1rem 1.75rem -1.25rem var(--box-bg-shadow);
+    overflow: hidden;
+    padding: 0.875rem;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .calendar-card:hover {
+    border-color: var(--color-pink-a3);
+    box-shadow: 0 1.25rem 2.25rem -1.5rem var(--box-bg-shadow);
+    transform: translateY(-0.1875rem);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  h3 {
+    color: var(--grey-8);
+    font-size: 1.125rem;
+    margin: 0;
+  }
+
+  .badge {
+    background: var(--nav-bg);
+    border-radius: 999px;
+    color: var(--grey-7);
+    display: inline-flex;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.45rem 0.7rem;
+    white-space: nowrap;
+  }
+
+  .calendar-grid {
+    display: grid;
+    gap: 0.25rem;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    margin-bottom: 0.75rem;
+  }
+
+  .weekday,
+  .date {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  .weekday {
+    color: var(--grey-5);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-height: 1.45rem;
+  }
+
+  .date {
+    background: var(--grey-2-a0);
+    border: 0.0625rem solid var(--grey-3);
+    border-radius: 0.65rem;
+    color: var(--grey-6);
+    font-size: 0.8125rem;
+    min-height: 1.9rem;
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .date:not(.empty):hover {
+    border-color: var(--color-pink-a3);
+    color: var(--grey-8);
+    transform: translateY(-0.0625rem);
+  }
+
+  .date.today {
+    background: linear-gradient(
+      to right,
+      var(--color-pink) 0,
+      var(--color-orange) 100%
+    );
+    border-color: transparent;
+    color: var(--grey-0);
+    font-weight: 700;
+  }
+
+  .date.empty {
+    border-style: dashed;
+    opacity: 0.35;
+  }
+
+  :global(:root[data-theme="dark"]) .calendar-card {
+    box-shadow: var(--shadow-dark-elevated);
+  }
+
+  :global(:root[data-theme="dark"]) .date.today,
+  :global(:root[data-theme="dark"]) .badge {
+    color: var(--grey-9);
+  }
+
+  :global(:root[data-theme="dark"]) .date.today {
+    color: var(--grey-0);
+  }
+</style>
