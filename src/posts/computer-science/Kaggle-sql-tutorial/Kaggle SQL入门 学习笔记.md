@@ -1,7 +1,7 @@
 ---
 title: Kaggle SQL入门 学习笔记
 date: 2025-10-15 13:44:52
-categories: [计算机科学,Kaggle-sql-tutorial]
+categories: [计算机科学,KaggleSQL]
 tags:
  - SQL
  - BigQuery

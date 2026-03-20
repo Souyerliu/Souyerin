@@ -1,0 +1,290 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import themeConfig from "@/theme.config";
+import Layout from "@/layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const pageTitle = "关于";
+// ✅ 获取所有文章（排除 draft）
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+// ✅ 根据分类统计文章数量
+function countByCategory(category) {
+  return posts.filter(p =>
+    p.data.categories?.includes(category)
+  ).length;
+}
+
+// ✅ 你的学习计划（只需要维护 total）
+const plans = [
+  { name: "人工智能导论", category: "人工智能导论", total: 20 },
+
+  {
+    name: "UCB课程",
+    children: [
+      { name: "CS 70", category: "CS70", total: 9 },
+      { name: "CS 61A", category: "CS61A", total: 30 },
+      { name: "CS 61B", category: "CS61B", total: 30 },
+      { name: "DATA 8", category: "DATA8", total: 30 },
+      { name: "DATA 100", category: "DATA100", total: 30 },
+      { name: "DATA 140", category: "DATA140", total: 30 },
+      { name: "DATA 102", category: "DATA102", total: 30 },
+      { name: "STAT 33B", category: "STAT33B", total: 30 },
+      { name: "EECS 127", category: "EECS127", total: 30 },
+      { name: "CS 189", category: "CS189", total: 30 },
+    ],
+  },
+
+  { name: "统计学习方法", category: "统计学习方法", total: 30 },
+  { name: "Kaggle SQL", category: "KaggleSQL", total: 2 },
+];
+
+// ✅ 计算单个进度
+function calc(plan) {
+  const done = countByCategory(plan.category);
+  const progress = plan.total > 0 ? done / plan.total : 0;
+  return { done, progress };
+}
+
+// ✅ 总进度
+let totalDone = 0;
+let totalCount = 0;
+
+plans.forEach(plan => {
+  const done = countByCategory(plan.category);
+  totalDone += done;
+  totalCount += plan.total;
+});
+
+const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
+---
+
+<Layout pageTitle={pageTitle}>
+  <div class="wrap about-page">
+
+    <!-- 头部 -->
+    <div class="about-header">
+      <h2>{pageTitle}</h2>
+    </div>
+
+    <!-- 卡片区域 -->
+    <div class="about-grid">
+      <!-- 简介卡片 -->
+      <section class="about-card">
+        <h3>关于Souyer</h3>
+        <ul>
+          <li>我是一名ECNU的统计学-计算机本科生，目前大二。 </li>  
+          <li>正在学习概率统计，数据分析，机器学习，以及各种算法。</del>
+        </ul>
+      </section>
+
+      <!-- 兴趣卡片 -->
+      <section class="about-card">
+        <h3>兴趣</h3>
+        <ul>
+          <li>喜欢电子音乐（主推trance，bass music和日式电子）以及ACG Music</li>
+          <li>F1（入坑第三年，无主推）</li>
+          <li>lovelive，邦多利，少女歌剧等<del>木柜子企划</del>
+          <li>sakanaction</li>
+          <li>……</li>
+        </ul>
+      </section>
+
+
+      <section class="about-card">
+        <h3>目前更新计划与进度 </h3>
+
+        {plans.map(plan => {
+
+          // 👉 普通项
+          if (!plan.children) {
+            const { done, progress } = calc(plan);
+            const percent = Math.round(progress * 100);
+
+            return (
+              <div class="plan-item">
+                <div class="plan-title">
+                  {progress === 1 ? "✅" : "📘"} {plan.name}
+                  <span>{done}/{plan.total} · {percent}%</span>
+                </div>
+
+                <div class="progress-bar">
+                  <div
+                    class={progress === 1 ? "done" : ""}
+                    style={`width: ${percent}%`}
+                  ></div>
+                </div>
+              </div>
+            );
+          }
+
+          // 👉 分组（UCB）
+          return (
+            <div class="plan-group">
+              <div class="group-title">📚 {plan.name}</div>
+
+              {plan.children.map(sub => {
+                const { done, progress } = calc(sub);
+                const percent = Math.round(progress * 100);
+
+                return (
+                  <div class="plan-item sub">
+                    <div class="plan-title">
+                      {progress === 1 ? "✅" : "📖"} {sub.name}
+                      <span>{done}/{sub.total} · {percent}%</span>
+                    </div>
+
+                    <div class="progress-bar small">
+                      <div
+                        class={progress === 1 ? "done" : ""}
+                        style={`width: ${percent}%`}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </section>
+
+      <!-- 联系方式 -->
+      <section class="about-card">
+        <h3>联系我</h3>
+        <ul>
+          <li>
+            QQ：
+            <a href="https://qm.qq.com/q/pIE4iZHFe2" target="_blank" rel="noopener noreferrer">
+              491633539
+            </a>
+          </li>
+          <li>
+            Email：zsy142857@126.com
+          </li>
+          <li>欢迎与我交流~</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .about-page {
+    padding: 1.5rem 1.75rem 2.5rem;
+  }
+
+  .about-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .about-header h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.75rem;
+    color: var(--grey-7);
+  }
+
+  .about-header p {
+    margin: 0;
+    color: var(--grey-6);
+  }
+
+  /* 网格布局 */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  /* 卡片 */
+  .about-card {
+    padding: 1.2rem;
+    border-radius: 0.9rem;
+    background: linear-gradient(135deg, var(--grey-0), var(--grey-1));
+    border: 1px solid var(--grey-2);
+    box-shadow: 0 0.6rem 1.2rem var(--box-bg-shadow);
+  }
+
+  .about-card h3 {
+    margin: 0 0 0.6rem;
+    color: var(--grey-7);
+  }
+
+  .about-card p,
+  .about-card li {
+    color: var(--grey-6);
+    line-height: 1.6;
+  }
+  .about-card:hover {
+    transform: translateY(-4px);
+    transition: 0.2s;
+  }
+
+  .about-card a {
+    color: var(--color-pink);
+    text-decoration: none;
+  }
+
+  .about-card a:hover {
+    text-decoration: underline;
+  }
+
+  /* 进度条容器 */
+  .progress-bar {
+    height: 10px;
+    background: var(--grey-2);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0.4rem 0 0.8rem;
+  }
+
+  /* 进度条本体 */
+  .progress-bar div {
+    height: 100%;
+    background: linear-gradient(90deg, #ed6faa, #fc7b44);
+    transition: width 0.4s ease;
+  }
+
+  /* 完成态（100%） */
+  .progress-bar div.done {
+    background: linear-gradient(90deg, #43e97b, #38f9d7);
+  }
+
+  /* 小进度条（子项） */
+  .progress-bar.small {
+    height: 6px;
+  }
+
+  /* 每一项 */
+  .plan-item {
+    margin-bottom: 1rem;
+  }
+
+  /* 子项缩进（模拟 Tab） */
+  .plan-item.sub {
+    margin-left: 1rem;
+    padding-left: 0.8rem;
+    border-left: 2px solid var(--grey-3);
+  }
+
+  /* 标题 */
+  .plan-title {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    color: var(--grey-6);
+  }
+
+  /* 分组标题 */
+  .group-title {
+    margin: 1rem 0 0.5rem;
+    font-weight: bold;
+    color: var(--grey-7);
+  }
+
+  
+  @media (max-width: 768px) {
+    .about-page {
+      padding: 1.25rem 1rem 2rem;
+    }
+  }
+</style>

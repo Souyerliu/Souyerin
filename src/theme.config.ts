@@ -45,6 +45,11 @@ export default defineConfig({
       href: "/moments/",
       icon: "i-ri-chat-quote-line",
     },
+    {
+      text: "关于",
+      href: "/about/",
+      icon: "i-ri-user-line",
+    },
   ],
   brand: {
     title: "Souyer's Blog",

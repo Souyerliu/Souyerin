@@ -13,7 +13,7 @@ cover: ./随机过程-思考题集/folder.png
 本系列题集将在本学期长期更新，收集老师课上布置的部分课堂习题及“黑脸”（难度较大的）作业题。
 1. 设$X_1,X_2,X_3$是独立同分布的随机变量，都服从正态分布$N(1,1)$，令$Z=X_1+X_2-X_3,W=2X_1-X_2+X_3$.   
    （1）求$P(Z>W)$（用标准正态分布的分布函数$\Phi$表示）
-   <details class="mdx-collapse primary" style="--note-border: oklch(0.68 0.16 240);--note-bg: oklch(0.95 0.03 240);--note-text: oklch(0.45 0.12 240);--note-hover: oklch(0.6 0.15 240);">
+   <details class="mdx-collapse primary">
    <summary class="mdx-collapse__summary">点击查看答案</summary>
    <div class="mdx-collapse__content">
    将$Z,W$用$X_1,X_2,X_3$表示，即求$P(X_1-2X_2+2X_3\lt 0)$。又因为$X_1,X_2,X_3$均为正态分布且独立同分布，故$X_1-2X_2+2X_3\sim N(1,9)$。
@@ -147,5 +147,74 @@ cover: ./随机过程-思考题集/folder.png
    对关于$r$的函数$\dfrac{r}{n}\ln\dfrac{n}{r}$求导，得极大值为$\dfrac{1}{e}$，当且仅当$r=\dfrac{n}{e}$，即先拒绝前$\dfrac{1}{e}\approx 37\%$的候选人。   
    > 关于为什么这个策略是最优的，这里给出两个链接：[算法趣谈(1)——秘书问题与37\%法则](https://qi-zhan.github.io/blog/2023/algorithm0/)，[秘书问题——知乎](https://zhuanlan.zhihu.com/p/662370126)，涉及到动态规划的知识，在此不赘述。<Spoiler title="你知道的太多了">实则我也没大理解ww</Spoiler>
 
+   </div>
+   </details>
+
+6. 一个算法的伪代码如下：
+   ```
+   Initialize T in {1,2,...,10} uniformly, S=0
+   While T<6
+      For k in {1,2,...,T}
+         S=S+k
+      EndFor
+      Take T in {1,2,...,10} uniformly
+   EndWhile
+   Print S
+   ```
+   问：  
+   （1）若第6行被注释掉，最后输出的S值平均是多少?
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+
+   </div>
+   </details>
+   （2）若第6行没有被注释掉，最后输出的S值平均是多少?
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+
+   </div>
+   </details>
+
+7. 设仪器寿命服从参数为$\lambda$的指数分布，假定仪器损坏后能及时更换新仪器，而且仪器之间的寿命相互没有影响。   
+   那么从某个仪器装上后开始算，长为$t$的时间内更换的仪器数量的平均数是多少？
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+
+   </div>
+   </details>
+
+8. 已知$(X,Y)\sim N(0,0;1,1;\rho)$，求$E(Y|X)$。
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+   
+   </div>
+   </details>
+
+9. （Sanov）不等式：假设$X_1,X_2,\cdots,X_m$是取值在$[0,1]$区间上的独立同分布随机变量，记$E\left(X_i\right)=p$.  
+   证明：对任意$q\in[0,1]$，
+   $$
+   P(\frac{1}{m}\sum_{i=1}^{m}X_i\geq q)\leq e^{-mD(q||p)}
+   $$
+   其中$D(q||p)=q\log\frac{q}{p}+(1-q)\log\frac{1-q}{1-p}$.
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+   
+   </div>
+   </details>
+
+10. (Chernoff bound) 若随机变量X满足：对任意$b\geq s\geq 0$，$\phi\left(s\right)=E\left(e^{sX}\right)< +\infty$.   
+   证明：对任意$x>0$，
+   $$
+   P\left(X>x\right)\le\inf_{0\le s\le b}{e^{-sx}\phi\left(s\right)}
+   $$
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+   
    </div>
    </details>
