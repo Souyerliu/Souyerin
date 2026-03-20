@@ -132,7 +132,7 @@ def extended_gcd(x,y):
   + 设$x,y,z\in\mathbb{Z^+}$且$\operatorname*{gcd}(x,y)=1$，那么如果$x\mid yz$，则$x\mid z$。
   + 简单证明：因为$\operatorname*{gcd}(x,y)=1$，所以存在整数$a,b$，满足$ax+by=1$。两边乘以$z$得$axz+byz=z$，因为$x\mid axz$，$x\mid byz$（因为$x\mid yz$），所以$x\mid axz+byz=z$。
 + 有了这个引理，既可以对算术基本定理进行证明：
-  + 在[归纳法例4](/2025/10/06/computer-science/CS70/CS70-Chapter-3/#%E4%BE%8B4)中，我们已经证明了任意大于$1$的整数$n$都可以表示为一个或多个质数的乘积$p_1p_2\cdots p_k$。那么，就只需要证明这一序列在对质因子进行排序后唯一即可。（用数学语言描述即为：如果$n=p_1p_2\cdots p_k=q_1q_2\cdots q_l$，$p_i,q_j(1\leq i\leq k,1\leq j\leq l)$均为质数，那么$k=l$，且$\{p_i\}$与$\{q_j\}$仅顺序不同）
+  + 在[归纳法例4](/posts/computer-science/cs70/cs70-chapter-3/#例4)中，我们已经证明了任意大于$1$的整数$n$都可以表示为一个或多个质数的乘积$p_1p_2\cdots p_k$。那么，就只需要证明这一序列在对质因子进行排序后唯一即可。（用数学语言描述即为：如果$n=p_1p_2\cdots p_k=q_1q_2\cdots q_l$，$p_i,q_j(1\leq i\leq k,1\leq j\leq l)$均为质数，那么$k=l$，且$\{p_i\}$与$\{q_j\}$仅顺序不同）
   + 下面给出具体证明：
   + 对于$p_1$，因为$p_1\mid n$，所以$p_1\mid q_1q_2\cdots q_l$，又因为$p_1,q_1,\cdots,q_l$均为质数，所以$p_1$一定等于$q_1,q_2,\cdots,q_l$的其中之一（设为$q_{j1}$）。于是将等式$p_1p_2\cdots p_k=q_1q_2\cdots q_l$两边各除去$p_1$和对应的$q_{j1}$。
   + 以此类推，可以得到$p_2,p_3,\cdots,p_k$对应的$q_{ji}$项。最终左式除到$1$，此时右式还剩下$l-k$项。又因为质数均大于$1$，所以只有当$l-k=0$，即$l=k$时等式成立。再由先前已经建立的$p_i$与$q_j$一一对应，命题得证。

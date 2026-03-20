@@ -1,0 +1,151 @@
+---
+title: 随机过程 思考题集
+date: 2026-03-08 23:01:55
+categories: [数学,随机过程] 
+tags: 
+ - 概率论
+ - 随机过程
+
+cover: ./随机过程-思考题集/folder.png
+---
+
+
+本系列题集将在本学期长期更新，收集老师课上布置的部分课堂习题及“黑脸”（难度较大的）作业题。
+1. 设$X_1,X_2,X_3$是独立同分布的随机变量，都服从正态分布$N(1,1)$，令$Z=X_1+X_2-X_3,W=2X_1-X_2+X_3$.   
+   （1）求$P(Z>W)$（用标准正态分布的分布函数$\Phi$表示）
+   <details class="mdx-collapse primary" style="--note-border: oklch(0.68 0.16 240);--note-bg: oklch(0.95 0.03 240);--note-text: oklch(0.45 0.12 240);--note-hover: oklch(0.6 0.15 240);">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+   将$Z,W$用$X_1,X_2,X_3$表示，即求$P(X_1-2X_2+2X_3\lt 0)$。又因为$X_1,X_2,X_3$均为正态分布且独立同分布，故$X_1-2X_2+2X_3\sim N(1,9)$。
+   所以设$X_1-2X_2+2X_3=Y$，则$\frac{Y-1}{3}\sim N(0,1)$，故
+      $$
+      P(Y< 0)=P\left(\frac{Y-1}{3}< -\frac{1}{3}\right)=1-\Phi\left(\frac{1}{3}\right)
+      $$
+   </div>
+   </details>
+   
+   （2）验证随机变量$Z$和$W$是独立的。
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+      证明：因为
+      $$
+      \mathrm{Cov}(Z,W)=\mathrm{Cov}(X_1+X_2-X_3,2X_1-X_2+X_3)=2\mathrm{Var}X_1-\mathrm{Var}X_2-\mathrm{Var}X_3=0
+      $$
+      所以$\mathrm{Corr}(Z,W)=0$，$Z$与$W$不相关。又因为$Z$和$W$均服从一维正态分布，所以由不相关可以推出独立。  
+   </div>
+   </details>
+
+
+2. 甲、乙、丙三人在玩下面的游戏。每个人开始时都有且仅有$1$元钱。每$6$秒钟就会响铃，铃响时每个有钱的玩家随机选择另外两名玩家中的一名并给予该玩家$1$元（例如：甲和乙可能会同时决定给丙，丙可能会决定把她的钱给甲，这样第一轮游戏结束时丙$2$元，甲$1$元，乙$0$元。在第二轮比赛中，乙没有钱给，但甲和丙可能会选择对方，那么在第二轮游戏结束时仍然是丙$2$元，甲$1$元，乙$0$元）。$600$次铃响后，   
+   （1）每个玩家都有$1$元钱的概率是多少？ 
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+      设第$n$轮的状态：
+      $A_n$：每个玩家都有$1$元钱（$1$种可能）；
+      $B_n$：一个玩家有$1$元，一个玩家有$2$元，剩下一个玩家没有钱（$6$种可能）。
+      满足$P(A_n)+P(B_n)=1$（没有其他可能）    
+      若上一轮状态为$A_{n-1}$，则下一轮有$2^3=8$种可能，其中$2$种可能结果为$A_n$（甲给乙、乙给丙、丙给甲；甲给丙、丙给乙、乙给甲）  
+      若上一轮状态为$B_{n-1}$，则下一轮有$2^2=4$种可能（因为没钱的人无法给钱），其中只有$1$种可能结果为$A_n$（$2$元的玩家给$1$元，$1$元的玩家给$0$元）  
+      综上，$P(A_n)=\frac{2}{8}P(A_{n-1})+\frac{1}{4}P(B_{n-1})=\frac{1}{4}$，即每轮每个玩家有$1$元钱的概率均为$\frac{1}{4}$。  
+   </div>
+   </details>
+   （2）玩家甲恰有$2$元的概率？
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+      设第$n$轮每个玩家都有$1$元钱的状态为$A_n$（$1$种可能），玩家甲有$2$元（$2$种可能）的状态为$B_n$，有$1$元（非$A_n$情况）的状态为$C_n$（$2$种可能），有$0$元的状态为$D_n$（$2$种可能）。则
+      $$
+      P(B_n)=\frac{1}{4}P(A_{n-1})+\frac{1}{4}P(B_{n-1})+\frac{1}{4}P(C_{n-1})+\frac{1}{4}P(D_{n-1})=\frac{1}{4}
+      $$
+      > 当然也可以用对称性理解：$B_n,C_n,D_n$出现的概率是均等的（都有两种可能），且概率和为$\frac{3}{4}$，故每个概率分别为$\frac{1}{4}$。
+   
+   </div>
+   </details>
+
+3. 设$X$为取值在$[a,b]$上的一个随机变量，证明：$\mathrm{Var}(X)\leq\dfrac{(b-a)^2}{4}$。（此证明思想可用于证明马尔科夫/切比雪夫不等式）
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+      证明：
+      ```math
+      \begin{aligned}
+         \mathrm{Var}X&=E[(X-EX)^2]\\
+         &=E[(X-EX)^2\cdot 1_{X>EX}]+E[(X-EX)^2\cdot 1_{X\leq EX}]\\
+         &\leq E[(b-EX)^2\cdot 1_{X>EX}]+E[(a-EX)^2\cdot 1_{X\leq EX}]\\
+         &=(b-EX)^2\cdot\underbrace{P(X>EX)}_ y+(a-EX)^2\cdot\underbrace{P(X\leq EX)}_{1-y}\\
+         &\leq\frac{(b-a)^2}{4}
+      \end{aligned}
+      ```
+      当且仅当$EX=\frac{a+b}{2},y=\frac{1}{2}$时取等号。（最后一个不等号可以用二元函数求极值的方法求解）
+      ______
+      这里我们直接证明一个一般的不等式：若随机变量$X$的$p$阶矩存在，则对任意$x>0$，有
+      ```math
+         P(|X|>x)\leq\frac{E(|X|^p)}{x^p}
+      ```
+      马尔科夫不等式与切比雪夫不等式分别对应$p=1$与$p=2$的情形。
+      证明：令$Y=|X|^p,z=x^p>0$，则
+      ```math
+      EY=E[Y\cdot 1_{Y>z}]+E[Y\cdot 1_{Y\leq z}]
+      ```
+      又因为$E[Y\cdot 1_{Y>z}]\geq E[x\cdot 1_{Y>z}]=zP(Y>z)$，所以
+      ```math
+         P(Y>z)=P(X^p>x^p)\leq\frac{EY}{z}=\frac{|X|^p}{x^p}
+      ```
+      又因为$|X|^p>x^p$等价于$|X|>x$，所以不等式成立。
+   </div>
+   </details>
+
+4. 设$\{X_n,n\geq 1\}$是独立同分布的随机变量序列，证明当$n\to\infty$时$\dfrac{X_n}{n}$几乎处处收敛到$0$当且仅当$E(X_1)$存在。（由此可构造依概率收敛无法推出几乎处处收敛的反例）
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+      $\forall \epsilon>0$，设$A_k\doteq\left\{\left|\dfrac{X_k}{k}\right|>\epsilon\right\}$，则$\{A_k,k\geq 1\}$相互独立，且
+      ```math
+      \begin{aligned}
+         \sum_{k=1}^\infty P(A_k)&=\sum_{k=1}^\infty P(|X_k|>k\epsilon)\\
+         &=\sum_{k=1}^\infty kP(k\epsilon<|X_k|<(k+1)\epsilon)\\
+         &=\frac{1}{\epsilon}\sum_{k=1}^nk\epsilon P(k\epsilon<|X_k|<(k+1)\epsilon)\\
+         &=\frac{1}{\epsilon}\sum_{k=1}^\infty\int_{k\epsilon}^{(k+1)\epsilon}k\epsilon p_{X_k}(x)dx+\frac{1}{\epsilon}\sum_{k=1}^\infty\int_{-(k+1)\epsilon}^{-k\epsilon}k\epsilon p_{X_k}(x)dx\\
+         &\leq\frac{2}{\epsilon}\sum_{k=1}^\infty\int_{k\epsilon}^{(k+1)\epsilon}|x| p_{|X_k|}(x)dx\\
+         &=\frac{2}{\epsilon}\int_{\epsilon}^\infty |x|p_{|X_k|}(x)dx\\
+         &\leq\frac{2}{\epsilon}E|X_k|<+\infty
+      \end{aligned}
+      ```
+      最后一个小于是因为$E|X_k|=E|X_1|$且$EX_1$存在（积分绝对收敛）。于是由Borel–Cantelli引理，$A_n$可以无限次发生，$\lim_{n\to\infty}\frac{X_n}{n}\stackrel{a.s.}{\rightarrow}0$  
+      实际上，这里用了一个思想：
+      ```math
+         \begin{aligned}
+         E|X|&=\int_{0}^\infty xdF(x)\\
+         &=-\int_{0}^\infty xd(1-F(x))\\
+         &=-x(1-F(x))|_{0}^{+\infty}+\int_{0}^\infty (1-F(x))dx\\
+         &=\int_{0}^\infty P(|X|>x)dx\approx \sum_{k=1}^{\infty}\epsilon P(|X|>k\epsilon)
+         \end{aligned}
+      ```
+      无论$X_n$服从何种分布，$\lim_{n\to\infty}P\left(\left|\dfrac{X_n}{n}\right|>\epsilon\right)=\lim_{n\to\infty}P(|X_n|>n\epsilon)=0$，所以
+      $$
+      \lim_{n\to\infty}\frac{X_n}{n}\stackrel{p}{\rightarrow}0
+      $$
+      只要$EX_n$不存在（如柯西分布），即为依概率收敛无法推出几乎处处收敛的反例。
+   </div>
+   </details>
+
+5. （秘书问题）某岗位有$n$个应聘者，假设应聘者的面试顺序是完全随机的。每次只面试一人，只有通过和不通过两种结果，且面试结束后立即知晓，没有通过的应聘者，面试官就失去再次招聘他的机会，一旦某位应聘者面试通过，后面的面试就自然取消。假定面试官是公正的，面试通过的人在面试官面试过的应聘者中最优。为了使得面试官能以最大的概率录用到应聘者中的最佳人选，问面试最少要面试几个人？
+   <details class="mdx-collapse primary">
+   <summary class="mdx-collapse__summary">点击查看答案</summary>
+   <div class="mdx-collapse__content">
+   最优策略是：   
+   先拒绝前$r$个人，然后选择第一个比前$r$个人都优秀的人。对$r$的计算如下：设最优秀的人顺序为第$k$个（概率为$\dfrac{1}{n}$），则若$k\leq r$则选到最优的概率为$0$（被拒绝），若$k>r$，则要保证最优秀的人被选中需要前$k-1$个候选人中最优秀的人处于前$r$个候选人中，概率为$\dfrac{r}{k-1}$。所以，总概率为
+   ```math
+      P(r) = \sum_{k=1}^r\frac{1}{n}\cdot 0+\sum_{k=r+1}^n \frac{1}{n} \cdot \frac{r}{k-1}
+   ```
+   当$n\to\infty$时，
+   ```math
+      \sum_{k=r+1}^n \frac{1}{n} \cdot \frac{r}{k-1}\approx\frac{r}{n}(\ln n-\ln r)=\frac{r}{n}\ln\frac{n}{r}
+   ```
+   对关于$r$的函数$\dfrac{r}{n}\ln\dfrac{n}{r}$求导，得极大值为$\dfrac{1}{e}$，当且仅当$r=\dfrac{n}{e}$，即先拒绝前$\dfrac{1}{e}\approx 37\%$的候选人。   
+   > 关于为什么这个策略是最优的，这里给出两个链接：[算法趣谈(1)——秘书问题与37\%法则](https://qi-zhan.github.io/blog/2023/algorithm0/)，[秘书问题——知乎](https://zhuanlan.zhihu.com/p/662370126)，涉及到动态规划的知识，在此不赘述。<Spoiler title="你知道的太多了">实则我也没大理解ww</Spoiler>
+
+   </div>
+   </details>

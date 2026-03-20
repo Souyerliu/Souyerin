@@ -7,12 +7,12 @@ tags:
 cover: ./61A-header.png
 ---
 # 面向对象编程（Object-oriented Programming,OOP）
-+ 面向对象编程是一种程序的组织方法，其综合了之前提到的[抽象屏障](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E6%8A%BD%E8%B1%A1%E5%B1%8F%E9%9A%9Cabstraction-barriers)，[调度字典](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E8%B0%83%E5%BA%A6%E5%AD%97%E5%85%B8dispatch-dictionaries)以及[局部状态](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E5%B1%80%E9%83%A8%E7%8A%B6%E6%80%81local-state)的思想。
++ 面向对象编程是一种程序的组织方法，其综合了之前提到的[抽象屏障](/posts/computer-science/cs61a/cs61a-chapter-7/#抽象屏障abstraction-barriers)，[调度字典](/posts/computer-science/cs61a/cs61a-chapter-7/#调度字典dispatch-dictionaries)以及[局部状态](/posts/computer-science/cs61a/cs61a-chapter-7/#局部状态local-state)的思想。
 + 具体而言，在面向对象编程中，对象可以理解为程序中的Agents（代理），各自维护自身的状态（属性Attributes）与行为（方法Methods）。不同对象之间通过调用方法实现通信（交互与计算）。对象不仅能传递消息，还可以从对应的类中继承特征，共享类的行为。
 ## 类与对象（Objects and Classes）
-+ 之前我们已经简单介绍了类与对象的基本概念（见[Chapter 7](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E5%AF%B9%E8%B1%A1objects)），这里我们再作进一步阐释：
++ 之前我们已经简单介绍了类与对象的基本概念（见[Chapter 7](/posts/computer-science/cs61a/cs61a-chapter-7/#对象objects)），这里我们再作进一步阐释：
 + 类可以看作一种模版，而对象就是基于这个模版（类）生成的实例。前面提到，python中所有的值都是其对应类（包括内置类与自定义类）实例化后的对象。类定义了该类的对象之间共享的属性与方法。
-+ 下面我们再用之前的[bank account](/2026/02/10/computer-science/CS61A/CS61A-Chapter-7/#%E5%B1%80%E9%83%A8%E7%8A%B6%E6%80%81local-state)的例子说明（当然这里我们不再使用之前定义的高阶函数，而直接使用类与对象）：
++ 下面我们再用之前的[bank account](/posts/computer-science/cs61a/cs61a-chapter-7/#局部状态local-state)的例子说明（当然这里我们不再使用之前定义的高阶函数，而直接使用类与对象）：
   + 对于一个银行账户（类），我们希望其有一个可变值`balance`（余额），同时具有`withdraw`和`deposit`两个方法（对应取款与存款），同时能够返回账户的名称`holder`（以区分不同的对象）。
   + 假设我们已经定义好了一个`Account`类（具体实现后面会给出），那么我们就可以通过传入账户名参数创建新的对象（也称为实例化类）：
     ```python

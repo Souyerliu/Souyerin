@@ -56,7 +56,7 @@ cover: ./cover.jpg
 # 主成分分析(Principle Component Analysis,PCA)
 + 主成分分析是一种特征降维方法，即“化繁为简”
 ## 前置概念：方差，协方差与相关系数
-+ 详见[概率论Cheat Sheet](/2025/12/18/%E6%A6%82%E7%8E%87%E8%AE%BA%20Cheat%20Sheet/#%E5%8D%8F%E6%96%B9%E5%B7%AE)。
++ 详见[概率论Cheat Sheet](/posts/mathematics/概率论-cheat-sheet/概率论-cheat-sheet/)。
 ## 算法动机：保证样本投影后方差最大
 + 在降维之中，需要尽可能将数据向方差最大方向进行投影，使得数据所蕴含信息没有丢失，彰显个性。
 + 主成分分析思想是将$n$维特征数据映射到$l$维空间（$n\gg l$），去除原始数据之间的冗余性（通过去除相关性手段达到这一目的）。

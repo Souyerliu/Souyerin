@@ -9,8 +9,8 @@ tags:
 cover: ./cover.jpg
 ---
 # 多模态大模型的基础——视觉编码器（Vision Transformer, ViT）
-+ 回顾1：[卷积神经网络CNN](2025/11/12/computer-science/Introduction-to-AI/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E5%AF%BC%E8%AE%BA%20Ch.7%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/#%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9Cconvolution-neural-networkcnn)
-+ 回顾2：[Transformer架构](/2025/12/13/computer-science/Introduction-to-AI/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E5%AF%BC%E8%AE%BA%20Ch.8%20%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/#transformer%E6%A8%A1%E5%9E%8B)
++ 回顾1：[卷积神经网络CNN](/posts/computer-science/introduction-to-ai/人工智能导论-ch7-深度学习/#卷积神经网络convolution-neural-networkcnn)
++ 回顾2：[Transformer架构](/posts/computer-science/introduction-to-ai/人工智能导论-ch8-大语言模型/#transformer模型)
 + 在Attention机制出现前，计算机视觉领域主要使用CNN进行图像处理。但是CNN存在以下缺点：
   + 受到归纳偏置的限制：CNN假设图像数据具有局部性和平移不变性，因而其更关注相邻像素间的关系（局部特征），而在处理图像整体特征时存在局限性。
   + 扩展与迁移能力弱：CNN通过多层卷积和池化操作，从低级特征（如边缘）逐步抽象到高级特征（如对象部件、整体物体），而如果要对模型扩展，堆叠网络层会使得优化稳定性降低，因而在处理大规模数据时会受限。

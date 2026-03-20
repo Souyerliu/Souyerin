@@ -1046,7 +1046,7 @@ cover: ./概率论 Cheat Sheet/folder.png
 1. $f(0)=1,|f(t)|\leq 1$
 2. $f(-t)=\overline{f(t)}$（共轭）
 3. 设$a,b$为常数，$Y=aX+b$，则$f_Y(t)=e^{ibt}f_X(at)$
-4. 若$X$与$Y$相互独立，则$f_{X+Y}(t)=f_X(t)f_Y(t)$ <Spoiler title="你知道的太多了">比卷积公式好记</Spoiler>!
+4. 若$X$与$Y$相互独立，则$f_{X+Y}(t)=f_X(t)f_Y(t)$ ~~比卷积公式好记~~
 5. 特征函数与矩的关系：若随机变量$X$的$k$阶矩$\mu_k=EX^k$存在，则$\forall j,1\leq j\leq k,f(t)$的$j$阶导数存在，且
    $$
    f^{(j)}(0)=i^j\mu_j

@@ -86,12 +86,15 @@ export default defineConfig({
       ],
     }),
     mdx(),
-    PlayformInline({
-      Logger: 0,
-    }),
+    // PlayformInline({
+    //   Logger: 0,
+    // }),
   ],
 
   vite: {
+    build: {
+    cssCodeSplit: true
+    },
     resolve: {
       alias: {
         "@": new URL("./src", import.meta.url).toString(),
@@ -138,9 +141,9 @@ export default defineConfig({
     rehypePlugins: [rehypeKatex, rehypeAutoLinkHeadings],
   },
   experimental: {
-    rustCompiler: true,
+    rustCompiler: false,
     queuedRendering: {
-      enabled: true,
+      enabled: false,
     },
   },
 });

@@ -246,11 +246,11 @@ def leaves(tree):
         return sum([leaves(b) for b in branches(tree)], []) # 这里用了sum函数的一个小技巧：sum(列表,[])可以将列表里的所有子列表进行加法合并
 ```
 ### 分割树（Partition Trees）
-+ 在之前的[整数分割问题](/2025/11/21/computer-science/CS61A/CS61A-Chapter-5/#%E7%A4%BA%E4%BE%8B%E6%95%B4%E6%95%B0%E6%8B%86%E5%88%86)中，我们也可以使用分割树解决。
++ 在之前的[整数分割问题](/posts/computer-science/cs61a/cs61a-chapter-5/#示例整数拆分)中，我们也可以使用分割树解决。
 + 首先进行分割树的构建。这里我们定义一棵树`partition_tree(n, m)`，表示所有用不超过$m$的整数分割$n$的方案。对于任意非叶子节点：
   + 它的左子树代表用至少一个$m$分割$n$的所有方案（即`partition_tree(n-m, m)`）；
   + 它的右子树代表用不超过$m-1$的整数分割$n$的所有方案（即`partition_tree(n, m-1)`）。
-+ 对于叶子节点，如果$n=0$则设为`True`（即完成分割），如果$n<0$或$m=0$则设为`False`（即无法完成分割）。最终得到的函数定义如下：
++ 对于叶子节点，如果$n=0$则设为`True`（即完成分割），如果$n< 0$或$m=0$则设为`False`（即无法完成分割）。最终得到的函数定义如下：
 ```python
 >>> def partition_tree(n, m):
         """返回一棵用不超过m的整数分割n的分割树"""

@@ -40,13 +40,13 @@ cover: ./penguin_and_pigeon.png
 + 有时，我们想要证明$P(x)\Longleftrightarrow Q(x)$，那么就需要证明以下两个命题都成立：$P(x)\Longrightarrow Q(x)$和$Q(x)\Longrightarrow P(x)$   
   <Spoiler title="个人理解">这有点像数学证明中的充分性必要性证明</Spoiler>
 # 利用逆否命题证明(Proof by Contraposition)
-+ 在[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)中，我们已经知道$P\Longrightarrow Q$和$\lnot Q\Longrightarrow \lnot P$等价
++ 在[CS70 Chapter1](/posts/computer-science/cs70/cs70-chapter-1/)中，我们已经知道$P\Longrightarrow Q$和$\lnot Q\Longrightarrow \lnot P$等价
 + 而有时，证明$\lnot Q\Longrightarrow \lnot P$要比直接证明$P\Longrightarrow Q$容易得多
 + 因此，我们有时会用逆否命题$\lnot Q\Longrightarrow \lnot P$来证明
 + 例子略
 # 利用反证法证明(Proof by Contradiction)
 + 反证法的思路核心：假定结论不成立，再通过条件与结论两边的推理得出矛盾(Contradiction)，由此得到结论成立。
-  + 这基于一个重要定律：排中律（见于[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)）
+  + 这基于一个重要定律：排中律（见于[CS70 Chapter1](/posts/computer-science/cs70/cs70-chapter-1/)）
   + 更加严谨的证明：
     + 反证法证明过程：目标是证明$P$成立(条件为$R$)。先假设$\lnot P$成立，通过逻辑推理得到$\lnot R$，得到结论$\lnot P\Longrightarrow R\land\lnot R$。
     + 而$\lnot P\Longrightarrow R\land\lnot R\equiv False$，它的逆否命题就是$True\Longrightarrow P$，即$P$成立。
@@ -85,8 +85,9 @@ cover: ./penguin_and_pigeon.png
 # 一些证明时的注意事项
 1. 不要将结论直接当作条件——这有可能得到错误的结果。
 2. 注意“$0$”的存在——等式两边同时有$0$时不能同时消去。
-3. 不等式推导中注意两边同时乘负数时不等号方向改变。
-4. !!其实这些感觉都是从小就培养的思维了，应该不会有什么问题!!
+3. 不等式推导中注意两边同时乘负数时不等号方向改变。   
+
+~~其实这些感觉都是从小就培养的思维了，应该不会有什么问题~~
 # 书写证明的风格
 1. 关于逻辑推理的步骤：在书写下一步之前，确保当前得到的命题已经被严格证明成立（基于公理和之前的推理）。必要时可能需要将一个步骤分解为若干个步骤，以让读者理解并接受。
 2. 关于引理的使用：引理本质是由一个相对简单的命题得到的结论。一个复杂的命题可以分解为若干个引理，就像一个计算机程序可以分解为几个子程序一样。当然，设置引理的目标还是让引理尽量具有普适性。

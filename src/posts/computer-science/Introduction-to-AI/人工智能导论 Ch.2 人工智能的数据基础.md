@@ -14,7 +14,7 @@ cover: ./cover.jpg
 
 # 人工智能导论 第二节 
 # 数据的感知
-* 回顾： [现代AI的基本要素](/2025/09/28/computer-science/Introduction-to-AI/人工智能导论%20Ch.1%20人工智能概述/#现代ai的基本要素)
+* 回顾： [现代AI的基本要素](/posts/computer-science/introduction-to-ai/人工智能导论-ch1-人工智能概述/#现代ai的基本要素)
 ## AI的感知系统
 + 本质：模拟人的感知
   * 环境感知（传感器→中枢→效应器）

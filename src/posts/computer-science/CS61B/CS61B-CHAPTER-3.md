@@ -62,7 +62,7 @@ int[] x = new int[]{1，1, 4, 5, 1, 4}; // 当然这也等价于int[] x = {1, 1,
 上面这两行代码都同时包含了声明（等号左边）、实例化（等号右边）以及赋值（等号）。注意，这里`p`和`x`存储的都是数组对应的地址，而非数组内容本身。
 + 另外，在比较两个数组是否相等时，不能直接使用`==`，因为即使两个数组内容完全相同，它们的地址也不一样。所以比较两个数组需要使用`Arrays.equals(x,y)`。
 ## 初始化列表（IntLists）
-+ 我们在[CS61A](/2026/02/04/computer-science/CS61A/CS61A-Chapter-6/#%E9%93%BE%E8%A1%A8linked-lists)里已经提到了链表这一结构。我们可以尝试在Java中也构建这样的列表。
++ 我们在[CS61A](/posts/computer-science/cs61a/cs61a-chapter-6/#链表linked-lists)里已经提到了链表这一结构。我们可以尝试在Java中也构建这样的列表。
 + 一个比较直接的想法如下：
 ```java
 IntList L = new IntList(5, null);

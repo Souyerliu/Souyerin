@@ -9,7 +9,7 @@ tags:
 cover: ./cover.jpg
 ---
 注1：从这一节开始，本笔记内容主要基于[《人工智能导论：模型与算法》（吴飞）](https://www.hep.com.cn/book/show/4603e86d-1627-4c26-849b-ce71123d5142)及其课件撰写。
-注2：由于本节内容较多，故分为上下两部分，下部分请见：[人工智能导论 Ch.4 逻辑与推理（下）](/2025/10/01/computer-science/Introduction-to-AI/人工智能导论%20Ch.4%20逻辑与推理（下）/)
+注2：由于本节内容较多，故分为上下两部分，下部分请见：[人工智能导论 Ch.4 逻辑与推理（下）](/posts/computer-science/introduction-to-ai/人工智能导论-ch4-逻辑与推理下/)
 注3：本节概念性较强，涉及比较多的离散数学，概率统计等内容，如果觉得比较困难可以暂时跳过，或先进行相关知识的学习(如CS70)后再回顾。
 # 逻辑与推理是人工智能的核心问题
 + 人类思维活动的一个重要功能是逻辑推理，即通过**演绎和归纳**等手段对现有观测现象进行分析，得出判断。
@@ -35,7 +35,7 @@ cover: ./cover.jpg
 + 是应用一套形式化规则对以符号表示的描述性陈述进行推理的系统。
 + 在命题逻辑中，一个或真或假的描述性陈述被称为**原子命题**，对原子命题的内部结构不做任何解析。
 + 若干原子命题可通过逻辑运算符来构成复合命题。
-+ 更多有关命题逻辑的解释，大部分可参见CS70 Chapter1相关内容：[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)，这里只进行一些补充：
++ 更多有关命题逻辑的解释，大部分可参见CS70 Chapter1相关内容：[CS70 Chapter1](/posts/computer-science/cs70/cs70-chapter-1/)，这里只进行一些补充：
 1. 双向蕴含（$P\Longleftrightarrow Q$）的真值表：
    + | $P$ | $Q$     | $P\longleftrightarrow Q$ |
     | :-: | :-: | :-----------:   | 
@@ -44,7 +44,7 @@ cover: ./cover.jpg
     | T  | F  | F           |
     | T  | T  | T           |
    + 事实上，双向蕴含等价于： $(P\Longrightarrow Q) \land (Q\Longrightarrow P)$，或者“异或非”（在逻辑代数中）
-2. 一些逻辑等价定律（除了[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)和上面提到的）：
+2. 一些逻辑等价定律（除了[CS70 Chapter1](/posts/computer-science/cs70/cs70-chapter-1/)和上面提到的）：
    + **交互律：** $\alpha \land \beta \equiv \beta\land \alpha$,$\alpha \lor \beta \equiv \beta\lor \alpha$
    + **结合律：** $(\alpha \land \beta)\land \gamma \equiv \alpha \land (\beta\land \gamma)$,$(\alpha \lor \beta)\lor \gamma\equiv \alpha \lor (\beta\lor \gamma)$
    + **双重否定：** $\lnot(\lnot \alpha)\equiv \alpha$
@@ -129,7 +129,7 @@ cover: ./cover.jpg
   1. **约束变元：** 在全称量词或存在量词的约束条件下的变量符号称为约束变元。
   2. **自由变元：** 不受全称量词或存在量词约束的变量符号称为自由变元。
   3. (直观理解就是$\forall$和$\exists$对应的变量是约束变元，其他变量都是自由变元)
-  4. 更多关于量词的解释可见[CS70 Chapter1](/2025/09/29/computer-science/CS70/CS70-Chapter-1/)
+  4. 更多关于量词的解释可见[CS70 Chapter1](/posts/computer-science/cs70/cs70-chapter-1/)
 ### 定理：
   1. 在约束变元相同的情况下，量词的运算满足分配律。
   2. 当公式中存在多个量词时，若多个量词都是全称量词或者都是存在量词，则量词的位置可以互换；若多个量词中既有全称量词又有存在量词，则量词的位置不可以随意互换。~~反例可以在高等数学/数学分析课本上找到~~

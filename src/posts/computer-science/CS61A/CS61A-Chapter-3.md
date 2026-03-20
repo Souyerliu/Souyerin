@@ -110,4 +110,4 @@ while <expression>:
 + 语句会对布尔语境下的表达式进行逻辑判断，如果结果为真则不会执行，如果为假则会执行语句，输出字符串，同时程序也会提前终止。
 + 测试时一般会对一些极端情况进行测试，以验证函数的功能完整性。
 ### 文档测试(doctests)
-见[Chapter 2](/2025/10/07/computer-science/CS61A/CS61A-Chapter-2/#%E5%87%BD%E6%95%B0%E5%86%85%E7%BD%AE%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8Bdoctest)。
+见[Chapter 2](/posts/computer-science/CS61A/CS61A-Chapter-2/#函数内置测试用例doctest)。

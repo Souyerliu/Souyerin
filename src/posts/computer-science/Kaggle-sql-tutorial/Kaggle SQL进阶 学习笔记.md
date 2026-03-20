@@ -7,9 +7,9 @@ tags:
  - BigQuery
 cover: ./Kaggle SQL进阶 学习笔记/cover.png
 ---
-注：强烈建议看完[SQL入门笔记](/2025/10/15/Kaggle%20SQL入门%20学习笔记/)后再阅读此笔记！
+注：强烈建议看完[SQL入门笔记](/posts/computer-science/kaggle-sql-tutorial/kaggle-sql入门-学习笔记/)后再阅读此笔记！
 # JOINs and UNIONs
-+ 在[入门笔记](/2025/10/15/Kaggle%20SQL%E5%85%A5%E9%97%A8%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#join)中，我们使用了`INNER JOIN`合并两个表格。这一节我们会使用更多的`JOIN`语句，以及使用`UNIONs`获取多个表格的信息。
++ 在[入门笔记](/posts/computer-science/kaggle-sql-tutorial/kaggle-sql入门-学习笔记/#join)中，我们使用了`INNER JOIN`合并两个表格。这一节我们会使用更多的`JOIN`语句，以及使用`UNIONs`获取多个表格的信息。
 + 这里我们使用以下表格作为示例（若无特别说明，以下图片均源自Kaggle教程）：
 ![origin2](./Kaggle%20SQL进阶%20学习笔记/origin2.png)
 和入门笔记中使用的表格略有不同，我们在两个表格中各自设置了一个无匹配对象的数据。
