@@ -385,6 +385,12 @@ span.label {
 .md .quiz-group .quiz-answer {
   display: none;
   margin-top: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-left: 0.25rem solid var(--primary-color);
+  background: var(--grey-2);
+  color: var(--text-color);
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
 }
 
 .md .quiz-group .quiz-item.show .quiz-answer {
@@ -393,7 +399,7 @@ span.label {
 }
 
 .md .quiz-group .quiz-mistake {
-  display: block;
+  display: none;
   border: 0.1875rem dashed var(--text-color-muted);
   padding: 0.625rem 1.25rem;
   background: var(--grey-3);
@@ -405,6 +411,11 @@ span.label {
   content: "[" attr(data-type) "]";
   font-size: 0.8125rem;
   color: var(--text-color-muted);
+}
+
+.md .quiz-group .quiz-item.show .quiz-mistake {
+  display: block;   /* ✅ show 时才显示 */
+  animation: slideDown 0.3s ease;
 }
 
 .md .quiz-group .quiz-check-btn {

@@ -114,9 +114,12 @@ cover: ./cover.jpg
   示意图如下：
   原始图像（源自ORL Database of Faces，kaggle链接：[kaggle-ORL](https://www.kaggle.com/datasets/tavarez/the-orl-database-for-training-and-testing)）
   ![faceset](./Intro-to-AI-Chapter-6/faceset.jpg)
-  +++ 特征图像（[**比较猎奇，谨慎观看**]{.red}）：
-  ![特征人脸图像](./Intro-to-AI-Chapter-6/eigenface.png)
-  +++
+  <details class="mdx-collapse primary">
+  <summary class="mdx-collapse__summary">特征图像（<Text type="red">比较猎奇，谨慎观看</Text>）</summary>
+  <div class="mdx-collapse__content">
+    ![特征人脸图像](./Intro-to-AI-Chapter-6/eigenface.png)
+  </div>
+  </details>
 ## 基于特征人脸的降维
 + 将每幅人脸分别与每个特征人脸做矩阵乘法，得到一个相关系数
 + 每幅人脸得到$l$个相关系数$\Longrightarrow$每幅人脸从$1024$维约减到$l$维

@@ -10,6 +10,7 @@ const { moment } = Astro.props;
 // 格式化日期
 function formatDate(date: Date): string {
   return date.toLocaleDateString("zh-CN", {
+    timeZone: "Asia/Shanghai",
     year: "numeric",
     month: "long",
     day: "numeric",

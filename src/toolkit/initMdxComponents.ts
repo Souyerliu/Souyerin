@@ -1,3 +1,4 @@
+import katex from "katex";
 const QUIZ_DATA_BOUND_KEY = "quizBound";
 const TABS_DATA_BOUND_KEY = "tabsBound";
 
@@ -60,6 +61,19 @@ const bindQuizItem = (quizItem: QuizItem) => {
 
   const quizType = (quizItem.dataset.quizType || "single") as QuizType;
   const question = quizItem.querySelector<HTMLElement>(":scope > .quiz-question");
+  const resetQuiz = () => {
+    // ❗ 清除 show（隐藏解析）
+    quizItem.classList.remove("show");
+
+    // ❗ 清除所有选项状态
+    const options = quizItem.querySelectorAll<HTMLElement>(
+      ":scope .quiz-options > .quiz-option"
+    );
+
+    options.forEach((opt) => {
+      opt.classList.remove("selected", "right", "wrong");
+    });
+  };
   const firstQuestionParagraph =
     question?.querySelector<HTMLParagraphElement>(":scope > p:first-child");
 
@@ -70,14 +84,18 @@ const bindQuizItem = (quizItem: QuizItem) => {
   if (quizType === "true" || quizType === "false" || quizType === "fill") {
     if (quizType === "true" || quizType === "false") {
       let stateIcon = quizItem.querySelector(":scope > .quiz-state-icon");
+
       if (!stateIcon) {
         stateIcon = document.createElement("span");
-        stateIcon.className = `quiz-state-icon ${
-          quizType === "true" ? "i-ri-check-fill" : "i-ri-close-fill"
-        }`;
+        stateIcon.className = "quiz-state-icon";
+        stateIcon.textContent = quizType === "true" ? "✔" : "✖";
         stateIcon.setAttribute("aria-hidden", "true");
         quizItem.append(stateIcon);
       }
+
+      question?.addEventListener("click", () => {
+        quizItem.classList.toggle("show");
+      });
     }
 
     if (quizType === "fill") {
@@ -87,17 +105,19 @@ const bindQuizItem = (quizItem: QuizItem) => {
 
         if (willShow) {
           const gaps = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-gap");
+
           gaps.forEach((gap) => {
-            gap.textContent = gap.dataset.answer || "";
+            const latex = gap.dataset.answer || "";
+
+            // 去掉 \( \)
+            const cleaned = latex.replace(/^\\\(|\\\)$/g, "");
+
+            // ✅ 用 KaTeX 渲染
+            katex.render(cleaned, gap, {
+              throwOnError: false,
+            });
           });
         }
-      });
-    }
-
-    if (quizType !== "fill") {
-      firstQuestionParagraph?.addEventListener("click", () => {
-        const willShow = !quizItem.classList.contains("show");
-        quizItem.classList.toggle("show", willShow);
       });
     }
   }
@@ -112,7 +132,7 @@ const bindQuizItem = (quizItem: QuizItem) => {
       actionButton = document.createElement("button");
       actionButton.type = "button";
       actionButton.className = "quiz-check-btn";
-      actionButton.textContent = "隐藏答案";
+      actionButton.textContent = "隐藏解析";
       actionButton.hidden = true;
       quizItem.append(actionButton);
     }
@@ -123,46 +143,109 @@ const bindQuizItem = (quizItem: QuizItem) => {
         markSingleOrMulti(quizItem);
         if (actionButton) {
           actionButton.hidden = false;
-          actionButton.textContent = "隐藏答案";
+          actionButton.textContent = "隐藏解析";
         }
       });
     });
 
     actionButton?.addEventListener("click", () => {
       const willShow = !quizItem.classList.contains("show");
-      quizItem.classList.toggle("show", willShow);
-      actionButton.textContent = willShow ? "隐藏答案" : "显示答案";
+
+      if (!willShow) {
+        // ❗ 隐藏时彻底重置
+        resetQuiz();
+        actionButton.textContent = "显示解析";
+        actionButton.hidden = true;
+        return;
+      }
+
+      quizItem.classList.add("show");
+      actionButton.textContent = "隐藏解析";
     });
   }
 
   if (quizType === "multi") {
     const options = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-options > .quiz-option");
+
+    // ✅ 获取正确选项
+    const getCorrectOptions = () =>
+      Array.from(options).filter((opt) => opt.dataset.correct === "true");
+
+    // ✅ 判断是否“刚好选中所有正确选项”
+    const isAllCorrectSelected = () => {
+      const correct = getCorrectOptions();
+
+      return (
+        correct.every((opt) => opt.classList.contains("selected")) &&
+        Array.from(options).every(
+          (opt) =>
+            opt.dataset.correct === "true" ||
+            !opt.classList.contains("selected")
+        )
+      );
+    };
+
+    // ✅ 清除所有状态（用于隐藏解析）
+    const resetOptions = () => {
+      options.forEach((opt) => {
+        opt.classList.remove("right", "wrong");
+      });
+    };
+
+    // ✅ 按钮（默认不存在）
+    let actionButton = quizItem.querySelector<HTMLButtonElement>(
+      ":scope > .quiz-check-btn"
+    );
+
+    // ❗ 初始隐藏
+    if (actionButton) {
+      actionButton.remove();
+      actionButton = null;
+    }
+
     options.forEach((option) => {
       option.addEventListener("click", () => {
         option.classList.toggle("selected");
+
+        // ❗ 每次点击先清状态（防止残留）
+        resetOptions();
+
+        // ❗ 判断是否全选正确
+        if (isAllCorrectSelected()) {
+          // ✅ 标记正确/错误
+          markSingleOrMulti(quizItem);
+
+          // ✅ 显示解析
+          revealAnswer(quizItem);
+
+          // ✅ 创建按钮（如果不存在）
+          if (!actionButton) {
+            actionButton = document.createElement("button");
+            actionButton.type = "button";
+            actionButton.className = "quiz-check-btn";
+            actionButton.textContent = "隐藏解析";
+            quizItem.append(actionButton);
+
+            // ✅ 绑定按钮行为
+            actionButton.addEventListener("click", () => {
+              const willShow = !quizItem.classList.contains("show");
+
+              if (willShow) {
+                // ✅ 显示解析时 → 标注所有选项（红/绿）
+                markSingleOrMulti(quizItem);
+                revealAnswer(quizItem);
+                actionButton!.textContent = "隐藏解析";
+              } else {
+                // ✅ 隐藏解析 → 完全重置
+                resetQuiz();
+                actionButton!.textContent = "显示解析";
+              }
+            });
+          } else {
+            actionButton.textContent = "隐藏解析";
+          }
+        }
       });
-    });
-
-    let actionButton = quizItem.querySelector<HTMLButtonElement>(":scope > .quiz-check-btn");
-
-    if (!actionButton) {
-      actionButton = document.createElement("button");
-      actionButton.type = "button";
-      actionButton.className = "quiz-check-btn";
-      actionButton.textContent = "查看答案";
-      quizItem.append(actionButton);
-    }
-
-    actionButton.addEventListener("click", () => {
-      const shouldHide = quizItem.classList.contains("show");
-      if (shouldHide) {
-        quizItem.classList.remove("show");
-        actionButton.textContent = "查看答案";
-        return;
-      }
-
-      markSingleOrMulti(quizItem);
-      actionButton.textContent = "隐藏答案";
     });
   }
 

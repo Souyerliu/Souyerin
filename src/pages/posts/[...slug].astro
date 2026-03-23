@@ -44,22 +44,35 @@ export async function getStaticPaths() {
 
       // Get related posts from the same category
       const categories = post.data.categories || [];
-      const relatedPosts =
-        categories.length > 0
-          ? sortedPosts
-              .filter(
-                (p) =>
-                  p.id !== post.id &&
-                  p.data.categories?.some((c) => categories.includes(c)),
-              )
-              .slice(0, 10)
-              .map((p) => ({
-                slug: p.id,
-                title: p.data.title,
-                date: p.data.date,
-                category: p.data.categories?.[0],
-              }))
-          : [];
+      const currentCategory = categories.at(-1);
+      const parentCategory = categories.at(0);
+
+      let relatedPosts = [];
+
+      // 优先：子分类
+      if (currentCategory) {
+        relatedPosts = sortedPosts.filter(
+          (p) =>
+            p.id !== post.id &&
+            (p.data.categories || []).at(-1) === currentCategory
+        );
+      }
+
+      // fallback：父分类
+      if (relatedPosts.length < 3 && parentCategory) {
+        relatedPosts = sortedPosts.filter(
+          (p) =>
+            p.id !== post.id &&
+            (p.data.categories || []).includes(parentCategory)
+        );
+      }
+
+      relatedPosts = relatedPosts.slice(0, 10).map((p) => ({
+        slug: p.id,
+        title: p.data.title,
+        date: p.data.date,
+        category: p.data.categories?.[0],
+      }));
 
       // 处理加密文章
       let encryptedContent: EncryptedData | undefined;

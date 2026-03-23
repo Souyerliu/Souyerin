@@ -28,11 +28,9 @@ const friendsJson = JSON.stringify(friendsSnippet, null, 2);
 <Layout pageTitle={pageTitle}>
   <div class="wrap friend-page">
     <div class="friend-header">
-      <h2>{pageTitle}</h2>
-      <p>{pageDescription}</p>
+      <h2>友链列表</h2>
     </div>
     <section class="friend-section friend-links-section">
-      <h3>友链列表</h3>
       <FriendLinks links={friendLinks} />
     </section>
   </div>

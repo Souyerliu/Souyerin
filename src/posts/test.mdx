@@ -125,3 +125,64 @@ print(c)
     这是灰色测试块。
   </div>
 </details>
+
+Quiz测试：
+<div class="quiz-group">
+  <div class="quiz-item single" data-quiz-type="single">
+    <div class="quiz-question">
+      下列叙述正确的是 
+      <span class="quiz-gap" data-answer="A、B、C都不对">
+        A、B、C都不对
+      </span>
+      <ul class="quiz-options list-none">
+        <li class="quiz-option">虚函数只能定义成无参函数</li>
+        <li class="quiz-option">虚函数不能有返回值</li>
+        <li class="quiz-option">能定义虚构造函数</li>
+        <li class="quiz-option" data-correct="true">A、B、C都不对</li>
+      </ul>
+      <div class="quiz-answer">
+        正确答案是 D。
+      </div>
+
+    </div>
+  </div>
+
+  <div class="quiz-item multi" data-quiz-type="multi">
+    <div class="quiz-question">
+      下列哪些项是“派生类对象替换基类对象”。
+      <ul class="quiz-options list-none">
+        <li class="quiz-option" data-correct="true"><code>p1=&circle1;</code></li>
+        <li class="quiz-option"><code>q1=&shape1;</code></li>
+        <li class="quiz-option" data-correct="true"><code>shape1=circle1;</code></li>
+        <li class="quiz-option"><code>circle1=shape1;</code></li>
+      </ul>
+      <div class="quiz-answer">
+        正确答案：A、C。
+      </div>
+    </div>
+  </div>
+  <div class="quiz-item true" data-quiz-type="true">
+    <div class="quiz-question">
+      编译时多态主要指运算符重载与函数重载，而运行时多态主要指虚函数。
+      <div class="quiz-answer">
+        ✅ 正确。
+      </div>
+    </div>
+  </div>
+  <div class="quiz-item false" data-quiz-type="false">
+    <div class="quiz-question">
+      太阳从西边升起。
+    </div>
+  </div>
+  <div class="quiz-item fill" data-quiz-type="fill">
+    <div class="quiz-question">
+      表达式结果为 <span class="quiz-gap" data-answer="9.4">9.4</span>。
+      <div class="quiz-answer">
+        注意运算顺序和数据类型。
+      </div>
+      <div class="quiz-mistake" data-type="错题备注">
+        常见错误答案：8.4
+      </div>
+    </div>
+  </div>
+</div>
