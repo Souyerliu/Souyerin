@@ -9,6 +9,7 @@
   "post": {
     "wordCount": "Word Count",
     "readingTime": "Reading Time",
+    "hours": "hr",
     "minutes": "min",
     "words": "words",
     "author": "Author",

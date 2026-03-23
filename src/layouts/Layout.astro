@@ -25,6 +25,7 @@ import FloatingToolbar from "@/components/FloatingToolbar.svelte";
 import TwoColumnLayout from "@/layouts/TwoColumnLayout.astro";
 import ThreeColumnLayout from "@/layouts/ThreeColumnLayout.astro";
 import { generateTagCloud } from "@/toolkit/posts/generateTagCloud";
+import Footer from "@/components/footer/Footer.astro";
 
 // Accept sidebar props from child pages
 interface PostMeta {
@@ -61,6 +62,7 @@ const coverConfig = themeConfig.cover || {};
 const footerConfig = themeConfig.footer || {};
 const widgetsConfig = themeConfig.widgets || {};
 const commentsConfig = themeConfig.comments || {};
+const commentsEnabled = Boolean(themeConfig.comments?.enable);
 const walineConfig = commentsConfig.waline || {};
 const tagCloudConfig = themeConfig.tagCloud || {};
 const visibilityTitleConfig = themeConfig.visibilityTitle || {};
@@ -171,7 +173,10 @@ import SearchPage from "@/components/search/SearchPage.svelte";
 
     <title>{pageTitle}</title>
   </head>
-  <body data-visibility-title-config={JSON.stringify(visibilityTitleConfig)}>
+  <body
+    data-visibility-title-config={JSON.stringify(visibilityTitleConfig)}
+    data-layout-mode={layoutMode}
+  >
     <NavBar
       client:load
       name={siteName}
@@ -201,11 +206,8 @@ import SearchPage from "@/components/search/SearchPage.svelte";
         <ActiveLayout
           posts={posts}
           widgetsConfig={widgetsConfig}
-          commentsEnabled={Boolean(themeConfig.comments?.enable)}
+          commentsEnabled={commentsEnabled}
           walineServerURL={walineConfig.serverURL || ""}
-          footerConfig={footerConfig}
-          siteName={siteName}
-          author={sidebarConfig.author}
           sidebarConfig={sidebarConfig}
           rightSidebarConfig={rightSidebarConfig}
           rightSidebarPosts={rightSidebarPosts}
@@ -221,6 +223,7 @@ import SearchPage from "@/components/search/SearchPage.svelte";
           <slot />
         </ActiveLayout>
       </main>
+      <Footer config={footerConfig} {siteName} author={sidebarConfig.author || ""} />
     </div>
     <script>
       import "@/toolkit/initMdxComponents";

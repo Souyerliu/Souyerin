@@ -51,10 +51,19 @@ const totalWords = wordCounts.reduce((a, b) => a + b, 0);
 // Calculate reading time (using 300 WPM as baseline for mixed content)
 const avgWordsPerMinute = 300;
 const readingMinutes = Math.ceil(totalWords / avgWordsPerMinute);
-const readingTimeStr =
-  readingMinutes === 1
-    ? `1 ${t("post.minutes")}`
-    : `${readingMinutes} ${t("post.minutes")}`;
+const hours = Math.floor(readingMinutes / 60);
+const minutes = readingMinutes % 60;
+let readingTimeStr = "";
+if (hours > 0) {
+  readingTimeStr += `${hours} ${t("post.hours")}`;
+}
+if (minutes > 0) {
+  readingTimeStr += `${hours > 0 ? " " : ""}${minutes} ${t("post.minutes")}`;
+}
+// 如果刚好是 0 分钟（极端情况）
+if (hours === 0 && minutes === 0) {
+  readingTimeStr = `1 ${t("post.minutes")}`;
+}
 
 // Get current year for copyright
 const currentYear = new Date().getFullYear();
@@ -68,7 +77,10 @@ const iconColor = sanitizeThemeColor(
 );
 ---
 
-<footer id="footer" class="text-grey-5 text-sm bg-body-bg-shadow mt-2 py-2">
+<footer
+  id="footer"
+  class="ml-48 text-grey-5 text-sm bg-body-bg-shadow mt-4 py-2"
+>
   <div class="inner mx-auto w-full max-w-3xl px-4">
     <div class="status text-center w-full">
       <!-- Copyright Section -->

@@ -24,9 +24,6 @@ interface Props {
   widgetsConfig?: WidgetsConfig;
   commentsEnabled?: boolean;
   walineServerURL?: string;
-  footerConfig?: any;
-  siteName: string;
-  author?: string;
   sidebarConfig?: SidebarConfig;
   rightSidebarConfig?: {
     order?: Array<
@@ -70,9 +67,6 @@ const {
   widgetsConfig = {},
   commentsEnabled = false,
   walineServerURL = "",
-  footerConfig = {},
-  siteName,
-  author = "",
   sidebarConfig,
   rightSidebarConfig = {},
   rightSidebarPosts = [],
@@ -97,15 +91,7 @@ const {
     {navigation}
     {siteState}
   />
-  <LayoutMainColumn
-    {posts}
-    {widgetsConfig}
-    {commentsEnabled}
-    {walineServerURL}
-    {footerConfig}
-    {siteName}
-    {author}
-  >
+  <LayoutMainColumn {posts} {widgetsConfig} {commentsEnabled} {walineServerURL}>
     <slot />
   </LayoutMainColumn>
   <RightSidebar

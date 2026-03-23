@@ -23,9 +23,6 @@ interface Props {
   widgetsConfig?: WidgetsConfig;
   commentsEnabled?: boolean;
   walineServerURL?: string;
-  footerConfig?: any;
-  siteName: string;
-  author?: string;
   sidebarConfig?: SidebarConfig;
   navLinks?: NavItemType[];
   toc?: TocItem[];
@@ -44,9 +41,6 @@ const {
   widgetsConfig = {},
   commentsEnabled = false,
   walineServerURL = "",
-  footerConfig = {},
-  siteName,
-  author = "",
   sidebarConfig,
   navLinks = [],
   toc = [],
@@ -67,15 +61,7 @@ const {
     {navigation}
     {siteState}
   />
-  <LayoutMainColumn
-    {posts}
-    {widgetsConfig}
-    {commentsEnabled}
-    {walineServerURL}
-    {footerConfig}
-    {siteName}
-    {author}
-  >
+  <LayoutMainColumn {posts} {widgetsConfig} {commentsEnabled} {walineServerURL}>
     <slot />
   </LayoutMainColumn>
 </div>

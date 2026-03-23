@@ -9,6 +9,7 @@
   "post": {
     "wordCount": "字数统计",
     "readingTime": "阅读时长",
+    "hours": "小时",
     "minutes": "分钟",
     "words": "字",
     "author": "文章作者",

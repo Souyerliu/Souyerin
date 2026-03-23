@@ -166,10 +166,10 @@
   <!-- Random Posts Widget -->
   {#if enableRandomPosts && randomPosts.length > 0}
     <div class="rpost px-4 py-4 w-1/2">
-      <h2 class="text-base font-semibold m-0 mb-4">
+      <h2 class="text-base color-grey-5 font-semibold m-0 mb-4">
         {t("footer.randomPosts")}
       </h2>
-      <ul class="post-list m-0 p-0 list-none">
+      <ul class="post-list m-0 p-0 list-none color-grey-5">
         {#each randomPosts as post}
           <li
             class="item border-grey-4 pb-2 pl-8 border-b border-dashed relative"

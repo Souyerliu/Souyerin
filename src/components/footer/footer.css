@@ -5,7 +5,8 @@
 
 @layer components {
   #footer {
-    z-index: var(--z-sidebar);
+    position: relative;
+    z-index: var(--z-base);
     color: var(--grey-5);
     font-size: 0.875rem;
   }
@@ -14,12 +15,18 @@
     margin: 2rem auto 0.625rem;
     width: calc(100% - 0.625rem);
     position: relative;
-    padding-right: 16.25rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   @media (min-width: 1024px) {
     #footer .inner {
       width: 72.5rem;
+    }
+
+    body[data-layout-mode="two-column"] #footer .inner,
+    body[data-layout-mode="three-column"] #footer .inner {
+      padding-left: 15.875rem;
     }
   }
 
@@ -27,12 +34,14 @@
     #footer .inner {
       width: 73%;
     }
+
+    body[data-layout-mode="three-column"] #footer .inner {
+      padding-left: 0;
+    }
   }
 
   @media (max-width: 1023px) {
     #footer .inner {
-      padding-right: 0;
-      padding-left: 0;
       width: auto;
     }
   }
