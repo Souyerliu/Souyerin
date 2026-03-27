@@ -412,7 +412,7 @@
 .md p:last-child,
 .md table:last-child,
 .md pre:last-child,
-.md blockquote:last-child,
+.md blockquote:last-childF,
 .md img:last-child,
 .md .tabs:last-child,
 .md .links:last-child {
@@ -615,6 +615,25 @@
 /* ============================================
    Tables
    ============================================ */
+
+.md table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.875rem;
+  margin: 0 0 1.25rem 0;
+  width: 100%;
+}
+
+.md table th,
+.md table td {
+  border: 0.0625rem solid var(--grey-3);
+  padding: 0.5rem;
+}
+
+.md table th {
+  font-weight: 700;
+  text-align: center;
+}
 
 .table-container {
   overflow: auto;

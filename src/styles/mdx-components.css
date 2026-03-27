@@ -682,3 +682,32 @@ span.label {
     background-position: -2000vw;
   }
 }
+
+/* ============================= */
+/* Code Compare (左右代码对比)   */
+/* ============================= */
+
+.md .code-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+/* 关键：适配你的 code-block 组件 */
+.md .code-compare code-block {
+  width: 100%;
+  display: block;
+}
+
+/* 防止横向溢出 */
+.md .code-compare pre {
+  overflow-x: auto;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .md .code-compare {
+    grid-template-columns: 1fr;
+  }
+}

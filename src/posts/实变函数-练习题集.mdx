@@ -1,0 +1,133 @@
+---
+title: 实变函数 练习题集
+date: 2026-03-11 13:21:30
+categories: [数学,实变函数]
+tags: 
+ - 概率论
+ - 数学分析
+ - 实分析
+cover: ./实变函数-练习题集/folder.png
+sticky: true
+---
+> 收集一些课上的思考题以及部分书上练习题，持续更新。
+# 集合论
+<div class="quiz-group">
+  <div class="quiz-item true" data-quiz-type="true">
+    <div class="quiz-question">
+    若有集列$\{A_n,n\geq 1\},\{B_n,n\geq 1\},\{C_n,n\geq 1\}$满足$A_n=B_n+C_n,n\geq 1$，那么有
+    $$
+    \varlimsup_{n\to\infty}A_n=\varlimsup_{n\to\infty}B_n\cup\varlimsup_{n\to\infty}C_n
+    $$
+      <div class="quiz-answer">
+      直观理解：当$x\in\varlimsup_{n\to\infty}A_n$，说明$x$属于无穷多个$A_n$，
+      那么$x$要么属于无穷多个$B_n$，要么属于无穷多个$C_n$（否则存在一个充分大的$N$，使得$x\notin A_N$，矛盾）
+      ___
+      注：如果改为下极限则结论不一定成立。实际上，
+      $$
+      \varliminf_{n\to\infty}A_n\supseteq\varliminf_{n\to\infty}B_n\cup\varliminf_{n\to\infty}C_n
+      $$
+      （当然将右边的并改成交，等号就成立了）
+      </div>
+    </div>
+  </div>
+  
+  <div class="quiz-item false" data-quiz-type="false">
+    <div class="quiz-question">
+    若集列$\{A_n,n\geq 1\}$收敛且$\displaystyle\lim_{n\to\infty}A_n=\bigcup_{n=1}^\infty A_n$，那么$\{A_n,n\geq 1\}$单调不降。
+      <div class="quiz-answer">
+      反例：
+      令$A_1=\{1\},A_2=\{2\},A_n=\{1,2\}(n\geq 3)$，则易得
+      $$
+      \varliminf_{n\to\infty}A_n=\varlimsup_{n\to\infty}A_n=\{1,2\}
+      $$
+      而$A_1\nsubseteq A_2$，所以集列不是单调不降的。
+      > 同理，$\displaystyle\lim_{n\to\infty}A_n=\bigcap_{n=1}^\infty A_n$也无法推出$\{A_n,n\geq 1\}$单调不增。
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+      设$\{A_n,n\geq 1\}$为任一集列，问下面等式是否成立？
+      $$
+      \begin{aligned}
+      (1)\quad \varlimsup_{n\to\infty}A_n=(\varlimsup_{n\to\infty}A_{2n-1})\cup(\varlimsup_{n\to\infty}A_{2n})\\
+      (2)\quad \varliminf_{n\to\infty}A_n=(\varliminf_{n\to\infty}A_{2n-1})\cap(\varliminf_{n\to\infty}A_{2n})
+      \end{aligned}
+      $$
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+      均成立。直观理解：   
+      $(1)$：当$\displaystyle x\in\varlimsup_{n\to\infty}A_n$，则$x$属于无穷多个$A_n$，那它一定属于无穷多个奇数项或无穷多个偶数项。  
+      $(2)$：当$\displaystyle x\in\varliminf_{n\to\infty}A_n$，则$x$至多不属于有限个$A_n$，那它最终一定同时属于无穷个奇数项与无穷个偶数项。
+    </div>
+    </details>
+  </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+    证明：
+    $$
+    \chi_{\varlimsup_{n\to\infty}A_n}=\varlimsup_{n\to\infty}\chi_{A_n},
+    \chi_{\varliminf_{n\to\infty}A_n}=\varliminf_{n\to\infty}\chi_{A_n}
+    $$
+    其中$\chi_A(x)$表示$A$的示性函数。
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    证明：以第一个式子为例，  
+    若$\chi_{\varlimsup_{n\to\infty}A_n}(x)=1$，说明$x$属于无穷多个$A_n$，即$\chi_{A_n}(x)=1$对无穷个$A_n$均成立，所以$\varlimsup_{n\to\infty}\chi_{A_n}=1$。
+    （二者均为$0$情况同理）
+    > 这个等式将集列的上下极限与数列的上下极限联系在了一起。
+    </div>
+    </details>
+  </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+    设f(x)是定义在$[0,1]$上的实值函数，且存在常数$M$,使得对于$[0,1]$中的任意有限个数$x_1,x_2,\cdots,x_n$，均有
+    $$
+    |f(x_1)+f(x_2)+\cdots+f(x_n)|\leq M
+    $$
+    证明集合$E=\{x\in[0,1]: f(x)\neq 0\}$为可数集.
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    证明：设集列$E_n=\{x\in[0,1]: |f(x)|\geq\frac{1}{n},n\in \Z^+\}$，则$\displaystyle E=\bigcup_{n=1}^\infty E_n$。
+    设$E$不是可数集，则一定存在$n_0\in\Z^+$，使$E_{n_0}$为不可数集（否则可数个可数集的并仍然为可数集）。
+    即存在一个不可数集$A\subset[0,1]$，使得任意$x\in A,|f(x)|>\dfrac{1}{n_0}$.  
+    再设$A=A^++A^-$，其中
+    $$
+    A^+=\{x\in A:f(x)>\frac{1}{n_0}\},A^-=\{x\in A:f(x)< -\frac{1}{n_0}\}
+    $$
+    那么$A^+$与$A^-$之中一定有一个不可数集，不妨设是$A^+$。那么就能从中取任意$k$个数$x_1,x_2,\cdots,x_k$，有
+    $$
+    |f(x_1)+f(x_2)+\cdots+f(x_k)|>\frac{k}{n_0}
+    $$
+    而这里$k$可以趋于无穷大，那么一定存在$k$，使得$\frac{k}{n_0}>M$，产生矛盾。
+    故原命题成立。
+    </div>
+    </details>
+  </div>
+  <div class="quiz-item">
+    <div class="quiz-question">
+    证明$x\in A'$当且仅当对任意的$\epsilon>0$,$(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$.
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    证明：  
+    充分性：若$x\in A'$，则任意$\epsilon>0$，$U(x,\epsilon)$包含$A$的无穷多个点。所以$(U(x,\epsilon)\backslash\{x\})$一定包含$A$的无穷多个点（否则邻域只有$A$的有限多个点），故与$A$的交集一定非空。  
+    必要性：若对任意的$\epsilon>0$,$(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$，
+    那么可以令$\epsilon=\epsilon_0$（任意值），并取$x_0\in(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$；  
+    再令$\epsilon=\min\left(\dfrac{\epsilon_0}{2},d(x_0,x)\right)$，再取$x_1\in(U(x,\epsilon)\backslash\{x\})\cap A$；  
+    以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\backslash\{x\})\cap A$内，故$x\in A'$.
+    </div>
+    </details>
+  </div>
+</div>
+

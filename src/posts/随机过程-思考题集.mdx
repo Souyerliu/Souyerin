@@ -408,4 +408,43 @@ sticky: true
       </details>
    </div>
 </div>
-# 简单随机过程
+# 简单随机模型
+<div class="quiz-group">
+  <div class="quiz-item">
+    <div class="quiz-question">
+      当$p\neq\dfrac{1}{2}$时, 证明Bernoulli过程不是独立增量过程.
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">  
+      > 独立增量过程的定义：$\{X(t+1)-X(t),t\geq 1\}(,X(1))$相互独立  
+      
+      证明：
+      因为$P(X_2-X_1=0|X_1=1)=P(X_2=1)=p$，而$P(X_2-X_1=0)=P(X_2=1,X_1=1)+P(X_2=0,X_1=0)=p^2+(1-p)^2$  
+      所以当$p\neq\frac{1}{2}$时，$p\neq p^2+(1-p)^2$，$P(X_2-X_1=0|X_1=1)\neq P(X_2-X_1=0)$，$P(X_2-X_1=0)$与$P(X_1)$不独立，得证。
+      </div>
+      </details>
+   </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      已知$\Theta\sim U\left(0,2\pi\right)$，对任意$t$，$Y_t=A\cos\left(wt+\Theta\right)$，
+      称$Y=\{Y_t;t\geq0\}$为正弦波随机过程，其中$A$为振幅，$w$为角频率都是常数，$\Theta$是随机相位. 证明$Y$是严平稳过程。
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：
+      任意时刻$t_1,t_2,\cdots,t_n$，与任意非负整数$h$，考查联合分布$(Y_{t_1},Y_{t_2},\cdots,Y_{t_n})$与$(Y_{t_1+h},Y_{t_2+h},\cdots,Y_{t_n+h})$：    
+      因为
+      $$
+      Y_{t_1+h}=A\cos(w(t_1+h)+\Theta)=A\cos(wt_1+\Theta+wh)
+      $$
+      而$(\Theta+wh)\mod 2\pi\sim U(0,2\pi)$，所以$(\Theta+wh)\mod 2\pi$与$\Theta$同分布，  
+      那么
+      $A\cos(wt_1+\Theta+wh)$与$A\cos(wt_1+\Theta)$同分布，进而得到
+      $(Y_{t_1},Y_{t_2},\cdots,Y_{t_n})$与$(Y_{t_1+h},Y_{t_2+h},\cdots,Y_{t_n+h})$同分布，$Y$的严平稳性得证。
+      </div>
+      </details>
+   </div>
+</div>

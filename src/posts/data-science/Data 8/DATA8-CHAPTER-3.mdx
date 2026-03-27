@@ -1,0 +1,285 @@
+---
+title: DATA8 CHAPTER 3
+date: 2026-03-23 10:39:14
+categories: [数据科学,DATA8] 
+tags: 
+ - data science
+ - jupyter notebook
+cover: ./valentine_logo.png
+---
+> 由于本部分原本对应教材/Lecture内容过于基础~~只要会python基本都能明白~~，故笔者考虑对笔记内容进行调整——在这里放一些python numpy/pandas库以及r语言相关代码，顺带可以比较二者的差异。
+> 大致对应教材第3~6节内容。<Spoiler title="你知道的太多了">四舍五入就是统计软件笔记</Spoiler>
+# 编程基础
+1. 数学运算
+    <div className="code-compare">
+    ```python
+    2 + 3
+    2 - 3
+    2 * 3
+    7 / 3
+    7 % 3
+    2 ** 0.5
+    ```
+
+    ```r
+    2 + 3
+    2 - 3
+    2 * 3
+    7 / 3
+    7 %% 3
+    2 ** 0.5 # 或 2 ^ 0.5
+    ```
+    </div>
+2. 名称赋值
+    <div className="code-compare">
+    ```python
+    a = 10
+    b = 20
+    print(a + b) # 30
+    ```
+
+    ```r
+    a <- 10
+    b <- 20
+    print(a + b)  
+    ```
+    </div>
+3. 表达式调用（操作函数）
+    <div className="code-compare">
+    ```python
+    abs(-12) 
+    round(5 - 1.3) 
+    max(2, 2 + 3, 4) 
+    import math
+    sqrt(9) 
+    exp(1)  
+    log(10)
+    log10(100)    
+    sin(pi / 2) 
+    factorial(5)    
+    floor(3.14)     
+    ceil(3.14)   
+    comb(5, 2) # 组合数 
+    ```
+
+    ```r
+    abs(-12)          
+    round(5 - 1.3)    
+    max(2, 2 + 3, 4)  
+    sqrt(9)           # 也是基础函数，不需要导入包（下同）
+    exp(1)  
+    log(10)
+    log10(100)    
+    sin(pi / 2) 
+    factorial(5)    
+    floor(3.14)     
+    ceiling(3.14)    
+    choose(5, 2)         
+    ```
+    </div>
+    补充一个公式：
+    **百分差异（percent difference）**，用于衡量两个数值的相对接近程度。计算公式如下：
+    $$
+    \mathrm{percent difference}=100\times\frac{|A-B|}{\frac{A+B}{2}}
+    $$
+4. 表格的简单操作   
+    设表格数据如下：
+    |Flavor|Color|Price|
+    |:----:|:---:|:---:|
+    |strawberry|pink|3.55|
+    |chocolate|light brown|4.75|
+    |chocolate|dark brown|5.25|
+    |strawberry|pink|5.25|
+    |chocolate|dark brown|5.25|
+    |bubblegum|pink|4.75|
+
+    <div className="code-compare">
+    ```python
+    import pandas as pd
+    df = pd.read_csv("data.csv")
+    df.head(2) # 显示前两行
+    df['Flavor'] # 选择指定名称的列（不影响原表，下同）
+    df[['Flavor', 'Price']] # 选择多列
+    df.drop(columns = 'Color') # 拿走指定名称列
+    df.sort_values(by = 'Price') # 按指定列排序（默认升序）
+    df.sort_values(by = 'Price',ascending = False) # 降序排序
+    df.loc[df['Flavor'] == 'chocolate'] # 筛选满足条件的行（注意大小写）
+    ```
+
+    ```r
+    df <- read.csv("data.csv")
+    head(df, 2)
+    df$Flavor # 或 df[["Flavor"]]
+    df[, c("Flavor", "Price")]
+    df[, !names(df) %in% "Color"]
+    df[order(df$Price), ]
+    df[order(df$Price, decreasing = TRUE), ]
+    df[df$Flavor == "chocolate", ]
+    ```
+    </div>
+
+# 数据类型
+1. 数值型
+    <div className="code-compare">
+    ```python
+    x = 2
+    type(x) # <class 'int'>
+    type(3/1) # <class 'float'>
+    type(x + 2.5) # <class 'float'>
+    -12345678900000000000.0 # -1.23456789e+19
+    2e306 * 100 # inf
+    2e-322 / 100 # 0.0
+    0.6666666666666666 - 0.6666666666666666123456789 # 0.0（浮点误差）
+    "data" + " " + "science" # "data science"
+    "That's " + str(1 + 1) + ' ' + str(True) # "That's 2 True"
+    ```
+
+    ```r
+    x <- 2
+    y <- 6L
+    typeof(x) # "double"
+    typeof(y) # "integer"
+    class(x) # "numeric"
+    class(y) # "integer"
+    typeof(3/1) # "double"
+    typeof(y+2.5) # "double"
+    is.integer(x)   # FALSE
+    is.integer(y)    # TRUE
+    print(paste0("That's ", 1 + 1, " ", TRUE)) # "That's 2 TRUE"（用paste会加空格分隔）
+    ```
+    </div>
+2. 字符串型
+    <div className="code-compare">
+    ```python
+    type("yachiyo") # str
+    "data" + " " + "science" # "data science"
+    "That's " + str(1 + 1) + ' ' + str(True) # "That's 2 True"
+    "louder".upper() # LOUDER
+    m = 'machiro'
+    m.replace('ma', 'i') # ichiro
+    ```
+
+    ```r
+    class("yachiyo") # "character"
+    paste("data","science") # "data science" （空格分隔）
+    paste0("That's ", 1 + 1, " ", TRUE) # "That's 2 TRUE"
+    toupper("louder")
+    m <- "machiro"
+    gsub("ma", "i", m)
+    ```
+    </div>
+3. 比较
+    <div className="code-compare">
+    ```python
+    3 > 1 + 1 # True
+    3 != 2 # True
+    1 < 1 + 3 < 2 # False （python支持链式比较）
+    "Dog" > "Catastrophe" > "Cat" # True
+    ```
+
+    ```r
+    3 > 1 + 1
+    3 != 2
+    1 < 1 + 3 && 1 + 3 < 2 # r不支持链式比较
+    "Dog" > "Catastrophe" && "Catastrophe" > "Cat"
+    ```
+    </div>
+# 序列
+1. 数组
+    <div className="code-compare">
+    ```python
+    import numpy as np
+    baseline_high = 14.48
+    highs = np.array([baseline_high - 0.880, baseline_high - 0.093,
+                   baseline_high + 0.105, baseline_high + 0.684]) # 要求元素数据类型相同（若类型不同会强制转换）
+    highs.item(1) # 14.387（或者用highs[1]）
+    len(highs) # 或者highs.size
+    sum(highs)/len(highs) # 14.434000000000001（也可用np.average(highs)）
+    (9/5) * highs + 32 # [56.48   57.8966 58.253  59.2952]
+    np.diff(highs) # [0.787, 0.198, 0.579]
+    baseline_low = 3.00
+    lows = np.array([baseline_low - 0.872, baseline_low - 0.629,
+                    baseline_low - 0.126, baseline_low + 0.728])
+    highs - lows # [11.472, 12.016, 11.711, 11.436]
+    ```
+
+    ```r
+    baseline_high <- 14.48
+    highs <- c(baseline_high - 0.880, baseline_high - 0.093,
+            baseline_high + 0.105, baseline_high + 0.684)
+    highs[1]
+    length(highs)
+    (9/5) * highs + 32
+    mean(highs)
+    diff(highs)
+    baseline_low <- 3.00
+    lows <- c(baseline_low - 0.872, baseline_low - 0.629,
+          baseline_low - 0.126, baseline_low + 0.728)
+    highs - lows # [11.472, 12.016, 11.711, 11.436] （要求两个数组长度相同）
+    ```
+    </div>
+    更多关于numpy的函数可参见[numpy官方文档](https://numpy.org/doc/stable/reference/routines.html)
+2. range
+    <div className="code-compare">
+    ```python
+    import numpy as np
+    np.arange(5) # [0, 1, 2, 3, 4]
+    np.arange(3, 9, 2) # [3, 5, 7]
+    np.arange(1.5, -2, -0.5) # [ 1.5,  1. ,  0.5,  0. , -0.5, -1. , -1.5]
+    ```
+
+    ```r
+    0:4  # 或 seq(0, 4) 或 seq_len(5) - 1
+    seq(3, 8, by = 2) 
+    seq(1.5, by = -0.5, length.out = 7)  
+    ```
+    </div>
+# 表格（更多的表格操作）
+1. 创建与编辑表格
+    <div className="code-compare">
+    ```python
+    import pandas as pd
+    df = pd.DataFrame() # 创建空表格
+    df = pd.DataFrame({'Number of petals': [8, 34, 5],'Name': ['lotus', 'sunflower', 'rose']}) # 导入列名数据
+    df['Color'] = ['pink', 'yellow', 'red'] # 增加新列（改变df）
+    flowers = df.assign(Color=['pink', 'yellow', 'red']) # 不改变df
+    ```
+
+    ```r
+    df <- data.frame()
+    df <- data.frame(
+    Number.of.petals = c(8, 34, 5),
+    Name = c('lotus', 'sunflower', 'rose')
+    )
+    df$Color <- c('pink', 'yellow', 'red')
+    flowers <- df  # 复制df（默认不修改原对象）
+    # 或使用 flowers <- transform(df, Color = c('pink', 'yellow', 'red'))  
+    ```
+    </div>
+2. 读取与处理表格数据
+    <div className="code-compare">
+    ```python
+    import pandas as pd
+    df = pd.read_table('data.csv', delimiter=',', index_col=false, nrows=5) # 取第一列为索引
+    df.rename(columns={'a': 'A', 'b': 'B'}, inplace=False) # 修改指定列名（不覆盖原表）
+    df.columns[1] # 获取列index=1的列名
+    df.iloc[:,1] # 返回列index=1的数据
+    df.iloc[:,1].iloc[2] # 返回列index=1,行index=2的数据
+    styled_df = df.style.format({'Rate': '{:.2%}'}) # 转换为百分比
+    df[df['A'].str.contains('C', na=False, regex=False)] # 筛选指定列中包含指定字符串的行（可设置正则表达式）
+    ```
+
+    ```r
+    library(tidyverse)
+    library(formattable)
+    df <- read_csv('data.csv', n_max = 5)
+    df_renamed <- df %>% rename(A = a, B = b)
+    colnames(df)[2]   # 或 names(df)[2]
+    df[[2]]           # 或 df[, 2, drop = TRUE]  
+    df[[2]][3]        # 或 df[3, 2] 
+    styled_df <- df %>%
+        formattable::formattable(list(Rate = percent))
+    df %>%
+        filter(str_detect(A, fixed("C")) & !is.na(A))
+    ```
+    </div>
