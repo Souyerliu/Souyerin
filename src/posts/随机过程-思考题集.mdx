@@ -447,4 +447,120 @@ sticky: true
       </div>
       </details>
    </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      定义随机过程$Z=\{Z_t;t\geq0\}$，其中$Z_t=X\cos\left(2\pi t\right)+Y\sin\left(2\pi t\right)$, 其中$X$，$Y$是两个不相关的随机变量，分布不同但$E[X]=E[Y]=0,D[X]=D[Y]=1$.  
+      （1）证明$Z$是平稳过程.  
+      （2）若进一步假设$X$，$Y$独立且都服从正态分布, 证明$Z$是严平稳过程.
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）证明：  
+      因为
+      $$
+      E[Z_t]=E[X]\cos(2\pi t)+E[Y]\sin(2\pi t)=0
+      $$
+      与$t$无关；又因为$E[X^2]=D[X]+(E[X])^2=1=E[Y^2],E[XY]=\mathrm{Cov}(X,Y)=0$（$X,Y$不相关），所以    
+      $$
+      \begin{aligned}
+      \mathrm{Cov}(Z_s,Z_t)&=E[Z_sZ_t]\\
+      &=E[(X\cos(2\pi s)+Y\sin(2\pi s))(X\cos(2\pi t)+Y\sin(2\pi t))]\\
+      &=\underbrace{E[X^2]}_{=1}\cos(2\pi s)\cos(2\pi t)+\underbrace{E[Y^2]}_{=1}\sin(2\pi s)\sin(2\pi t)+\underbrace{E[XY]}_{=0}(\dots)\\
+      &=\cos(2\pi s)\cos(2\pi t)+\sin(2\pi s)\sin(2\pi t)=\cos(2\pi(s-t))
+      \end{aligned}
+      $$
+      与$s,t$无关，所以$Z$为宽平稳过程。  
+      （2）证明：   
+      因为$X,Y$相互独立且均服从正态分布$N(0,1)$，所以$(X,Y)$服从二维标准正态分布
+      $$
+      \mathcal{N} \left(
+      \begin{pmatrix}
+      0 \\
+      0
+      \end{pmatrix},
+      \begin{pmatrix}
+      1 & 0 \\
+      0 & 1
+      \end{pmatrix}
+      \right)
+      $$
+      又
+      $$
+      \begin{aligned}
+      Z_{t+h}&=X\cos(2\pi(t+h))+Y\cos(2\pi(t+h))\\
+      &=X(\cos2\pi t\cdot\cos2\pi h-\sin2\pi t\cdot\sin2\pi h)+Y(\cos2\pi t\cdot\cos2\pi h-\sin2\pi t\cdot\sin2\pi h)\\
+      &=(X\cos2\pi h+Y\cos2\pi h)\cos2\pi t-(-X\sin2\pi h+Y\sin2\pi h)\sin2\pi t
+      \end{aligned}
+      $$
+      记$X'=X\cos2\pi h+Y\cos2\pi h,Y'=-X\sin2\pi h+Y\sin2\pi h$，则$(X,Y)$到$(X',Y')$是单位正交变换，所以$(X',Y')$同样满足二元标准正态分布。
+      所以$Z_{t+h}$与$Z_t$同分布，进而任意$t_1< t_2\cdots< t_n$与$h$，
+      $(Z_{t_1},Z_{t_2},\cdots,Z_{t_n})$与$(Z_{t_{1+h}},Z_{t_{2+h}},\cdots,Z_{t_{n+h}})$同分布，$Z$为严平稳过程。
+      </div>
+      </details>
+   </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      设$S=\{S_n;n\geq 1\}$是$(q, p)$-简单随机游动, 其中$q=1-p,p > \frac{1}{2}$，$\tau_1=\inf\{n > 0: S_n = 1\}$，  
+      （1）求$\tau_1$的分布（默认初始位置为$0$）。  
+      （2）求$E(\tau_1|S_0 = 0)$.
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）因为$S$是简单随机游动且右连续，所以
+      $$
+      \begin{aligned}
+      P(\tau_1=n|S_0=0)&=\frac{1}{n}P(S_n=1|S_0=0)\\
+      &=\begin{cases}
+      \frac{1}{n}\binom{n}{\frac{n+1}{2}}p^{\frac{n+1}{2}}q^{\frac{n-1}{2}},&\frac{n+1}{2}\in\Z\\
+      0,&otherwise.
+      \end{cases}
+      \end{aligned}
+      $$
+      </div>
+      </details>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （2）
+      $$
+      \begin{aligned}
+      E(\tau_1|S_0)&=E[E(\tau_1|S_1,S_0)|S_0]\\
+      &=E(\tau_1|S_1=1,S_0)P(S_1=1|S_0)+E(\tau_1|S_1=-1,S_0)P(S_1=-1|S_0)\\
+      &=1\cdot P(S_1=1|S_0)+E(1+\tau'_1+\tau''_1|S_1=-1,S_0)P(S_1=-1|S_0)
+      \end{aligned}
+      $$
+      其中$\tau'_1$与$\tau''_1$分别为从$-1$出发首次到$0$的时间与首次到$0$后，从$0$出发到$1$的时间.
+      然后
+      $$
+      \begin{aligned}
+      &E(1+\tau'_1+\tau''_1|S_1=-1,S_0)P(S_1=-1|S_0)\\
+      =&P(S_1=-1|S_0)+E(\tau'_1)P(S_1=-1|S_0)+E(\tau''_1)P(S_1=-1|S_0)
+      \end{aligned}
+      $$
+      而$E(\tau'_1)=E(\tau''_1)=E(\tau_1|S_0=0)$，所以
+      $$
+      E(\tau_1|S_0=0)=p+q+2qE(\tau_1|S_0=0)=1+2qE(\tau_1|S_0=0)
+      $$
+      即$E(\tau_1|S_0=0)=\dfrac{1}{1-2q}$.（这也是为什么要求$q< \dfrac{1}{2}$）
+      </div>
+      </details>
+   </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      设$S=\{S_n;n\geq 0\}$是初值为$0$的$(q, p)$-简单随机游动，用$T$表示$S$在首次到达$1$之前回到$0$的次数。
+      已知$q\leq p$, 对任意$k\geq 0$, 证明$P(T = k) = q^kp$.
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：
+      </div>
+      </details>
+   </div>
+   
 </div>

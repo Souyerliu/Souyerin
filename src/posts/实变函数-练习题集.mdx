@@ -115,7 +115,7 @@ sticky: true
   </div>
   <div class="quiz-item">
     <div class="quiz-question">
-    证明$x\in A'$当且仅当对任意的$\epsilon>0$,$(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$.
+    证明$x\in A'$当且仅当对任意的$\epsilon>0$，$(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$.
     </div>
     <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
@@ -126,6 +126,75 @@ sticky: true
     那么可以令$\epsilon=\epsilon_0$（任意值），并取$x_0\in(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$；  
     再令$\epsilon=\min\left(\dfrac{\epsilon_0}{2},d(x_0,x)\right)$，再取$x_1\in(U(x,\epsilon)\backslash\{x\})\cap A$；  
     以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\backslash\{x\})\cap A$内，故$x\in A'$.
+    </div>
+    </details>
+  </div>
+
+  <div class="quiz-item true" data-quiz-type="true">
+    <div class="quiz-question">
+      若$A$为开集，$A^\circ$为$A$的内部，那么$A^\circ$也是开集。
+      <div class="quiz-answer">
+      对于任意$x\in A^\circ$，满足存在$\epsilon>0$，使得$U(x,\epsilon)\subset A$。
+      任意$y\in U(x,\epsilon)$，令$\epsilon_y=\min\{d(x,y)-\epsilon-d(x,y)\}$，则$U(y,\epsilon_y)\subset U(x,\epsilon)$，所以$U(y,\epsilon_y)\subset A$，$y\in A^\circ$.
+      所以$U(x,\epsilon)\subset A^\circ$，$A^\circ$为开集。
+      </div>
+    </div>
+  </div>
+  <div class="quiz-item">
+    <div class="quiz-question">
+    证明：  
+    （1）$G_{\delta}$型集和$F_{\delta}$型集都是Borel集.  
+    （2）$G_{\delta}$型集未必是开集，$F_{\delta}$型集未必是闭集.  
+    （3）闭集一定是$G_{\delta}$型集，开集一定是$F_{\delta}$型集.
+    > 补充定义1：若$E\subset\R^n$是可列个开集的交集，则称$E$为$G_\delta$型集；若$E$是可列个闭集的并集，则称$E$是$F_\delta$型集。   
+    > 补充定义2：由$\R^n$所有开子集构成集类生成的$\sigma-$代数记称为Borel$-\sigma$代数（记为$\mathcal{B}$），其元素称为Borel集。
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    （1）证明：设$G$为$G_\delta$型集，则$G=\bigcap G_i$（$G_i$均为开集），那么$G_i\in\mathcal{B}$。而Borel集对可列交封闭，所以$G\in\mathcal{B}$；   
+    设$F$为$F_\delta$型集，则$F=\bigcup F_i$（$F_i$均为闭集），那么$F_i^c\in\mathcal{B}$（因为$F_i^c$为开集），所以$F_i\in\mathcal{B}$（$\sigma-$代数性质），进而$F\in\mathcal{B}$。   
+    （2）先给出原命题反例：  
+    $G_\delta$型集：$\displaystyle G=\bigcap_{n=1}^\infty  G_n$，其中$G_n=\left(-\dfrac{1}{n},\dfrac{1}{n}\right)$，那么$G=\{0\}$不是开集；
+    $F_\delta$型集：对上面的每个$G_n$取补集即可。（$G^c=\R\backslash\{0\}$不是闭集）  
+    （3）设$F$为闭集，令$G_k=\{x\in\R^n:d(x,F)< \frac{1}{k}\}$，则任意$y\in G_k$，取$\epsilon_y=\min\{d(y,F),\frac{1}{k}-d(y,F)\}$，则$U(y,\epsilon_y)\subset G_k$，$y$属于$G_k$内部，即$G_k$为开集；  
+    下面证$F=\bigcap G_k$：  
+    因为任意$z\in F$，$z\in\bigcap G_k$，而任意$w\notin F$，总存在$k_0\in N$使$d(w,F)\geq\frac{1}{k_0}$，即$w\notin G_{k_0}\Rightarrow w\notin\bigcap G_k$。所以$F=\bigcap G_k$。   
+    综上，$F$属于$G_\delta$型集。（同理可证开集属于$F_\delta$型集，只需要$F$和$\bigcup G_k$取补集即可）
+    </div>
+    </details>
+  </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+    证明：设$f$是定义在$\R^n$上的实值函数，则$f\in\mathcal{C}(\R^n)$当且仅当对任意的$G\in\mathcal{O}(\R^1),f^{-1}(G)\in\mathcal{O}(\R^n)$.
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    必要性：即证当$f$为$\R^n$上连续函数时，对任意$\R^1$上开集$G$，$f^{-1}(G)$为开集。  
+    对任意$x\in f^{-1}(G)$，$f(x)\in G$，所以存在$\epsilon>0$，使$(f(x)-\epsilon,f(x)+\epsilon)\subset G$。又由$f$的连续性，存在$\delta>0$，使$|y-x|< \delta$时，$f(y)\in(f(x)-\epsilon,f(x)+\epsilon)$，所以$f(y)\in G$，$y\in f^{-1}(G)$。  
+    因此$U(x,\delta)\subset f^{-1}(G)$，$f^{-1}(G)$为开集。   
+    充分性：即证当任意$\R^1$上开集$G$，$f^{-1}(G)$为开集，则$f$为$\R^n$上连续函数。   
+    对任意$x\in\R^n$，任意$\epsilon>0$，令$G=(f(x)-\epsilon,f(x)+\epsilon)$，则$f(x)\in G$，$x\in f^{-1}(G)$。又因为$f^{-1}(G)$为开集，所以存在$\delta>0$，使任意$y\in U(x,\delta)$，有$y\in f^{-1}(G)$，即$f(y)\in G$。  
+    所以$|f(y)-f(x)|< \epsilon$，$f$在$\R^n$上连续。
+    </div>
+    </details>
+  </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+    设$f(x)$是定义在$\R^1$上的实值函数，证明$f$的连续点集为$G_\delta$型集.
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    证明：构造$G_\delta$型集$\bigcap G_n$，其中$G_n=\{x: |f(x_1)-f(x_2)|< \dfrac{1}{n},x_1,x_2\in(x-\delta_x,x+\delta_x)\}$，下面分两步证明：   
+    1. $f$的连续点集为$\bigcap G_n$。设$f$在$x$处连续，则任意$\epsilon>0$，存在$\delta_x>0$使$|y-x|< \delta_x,|f(y)-f(x)|< \epsilon$。那么任意$y,z\in(x-\delta_x,x+\delta_x),|f(y)-f(z)|\leq |f(y)-f(x)|+|f(z)-f(x)|< 2\epsilon$。
+    令$\frac{1}{n}=2\epsilon$，则$x\in G_n$对所有$n$均成立，即$x\in\bigcap G_n$；
+    2. $G_n$为开集。任意$x\in G_n$，取$y\in U(x,\frac{\delta_x}{2})$，并令$\delta_y=\min\{y-(x-\frac{\delta_x}{2}),(x+\frac{\delta_x}{2})-y\}$，则$U(y,\delta_y)\subset U(x,\frac{\delta_x}{2})\in U(x,\delta_x)$。
+    所以有$y\in G_n$，即$G_n$为开集。  
+    综上，命题得证。
     </div>
     </details>
   </div>

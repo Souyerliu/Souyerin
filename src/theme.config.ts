@@ -2,7 +2,7 @@
 import { defineConfig } from "./toolkit/themeConfig";
 
 export default defineConfig({
-  siteName: "ShokaX",
+  siteName: "Souyer's Blog",
   locale: "zh-CN", // 网站语言: "zh-CN" | "en"
   nav: [
     {

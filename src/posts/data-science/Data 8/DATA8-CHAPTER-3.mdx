@@ -265,6 +265,7 @@ cover: ./valentine_logo.png
     df.columns[1] # 获取列index=1的列名
     df.iloc[:,1] # 返回列index=1的数据
     df.iloc[:,1].iloc[2] # 返回列index=1,行index=2的数据
+    df.shape # 获取dataframe大小
     styled_df = df.style.format({'Rate': '{:.2%}'}) # 转换为百分比
     df[df['A'].str.contains('C', na=False, regex=False)] # 筛选指定列中包含指定字符串的行（可设置正则表达式）
     ```
@@ -277,6 +278,7 @@ cover: ./valentine_logo.png
     colnames(df)[2]   # 或 names(df)[2]
     df[[2]]           # 或 df[, 2, drop = TRUE]  
     df[[2]][3]        # 或 df[3, 2] 
+    dim(df)        # 维数（行数为nrow(df)，列数为ncol(df)）       # 输出: 3
     styled_df <- df %>%
         formattable::formattable(list(Rate = percent))
     df %>%

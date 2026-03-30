@@ -151,7 +151,7 @@ const isNoReprint = license === "NOREPRINT";
             <div class="icon i-ri-link" />
             <strong>{t("post.link")}: </strong>
             <a href={permalink} title={title}>
-              {permalink}
+              {decodeURIComponent(permalink)}
             </a>
           </li>
           <li class="license" class:list={{ noreprint: isNoReprint }}>
