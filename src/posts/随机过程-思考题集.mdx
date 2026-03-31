@@ -504,13 +504,12 @@ sticky: true
    <div class="quiz-item">
       <div class="quiz-question">
       设$S=\{S_n;n\geq 1\}$是$(q, p)$-简单随机游动, 其中$q=1-p,p > \frac{1}{2}$，$\tau_1=\inf\{n > 0: S_n = 1\}$，  
-      （1）求$\tau_1$的分布（默认初始位置为$0$）。  
-      （2）求$E(\tau_1|S_0 = 0)$.
-      </div>
+      （1）求$\tau_1$的分布（默认初始位置为$0$）。 
+      </div> 
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      （1）因为$S$是简单随机游动且右连续，所以
+      因为$S$是简单随机游动且右连续，所以
       $$
       \begin{aligned}
       P(\tau_1=n|S_0=0)&=\frac{1}{n}P(S_n=1|S_0=0)\\
@@ -522,23 +521,25 @@ sticky: true
       $$
       </div>
       </details>
+      <div class="quiz-question">
+      （2）求$E(\tau_1|S_0 = 0)$.
+      </div>
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      （2）
       $$
       \begin{aligned}
-      E(\tau_1|S_0)&=E[E(\tau_1|S_1,S_0)|S_0]\\
-      &=E(\tau_1|S_1=1,S_0)P(S_1=1|S_0)+E(\tau_1|S_1=-1,S_0)P(S_1=-1|S_0)\\
-      &=1\cdot P(S_1=1|S_0)+E(1+\tau'_1+\tau''_1|S_1=-1,S_0)P(S_1=-1|S_0)
+      E(\tau_1|S_0=0)&=E[E(\tau_1|S_1,S_0=0)|S_0=0]\\
+      &=E(\tau_1|S_1=1,S_0=0)P(S_1=1|S_0=0)+E(\tau_1|S_1=-1,S_0=0)P(S_1=-1|S_0=0)\\
+      &=1\cdot P(S_1=1|S_0=0)+E(1+\tau'_1+\tau''_1|S_1=-1,S_0=0)P(S_1=-1|S_0=0)
       \end{aligned}
       $$
       其中$\tau'_1$与$\tau''_1$分别为从$-1$出发首次到$0$的时间与首次到$0$后，从$0$出发到$1$的时间.
       然后
       $$
       \begin{aligned}
-      &E(1+\tau'_1+\tau''_1|S_1=-1,S_0)P(S_1=-1|S_0)\\
-      =&P(S_1=-1|S_0)+E(\tau'_1)P(S_1=-1|S_0)+E(\tau''_1)P(S_1=-1|S_0)
+      &E(1+\tau'_1+\tau''_1|S_1=-1,S_0=0)P(S_1=-1|S_0=0)\\
+      =&P(S_1=-1|S_0=0)+E(\tau'_1)P(S_1=-1|S_0=0)+E(\tau''_1)P(S_1=-1|S_0=0)
       \end{aligned}
       $$
       而$E(\tau'_1)=E(\tau''_1)=E(\tau_1|S_0=0)$，所以
@@ -546,6 +547,36 @@ sticky: true
       E(\tau_1|S_0=0)=p+q+2qE(\tau_1|S_0=0)=1+2qE(\tau_1|S_0=0)
       $$
       即$E(\tau_1|S_0=0)=\dfrac{1}{1-2q}$.（这也是为什么要求$q< \dfrac{1}{2}$）
+      </div>
+      </details>
+      <div class="quiz-question">
+      （3）证明$P(\tau_1< \infty)=1$.（即从任意位置出发，一定能经过有限次游动回到位置$1$）。
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：设$f(i)=P_i(\tau_1< \infty)$表示从位置$i$出发，最终经过有限次到达$1$的概率。则
+      $$
+      f(i)=pf(i+1)+qf(i-1)
+      $$
+      解得
+      $$
+      f(i)=A+B\left(\frac{q}{p}\right)^i
+      $$
+      其中$A,B$为常数。又因为
+      $$
+      \begin{cases}
+      f(0)=1\\
+      f(i)\leq 1,\forall i\in\Z\\
+      \dfrac{q}{p}< 1
+      \end{cases}
+      $$
+      所以
+      $$
+      B=0,A=1\Longrightarrow f(i)\equiv 1
+      $$
+      所以$P(\tau_1< \infty)=1$.
+      > 注：上面用到的差分方程在处理简单随机游动问题时非常有用，务必牢记。
       </div>
       </details>
    </div>
@@ -558,7 +589,12 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      证明：
+      证明：  
+      设事件$A_i$表示第$i$次从$0$出发，并在到达$1$前回到$0$。  
+      那么$P(A_i)=p_1(0,-1)=q$（因为第一步到达$-1$后，$P_{-1}(\tau_0< \infty)=1$，此为上题第3问结论），所以
+      $$
+      P(T=k)=P(A_1A_2\cdots A_k\overline{A_{k+1}})=q^k(1-q)=q^kp.
+      $$
       </div>
       </details>
    </div>

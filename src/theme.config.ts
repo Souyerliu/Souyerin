@@ -103,8 +103,8 @@ export default defineConfig({
     icp: {
       enable: true,
       // icon: '/beian-icon.png',
-      icpnumber: "津ICP备2022001375号",
-      icpurl: "https://beian.miit.gov.cn/",
+      icpnumber: "萌ICP备20260616号",
+      icpurl: "https://icp.gov.moe/?keyword=20260616",
       // beian: '网安备案号',
       // recordcode: 'xxxxx',
     },
