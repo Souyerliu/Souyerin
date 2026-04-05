@@ -343,7 +343,22 @@ const initAllTabs = () => {
   });
 };
 
+const wrapImages = () => {
+  const images = document.querySelectorAll<HTMLImageElement>(".md img");
+
+  images.forEach((imageElement) => {
+    if (imageElement.closest("image-zoom")) {
+      return;
+    }
+
+    const imageZoomElement = document.createElement("image-zoom");
+    imageElement.replaceWith(imageZoomElement);
+    imageZoomElement.append(imageElement);
+  });
+};
+
 const initMdxComponents = () => {
+  wrapImages();
   initQuiz();
   initAllTabs();
 };

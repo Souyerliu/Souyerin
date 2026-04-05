@@ -114,6 +114,10 @@
   padding: 0.625rem;
 }
 
+.md .mdx-collapse__content > :last-child {
+  margin-bottom: 0;
+}
+
 .md .mdx-collapse.primary,
 .md .mdx-collapse.info,
 .md .mdx-collapse.success,

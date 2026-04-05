@@ -156,6 +156,7 @@ const siteState = {
 
 // Import CodeBlock to define custom element
 import CodeBlock from "@/components/CodeBlock.svelte";
+import ImageZoom from "@/components/ImageZoom.svelte";
 import SearchPage from "@/components/search/SearchPage.svelte";
 ---
 
@@ -324,6 +325,7 @@ import SearchPage from "@/components/search/SearchPage.svelte";
     </script>
     <div class="hidden">
       <CodeBlock client:idle />
+      <ImageZoom client:idle />
     </div>
     <FloatingToolbar client:idle nyxPlayer={themeConfig.nyxPlayer} />
   </body>

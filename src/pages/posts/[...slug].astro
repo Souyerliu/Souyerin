@@ -17,6 +17,7 @@ import type { EncryptedData } from "@/toolkit/encryption/types";
 import { encryptContent } from "@/toolkit/encryption/crypto";
 import { createPostContentContainer } from "@/toolkit/posts/createPostContentContainer";
 import { wrapRenderedCodeBlocks } from "@/toolkit/wrapRenderedCodeBlocks";
+import { wrapRenderedImages } from "@/toolkit/wrapRenderedImages";
 
 import "@/styles/post.css";
 
@@ -85,10 +86,10 @@ export async function getStaticPaths() {
         isEncrypted = true;
 
         // 使用 renderToString 渲染文章内容为 HTML
-        const html = wrapRenderedCodeBlocks(
-          await container.renderToString(Content),
+        const html = wrapRenderedImages(
+          wrapRenderedCodeBlocks(await container.renderToString(Content)),
         );
-
+        
         // 加密内容
         encryptedContent = await encryptContent(html, post.data.password);
 
