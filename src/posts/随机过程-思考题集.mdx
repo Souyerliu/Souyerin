@@ -5,7 +5,6 @@ categories: [数学,随机过程]
 tags: 
  - 概率论
  - 随机过程
-
 cover: ./随机过程-思考题集/folder.png
 sticky: true
 ---
@@ -551,7 +550,7 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      证明：设$f(i)=P_i(\tau_1< \infty)$表示从位置$i$出发，最终经过有限次到达$1$的概率。则
+      证明思路1：设$f(i)=P_i(\tau_1< \infty)$表示从位置$i$出发，最终经过有限次到达$1$的概率。则
       $$
       f(i)=pf(i+1)+qf(i-1)
       $$
@@ -573,6 +572,8 @@ sticky: true
       $$
       所以$P(\tau_1< \infty)=1$.
       > 注：上面用到的差分方程在处理简单随机游动问题时非常有用，务必牢记。
+      证明思路2（使用条件期望）：
+
       </div>
       </details>
    </div>
@@ -598,9 +599,25 @@ sticky: true
    
    <div class="quiz-item fill" data-quiz-type="fill">
     <div class="quiz-question">
-      对初值为$0$的简单对称随机游动$W$,求$P(W_1\neq 0,W_2\neq 0,\cdots,W_{2n-1}\neq 0,W_{2n}=0)=$<span class="quiz-gap" data-answer="\frac{\binom{2n-1}{n-1}}{2^{2n}}">$\frac{\binom{2n-1}{n-1}}{2^{2n}}$</span>。
+      对初值为$0$的简单对称随机游动$W$，求$P(W_1\neq 0,W_2\neq 0,\cdots,W_{2n-1}\neq 0,W_{2n}=0)=$<span class="quiz-gap" data-answer="\frac{\binom{2n}{n}}{(2n-1)2^{2n}}">$\frac{\binom{2n}{n}}{(2n-1)2^{2n}}$</span>。
       <div class="quiz-answer">
-          
+      这一过程等价于从$0$出发，经过$2n$步后第一次回到$0$。  
+      将情况分为$2$种（另一种对称）：第一步移动到$1$，之后位置一直大于$0$，到$2n-1$步回到$1$。下面讨论这种情况的路径数。  
+      首先，所有从$1$开始经过$2n-2$步后回到$1$的路径数为$\displaystyle\binom{2n-2}{n-1}$（即向上$n-1$步+向下$n-1$步）。  
+      然后中间回到过$0$的路径：根据反射原理，
+      $$
+      \begin{aligned}
+      &P(W_{2n-1}=1,\min_{2\leq k\leq 2n-1}W_k\leq 1|S_1=1)\\
+      =&P(W_{2n-2}=1,\min_{1\leq k\leq 2n-2}W_k\leq 0|S_0=1)\\
+      =&P(W_{2n-2}=1|S_0=-1)
+      \end{aligned}
+      $$
+      因此路径数为$\displaystyle\binom{2n-2}{n}$（$n$条上+$n-2$条下）。  
+      所以最终的路径数量为
+      $$
+      2\left(\binom{2n-2}{n-1}-\binom{2n-2}{n}\right)=\frac{2}{n}\binom{2n-2}{n-1}=\frac{1}{2n-1}\binom{2n}{n}
+      $$
+      而总路径数为$2^{2n}$，故概率为$\dfrac{\binom{2n}{n}}{(2n-1)2^{2n}}$。
       </div>
     </div>
   </div>
@@ -611,7 +628,29 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-   
+      设$E(\tau_1 | S_0 = 0)=a$，则由条件期望的平滑性及全期望公式：
+      $$
+      \begin{aligned}
+      E(\tau_1 | S_0 = 0) &= E[E(\tau_1 | S_1, S_0) | S_0 = 0]\\
+      &= 1\cdot P(S_1=1|S_0=0)+E(\tau_1 | S_1=0, S_0=0)P(S_1=0|S_0=0)+\sum_{k=1}^\infty E(\tau_1 | S_1=k, S_0=0)P(S_1=k|S_0=0)
+      \end{aligned}
+      $$
+      其中$E(\tau_1 | S_1=0, S_0=0)=1+E(\tau_1 | S_0 = 0) = 1+a$，$E(\tau_1 | S_1=k, S_0=0)=1+\sum_{i=0}^kE(\tau_1 | S_0=0)=(k+1)a$（即从$-k$到$1$经过$k+1$个首回时），因此
+      $$
+      \begin{aligned}
+      a&=p_{-1}+p_0(1+a)+\sum_{k=1}^\infty p_k\cdot[1+(k+1)a]\\
+      &=1+ap_0+a\sum_{k=1}^\infty p_k\cdot(k+1)\\
+      &=1+a(1-p_{-1})+a\sum_{k=1}^\infty kp_k
+      \end{aligned}
+      $$
+      因此$a=\dfrac{1}{p_{-1}-\sum_{k=1}^\infty kp_k}$。又因为
+      $$
+      m=E(|X|)=p_{-1}+\sum_{k=1}^\infty kp_k
+      $$
+      所以
+      $$
+      a=\frac{1}{2p_{-1}-m}.
+      $$
       </div>
       </details>
    </div>
@@ -623,8 +662,37 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-   
+      设 $N_1(t)$ 和 $N_2(t)$ 是两个独立的泊松过程，强度分别为 $\lambda_1$ 和 $\lambda_2$。  
+      根据泊松过程的定义，任意$t > 0$，
+      $$
+      N_1(t)\sim \text{Poisson}(\lambda_1 t),N_2(t) \sim \text{Poisson}(\lambda_2 t)
+      $$
+      且相互独立。因此$N(t)=N_1(t)+N_2(t)\sim\text{Poisson}((\lambda_1+\lambda_2) t)$
+      又因为$N_1$与$N_2$均为独立平稳增量过程，所以$N$也是独立平稳增量过程。因此$N$是强度为$\lambda_1 + \lambda_2$的泊松过程。
       </div>
       </details>
    </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      以$T_k$表示$N$的第$k$次随机事件发生的时间.对任意$t>x>0$,求：
+      （1）$P(t-T_k>x|N(t)=k)$
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+      （2）$P(t-T_{N(t)}>x)$.
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+      （3）以$W_k$表示$N$的第$k$次事件的间隔时间, 对任意$x > 0$, 求$P(W_{N(t)+1}>x)$。
+   </div>
+
+
 </div>

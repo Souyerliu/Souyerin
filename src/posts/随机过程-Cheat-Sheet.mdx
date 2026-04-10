@@ -1,0 +1,505 @@
+---
+title: 随机过程 Cheat Sheet
+date: 2026-04-07 09:46:52
+categories: [数学,随机过程] 
+tags: 
+ - 概率论
+ - 随机过程
+cover: ./随机过程-Cheat-Sheet/folder.jpg
+sticky: true
+---
+> 好吧，马上要小测了，感觉不妙，所以赶紧重新梳理一下……
+# 预备知识
++ 大部分可见[概率论Cheat Sheet](/posts/mathematics/概率论-cheat-sheet/)，这里只列出补充部分。
+## 随机变量及其分布
++ 随机变量几乎处处相等：$P(X=Y)=1$（注意与独立同分布区别）
+    + 与$X=Y$的唯一区别：是否有$X\neq Y$的样本点（概率为$0$）
++ 若随机变量$X$的二阶矩存在，则$P(|X|>0)\geq\dfrac{[EX]^2}{E[X^2]}$.（可用柯西-施瓦茨不等式证明）
+### $n$元正态分布
++ 当$n=2$时，设$\mathbf{X}=(X_1,X_2)\sim N(\mu_1,\mu_2,\sigma_1^2,\sigma_2^2,\rho)$，则联合概率密度函数为
+    $$
+    \frac{1}{2\pi\sigma_1\sigma_2\sqrt{1-\rho^2}} \exp\left\{-\frac{1}{2(1-\rho^2)}\left(\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho\frac{x_1-\mu_1}{\sigma_1}\frac{x_2-\mu_2}{\sigma_2} + \frac{(x_2-\mu_2)^2}{\sigma_2^2}\right)\right\}
+    $$
+    记期望向量$\mu=(\mu_1,\mu_2)$，协方差矩阵
+    $$
+    \mathbf{D}=\begin{pmatrix}
+    \sigma_1^2,&\rho\sigma_1\sigma_2\\
+    \rho\sigma_1\sigma_2,&\sigma_2^2
+    \end{pmatrix}
+    $$
+    则概率密度函数可写为
+    $$
+    f(x_1,x_2)=\frac{1}{2\pi\sqrt{|\mathbf{D}|}}\exp\left\{-\frac{1}{2}(x-\mu)^\top\mathbf{D}^{-1}(x-\mu)\right\}
+    $$
++ 推广至$n$元，有
+    $$
+    f(x_1,\cdots,x_n)=\frac{1}{(2\pi)^{\frac{n}{2}}\sqrt{|\mathbf{D}|}}\exp\left\{-\frac{1}{2}(x-\mu)^\top\mathbf{D}^{-1}(x-\mu)\right\}
+    $$
+### 多元随机变量的独立性
++ 设$X_i = (X_{i,1}, \cdots, X_{i,k_i}) , i = 1, \cdots, n$分别是$k_1, \cdots, k_n$维的随机变量，其中每个$k_i \geq 1$。
+称多元随机变量$X_1,\cdots, X_n$是独立的，若任意的$x_{i,j} \in (-\infty, +\infty)$，其中$1 \leq j \leq k_i,1 \leq i \leq n$，
+    $$
+    P(X_{i,j} \leq x_{i,j}, 1 \leq j \leq k_i, 1 \leq i \leq n) = \prod_{i=1}^n P(X_{i,j} \leq x_{i,j}, 1 \leq j \leq k_i).
+    $$
+    <Note type="primary" title="图示">
+    可以这么理解：从$n$个随机向量
+    $$
+        \begin{pmatrix}
+        X_{1,1}\\
+        X_{1,2}\\
+        ...\\
+        X_{1,k_1}
+        \end{pmatrix},
+        \begin{pmatrix}
+        X_{2,1}\\
+        X_{2,2}\\
+        ...\\
+        X_{2,k_2}
+        \end{pmatrix},
+        \cdots,
+        \begin{pmatrix}
+        X_{n,1}\\
+        X_{n,2}\\
+        ...\\
+        X_{n,k_n}
+        \end{pmatrix}
+    $$
+    中各取一个随机变量，它们都是相互独立的。
+    </Note>
+### 条件概率公式
++ $P(AB|C)=PP(B|AC)(A|C)=P(A|BC)P(B|C)$.
+    <Note type="primary" title="证明">
+    $$
+    \begin{aligned}
+    P(AB|C)=\frac{P(ABC)}{P(C)}&=\frac{P(ABC)}{P(AC)}\cdot\frac{P(AC)}{P(C)}=P(A|C)P(B|AC)\\
+    &=\frac{P(ABC)}{P(BC)}\cdot\frac{P(BC)}{P(C)}=P(A|BC)P(B|C)
+    \end{aligned}
+    $$
+    </Note>
+## 条件数学期望
+### 随机事件发生下的条件数学期望
++ 设$X,Y$为两个随机变量，则在事件$\{Y\in A\}$发生条件下$X$的分布函数为
+    $$
+    F_X(x|A)=P(X\leq x|Y\in A)=\frac{P(X\leq x,Y\in A)}{P(Y\in A)}
+    $$
+    若$(X,Y)$为连续型随机变量，则概率密度函数
+    $$
+    f(x|A)=\frac{\int_Af(x,y)dy}{\int_{-\infty}^\infty dx\int_Af(x,y)dy}
+    $$
++ 在$Y\in A$条件下定义$X$的函数$g(X)$的数学期望
+    $$
+    E(g(X)|Y\in A)=\begin{cases}
+    \dfrac{\sum_xg(x)P(X=x,Y\in A)}{P(Y\in A)},&X\text{离散}\\
+    \displaystyle\int_{-\infty}^\infty g(x)f(x|A)dx,&X\text{连续}
+    \end{cases}
+    $$
++ 当$(X,Y)$为连续型随机变量，考虑条件为$\{Y=y\}$时，$X$的条件概率密度函数
+    $$
+    f(x|y)=\frac{f(x,y)}{f_Y(y)}=\frac{f(x,y)}{\int_{-\infty}^\infty f(x,y)dx}
+    $$
+    从而对应的条件数学期望为
+    $$
+    E(\Phi(x,y)|Y=y)=\int_{-\infty}^\infty\Phi(x,y)f(x|y)dx=\frac{\int_{-\infty}^\infty\Phi(x,y)f(x,y)dx}{f_Y(y)}
+    $$
+### 随机变量条件下的数学期望
++ 首先定义集合
+    $$
+    \mathcal{Y}=\begin{cases}
+    \{y;P(Y=y)>0\},&Y\text{离散}\\
+    \{y;P_Y(y)>0\},&Y\text{连续}\\
+    \end{cases},
+    \quad\Omega_y=\{\omega;Y(\omega)\in\mathcal{Y}\}
+    $$
++ 定义：设$(X, Y)$是连续型或离散型二元随机变量，$X$的数学期望存在。若存在随机变量$Z$使得$Z$为随机变量$Y$的函数（即存在函数$g$使得$Z=g(Y)$），且
+    $$
+    Z(\omega)=g(Y(\omega))=E(X|Y=Y(\omega))\quad\forall \omega\in\Omega_y
+    $$
+    则称$Z$为$X$关于随机变量$Y$的条件数学期望（简称条件数学期望），记为$E(X|Y)$。
+    > 在几乎处处相等意义下, 上述定义中的条件数学期望是唯一的。（$P(\Omega_y)=1$）
++ 推论：对任意集合$B$满足$P(Y\in B)>0$，有
+    $$
+    \int_BE(X|Y=y)f_Y(y)dy=E(X|Y\in B)P(Y\in B)
+    $$
++ 性质：
+    + 若$X$与$Y$独立，则$E(X|Y)=EX$；
+    + 若$a\leq\Phi(X< Y)\leq b$，则$a\leq E(\Phi(X< Y)|Y)\leq b$；
+    + $E(a|Y)=a$（$a$为常数）；
+    + $\color{red}E(\sum_{i=1}^Na_iX_i|Y)=\sum_{i=1}^Na_iE(X_i|Y)$，其中$a_i$均为常数；
+    + $|E(X\mid Y)|\leq E(|X|\mid Y)$；
+    + $\color{red}E(X)=E(E(X|Y))$.（重期望公式）
+    + 对几乎处处的$\omega\in\Omega$，$E(\Phi(X,Y)|Y)(\omega)=E(\Phi(X,Y(\omega))|Y=Y(\omega))$；特别地，
+        $$
+        \color{red}E(f(X)g(Y)|Y)=g(Y)E(f(X)|Y),\quad E(g(Y)|Y)=g(Y).
+        $$
+### 条件数学期望的推广与一般化
++ 定义略（基本就是上述二元推广到$n$元）
++ **平滑性质**：对任意$n>m$，
+    $$
+    \color{red}E(E(h(X)|Y_1,\cdots,Y_n)|Y_1,\cdots,Y_m)=E(h(X)|Y_1,\cdots,Y_m)
+    $$
++ 条件概率：
+    $$
+    P(A|Y_1,\cdots,Y_n)=E(\mathbf{1}_A|Y_1,\cdots,Y_n)
+    $$
++ 条件方差：
+    $$
+    \mathrm{Var}(X|Y)=E((X-E(X|Y))^2|Y)=E(X^2|Y)-(E(X|Y))^2
+    $$
+    性质：
+    $$
+    \mathrm{Var}(X)=E(\mathrm{Var}(X|Y))+\mathrm{Var}(E(X|Y)).
+    $$
+## 特征函数
++ 定义：对于随机变量$X$，称$\psi_X(t)=E(e^{itX})=E(\cos tX)+iE(\sin tX)$为$X$的特征函数。（$t\in\R$）
++ 性质（只给出主要性质，其他性质见概率论）：
+    + $|\psi_X(t)|\leq\psi_X(0)=1$；
+    + 唯一性定理，连续性定理（略）；
+    + 若$X$的$n$阶绝对矩$E(|X|^n)< \infty$，则对任意$k\leq n$，$E(X^k)=i^{-k}\psi_X^{(k)}(0)$.
+    + 随机变量$X_1,\cdots,X_n$相互独立当且仅当对任意的$t_1,\cdots,t_n \in\R$，
+        $$
+        \psi_{(X_1,X_2,\cdots,X_n)}(t_1,\cdots,t_n)=\prod_{i=1}^n\psi_{X_k}(t_k)
+        $$
+### Laplace变换
+> 适用：非负随机变量
++ 定义：若$X$为非负随机变量，称函数$L_X(\theta)=E(e^{-\theta X})$为$X$的拉普拉斯变换，其中变量$\theta\in[0,+\infty)$.
+    + 用分布函数表示：$\displaystyle L_F(\theta)=\int_0^\infty e^{-\theta x}dF(x)$，故也记作$L_F(\theta)$.
+    + 若$X$为连续型随机变量，概率密度函数为$f(x)$，则
+        $$
+        L_F(\theta)=\int_0^\infty e^{-\theta x}f(x)dx
+        $$
+    + 若$X$为离散随机变量，分布列为$P(X=x_k)=p_k,k=1,2,\cdots$，则
+        $$
+        L_F(\theta)=\sum_{k=1}^\infty e^{-\theta x_k}p_k
+        $$
+        若$x_k$取非负整数，则
+        $$
+        L_X(\theta)=\sum_{k=1}^\infty e^{-\theta k}p_k.
+        $$
++ 反演公式：设$F$是$[0, \infty)$上的分布函数，$L_F(\theta)$是$F$的拉普拉斯变换，那么对$F$的任意连续点$x$，有
+    $$
+    F(x)=\lim_{n\to\infty}\sum_{k=0}^{\lfloor nx\rfloor}\frac{(-1)^k}{k!}n^kL_F^{(k)}(n)
+    $$
+    + 由此可得唯一性定理。
++ 连续性定理：设非负随机变量$X_n$的拉普拉斯变换为$L_{X_n}(\theta)$，那么存在随机变量$X$使得$X_n\stackrel{d}{\longrightarrow}X$的充要条件是对任意$\theta > 0$，$L_{X_n}(\theta)$收敛且
+    $$
+    \lim_{\theta\to 0}\lim_{n\to\infty}L_{X_n}(\theta)=1
+    $$
+    + 广义连续性定理：非负随机变量$X_n\stackrel{d}{\longrightarrow}X$当且仅当存在$\lambda>0$使得对任意$\theta>\lambda$，$L_{X_n}(\theta) → L_{X}(\theta)$.
++ 性质：
+    + 任意$\theta>0$，$0\leq L_X(\theta)\leq L_X(0)=1$；
+    + 任意$a>0,b>0$，$L_{aX+b}(\theta)=L_X(a\theta)e^{-b\theta}$.
+    + 对任意非负随机变量$X,Y$，$L_{X+Y}(\theta)=L_X(\theta)L_Y(\theta),\theta\geq 0$；
+    + 任意正整数$k$，$E(X^k)=(-1)^kL_X^{(k)}(0)$（默认$k$阶矩存在）。
+### 概率母函数
+> 适用：只取可数个非负整数值的随机变量（离散）
++ 定义：设$X$为非负整数值随机变量，称函数$\phi_X(s)=E(s^X)$为$X$的概率母函数，其中$s\in[-1,1]$。
+    + 设$X$分布列为$P(X=k)=p_k,k\geq 0$，则
+        $$
+        \phi_X(s)=\sum_{k=0}^\infty p_ks^k
+        $$
++ 与Laplace变换的关系：$\phi_X(s)=L_X(-\ln s)$.
+    > 因此继承Laplace变换的性质，如：  
+      任意$s\in[-1,1]$，$0\leq\phi_X(s)\leq\phi_X(1)=1$；  
+      任意$a,b\in\N$，$\phi_{aX+b}(s)=s^b\phi_X(s^a)$.  
+      对任意非负整数值随机变量$X,Y$，$\phi_{X+Y}(s)=\phi_X(s)\phi_Y(s),s\in[-1,1]$；
++ 若非负整数值随机变量$X$的$n$阶矩存在，那么对任意$k\leq n$以及$s\in[-1, 1]$，概率母函数$\phi_X$的$k$阶导数$\phi_X^{(k)}(s)$存在，且$X$的$n$阶矩可由$\phi_X(s)$前$n$阶导数在$s = 1$的值表示。特别地，
+    $$
+    EX=\phi'_X(1),\quad E(X^2)=\phi''_X(1)+\phi'_X(1)
+    $$
+    > 实际上，$\displaystyle E(X^k)=\sum_{j=0}^kS(k,j)\phi_X^{(j)}(1)$，其中$S(k,j)$为[第二类斯特林数](https://oi-wiki.org/math/combinatorics/stirling/#%E7%AC%AC%E4%BA%8C%E7%B1%BB%E6%96%AF%E7%89%B9%E6%9E%97%E6%95%B0stirling-number)。
++ **反演公式**：若非负整数值随机变量$X$的概率母函数为$\phi_X(s)$.那么对任意$k\geq 0,P(X=k)=\dfrac{\phi_X^{(k)}(0)}{k!}$.
++ 多元随机变量的概率母函数（略）
+## 收敛性与极限定理
+> 只做一些补充
++ 几乎处处收敛$\Longrightarrow$依概率收敛$\Longrightarrow$依分布收敛，反之不真；
++ $X_n\stackrel{d}{\longrightarrow}X$当且仅当$X_n$的特征函数$\psi_n(t)$点点收敛到$X$的特征函数$\psi(t)$。
++ 几乎必然收敛的$\epsilon-\delta$语言描述：  
+    $X_n\stackrel{a.s.}{\longrightarrow}X$当且仅当存在一个集合$A\in\mathcal{F}$满足$P(A)=0$，对任意$\omega=\Omega\backslash A$及任意$\epsilon>0$，存在$N=N(\epsilon,\omega)$，使得当$n>N$时，
+    $$
+    |X_n(\omega)-X(\omega)|<\epsilon.
+    $$
++ 依概率收敛与几乎处处收敛均满足线性可加性与可乘/除性（除法要求$P(Y=0)=0$）
++ 由B-C引理得到的几乎处处收敛的充分条件：  
+    若$\forall\epsilon>0$，$\displaystyle\sum_{n=1}^\infty P(|X_n-X|>\epsilon)< \infty$，则$X_n\stackrel{a.s.}{\longrightarrow}X$；
+    + 推论：若$X_n\stackrel{p}{\longrightarrow}X$，那么存在一个子列$\{X_{n_k}\}$使得$X_{n_k}\stackrel{a.s.}{\longrightarrow}X$
+# 简单随机模型
+## 随机过程简介
++ 定义：在概率空间$(\Omega,\mathcal{F},P)$上，若$X=\{X(t);t\in T\}$为一族随机变量（可为向量值），称其为随机过程。
+    + 其中$X(t),t\in T$的所有取值$S$成为$X$的状态空间，称$T$为指标集或参数集。（若$t$表示时间，也称$T$为时间参数）
+    + 有时简记为$X=(X_t)_{t\in T},X=\{X_t;t\in T\}$或$\{X_t\},X$（视具体情况而定）
+    > 本课程只考虑实数值随机过程
++ 随机过程可理解为$T\times\Omega\longrightarrow S$上的二元映射：
+    + 当$t,\omega$给定：$X(t,\omega)\longrightarrow\R$；
+    + 当$t$给定：$X(t,\cdot)\longrightarrow$随机变量；
+    + 当$\omega$给定：$X(\cdot,\omega)\longrightarrow$关于$t$的函数（也称为轨道或样本）。
++ 主要分类：
+    |参数\状态|离散|连续|
+    |:------:|:------:|:------:|
+    |**离散**|离散参数离散状态|离散参数连续状态|
+    |**连续**|连续参数离散状态|连续参数连续状态|
+### 随机过程的刻画
++ **分布函数族**：任取$X =\{X_t;t\in T\}$的$k$个参数$t_1,t_2,\cdots,t_k$，称$X_{t_1},\cdots,X_{t_k}$的联合分布函数
+    $$
+    F_{t_1,t_2,\cdots,t_k}(x_1,x_2,\cdots,x_k)=P(X_{t_1}\leq x_1, X_{t_2}\leq x_2,\cdots,X_{t_k}\leq x_k)
+    $$
+    为随机过程$X$的一个$k$阶有限维分布，称函数族
+    $$
+    \{F_{t_1,t_2,\cdots,t_k}(x_1,x_2,\cdots,x_k); t_1,\cdots,t_k\in T, k\geq 1\}
+    $$
+    为随机过程$X$的**有限维分布族**。
+    + 当$S$离散时，有限维分布族可用以下有限维分布列代替：
+    $$
+    P_{t_1,t_2,\cdots,t_k}(x_1,x_2,\cdots,x_k) = P(X_{t_1}=x_1, X_{t_2}=x_2,\cdots,X_{t_k}=x_k), x_1,\cdots,x_k\in S
+    $$
++ 分布函数族性质：
+    + 对称性：对任意$(1, 2, \cdots, k)$的置换$(i_1, i_2, \cdots, i_k)$,
+        $$
+        F_{t_1, t_2, \cdots, t_k}(x_1, x_2, \cdots, x_k) = F_{t_{i_1}, t_{i_2}, \cdots, t_{i_k}}(x_{i_1}, x_{i_2}, \cdots, x_{i_k}).
+        $$
+    + 相容性：对任意$n > m$,
+        $$
+        F_{t_1, \cdots, t_m, \cdots, t_n}(x_1, \cdots, x_m, +\infty, \cdots, +\infty)
+        = F_{t_1, \cdots, t_m}(x_1, \cdots, x_m).
+        $$
++ 柯尔莫哥洛夫存在性定理：设$\{F_{t_1,t_2,\cdots,t_k}(x_1,x_2,\cdots,x_k); t_1,\cdots,t_k\in T, k\geq 1\}$为分布函数族，则存在概率空间$(\Omega,\mathcal{F},P)$及其上的一个随机过程$X=\{X(t);t\in T\}$使$X$的有限维分布族恰为此分布函数族。
++ 比较两个在$(\Omega,\mathcal{F},P)$上随机过程$X_t,Y_t$：
+    + 若二者的有限维分布族相同，则称$Y$为$X$的一个**版本（version）**；
+    + 若对任意$t\in T,P(X_t=Y_t)=1$，则称$Y$为$X$的一个**修正（Modification）**；
+        + 也表示为$\forall t\in T,P(\{\omega:X_t(\omega)=Y_t(\omega)\})=1$
+    + 若存在集合$A\in\mathcal{F}$使$P(A)=1$，且任意$\omega\in A$，任意$t\in T$，$X_t(\omega)=Y_t(\omega)$均成立，则称$X$与$Y$**不可区分（Indistinguishable）**。
+        + 也表示为$\displaystyle P\left(\bigcap_{t\in T}\{\omega:X_t(\omega)=Y_t(\omega)\}\right)=1$
+    > 上述三者关系：不可区分$\Longrightarrow$修正$\Longrightarrow$版本（反之一般不成立）；  
+    > 若$X,Y$为离散参数随机过程，那么不可区分与修正等价。
++ 独立性：设$X =\{X_t;t\in T\}$，$Y =\{Y_u; u\in S\}$都是概率空间$(\Omega,\mathcal{F},P)$上的随机过程，若对任意$k, m \geq 1,t_1,\cdots,t_k\in T,u_1,\cdots,u_m\in S$，
+    $$
+    (X_{t_1},\cdots,X_{t_k})\text{与}(Y_{u_1},\cdots,Y_{u_m})
+    $$
+    独立，则称$X$与$Y$相互独立。
++ 数字特征：
+    + 均值函数：$m_X(t)=E(X_t)$
+    + 方差函数：$D_X(t)=\mathrm{Var}(X_t)$
+    + 自相关函数：$R_X(s,t)=E(X_sX_t)$
+    + 协方差函数：$\mathrm{Cov}_X(s,t)=\mathrm{Cov}(X_s,X_t)$
+### 典型随机过程
+1. **严平稳过程**
+    + 若对任意的$t_1< \cdots<  t_n\in T$以及$h\in T$，$(X(t_1),\cdots,X(t_n))$与$(X(t_1+h),\cdots,X(t_n+h))$同分布，则称随机过程$X=\{X(t);t\in T\}$为严平稳过程。
+    + 例：独立同分布随机变量序列
+2. **（宽）平稳过程**
+    + 若对任意$t\in T, E(X(t))$与$t$无关，且对任意$t,h\in T$，协方差$\mathrm{Cov}(X(t), X(t + h))$与$t$无关，则称随机过程$X$为平稳过程。
+    + 二阶矩存在的严平稳过程一定是平稳过程。
+3. **独立增量过程**
+    + 称随机过程$X=\{X(t);t\in T\}$是独立增量过程，若对任意$n$以及$t_1< \cdots< t_n\in T$，
+        $$
+        X(t_2)-X(t_1),\cdots,X(t_n)-X(t_{n-1})
+        $$
+        相互独立（若指标集$T$有最小元素$t_0$则加上$X(t_1)-X(t_0)$与$X(t_0)$）
+    + 进一步，若对任意$t, t + h, s, s + h \in T$，$X(t+h)-X(t)$与$X(s+h)-X(s)$分布相同，则称$X$为**独立平稳增量过程**。
+    + 性质：
+    如果$X =\{X(t);t∈\R^+\}$为平稳独立增量过程，均值函数$m(t)$与方差函数$D(t)$都存在且连续，那么对任意$t\geq 0$，
+        $$
+        m_X(t) = Ct + E(X(0)),D_X(t) = C_1t + \mathrm{Var}(X(0))
+        $$
+        其中$C=E(X(1))-E(X(0)),C_1=\mathrm{Var}(X(1)-X(0))$.
+    + $T=\N$时独立增量过程就是一列相互独立随机变量的部分和，而初值为$0$的平稳独立增量过程就是一列独立同分布随机变量的部分和。
+    > 随机游动、泊松过程与布朗运动都属于平稳独立增量过程。
+    + 期望有限的独立增量过程满足以下性质：
+        1. 对任意$s, t\in T$且$s < t$, 以及对任意$x\in\R$，
+            $$
+            P(X(t) < x|X(0),\cdots, X(s)) = P(X(t) < x|X(s))
+            $$
+        2. 若对任意$s, t\in T, E(X(t) - X(s)) = 0$, 那么对任意$s < t\in T$，
+            $$
+            E(X(t)|X(0),\cdots, X(s)) = X(s)
+            $$
+        通常称满足性质(i)的随机过程为马氏过程, 满足性质(ii)的过程为鞅(过程)。
+4. 伯努利过程
+    + 称随机过程$X =\{X_n; n \in\Z^+\}$为伯努利过程，若$\{X_n; n \in\Z^+\}$为独立同分布的随机变量序列，而且
+        $$
+        P(X_n = 1) = p, P(X_n = 0) = q = 1 - p, 0 < p < 1.
+        $$
+    + 显然，伯努利过程是严平稳的，但不是独立增量过程（证明见[题集](/posts/随机过程-思考题集/#简单随机模型)）。
+### 停时（离散时间）
++ 定义：称非负整数值的随机变量（可取$+\infty$）$T$是关于随机过程$\{X_n; n\geq 0\}$的停时(Stopping time)，若对任意非负整数$n$，随机事件$\{T=n\}$可以通过随机变量$X_0,\cdots,X_n$表示，也即随机变量$\mathbf{1}_{\{T=n\}}$可表示成随机变量$X_0,\cdots,X_n$的函数。
+    + 当无需强调参考过程$X$时，我们简称$T$为停时。
+## 直线上简单随机游动
++ 随机游动定义：已知$\{X_n; n \geq 0\}$为相互独立的随机变量序列而且对任意$n \geq 1$，$X_n$的分布相同，令
+    $$
+    W_n=\sum_{k=0}^nX_k
+    $$
+    称随机过程$W=\{W_n; n \geq 0\}$为（一维或直线上）的随机游动(Random Walk)；若$X_n \in \R^d, n \geq 0$，其他条件不变，那么我们称$W$为$d$-维随机游动。
+    + 实质：独立同分布随机变量的部分和序列，所以属于独立平稳增量过程。
+    + 称$W_0$的值为初值或初始位置，称$W_0$的分布为初始分布；有时称$X_n$为（第$n$步的）步长。
+    > 以下讨论的随机游动都是**整数值的随机游动**，即$X_n(n\geq 0)$都是整数值随机变量。
++ **简单随机游动**：称满足
+    $$
+    P(X_n = 1) = p, P(X_n =-1) = q = 1 - p, n \geq 1
+    $$
+    的整数值随机游动为简单随机游动（或$(q,p)$-简单随机游动）；
+    + 当$p=q=\dfrac{1}{2}$时称$W$为**简单对称随机游动**。
+### 转移概率
++ 定义：对任意$x,y$及$n\geq 0$，称条件概率$p_n(x,y)=P(W_n=y|W_0=x)$为$W$从初值$x$出发经过$n$步到达$y$的转移概率。
+    + 规定
+        $$
+        p_0(x,y)=\delta_x(y)=\begin{cases}
+        1,&y=x\\
+        0,&y\neq x
+        \end{cases}
+        $$
++ 性质：
+    + 任意$n\geq 0$，$\displaystyle\sum_{y\in\Z}p_n(x,y)=1$；
+    + 任意$n,k\geq 0$，$x,y,z\in\Z$，$\color{red}p_n(x,y)=P(W_{n+k}=y+z|W_k=x+z)$（即转移概率只与时间及位置的相对变化量有关）
+    + $p_n(x,y)=p_n(0,y-x)$（可简记为$p_n(y-x)$）
++ 计算：设步长分布为$F$，则$p_n(x,y)=F^{*n}(\{y-x\})$，其中$F^{*n}(\{y-x\})$表示分布为$F$的$n$重卷积的随机变量落在$y-x$点的概率。
+    <Note type="primary" title="图示">
+    在实际运算中，常使用概率母函数计算：
+        $$
+        \phi_{F^{*n}}(s)=[\phi_F(s)]^n=\left[\sum_{k=0}^\infty P(X_i=k)s^k\right]^n
+        $$
+        然后用反演公式计算概率：
+        $$
+        p_n(x,y)=\frac{\phi_{F^{*n}}^{(y-x)}(0)}{(y-x)!}
+        $$
+        > 注：要求步长取值为非负整数。
+    </Note>
++ 有限维分布：任取$0 \leq k_0 < k_1 < \cdots < k_n, \, r_0, r_1, \cdots, r_n \in \mathbb{Z}$，
+    $$
+    \begin{aligned}
+    &P(W_{k_0} = r_0, W_{k_1} = r_1, \cdots, W_{k_n} = r_n) \\
+    =&P(W_{k_0} = r_0) \prod_{j=1}^n p_{k_j-k_{j-1}}(r_{j-1}, r_j).
+    \end{aligned}
+    $$
+    记$W$的初始分布为$\mu$，则由全概率公式，
+    $$
+    \begin{aligned}
+    P(W_{k_0} = r_0) &= \sum_{i \in \mathbb{Z}} P(W_0 = i, W_{k_0} = r_0) \\
+    &= \sum_{i \in \mathbb{Z}} P(W_0 = i) P(W_{k_0} = r_0 \mid W_0 = i) = \sum_{i \in \mathbb{Z}} \mu(i) p_{k_0}(i, r_0).
+    \end{aligned}
+    $$
+    > 因此初始分布+转移概率族就可以确定随机游动的规律。
+### 基本性质
++ **马氏性**：设$W$是整数值随机游动，则对任意$m, k\in\N$以及状态$i_0, i_1,\cdots, i_{m+1}\in\Z$，
+    $$
+    P(W_{m+k} = i_{m+1}|W_m = i_m,\cdots, W_0 = i_0) = P(W_{m+k} = i_{m+1}|W_m = i_m).
+    $$
+    + 可理解为“将来与历史无关”
++ **对称原理**：设$W$是整数值的随机游动，对任意$n\geq 1$，集合$I\subset\Z$，
+    $$
+    \begin{aligned}
+    &P(W_1>0,\cdots,W_{n-1}>0,W_n\in I|W_0=0)\\
+    =&P(W_1<W_n,\cdots,W_{n-1}<W_n,W_n\in I|W_0=0).
+    \end{aligned}
+    $$
++ **右连续随机游动**：称整数值随机游动$W$是右连续的（或不带右跳的）, 若其步长满足
+    $$
+    P(X_n=1)>0\text{且}\sum_{k=-\infty}^1P(X_n=k)=1.
+    $$
+    > 即步长范围为$-\infty\sim 1$的所有整数值。
+    + 简单随机游动是右连续的随机游动。
++ **首回时**：对任意整数$i$,令$\tau_i=\inf\{n\geq 1,W_n=i\}$，那么$\tau_i$是一个停时。事实上，
+    $$
+    \{\tau_i=n\}=\{W_1\neq i,\cdots,W_{n-1}\neq i,W_n=i\}.
+    $$
+    通常我们称这样定义的$\tau_i$为状态$i$的首回时。若$W_0=i$，$\tau_i$表示随机游动$W$首次回到位置$i$的时间。
+    + 当整数值随机游动$W$右连续且初值为$0$时对任意$i > 0$，
+        $$
+        \{\tau_i = n\} = \{W_1 < W_n,\cdots, W_{n-1} < W_n, W_n = i\}
+        $$
+    + 定理：若整数值随机游动$W$右连续，那么对任意正整数$m$和$n$（默认$m< n$），
+        $$
+        P(\tau_m=n|W_0=0)=\frac{m}{n}P(W_n=m|W_0=0)
+        $$
+    + 推论：对于右连续的随机游动$W$，
+        $$
+        P(W_1>0,\cdots,W_{n-1}>0,W_n=m|W_0=0)=\frac{m}{n}p_n(m)
+        $$
++ 简单随机游动的性质：
+    1. 转移概率
+        $$
+        p_n(x,y)=\begin{cases}
+        \displaystyle\binom{n}{\frac{n+y-x}{2}}p^{\frac{n+y-x}{2}}q^{\frac{n+x-y}{2}},&n-|y-x|\text{为非负偶数}\\
+        0,&\mathrm{otherwise}.
+        \end{cases}
+        $$
+    2. 首回时
+        + $i>0$时，
+            $$
+            \begin{aligned}
+            P(\tau_i=n|W_0=0)&=\frac{i}{n}P(W_n=i|W_0=0)\\
+            &=\begin{cases}
+            \displaystyle\frac{i}{n}\binom{n}{\frac{n+i}{2}}p^{\frac{n+i}{2}}q^{\frac{n-i}{2}},&\frac{n+i}{2}\leq n\text{且为正整数}\\
+            0,&\mathrm{otherwise}.
+            \end{cases}     
+            \end{aligned}
+            $$
+        + $i=0$时，  
+            $P(\tau_0 = 2k + 1|W_0 = 0) = 0$；
+            $$
+            P(\tau_0 = 2k \mid W_0 = 0) = 2 \frac{(2k - 2)!}{k! (k - 1)!} q^k p^k = 
+            \begin{cases} 
+            2pq, & k = 1\\
+            \displaystyle \frac{(2k-3)!!}{(2k)!} \cdot \frac{(4pq)^k}{k!}, & k \geq 2.
+            \end{cases}
+            $$
+    3. 反射原理
+        + 设$W$为简单随机游动，对任意正整数$x,y$,从$(n,x)$到$(n+m,y)$并途中位置回到零点的轨道数与从$(n,-x)$到$(n+m,y)$的轨道数相同。
+            > 这里的轨道是指将随机游动$W$中各位置$(n,W_n)$在平面上绘点并按$n$从小到大的次序用直线依次相连所得到的折线.
+        + 若$W$是简单对称随机游动, 那么对任意$x, y > 0$,
+            $$
+            P(W_{n+m} = y, \min_{n< k< n+m}W_k\leq 0|W_n = x) = P(W_{n+m}= y|W_{n} = -x).
+            $$
+### 简单应用
+1. 选票问题
+    在一次选举中候选人$A$得到了$n$张票，候选人$B$得到$m$张票，$n>m$。则投票过程中$A$始终领先$B$的概率为
+    $$
+    P(W_1>0,W_2>0,\cdots,W_{n+m-1}>0|W_{n+m}=n-m,W_0=0)=\frac{n-m}{n+m}
+    $$
+2. 设$W$为$(q,p)$-简单随机游动，记$\rho=\dfrac{p}{q}$。任给两个状态（整数）$m,n$使得$m< 0,n>0$，从$0$出发，则$W$在到达$n$之前先到达$m$的概率为
+    $$
+    \begin{cases}
+    \displaystyle\frac{n}{n-m},&\rho=1\\[10pt]
+    \displaystyle\frac{\rho^n-1}{\rho^{n-m}-1},&\rho\neq 1
+    \end{cases}
+    $$
+## 泊松过程
+### 计数过程
++ 定义：称非负整数值的随机过程$N = \{N(t);t\geq 0\}$为计数过程或点过程，若其样本函数$N(\cdot,\omega)$为右连续的单调不降函数。
+    + 若还存在一个集合$A$使得$P(A) = 1$而且
+        $$
+        A\subset\{\omega; N(t, \omega) - N(t-, \omega) \geq 1,\forall t\geq0\}
+        $$
+        则称$N$是简单计数过程，其中$N(t-, \omega)$表示函数$N(\cdot,\omega)$在$t$点的左极限。
+        > 本质上，简单计数过程要求依概率$1$保证在任一时刻至多发生一次随机事件.
+    + 对任意给定的$\omega\in\Omega$，$N(t,\omega)$关于$t$单调不降且右连续。对任意给定的整数$k>0$，可定义
+        $$
+        T_k(\omega)\coloneqq\inf\{t\geq 0;N(t,\omega)\geq k\}
+        $$
+        称$T_k$为第$k$次（随机事件）到达时间。$T_k$随$k$增加单调不降且$T_0=0$。
+    + 令$W_k=T_k-T_{k-1}$，那么$W_k$表示第$k-1$个事件与第$k$个事件发生的时间间隔，一般称为第$k$个间隔时间。那么
+        $$
+        T_k=\sum_{i=1}^kW_i
+        $$
+        为$\{W_i;i\geq 1\}$的部分和。
++ $N_t,W_k,T_k$的关系：
+    + $\displaystyle T_{N(t)}\leq t,N(T_k)\geq k\Longrightarrow N(t)=\sup\{k\geq 0;T_k\leq t\}=\sup\{n\geq 0;\sum_{i=1}^nW_k\leq t\}$
+    + $\{N(t)\geq k\}=\{T_k\leq t\},\{N(t)=k\}=\{T_{k}\leq t\}\backslash\{T_{k+1}\leq t\}=\{T_{k+1}>t\}\backslash\{T_k>t\}$
+        > 由此可构建计数过程与随机游动的关系。
+### 泊松过程及其刻画
++ 定义：称计数过程$N=\{N(t);t\geq 0\}$是强度为$\lambda$的泊松（Poisson）过程，若$N$具有独立同分布的时间间隔序列$\{W_k;k\geq 1\}$且间隔时间服从参数为$\lambda$的指数分布。
+    + $T_k=\sum_{i=1}^kW_i$服从$Ga(k,\lambda)$分布；
+    + 泊松过程是初值为$0$的简单计数过程。
++ 记强度为$\lambda$的泊松过程为$N$，那么对任意$t > 0$, $N(t)$服从强度为$\lambda t$的泊松分布，因此$E(N(t))=\mathrm{Var}(N(t))=\lambda t$.
++ <Text type = "red">$N$为泊松过程当且仅当$N$是初值为$0$的非零简单计数过程且具有平稳独立增量。</Text>
+
+### 到达时间的条件分布
++ 设 $\{T_n; n \geq 1\}$ 是强度为 $\lambda$ 的泊松过程 $N = \{N(t); t \geq 0\}$ 的到达时刻序列，那么对任意 $0 \leq s_1 < t_1 \leq s_2 < \cdots \leq s_n < t_n \leq t$，
+$$
+P(T_j \in (s_j, t_j], 1 \leq j \leq n \mid N(t) = n) = \frac{n!}{t^n} \prod_{j=1}^n (t_j - s_j).
+$$
++ <Text type = "red">设$X_{(1)},X_{(2)},\cdots,X_{(n)}$为$(0, t]$上均匀分布随机变量的次序统计量，则$(X_{(1)},X_{(2)},\cdots,X_{(n)})$的联合分布与给定$N(t) = n$的条件下的$(T_1, T_2,\cdots,T_n)$的联合分布相同。</Text>
+    > $T_1,\cdots, T_n$可看作$n$个独立的$(0, t]$上均匀分布随机变量的次序统计量.
+### 稀疏过程
++ 定义：若将计数过程$N = \{N(t)\}$记录的每一个随机事件都能独立于其他事件以概率$p_i$归为第$i$类事件，其中$\displaystyle\sum_{i=1}^m p_i = 1$，那么称记录第$ i$类事件发生次数的计数过程$ N_i = \{N_i(t)\}$为$N$的稀疏过程。
++ 若$ N$是强度为$ \lambda$的泊松过程，那么它的稀疏过程$ N_1, N_2, \cdots, N_m$是独立的泊松过程，强度分别$\lambda p_1, \cdots, \lambda p_m$。
+### 复合泊松过程
++ 定义：若$N=\{N(t);t\geq 0\}$为泊松过程，$\{Y_n; n\geq 1\}$为一列独立同分布的随机变量且与$N$独立。对任意$t\geq 0$，令$\displaystyle X(t)=\sum_{n=1}^{N(t)}Y_n$，则称$X=\{X(t);t\geq 0\}$为复合泊松过程。
++ 性质：$E(X(t)) = \lambda tE(Y_1),E(X^2(t))= [\lambda tE(Y_1)]^2 +\lambda tE(Y_1^2)$.

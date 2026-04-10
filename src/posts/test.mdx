@@ -158,54 +158,6 @@ H<Sup>2</Sup>O 与 CO<Sub>2</Sub>
   </Tab>
 </Tabs>
 
-下面是 Quiz 组件示例：
-
-<QuizGroup>
-  <Quiz type="true">
-    <p>编译时多态主要指运算符重载与函数重载，而运行时多态主要指虚函数。</p>
-  </Quiz>
-
-<Quiz type="multi">
-  <p>下列哪些项是“派生类对象替换基类对象”？</p>
-  <QuizOptions>
-    <QuizOption correct>`p1=&circle1;`</QuizOption>
-    <QuizOption>`q1=&shape1;`</QuizOption>
-    <QuizOption correct>`shape1=circle1;`</QuizOption>
-    <QuizOption>`circle1=shape1;`</QuizOption>
-  </QuizOptions>
-  <QuizAnswer>
-    <ul>
-      <li>令基类对象的指针指向派生类对象</li>
-      <li>派生类指针不能指向基类对象</li>
-      <li>派生类对象可以赋值给基类对象（对象切片）</li>
-      <li>基类对象不能直接赋值给派生类对象</li>
-    </ul>
-  </QuizAnswer>
-</Quiz>
-
-<Quiz type="single">
-  <p>下列叙述正确的是：</p>
-  <QuizOptions>
-    <QuizOption>虚函数只能定义成无参函数</QuizOption>
-    <QuizOption>虚函数不能有返回值</QuizOption>
-    <QuizOption>可以定义虚构造函数</QuizOption>
-    <QuizOption correct>A、B、C 都不对</QuizOption>
-  </QuizOptions>
-  <QuizAnswer>虚函数既可以有参数也可以有返回值，且不存在虚构造函数。</QuizAnswer>
-</Quiz>
-
-  <Quiz type="fill">
-    <p>
-      若定义 `int e=8; double f=6.4, g=8.9;`，则表达式`f+int (e/3*int (f+g)/2)%4` 的值为
-      <QuizGap answer="9.4" />。
-    </p>
-    <QuizAnswer>
-      注意运算顺序和数据类型。
-      <QuizMistake dataType="易错答案">8.4</QuizMistake>
-    </QuizAnswer>
-  </Quiz>
-</QuizGroup>
-
 <details class="mdx-collapse">
   <summary class="mdx-collapse__summary">默认折叠块</summary>
   <div class="mdx-collapse__content">

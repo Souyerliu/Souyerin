@@ -1,0 +1,222 @@
+---
+title: 数理统计 Cheat Sheet
+date: 2026-04-06 09:31:17
+categories: [数学,数理统计] 
+tags:
+    - 概率论
+    - 数理统计
+cover: ./数理统计-Cheat-Sheet/stat_cover.png
+sticky: true
+---
+> 经过笔者的深思熟虑，笔者决定将数理统计的内容以类似[概率论Cheat Sheet](/posts/mathematics/概率论-cheat-sheet/)的形式整理，中间穿插一些习题。
+内容应该不会像概率论那么多了（大概
+
+# 统计量及其分布
+## 总体与样本
++ **总体**：研究对象的全体
+    + 可用一个分布描述，因此也可指服从某一分布的随机变量（用分布列/分布函数表示）
++ **个体**：组成总体的每个成员
++ **样本**：从总体中（随机）抽取的$n$个个体，记为$\mathbf{X}=(X_1,X_2,\cdots,X_n)$。下面讨论这种情况的路径数。
+    + $n$称为样本量；
+    + **样本的二重性**：样本可同时作为随机变量（观测前）【用于计算估计量】，也可作为确定的观测值（观测后）【实际应用】。样本的观察值用$X=(x_1,x_2,\cdots,x_n)$表示。
+    + 后续样本均以小写表示。
+    
++ 完全样本：所有观测值均确定；不完全样本：观测值无精确值（也称分组样本）
++ **简单随机抽样**：样本满足独立同分布（记为$x_1,x_2,\cdots,x_n\stackrel{i.i.d}{\sim}X$）
+    + 设总体$X$的分布函数为$F(x)$，则样本量为$n$的样本联合分布函数为
+        $$
+        F_X(x_1,x_2,\cdots,x_n)=\prod_{i=1}^nF(x_i)
+        $$
+    + 若总体无限，则独立同分布易得；若总体有限，则只要个体数相比样本量很大，也可近似得到独立性。
+    > 如无特别声明，一般默认样本均通过简单随机抽样得到。
++ **经验分布函数**：设$I(A)$为集合$A$的示性函数，$x_1,\cdots,x_n$为总体得到的一组样本（给定），总体分布函数为$F(x)$，称
+    $$
+    F_n(x)=\frac{1}{n}\sum_{i=1}^nI(x_i\leq x)
+    $$
+    为经验分布函数。（图像类似阶梯分段函数）
+    + 经验分布列：
+        |$X$|$t_1$|$\cdots$|$t_k$|
+        |:--:|:--:|:--:|:--:|
+        |$p$|$\dfrac{f_1}{n}$|$\cdots$|$\dfrac{f_k}{n}$|
+        
+        其中$t_1< \cdots < t_k$为$x_1,\cdots,x_n$的不同取值，$f_1,\cdots,f_k$为对应的频数。
+        从而分布函数也可写作：
+        $$
+        F_n(x)=\begin{cases}
+        0,&x< t_1\\
+        \frac{1}{n}\sum_{j=1}^if_j,&t_i\leq x< t_{i+1},i=1,2,\cdots,k-1\\
+        1,&x\geq t_k
+        \end{cases}
+        $$
+    + 将$I(x_i\leq x)$记为随机变量$I_i$的分布函数，则$I_i\sim b(1,F(x))$。因此由伯努利大数定律，$F_n(x)\stackrel{p}{\longrightarrow}F(x)$
+    + **格里文科定理**：设$x_1,\cdots,x_n$为取自$F(x)$的样本，经验分布函数为$F_n(x)$，则$n\to\infty$时，有
+        $$
+        P(\sup_{x\in\R}|F_n(x)-F(x)|\to 0)=1
+        $$
+        所以$F_n(x)$是$F(x)$的一个良好近似。
++ 样本信息$\{x_1,\cdots,x_n\}\Longleftrightarrow$经验分布函数+样本量信息$\{n,F_n(x)\}$
++ 频数与频率表、直方图与茎叶图（略，可见DATA 8）
+## 常见统计量及其抽样分布
++ **统计量**定义：设$x_1,x_2,\cdots,x_n$为取自某总体的样本，若样本函数$T=T(x_1,x_2,\cdots,x_n)$中不含有任何未知参数，则称$T$为统计量。
+    + **抽样分布**：统计量的分布。（可依赖未知参数）
+### 样本矩及其分布
+1. **样本均值**（度量样本中心位置）
+    + 定义：样本的算术平均值，一般用$\overline{x}$表示：
+        $$
+        \overline{x}=\frac{x_1+x_2+\cdots+x_n}{n}=\frac{1}{n}\sum_{i=1}^nx_i
+        $$
+        > 对于分组样本：$\displaystyle\overline{x}=\frac{x_1f_1+\cdots+x_kf_k}{n},n=\sum_{i=1}^nx_i$（$x_i$为组中值，$f_i$为频数）
+    + 性质：
+        + 样本观测值与样本均值之差称为**偏差**。总偏差之和$\displaystyle\sum_{i=1}^n(x_i-\overline{x})=0$；
+        + 观测值与样本均值偏差平方和最小（$\displaystyle\sum_{i=1}^n(x_i-\overline{x})^2\leq\sum_{i=1}^n(x_i-c)^2,\forall c\in\R$）
+    + 抽样分布：
+        + 若总体分布为$N(\mu,\sigma^2)$，则$\overline{x}$的精确分布为$N\left(\mu,\dfrac{\sigma^2}{n}\right)$；【正态分布可加性】
+        + 若总体分布未知（或非抽样分布），且$EX=\mu,\mathrm{Var}X=\sigma^2$存在，则$n$较大时，$\overline{x}$渐近分布为$N\left(\mu,\dfrac{\sigma^2}{n}\right)$。【中心极限定理】
+2. **样本方差&样本标准差**（度量样本离散程度）
+    + 定义1：
+        $$
+        s_n^2=\frac{1}{n}\sum_{i=1}^n(x_i-\overline{x})^2,\quad s_n=\sqrt{s_n^2}
+        $$
+    + 定义2（无偏方差、标准差）：
+        $$
+        s^2=\frac{1}{n-1}\sum_{i=1}^n(x_i-\overline{x})^2,\quad s=\sqrt{s^2}
+        $$
+        > 比定义1更常用，之后样本方差（标准差）常指$s^2$（$s$）；分组样本定义略。
+    + **偏差平方和**：将$\displaystyle\sum_{i=1}^n(x_i-\overline{x})$称为偏差平方和，其自由度为$n-1$（均值限制$1$个自由度）
+        + 等价表示：$\displaystyle\sum_{i=1}^n(x_i-\overline{x})^2=\sum_{i=1}^nx_i-n\overline{x}^2$
+    + 性质：
+        + 设总体$X$二阶矩存在，记$EX=\mu,\mathrm{var}{X}=\sigma^2$，$x_1,\cdots,x_n$为从$X$得到的样本，样本均值为$\overline{x}$，样本方差为$s^2$，则
+            $$
+            \begin{aligned}
+            &E\overline{X}=\mu,\quad\mathrm{Var}\overline{X}=\frac{\sigma^2}{n}\\
+            &Es^2=\sigma^2,\quad Es_n^2=\frac{n-1}{n}\sigma^2
+            \end{aligned}
+            $$
+3. **样本矩**（样本均值、方差的推广）
+    + 样本$k$阶原点矩：$\displaystyle a_k=\frac{1}{n}\sum_{i=1}^nx_i^k$；
+    + 样本$k$阶中心矩：$\displaystyle b_k=\frac{1}{n}\sum_{i=1}^n(x_i-\overline{x})^k$；
+    + 性质（与总体矩关系）：$Ea_k=\mu_k=EX^k,\quad Eb_k=\nu_k=E(X-EX)^k$.
+4. **样本偏度**（样本分布偏离对称的程度）
+    + 定义：$\displaystyle\hat{\beta_s}=\frac{b_3}{b_2^{\frac{3}{2}}}=\frac{1}{n}\sum_{i=1}^ny_i^3\quad (y_i=\frac{x_i-\overline{x}}{s})$
+    + 与总体偏度的关系：$n\to\infty$时，$\hat{\beta_s}\to\beta_s=\dfrac{\nu_3}{\nu_2^{3/2}}$.
+5. **样本峰度**（样本分布尾部肥瘦程度）
+    + 定义：$\displaystyle\hat{\beta_k}=\frac{b_4}{b_2^2}-3$
+    + 与总体峰度的关系：略（类似偏度）
+6. 经验分布函数$F_n(x)$的所有特征数
+    + 因为经验分布只依赖于样本，有了样本观察值之后，它是完全确定的，所以它的任何特征数不依赖于任何未知参数，都是统计量。
+### 蒙特卡罗分布
+> 用于确定一些统计量的抽样分布
++ 要求：$T$可表示为某分布已知的随机变量的参数（即不含未知参数）。
++ 原理：由格里文科定理，若$Y_1,\cdots,Y_m$为与$Y$独立同分布的$M$个观测值，则当$M\to\infty$时，$\{T(Y_1),\cdots,T(Y_m)\}$的经验分布一致收敛于$T(Y)$的分布$F_T(t)$。
++ 具体算法：
+    1. 从$n$维标准正态分布中产生随机向量$Y$，计算统计量$T(Y)$；
+    2. 独立重复上步$M$次，得到$M$个$T(Y)$，记为$T_1,\cdots,T_m$；
+    3. $T_1,\cdots,T_m$的经验分布近似$T(Y)$的抽样分布。
+### 次序统计量及其分布
++ 定义：设$x_1,\cdots,x_n$为取自总体$X$的样本，对其进行排序得到$x_{(1)}\leq x_{(2)}\leq\cdots\leq x_{(n)}$，则称$x_{(i)}$为第$i$个次序统计量，$(x_{(1)},x_{(2)},\cdots,x_{(n)})$称为样本的次序统计量。
+    + $x_{(n)}=\max\{x_1,\cdots,x_n\}$为样本的**最大次序统计量**，$x_{(1)}=\min\{x_1,\cdots,x_n\}$为样本的**最小次序统计量**。
+    + $x_{(1)},x_{(2)},\cdots,x_{(n)}$一般不独立，也不同分布。下面仅对连续分布情况讨论抽样分布。
++ 抽样分布：
+    1. 单个次序统计量
+        + 设总体$X$密度函数为$p(x)$，分布函数为$F(x)$，$x_1,\cdots,x_n$为样本，则$x_{(k)}$的密度函数为
+            $$
+            p_k(x)=\frac{n!}{(k-1)!(n-k)!}(F(x))^{k-1}(1-f(x))^{n-k}p(x)
+            $$
+            特别地，$x_{(1)}$的密度函数为$n[1-F(x)]^{n-1}p(x)$，$x_{(n)}$的密度函数为$n[F(x)]^{n-1}p(x)$。
+        + 当总体分布为$U(0,1)$，则$p_k(x)=\dfrac{n!}{(k-1)!(n-k)!}x^{k-1}(1-x)^{n-k},0< x< 1 $
+            > 可知$x_{(k)}$服从Beta分布$Be(k,n-k+1)$，$EX_{(k)}=\dfrac{k}{n+1}$。
+    2. 多个次序统计量
+        + 二元情形：$(X_{(i)},X_{(j)})$（$i< j$）的联合概率密度函数为
+            $$
+            p_{ij}(y,z)=\frac{n!}{(i-1)!(j-i-1)!(n-j)!}[F(y)]^{i-1}[F(z)-F(y)]^{j-i-1}[1-F(z)]^{n-j}p(y)p(z),\quad y\leq z
+            $$
+        + $n$元情形：$(x_{(1)},x_{(2)},\cdots,x_{(n)})$的联合概率密度函数为
+            $$
+            p_\mathbf{X}(y_1,y_2,\cdots,y_n)=n!\prod_{k=1}^np(y_k),y_1\leq y_2\leq\cdots\leq y_n
+            $$
++ 样本极差：$R_n=X_{(n)}-X_{(1)}$
+### 样本中位数与样本分位数
++ **样本分位数**：
+    + 定义1（课本定义）：
+        $$
+        m_p^*=\begin{cases}
+        X_{\lfloor np+1\rfloor},&np\notin\Z\\
+        \frac{1}{2}(X_{(np)}+X_{(np+1)}),&np\in\Z
+        \end{cases}
+        $$
+    + 定义2（线性插值）：
+        $$
+        m_p=X_{(k)}+[(n+1)p-k](X_{(k+1)}-X_{(k)}),\quad k=\lfloor (n+1)p\rfloor
+        $$
++ **样本中位数**：当$p=\frac{1}{2}$时，
+    $$
+    m_{0.5}=\begin{cases}
+        X_{(\frac{n+1}{2})},&n\text{为奇数}\\
+        \frac{1}{2}\left(X_{(\frac{n}{2})}+X_{(\frac{n}{2}+1)}\right),&n\text{为偶数}
+        \end{cases}
+    $$
+    为样本中位数。
++ 渐近分布：设总体密度为$p(x)$，$\xi_\alpha$为$\alpha$-分位数，$p(x)$在$\xi_\alpha$处连续且$p(\xi_a)>0$，则$n\to\infty$时，样本$\alpha$-分位数的渐近分布
+    $$
+    m_\alpha\stackrel{\cdot}{\sim}N\left(\xi_\alpha,\frac{\alpha(1-\alpha)}{n[p(\xi_\alpha)]^2}\right)
+    $$
+    > 渐近分布方差随$n$增大趋于$0$，说明中位数有较强稳健性。
+### 五数概括与箱线图
++ 五数概括：$x_{\mathrm{min}}\quad Q_1(=m_{0.25})\quad m_{0.5}\quad Q_3(=m_{0.75})\quad x_{\mathrm{max}}$
++ 箱线图（略，网上一搜就有）
+    > $m_{0.5}$靠近$Q_1$表示右偏，靠近$Q_3$表示左偏。
+## 三大抽样分布
+> 即卡方分布、F分布和t分布，均为由正态分布样本导出的三个统计量。
+### 卡方分布
++ 定义：设$x_1,x_2,\cdots,x_n\stackrel{i.i.d}{\sim}N(0,1)$，则称$\displaystyle\sum_{k=1}^nX_k^2$的分布为自由度$n$的$\chi^2$分布，记为$\chi^2(n)$。
+    > 若总体分布为$N(\mu,\sigma^2)$，可先构造$z_i=\dfrac{x-\mu}{\sigma}$.
+    + 概率密度函数（$\chi^2(n)=Ga\left(\dfrac{n}{2},\dfrac{1}{2}\right)$）：
+        $$
+        p(x)=\frac{1}{\Gamma(\frac{n}{2})}\left(\frac{1}{2}\right)^{\frac{n}{2}}x^{(\frac{n}{2}-1)}e^{-\frac{x}{2}}\quad (x>0)
+        $$
++ 性质：
+    + 卡方分布具有可加性；
+    + 若$Y\sim\chi^2(n)$，则$EY=n,\mathrm{Var}Y=2n$；
+    + 当$n\to\infty$，$\chi^2(n)\stackrel{d}{\longrightarrow}N(n,2n)$；【中心极限定理】
+    + 下侧$\alpha$-分位数：若$Y\sim\chi^2(n)$，则$P(Y\leq\chi_\alpha^2(n))=\alpha$。
++ **卡方分布重要应用**：设$x_1,\cdots,x_n$为总体$N(\mu,\sigma^2)$的一个样本，令样本均值为$\overline{x}$，样本方差为$s^2$，则
+    + $\color{red}\displaystyle\overline{x}\sim N\left(\mu,\frac{\sigma^2}{n}\right)$；
+    + $\color{red}\displaystyle\frac{(n-1)s^2}{\sigma^2}\sim\chi^2(n-1)$；
+    + <Text type = "red">$\overline{x}$与$s^2$相互独立。</Text>
+### F分布
++ 定义：设$X\sim\chi^2(n),Y\sim\chi^2(m)$且相互独立，则$\dfrac{\frac{1}{n}X}{\frac{1}{m}Y}$的分布为自由度$(n,m)$的F分布，记为$F(n,m)$。
++ 性质：
+    + 分布取值一定非负
+    + 设$x_1,\cdots,x_n$为$N(\mu_1,\sigma_1^2)$的样本，$y_1,\cdots,y_m$为$N(\mu_2,\sigma_2^2)$的样本，且相互独立。两个样本方差分别记为$s_x^2$和$s_y^2$，则
+        $$
+        F=\frac{\frac{s_x^2}{\sigma_1^2}}{\frac{s_y^2}{\sigma_2^2}}\sim F(n-1,m-1)
+        $$
+        当$\sigma_1^2=\sigma_2^2$时$\dfrac{s_x^2}{s_y^2}\sim F(n-1,m-1)$.
+    + 若$T\sim F(n,m)$，则$U=\dfrac{1}{T}\sim F(m,n)$；
+    + 分位数：记$F(n,m)$的$\alpha$-分位数为$F_\alpha(n,m)$，则$F_{1-\alpha}(m,n)=\dfrac{1}{F_\alpha(m,n)}$.
+### t分布
++ 定义：设$X\sim N(0,1),Y\sim\chi^2(n)$且相互独立，则称$\dfrac{X}{\sqrt{\frac{Y}{n}}}$的分布为自由度为$n$的t分布，记为$t(n)$。
+    + 密度函数：$\displaystyle p(x)=\frac{1}{\sqrt{n}B(\frac{1}{2},\frac{n}{2})}\left(1+\frac{x^2}{n}\right)^{-\frac{n+1}{2}}$
+        > $n=1$时，$p(x)=\dfrac{1}{\pi(1+x^2)}$，即服从柯西分布。
++ 性质：
+    + 记$t(n)$的下侧$\alpha$-分位数为$t_\alpha(n)$，则$t_{1-\alpha}(n)=-t_\alpha(n)$；
+    + $n>1$时期望为$0$，$n>2$时方差为$\frac{n}{n-2}$
++ 应用：设$x_1,\cdots,x_n$为$N(\mu,\sigma^2)$的样本，样本均值$\overline{x}$，样本方差$s^2$，则$\dfrac{\sqrt{n}(\overline{x}-\mu)}{s}\sim t(n-1)$
+    + 推论：设$x_1,\cdots,x_n$为$N(\mu_1,\sigma_1)$的样本，$y_1,\cdots,y_m$为$N(\mu_2,\sigma_2)$的样本，且相互独立。两个样本的均值方差分别记为$\overline{x},s_x^2$和$\overline{y},s_y^2$，则
+        $$
+        \frac{\overline{x}-\overline{y}-(\mu_1-\mu_2)}{s_w\sqrt{\frac{1}{m}+\frac{1}{n}}}\sim t(m+n-2)
+        $$
+        其中$s_w^2=\dfrac{(m-1)s_x^2+(n-1)s_y^2}{m+n-2}$.
+## 充分统计量
++ 充分性定义：给定统计量$T=t$时，样本的条件分布$F_\theta(x_1,\cdots,x_n|T=t)$不含有$\theta$的信息。（与$\theta$无关）
++ 充分性原则：任何统计推断均可基于充分统计量进行。
+### 因子分解定理
+> 概率函数：随机变量$X$的概率函数$f(x)$在连续情况下为概率密度函数，在离散情况下为概率分布列。
++ 设总体的概率函数为$f(x;\theta)$，$x_1,\cdots,x_n$为样本，则$T(x_1,\cdots,x_n)$为充分统计量$\Longleftrightarrow$存在两个函数$g(t,\theta)$和$h(x_1,\cdots.x_n)$使得对任意$\theta$和一组观测值$x_1,\cdots,x_n$，有
+    $$
+    f(x_1,\cdots,x_n;\theta)=g(T(x_1,\cdots,x_n),\theta)\cdot h(x_1,\cdots,x_n)
+    $$
+    > 注：$h(x_1,\cdots,x_n)$大概率会取$1$，所以关键在于将概率函数能否表示为$T$和$\theta$的函数。
++ 若$T$为充分统计量，且存在某个函数$h(\cdot)$使$T$可表示为$t=h(s)$，则统计量$S$也是充分统计量。
+    + 极小充分统计量：若对任意充分统计量$T$，均存在函数$h$使$T^*(\mathbf{X})=h(T(\mathbf{X}))$，则称$T^*$为极小充分统计量。
+        > 通常因子分解定理所得到的充分统计量即为极小充分统计量。
