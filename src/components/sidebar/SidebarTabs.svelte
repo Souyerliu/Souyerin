@@ -44,11 +44,6 @@
 {/if}
 
 <style>
-  /* :global 和渐变样式无法原子化，保留 */
-  :global(#sidebar.affix) .tab {
-    padding-top: 0.625rem;
-  }
-
   .tab .item {
     cursor: pointer;
     display: inline-flex;

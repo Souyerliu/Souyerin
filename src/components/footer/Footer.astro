@@ -79,7 +79,7 @@ const iconColor = sanitizeThemeColor(
 
 <footer
   id="footer"
-  class="text-grey-5 text-sm bg-body-bg-shadow mt-4 py-2"
+  class="text-grey-7 text-sm bg-body-bg-shadow mt-4 py-2"
 >
   <div class="inner mx-auto w-full max-w-3xl px-4">
     <div class="status text-center w-full">
@@ -147,7 +147,7 @@ const iconColor = sanitizeThemeColor(
             <a
               href={config.icp.icpurl || "https://beian.miit.gov.cn/"}
               target="_blank"
-              class="text-grey-5 hover:opacity-80 border-b border-dashed"
+              class="text-grey-7 hover:opacity-80 border-b border-dashed"
             >
               {config.icp.icpnumber}
             </a>
@@ -157,7 +157,7 @@ const iconColor = sanitizeThemeColor(
                 <a
                   target="_blank"
                   href={`https://beian.mps.gov.cn/#/query/webSearch?code=${config.icp.recordcode}`}
-                  class="inline-block text-grey-5 hover:opacity-80 border-b border-dashed"
+                  class="inline-block text-grey-7 hover:opacity-80 border-b border-dashed"
                 >
                   {config.icp.icon && (
                     <img
@@ -192,6 +192,12 @@ const iconColor = sanitizeThemeColor(
   @media (min-width: 1440px) {
     .inner {
       max-width: 1340px;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    #footer .inner {
+      padding-left: calc(15rem + 0.875rem);
     }
   }
 </style>

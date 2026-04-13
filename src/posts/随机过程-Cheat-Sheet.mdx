@@ -214,7 +214,7 @@ sticky: true
 + 几乎处处收敛$\Longrightarrow$依概率收敛$\Longrightarrow$依分布收敛，反之不真；
 + $X_n\stackrel{d}{\longrightarrow}X$当且仅当$X_n$的特征函数$\psi_n(t)$点点收敛到$X$的特征函数$\psi(t)$。
 + 几乎必然收敛的$\epsilon-\delta$语言描述：  
-    $X_n\stackrel{a.s.}{\longrightarrow}X$当且仅当存在一个集合$A\in\mathcal{F}$满足$P(A)=0$，对任意$\omega=\Omega\backslash A$及任意$\epsilon>0$，存在$N=N(\epsilon,\omega)$，使得当$n>N$时，
+    $X_n\stackrel{a.s.}{\longrightarrow}X$当且仅当存在一个集合$A\in\mathcal{F}$满足$P(A)=0$，对任意$\omega=\Omega\setminus A$及任意$\epsilon>0$，存在$N=N(\epsilon,\omega)$，使得当$n>N$时，
     $$
     |X_n(\omega)-X(\omega)|<\epsilon.
     $$
@@ -481,7 +481,7 @@ sticky: true
         为$\{W_i;i\geq 1\}$的部分和。
 + $N_t,W_k,T_k$的关系：
     + $\displaystyle T_{N(t)}\leq t,N(T_k)\geq k\Longrightarrow N(t)=\sup\{k\geq 0;T_k\leq t\}=\sup\{n\geq 0;\sum_{i=1}^nW_k\leq t\}$
-    + $\{N(t)\geq k\}=\{T_k\leq t\},\{N(t)=k\}=\{T_{k}\leq t\}\backslash\{T_{k+1}\leq t\}=\{T_{k+1}>t\}\backslash\{T_k>t\}$
+    + $\{N(t)\geq k\}=\{T_k\leq t\},\{N(t)=k\}=\{T_{k}\leq t\}\setminus\{T_{k+1}\leq t\}=\{T_{k+1}>t\}\setminus\{T_k>t\}$
         > 由此可构建计数过程与随机游动的关系。
 ### 泊松过程及其刻画
 + 定义：称计数过程$N=\{N(t);t\geq 0\}$是强度为$\lambda$的泊松（Poisson）过程，若$N$具有独立同分布的时间间隔序列$\{W_k;k\geq 1\}$且间隔时间服从参数为$\lambda$的指数分布。
@@ -503,3 +503,5 @@ $$
 ### 复合泊松过程
 + 定义：若$N=\{N(t);t\geq 0\}$为泊松过程，$\{Y_n; n\geq 1\}$为一列独立同分布的随机变量且与$N$独立。对任意$t\geq 0$，令$\displaystyle X(t)=\sum_{n=1}^{N(t)}Y_n$，则称$X=\{X(t);t\geq 0\}$为复合泊松过程。
 + 性质：$E(X(t)) = \lambda tE(Y_1),E(X^2(t))= [\lambda tE(Y_1)]^2 +\lambda tE(Y_1^2)$.
+
+# 离散状态马尔科夫链

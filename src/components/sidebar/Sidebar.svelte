@@ -126,28 +126,6 @@
     }
   });
 
-  $effect(() => {
-    if (!sidebarElement || !innerElement) {
-      return;
-    }
-
-    const sidebar = sidebarElement;
-    const inner = innerElement;
-
-    const updateMinHeight = () => {
-      sidebar.style.minHeight = isAffix ? `${inner.offsetHeight}px` : "";
-    };
-
-    updateMinHeight();
-
-    const resizeObserver = new ResizeObserver(updateMinHeight);
-    resizeObserver.observe(inner);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  });
-
   onMount(() => {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
@@ -155,44 +133,46 @@
     // Initialize menu active state
     initMenuActive();
 
+    let affixThreshold = 0;
+
+    const updateAffixThreshold = () => {
+      if (!sidebarElement || !innerElement) {
+        affixThreshold = 0;
+        return;
+      }
+
+      const sidebarTopInDocument =
+        sidebarElement.getBoundingClientRect().top + window.scrollY;
+      const innerMarginTop = Number.parseFloat(
+        window.getComputedStyle(innerElement).marginTop,
+      );
+
+      affixThreshold = Math.max(sidebarTopInDocument - innerMarginTop, 0);
+    };
+
     // Handle scroll for affix behavior on desktop
     const handleScroll = () => {
-      // Calculate header height: nav (3.125rem = 50px) + header cover (70vh) + waves
-      const headerElement = document.querySelector(
-        "#imgs",
-      ) as HTMLElement | null;
-      const navElement = document.querySelector("#nav") as HTMLElement | null;
-      const wavesElement = document.querySelector(
-        "#waves",
-      ) as HTMLElement | null;
-
-      let headerHeight = 0;
-      if (headerElement) {
-        headerHeight = headerElement.offsetHeight;
-      }
-      if (navElement) {
-        headerHeight += navElement.offsetHeight;
-      }
-      if (wavesElement) {
-        headerHeight += wavesElement.offsetHeight;
-      }
-
       // Apply affix when scrolled past header and on desktop (width >= 1024px)
-      // 260px 能保证侧边栏过渡效果自然
       const shouldAffix =
-        window.scrollY > headerHeight - 260 && window.innerWidth >= 1024;
+        window.scrollY > affixThreshold && window.innerWidth >= 1024;
       isAffix = shouldAffix;
     };
 
+    const handleResize = () => {
+      updateAffixThreshold();
+      handleScroll();
+    };
+
+    updateAffixThreshold();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
 
     // Initial check
     handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
   });
 
@@ -256,11 +236,10 @@
   /* Sidebar container */
   #sidebar {
     position: static;
-    overflow: scroll;
+    overflow: visible;
     width: 100%;
     top: 0;
     bottom: 0;
-    transition: all 0.3s ease;
   }
 
   #sidebar::-webkit-scrollbar {
@@ -290,17 +269,6 @@
   }
 
   /* Affix styles */
-  #sidebar.affix > .inner {
-    position: fixed;
-    width: 15rem;
-    top: 0;
-  }
-
-  #sidebar.affix .panels {
-    padding-top: 3.625rem;
-    height: 100vh;
-  }
-
   /* Sidebar inner */
   #sidebar > .inner {
     margin-top: 3.5rem;
@@ -313,6 +281,16 @@
     align-items: flex-start;
     flex-wrap: wrap;
     z-index: var(--z-content);
+  }
+
+  #sidebar.affix > .inner {
+    position: fixed;
+    width: 15rem;
+    top: 0;
+  }
+
+  #sidebar.affix .panels {
+    height: 100vh;
   }
 
   /* Panels */

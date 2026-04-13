@@ -95,18 +95,18 @@ cover: ./概率论 题目分类汇编/folder.png
       $$
       \begin{aligned}
          &P(AB)-P(A)P(B)\\
-         =&P(AB)-(P(A\backslash B)+P(AB))(P(B\backslash A)+P(AB))\\
-         =&P(AB)(1-P(A\backslash B)-P(B\backslash A)-P(AB))-P(A\backslash B)P(B\backslash A)\\
-         =&P(AB)P(\overline{A}\cdot\overline{B})-P(A\backslash B)P(B\backslash A)
+         =&P(AB)-(P(A\setminus B)+P(AB))(P(B\setminus A)+P(AB))\\
+         =&P(AB)(1-P(A\setminus B)-P(B\setminus A)-P(AB))-P(A\setminus B)P(B\setminus A)\\
+         =&P(AB)P(\overline{A}\cdot\overline{B})-P(A\setminus B)P(B\setminus A)
       \end{aligned}
       $$
-      又因为$0\leq P(AB)+P(\overline{A}\cdot\overline{B})\leq 1,0\leq P(A\backslash B)+P(B\backslash A)\leq 1$，故由基本不等式，
+      又因为$0\leq P(AB)+P(\overline{A}\cdot\overline{B})\leq 1,0\leq P(A\setminus B)+P(B\setminus A)\leq 1$，故由基本不等式，
       $$
-      P(AB)P(\overline{A}\cdot\overline{B})\in[0,\frac{1}{4}],P(A\backslash B)+P(B\backslash A)\in[0,\frac{1}{4}]
+      P(AB)P(\overline{A}\cdot\overline{B})\in[0,\frac{1}{4}],P(A\setminus B)+P(B\setminus A)\in[0,\frac{1}{4}]
       $$
       所以
       $$
-      |P(AB)-P(A)P(B)|=|P(AB)P(\overline{A}\cdot\overline{B})-P(A\backslash B)P(B\backslash A)|\leq\frac{1}{4}
+      |P(AB)-P(A)P(B)|=|P(AB)P(\overline{A}\cdot\overline{B})-P(A\setminus B)P(B\setminus A)|\leq\frac{1}{4}
       $$
       （取等号条件：$A=B,P(A)=P(B)=\frac{1}{2}$）
       </div>

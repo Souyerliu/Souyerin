@@ -2,7 +2,6 @@
   import { onMount, onDestroy } from "svelte";
   import { getT } from "@/i18n";
   import themeConfig from "@/theme.config";
-  import pagefindCssHref from "@pagefind/default-ui/css/ui.css?url";
 
   const isDev = import.meta.env.DEV;
   const searchPanelTransitionMs = 350;
@@ -20,9 +19,29 @@
   let animatedVisible = $state(false);
   let cleanupListener: (() => void) | null = null;
   let cleanupKeyboard: (() => void) | null = null;
+  let cleanupThemeObserver: (() => void) | null = null;
   let panelElement: HTMLDivElement | null = null;
   let hideTimeoutId: number | null = null;
+  const pagefindInstanceName = "global-search";
   const visible = $derived(selector ? internalVisible : Boolean(showSearch));
+  let pagefindTheme = $state<"light" | "dark">("light");
+
+  interface PagefindFocusable extends HTMLElement {
+    focus(): void;
+  }
+
+  async function initPagefindComponentUi() {
+    if (isDev) return;
+
+    try {
+      await Promise.all([
+        import("@pagefind/component-ui"),
+        import("@pagefind/component-ui/css"),
+      ]);
+    } catch (error) {
+      console.warn("Pagefind Component UI 初始化失败：", error);
+    }
+  }
 
   function clearHideTimeout() {
     if (hideTimeoutId === null || typeof window === "undefined") return;
@@ -62,9 +81,14 @@
     if (typeof window === "undefined") return;
 
     window.requestAnimationFrame(() => {
-      panelElement
-        ?.querySelector<HTMLInputElement>(".pagefind-ui__search-input")
-        ?.focus();
+      const inputComponent =
+        panelElement?.querySelector<PagefindFocusable>("pagefind-input");
+
+      if (!inputComponent || typeof inputComponent.focus !== "function") {
+        return;
+      }
+
+      inputComponent.focus();
     });
   }
 
@@ -79,52 +103,16 @@
     );
   }
 
-  function loadPagefindCssAfterOnload() {
-    return new Promise<void>((resolve) => {
-      const existing = document.querySelector<HTMLLinkElement>(
-        'link[data-pagefind-ui="true"]',
-      );
-      if (existing) {
-        resolve();
-        return;
-      }
+  function resolveThemeFromRoot(): "light" | "dark" {
+    if (typeof document === "undefined") return "light";
 
-      const appendCss = () => {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = pagefindCssHref;
-        link.dataset.pagefindUi = "true";
-        link.onload = () => resolve();
-        link.onerror = () => resolve();
-        document.head.appendChild(link);
-      };
-
-      if (document.readyState === "complete") {
-        appendCss();
-        return;
-      }
-
-      window.addEventListener("load", appendCss, { once: true });
-    });
-  }
-
-  async function initPagefind() {
-    if (isDev) return;
-
-    try {
-      const [{ PagefindUI }] = await Promise.all([
-        // @ts-expect-error no types for PagefindUI
-        import("@pagefind/default-ui"),
-        loadPagefindCssAfterOnload(),
-      ]);
-      new PagefindUI({ element: "#pagefind", showSubResults: true });
-    } catch (error) {
-      console.warn("Pagefind 初始化失败：", error);
-    }
+    return document.documentElement.getAttribute("data-theme") === "dark"
+      ? "dark"
+      : "light";
   }
 
   onMount(() => {
-    initPagefind();
+    initPagefindComponentUi();
 
     // Setup selector listener
     if (selector) {
@@ -168,6 +156,23 @@
     cleanupKeyboard = () => {
       window.removeEventListener("keydown", handleKeydown);
     };
+
+    const root = document.documentElement;
+    const syncPagefindTheme = () => {
+      pagefindTheme = resolveThemeFromRoot();
+    };
+
+    syncPagefindTheme();
+
+    const observer = new MutationObserver(syncPagefindTheme);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    cleanupThemeObserver = () => {
+      observer.disconnect();
+    };
   });
 
   onDestroy(() => {
@@ -180,6 +185,10 @@
     if (cleanupKeyboard) {
       cleanupKeyboard();
       cleanupKeyboard = null;
+    }
+    if (cleanupThemeObserver) {
+      cleanupThemeObserver();
+      cleanupThemeObserver = null;
     }
   });
 
@@ -248,6 +257,7 @@
   class:search-shell-visible={animatedVisible}
   hidden={!rendered}
   aria-hidden={!animatedVisible}
+  data-pf-theme={pagefindTheme}
 >
   <button
     type="button"
@@ -273,7 +283,7 @@
       class="search-panel__close"
       onclick={closeSearch}
       aria-label="Close search"
-      aria-controls="pagefind"
+      aria-controls="pagefind-results-region"
     >
       <span class="i-ri-close-line"></span>
     </button>
@@ -285,7 +295,35 @@
           {t("search.buildHint")}
         </div>
       {:else}
-        <div id="pagefind"></div>
+        <div
+          class="pagefind-component-shell"
+          data-testid="pagefind-component-shell"
+        >
+          <pagefind-config
+            instance={pagefindInstanceName}
+            bundle-path="/pagefind/"
+          ></pagefind-config>
+
+          <div class="pagefind-component-header">
+            <pagefind-input instance={pagefindInstanceName} debounce={200}
+            ></pagefind-input>
+          </div>
+
+          <div
+            class="pagefind-component-results"
+            data-testid="pagefind-results-region"
+          >
+            <pagefind-summary instance={pagefindInstanceName}
+            ></pagefind-summary>
+            <pagefind-results instance={pagefindInstanceName}
+            ></pagefind-results>
+          </div>
+
+          <div class="pagefind-component-footer">
+            <pagefind-keyboard-hints instance={pagefindInstanceName}
+            ></pagefind-keyboard-hints>
+          </div>
+        </div>
       {/if}
     </div>
   </div>
@@ -440,8 +478,7 @@
     text-align: center;
   }
 
-  .pagefind-panel :global(#pagefind),
-  .pagefind-panel :global(.pagefind-ui) {
+  .pagefind-component-shell {
     display: flex;
     flex: 1;
     min-height: 0;
@@ -449,182 +486,131 @@
     width: 100%;
   }
 
-  .pagefind-panel :global(.pagefind-ui) {
+  .pagefind-component-shell {
+    --pf-outline-focus: transparent;
     --pagefind-ui-scale: 1;
     --pagefind-ui-primary: var(--color-red);
     --pagefind-ui-text: var(--text-color);
-    --pagefind-ui-background: transparent;
+    --pagefind-ui-secondary: var(--grey-6);
+    --pagefind-ui-accent: color-mix(in srgb, var(--color-red) 24%, transparent);
+    --pagefind-ui-background: color-mix(
+      in srgb,
+      var(--grey-0) 92%,
+      transparent
+    );
+    --pagefind-ui-background-alt: color-mix(
+      in srgb,
+      var(--grey-1) 92%,
+      transparent
+    );
     --pagefind-ui-border: color-mix(in srgb, var(--grey-4) 25%, transparent);
+    --pagefind-ui-border-focus: var(--color-red);
+    --pagefind-ui-focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-red) 25%, transparent);
     --pagefind-ui-tag: color-mix(in srgb, var(--grey-2) 90%, transparent);
+    --pagefind-ui-link: var(--text-color);
+    --pagefind-ui-link-hover: var(--color-red);
     --pagefind-ui-border-width: 1px;
     --pagefind-ui-border-radius: 0.9rem;
     --pagefind-ui-font: inherit;
+    --pagefind-ui-muted: var(--grey-5);
+    --pagefind-ui-overlay: transparent;
+    --pagefind-ui-backdrop: transparent;
     overflow: hidden;
   }
 
-  .pagefind-panel :global(.pagefind-ui__form) {
-    position: relative;
-  }
-
-  .pagefind-panel :global(.pagefind-ui__form::before) {
-    content: none;
-    display: none;
-    background: transparent;
-  }
-
-  .pagefind-panel :global(.pagefind-ui__search-input) {
-    min-height: 3.5rem;
-    border: 1px solid color-mix(in srgb, var(--grey-4) 24%, transparent);
-    border-radius: 1rem;
-    background: linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--grey-0) 88%, transparent),
-      color-mix(in srgb, var(--grey-2) 94%, transparent)
+  :global(:root[data-theme="dark"]) .pagefind-component-shell {
+    --pagefind-ui-primary: color-mix(
+      in srgb,
+      var(--color-red) 88%,
+      #ffffff 12%
     );
-    box-shadow: var(--search-input-inset), var(--search-input-shadow);
-    color: var(--text-color);
-    padding-inline: 1rem 3rem;
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
+    --pagefind-ui-text: var(--grey-8);
+    --pagefind-ui-secondary: var(--grey-6);
+    --pagefind-ui-accent: color-mix(in srgb, var(--color-red) 35%, transparent);
+    --pagefind-ui-background: color-mix(
+      in srgb,
+      var(--grey-2) 86%,
+      #000000 14%
+    );
+    --pagefind-ui-background-alt: color-mix(
+      in srgb,
+      var(--grey-3) 82%,
+      #000000 18%
+    );
+    --pagefind-ui-border: color-mix(in srgb, var(--grey-5) 56%, transparent);
+    --pagefind-ui-border-focus: color-mix(
+      in srgb,
+      var(--color-red) 52%,
+      var(--grey-5)
+    );
+    --pagefind-ui-focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-red) 25%, transparent);
+    --pagefind-ui-tag: color-mix(in srgb, var(--grey-3) 75%, transparent);
+    --pagefind-ui-link: var(--grey-8);
+    --pagefind-ui-link-hover: color-mix(
+      in srgb,
+      var(--color-red) 84%,
+      #fff 16%
+    );
+    --pagefind-ui-muted: var(--grey-6);
   }
 
-  .pagefind-panel :global(.pagefind-ui__search-input:focus) {
-    border-color: color-mix(in srgb, var(--color-red) 38%, var(--grey-4));
-    box-shadow:
-      0 0 0 0.25rem color-mix(in srgb, var(--color-red-a1) 78%, transparent),
-      var(--search-accent-shadow-soft);
-    outline: none;
-    transform: translateY(-1px);
+  .pagefind-component-header {
+    flex: 0 0 auto;
   }
 
-  .pagefind-panel :global(.pagefind-ui__search-input::placeholder) {
-    color: var(--grey-5);
-  }
-
-  .pagefind-panel :global(.pagefind-ui__search-clear) {
-    width: 2.75rem;
-    color: var(--grey-5);
-  }
-
-  .pagefind-panel :global(.pagefind-ui__drawer) {
-    display: block;
+  .pagefind-component-results {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     min-height: 0;
     margin-top: 1rem;
-    padding: 0;
-    border: 0;
-    background: transparent;
     overflow: auto;
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--grey-4) 80%, transparent)
       transparent;
   }
 
-  .pagefind-panel :global(.pagefind-ui__results-area) {
-    min-height: 0;
-    overflow: scroll;
-    max-height: 40rem;
-    scrollbar-width: thin;
+  .pagefind-component-footer {
+    flex: 0 0 auto;
+    margin-top: 0.8rem;
+    opacity: 0.8;
   }
 
-  .pagefind-panel :global(.pagefind-ui__results) {
-    display: grid;
-    gap: 0.9rem;
-  }
-
-  .pagefind-panel :global(.pagefind-ui__result) {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--grey-4) 18%, transparent);
-    border-radius: 1rem;
-    background: linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--grey-0) 88%, transparent),
-      color-mix(in srgb, var(--grey-2) 94%, transparent)
-    );
-    box-shadow: var(--search-result-shadow);
-    padding: 1rem 1.1rem;
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease,
-      border-color 0.25s ease;
-  }
-
-  .pagefind-panel :global(.pagefind-ui__result::before) {
-    content: "";
-    position: absolute;
-    inset: 0 auto auto 0;
-    height: 3px;
+  .pagefind-component-shell :global(pagefind-input),
+  .pagefind-component-shell :global(pagefind-summary),
+  .pagefind-component-shell :global(pagefind-results),
+  .pagefind-component-shell :global(pagefind-keyboard-hints) {
     width: 100%;
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--color-red) 70%, transparent),
-      color-mix(in srgb, var(--color-blue) 55%, transparent),
-      transparent
-    );
-    opacity: 0.7;
   }
 
-  .pagefind-panel :global(.pagefind-ui__result:hover) {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--color-red) 24%, var(--grey-4));
-    box-shadow: var(--search-result-shadow-hover);
-  }
-
-  .pagefind-panel :global(.pagefind-ui__result-link) {
-    color: var(--text-color);
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.5;
-    text-decoration: none;
+  .pagefind-component-shell :global(pagefind-results a) {
+    color: var(--pagefind-ui-link);
     transition: color 0.2s ease;
   }
 
-  .pagefind-panel :global(.pagefind-ui__result-link:hover) {
-    color: var(--color-red);
+  .pagefind-component-shell :global(pagefind-results a:hover),
+  .pagefind-component-shell :global(pagefind-results a:focus-visible) {
+    color: var(--pagefind-ui-link-hover);
   }
 
-  .pagefind-panel :global(.pagefind-ui__result-excerpt),
-  .pagefind-panel :global(.pagefind-ui__message),
-  .pagefind-panel :global(.pagefind-ui__result-meta) {
-    color: var(--grey-5);
-    line-height: 1.8;
-  }
-
-  .pagefind-panel :global(.pagefind-ui__message) {
-    padding: 1rem 0.25rem 0;
-  }
-
-  .pagefind-panel :global(mark) {
+  .pagefind-component-shell :global(mark) {
     border-radius: 0.35rem;
     background: color-mix(in srgb, var(--color-yellow) 30%, transparent);
     color: inherit;
     padding: 0.05rem 0.25rem;
   }
 
-  .pagefind-panel :global(.pagefind-ui__button) {
-    border-radius: 999px;
-    border-color: color-mix(in srgb, var(--grey-4) 25%, transparent);
-    background: color-mix(in srgb, var(--grey-0) 82%, transparent);
-    color: var(--text-color);
-    transition:
-      transform 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease,
-      background 0.2s ease;
+  :global(pagefind-input::part(input)) {
+    outline: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
   }
 
-  .pagefind-panel :global(.pagefind-ui__button:hover),
-  .pagefind-panel :global(.pagefind-ui__button:focus-visible) {
-    transform: translateY(-1px);
-    border-color: color-mix(in srgb, var(--color-red) 28%, var(--grey-4));
-    background: color-mix(in srgb, var(--color-red-a1) 60%, var(--grey-1));
-    color: var(--color-red);
-    outline: none;
+  :global(pagefind-input::part(input):focus),
+  :global(pagefind-input::part(input):focus-visible) {
+    outline: none !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-red) 30%, transparent) !important;
   }
 
   @media (max-width: 1023px) {
@@ -680,13 +666,8 @@
       padding-top: 3.25rem;
     }
 
-    .pagefind-panel :global(.pagefind-ui__search-input) {
-      min-height: 3.25rem;
-      font-size: 0.95rem;
-    }
-
-    .pagefind-panel :global(.pagefind-ui__result) {
-      padding: 0.9rem 1rem;
+    .pagefind-component-footer {
+      margin-top: 0.65rem;
     }
   }
 </style>

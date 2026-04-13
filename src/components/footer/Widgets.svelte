@@ -233,6 +233,9 @@
 <style>
   .widgets {
     --un-bg-opacity: 1;
+    --widget-heading-color: color-mix(in oklch, var(--text-color) 80%, var(--grey-0));
+    --widget-body-color: color-mix(in oklch, var(--text-color) 72%, var(--grey-0));
+    --widget-meta-color: color-mix(in oklch, var(--text-color) 60%, var(--grey-0));
   }
 
   .widgets > div {
@@ -241,6 +244,8 @@
 
   .widgets h2 {
     margin-top: 0;
+    color: var(--widget-heading-color);
+    font-weight: 500;
   }
 
   .post-list {
@@ -249,6 +254,7 @@
 
   .item {
     margin: 0;
+    color: var(--widget-body-color);
   }
 
   .item::before {
@@ -257,7 +263,7 @@
     position: absolute;
     left: 0;
     font-size: 1.5em;
-    color: var(--grey-4);
+    color: var(--widget-meta-color);
     line-height: 1.2;
     text-align: right;
     width: 1em;
@@ -280,10 +286,16 @@
 
   .breadcrumb {
     max-height: 1.5rem;
+    color: var(--widget-heading-color);
+    font-weight: 500;
   }
 
   .item span:not(.breadcrumb) {
-    max-height: 2rem;
+    color: var(--widget-body-color);
+  }
+
+  .post-list .item.text-grey-5 {
+    color: var(--widget-meta-color);
   }
 
   @media (max-width: 768px) {

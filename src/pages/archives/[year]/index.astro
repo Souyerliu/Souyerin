@@ -17,13 +17,14 @@ export async function getStaticPaths() {
   });
 
   const years = Object.keys(structuredPosts).map(Number);
+  const sortedYears = [...years].sort((a, b) => b - a);
 
-  return years.map((year) => ({
+  return sortedYears.map((year) => ({
     params: { year: String(year) },
     props: {
       year,
       posts: structuredPosts[year][0],
-      allYears: years.sort((a, b) => b - a),
+      allYears: sortedYears,
     },
   }));
 }

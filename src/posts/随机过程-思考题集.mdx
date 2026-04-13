@@ -572,8 +572,23 @@ sticky: true
       $$
       所以$P(\tau_1< \infty)=1$.
       > 注：上面用到的差分方程在处理简单随机游动问题时非常有用，务必牢记。
-      证明思路2（使用条件期望）：
 
+      证明思路2（使用条件期望）：
+      $$
+      \begin{aligned}
+      P(\tau_1< \infty) &= E[E(\mathbf{1}_{\{\tau_1 <\infty\}}|W_1)]\\
+      &=E(\mathbf{1}_{\{\tau_1 <\infty\}}|W_1=1)P(W_1=1)+E(\mathbf{1}_{\{\tau_1 <\infty\}}|W_1=-1)P(W_1=-1)\\
+      &=p+qE(\mathrm{1}_{\{\tau'_1+\tau''_1<\infty\}}|W_1=-1)\\
+      &=p+qE(\mathrm{1}_{\{\tau'_1<\infty\}})\cdot E(\mathrm{1}_{\{\tau''_1<\infty\}})\\
+      &=p+q[P(\tau_1<\infty)]^2
+      \end{aligned}
+      $$
+      因此$P(\tau_1< \infty)=\dfrac{1\pm\sqrt{1-4pq}}{2q}=\dfrac{1\pm|p-q|}{2q}$
+      又因为$p>q$，且$P(\tau_1<\infty)\leq 1$，所以只能
+         $$
+         P(\tau_1<\infty)=\frac{1-(p-q)}{2q}=1
+         $$
+      > 当$p\leq q$时，$P(\tau_1<\infty)=\dfrac{p}{q}$.
       </div>
       </details>
    </div>
@@ -676,23 +691,127 @@ sticky: true
    <div class="quiz-item">
       <div class="quiz-question">
       以$T_k$表示$N$的第$k$次随机事件发生的时间.对任意$t>x>0$,求：
-      （1）$P(t-T_k>x|N(t)=k)$
+      （1）$P(t-T_k>x|N(t)=k)$；
       </div>
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      当$k=0$时，$P(t-T_0>x|N(t)=0)=P(t>x|N(t)=0)=1$；  
+      下面讨论$k\geq 1$情况：  
+      因为给定$N(t)=k$时，$T_k$与均匀分布$U(0,t)$的最大次序统计量同分布，故$T_k$的概率密度函数为$\displaystyle k\left(\frac{x}{t}\right)^{k-1}\frac{1}{t}$，因此
+      $$
+      \begin{aligned}
+      P(t-T_k>x|N(t)=k)&=P(T_k< t-x|N(t)=k)\\
+      &=\int_{0}^{t-x}k\left(\frac{u}{t}\right)^{k-1}\frac{1}{t}du\\
+      &=\frac{k}{t^k}\int_{0}^{t-x}u^{k-1}du=\left(\frac{t-x}{t}\right)^k
+      \end{aligned}
+      $$
+      综上，$\displaystyle P(t-T_0>x|N(t)=k)=\left(1-\frac{x}{t}\right)^k$.
       </div>
       </details>
-      （2）$P(t-T_{N(t)}>x)$.
+      （2）$P(t-T_{N(t)}>x)$与$P(T_{N(t)+1}-t>x)$；
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      $$
+      \begin{aligned}
+      P(t-T_{N(t)}>x)&=E[P(t-T_{N(t)}>x)|N(t)]\\
+      &=\sum_{k=0}^\infty P(T_{N(t)}< t-x|N(t)=k)P(N(t)=k)\\
+      &=\sum_{k=0}^\infty \left(1-\frac{x}{t}\right)^k\cdot\frac{(\lambda t)^k}{k!}e^{-\lambda t}\\
+      &=e^{-\lambda t}\sum_{i=0}^\infty\frac{(\lambda (t-x))^k}{k!}\\
+      &=e^{-\lambda t}\cdot e^{\lambda(t-x)}=e^{-\lambda x}
+      \end{aligned}
+      $$
+      $$
+      \begin{aligned}
+      P(T_{N(t)+1}-t>x)&=P(T_{N(t)+1}>t+x)\\
+      &=\sum_{k=0}^\infty P(N(t+x)-N(t)=0|N(t)=k)P(N(t)=k)\\
+      &=P(N(t+x)-N(t)=0)\\
+      &=P(N(x)=0)=e^{-\lambda x}
+      \end{aligned}
+      $$
+      > 可以发现这两个概率相等，这是由指数分布的无记忆性以及泊松过程的平稳增量性决定的。
       </div>
       </details>
-      （3）以$W_k$表示$N$的第$k$次事件的间隔时间, 对任意$x > 0$, 求$P(W_{N(t)+1}>x)$。
+      （3）以$W_k$表示$N$的第$k$次事件的间隔时间，对任意$x > 0$，求$P(W_{N(t)+1}>x)$。
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      $$
+      \begin{aligned}
+      P(W_{N(t)+1}>x)&=P(T_{N(t)+1}-T_{N(t)}>x)\\
+      &=\sum_{k=0}^\infty P(T_{N(t)+1}-T_{N(t)}>x,N(t)=k)
+      \end{aligned}
+      $$
+      当$k=0$时，
+      $$
+      \begin{aligned}
+      P(T_1>x,N(t)=0)&=P(T_1>x,T_1>t)\\
+      &=e^{-\lambda\max(x,t)}
+      \end{aligned}
+      $$
+      当$k>0$时，
+      $$
+      \begin{aligned}
+      &P(T_{N(t)+1}-T_{N(t)}>x,N(t)=k)\\
+      &=P(T_k\leq t,T_{k+1}>t,T_{k+1}-T_k>x)\\
+      &=P(T_k\leq t,W_{k+1}>\max(x,t-T_k))\\
+      \end{aligned}
+      $$
+      又因为$T_k$与$W_{k+1}$相互独立，$T_k\sim Ga(k,\lambda),W_{k+1}\sim\mathrm{Exp}(\lambda)$，所以
+      $$
+      \begin{aligned}
+      &P(T_k\leq t,W_{k+1}>\max(x,t-T_k))\\
+      &=\int_{0}^t\frac{\lambda^ku^{k-1}e^{-\lambda u}}{(k-1)!}du\int_{\max(x,t-u)}^\infty\lambda e^{-\lambda v}dv\\
+      &=\int_{0}^t\frac{\lambda^ku^{k-1}e^{-\lambda u}}{(k-1)!}\cdot e^{-\lambda\max(x,t-u)}du
+      \end{aligned}
+      $$
+      因此
+      $$
+      \begin{aligned}
+      &\sum_{k=1}^\infty P(T_k\leq t,W_{k+1}>\max(x,t-T_k))\\
+      &=\sum_{k=1}^\infty\int_{0}^t\frac{\lambda^ku^{k-1}e^{-\lambda u}}{(k-1)!}\cdot e^{-\lambda\max(x,t-u)}du\\
+      &=\int_{0}^t\lambda\sum_{k=1}^\infty\frac{(\lambda u)^{k-1}e^{-\lambda u}}{(k-1)!}\cdot e^{-\lambda\max(x,t-u)}du\\
+      &=\int_0^t\lambda e^{-\lambda\max(x,t-u)}du\\
+      &=\lambda\int_0^te^{-\lambda\max(x,u)}du\\
+      &=\begin{cases}
+      \lambda t e^{-\lambda x}, & x \geq t, \\ 
+      (1 + \lambda x)e^{-\lambda x} - e^{-\lambda t}, & x < t 
+      \end{cases}
+      \end{aligned}
+      $$
+      综上，
+      $$
+      \begin{aligned}
+      P(W_{N(t)+1}>x)&=\sum_{k=0}^\infty P(W_{N(t)+1}>x,N(t)=k)\\
+      &=\begin{cases}
+      e^{-\lambda x}+\lambda t e^{-\lambda x}, & x \geq t, \\ 
+      e^{-\lambda t}+(1 + \lambda x)e^{-\lambda x} - e^{-\lambda t}, & x < t 
+      \end{cases}\\
+      &=(1+\lambda\max(x,t))e^{-\lambda x}.
+      \end{aligned}
+      $$
+      </div>
+      </details>
    </div>
-
-
+   <div class="quiz-item">
+      <div class="quiz-question">
+      离散时间随机游动假定了每一次游动都在整数时刻点发生，如果游动可以在任意时刻点发生，我们可以怎样建模？试着用泊松过程和简单$(q,p)$-随机游动构造一个随机过程模型，并在$p>q$时计算从$0$位置出发首次到达位置$1$的平均时间。
+      > 提示：连续时间随机游动
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      模型建立：设$(q,p)$-随机游动$\{X_t,t\geq 0\}$的游动时刻服从强度为$\lambda$的泊松过程，即在$[0,t]$时间内发生$N(t)$次游动，相邻游动时间间隔服从指数分布$\mathrm{Exp}(\lambda)$，则可以定义连续时间随机游动：
+      $$
+      S(t)=X_{N(t)}
+      $$
+      下面求$\tau=\inf\{t\geq 0;S(t)=1\}$：
+      因为离散时间下$E(\tau_1|S_0=0)=\dfrac{1}{1-2q}$（因为$p>q$），即首次到达位置$1$游动步数的期望为$\dfrac{1}{1-2q}$；又因为游动时间间隔的期望为$\dfrac{1}{\lambda}$，所以
+      $$
+      E(\tau)=\frac{1}{1-2q}\cdot\frac{1}{\lambda}=\frac{1}{\lambda(1-2q)}
+      $$
+      </div>
+      </details>
+   </div>
 </div>

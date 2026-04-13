@@ -180,8 +180,8 @@ sticky: true
     + 当$n\to\infty$，$\chi^2(n)\stackrel{d}{\longrightarrow}N(n,2n)$；【中心极限定理】
     + 下侧$\alpha$-分位数：若$Y\sim\chi^2(n)$，则$P(Y\leq\chi_\alpha^2(n))=\alpha$。
 + **卡方分布重要应用**：设$x_1,\cdots,x_n$为总体$N(\mu,\sigma^2)$的一个样本，令样本均值为$\overline{x}$，样本方差为$s^2$，则
-    + $\color{red}\displaystyle\overline{x}\sim N\left(\mu,\frac{\sigma^2}{n}\right)$；
-    + $\color{red}\displaystyle\frac{(n-1)s^2}{\sigma^2}\sim\chi^2(n-1)$；
+    + <Text type = "red">$\color{red}\displaystyle\overline{x}\sim N\left(\mu,\frac{\sigma^2}{n}\right)$；</Text>
+    + <Text type = "red">$\displaystyle\frac{(n-1)s^2}{\sigma^2}\sim\chi^2(n-1)$；</Text>
     + <Text type = "red">$\overline{x}$与$s^2$相互独立。</Text>
 ### F分布
 + 定义：设$X\sim\chi^2(n),Y\sim\chi^2(m)$且相互独立，则$\dfrac{\frac{1}{n}X}{\frac{1}{m}Y}$的分布为自由度$(n,m)$的F分布，记为$F(n,m)$。
@@ -220,3 +220,103 @@ sticky: true
 + 若$T$为充分统计量，且存在某个函数$h(\cdot)$使$T$可表示为$t=h(s)$，则统计量$S$也是充分统计量。
     + 极小充分统计量：若对任意充分统计量$T$，均存在函数$h$使$T^*(\mathbf{X})=h(T(\mathbf{X}))$，则称$T^*$为极小充分统计量。
         > 通常因子分解定理所得到的充分统计量即为极小充分统计量。
+# 参数估计
++ **参数**定义：总体分布所含的未知参数及其函数；总体分布的各种特征数（期望、方差……），使用$\theta$表示。
++ **参数空间**：参数的所有可能取值集合用参数空间$\Theta$表示。
++ 参数估计的形式：
+    + **点估计**（$\theta$的值大约是多少）【矩估计、最大似然估计、最小二乘估计】
+    + **区间估计**（$\theta$的值大约在哪个范围内）
+## 点估计及无偏性
++ 定义：设$x_1,x_2,\cdots,x_n$是来自总体的一个样本，用于估计未知参数$\theta$的统计量$\hat{\theta}=\hat{\theta}(x_1,x_2,\cdots,x_n)$称为$\theta$的估计量，或称为$\theta$的点估计，简称估计。
+    > 可能存在多个$\theta$的估计量，互相无对错之分，只有优劣之分。
++ **无偏性**：设$\theta$的参数空间为$\Theta$，$\hat{\theta}=\hat{\theta}(x_1,x_2,\cdots,x_n)$为$\theta$的一个估计。若任意$\theta\in\Theta$，有$E_{\theta}(\hat{\theta})=\theta$，则称$\hat{\theta}$为$\theta$的无偏估计。
+    > 计算路径：$\theta\Longrightarrow$总体（分布）$\Longrightarrow$样本（值）$\Longrightarrow\hat{\theta}$（统计量）$\Longrightarrow E(\hat{\theta})$；期望可理解为重复抽样多次后得到的平均估计值为$\theta$。
+    + 例：样本均值$\overline{x}$为总体期望$EX$的无偏估计；样本$k$阶原点矩为总体$k$阶原点矩的无偏估计。【中心矩通常不是无偏估计】
+    > 并非所有参数均存在无偏估计（如总体$b(1,p)$的参数$\dfrac{1}{p}$不存在无偏估计），此时称其不可估（否则可估）。
+    + 若$E_\theta(\hat{\theta})\neq\theta$，则称$\hat{\theta}$为$\theta$的**有偏估计**；若$n\to\infty$时$E_\theta(\hat{\theta})\to\theta$，则称$\hat{\theta}$为$\theta$的**渐近无偏估计**。
+    > 例：样本标准差$s$是总体标准差$\sigma$的渐近无偏估计。
+    + 无偏估计具有不变性：当$\hat{\theta}$为$\theta$的无偏估计，则$g(\hat{\theta})$也是$\theta$的无偏估计$\Longleftrightarrow g(\theta)$为$\theta$的线性函数。
+### 刀切法（Jacknife）
++ 设$\mathbf{x}=(x_1,\cdots,x_n)$为样本，$T(\mathbf{x})$为关于参数$g(\theta)$的统计量，且
+    $$
+    E_\theta[T(\mathbf{x})]=g(\theta)+O\left(\dfrac{1}{n}\right)
+    $$
+    那么用$\mathbf{x}_{(-i)}$表示样本去掉$x_i$后组成的向量，则$T(\mathbf{x})$的**刀切统计量**记为
+    $$
+    T_J(\mathbf{x})=nT(\mathbf{x})-\frac{n-1}{n}\sum_{i=1}^nT(\mathbf{x}_{(-i)})
+    $$
+    其具有以下性质：
+    $$
+    E_\theta[T_J(\mathbf{x})]=g(\theta)+O\left(\frac{1}{n^2}\right)
+    $$
+### 有效性
+> 对象为无偏估计，评价标准为方差
++ 定义：设$\hat{\theta}_1$与$\hat{\theta}_2$为$\theta$的两个无偏估计，若对任意$\theta\in\Theta$，$\mathrm{Var}_\theta(\hat{\theta}_1)\leq \mathrm{Var}_\theta(\hat{\theta}_2)$（且至少有一个$\theta$使不等号严格成立），则$\hat{\theta}_1$比$\hat{\theta}_2$更有效。
+    + 例：当$\theta$为总体均值，则$n>1$时，$\overline{x}$相比$x_i$更有效。
+## 矩估计及相合性
++ 矩法估计（替换原理，皮尔逊提出）定义：
+    + 用样本矩替换总体矩（原点矩或中心矩）；
+    + 用样本矩的函数替换对应总体矩的函数。
++ 矩估计的合理性基础为格里文科定理，本质是用经验分布函数逼近分布函数（对总体分布没有假设）。
+### 概率函数已知时参数未知的矩估计
++ 设$p(x;\theta_1,\cdots,\theta_k)$已知，$(\theta_1,\cdots,\theta_k)\in\Theta$是未知参数（或参数向量），且假定总体$k$阶原点矩$\mu_k$存在，$\theta_1,\cdots,\theta_k$可表示为$\mu_1,\cdots,\mu_k$的函数$\theta_j=\theta_j(\mu_1,\cdots,\mu_k)$，那么可给出$\theta_j(1\leq j\leq k)$的矩估计：
+    $$
+    \hat{\theta}_j=\theta_j(a_1,\cdots,a_k),\quad j=1,2,\cdots,k
+    $$
+    其中$a_1,\cdots,a_k$为前$k$阶样本原点矩。
+    + 进一步，若要估计$\theta_1,\cdots,\theta_k$的函数$\eta=g(\theta_1,\cdots,\theta_k)$，则
+        $$
+        \hat{\eta}=g(\hat{\theta}_1,\cdots,\hat{\theta}_k)
+        $$
+        > 本质上就是先得到原点矩的估计，再在此基础上估计原点矩函数。
+    + 矩估计可能不唯一，此时通常尽量采用低阶矩给出未知参数估计。
++ 有时总体矩$\mu_k$关于$\theta_1,\cdots,\theta_k$的表达式不容易求，那么可以直接求解方程组：
+    $$
+    a_i=\int x^ip(x;\theta_1,\cdots,\theta_k)\quad 1\leq i\leq k
+    $$
+    得到对应的参数估计。
+### 相合性
+> 本质：随着样本量的增加，样本包含的总体信息越多，估计的准确程度应该更高。
++ 定义：设$\theta\in\Theta$为未知参数，$\hat{\theta}_n=\hat{\theta}_n(x_1,\cdots,x_n)$为$\theta$的一个估计量，若对任意一个$\epsilon>0$，有
+    $$
+    \lim_{n\to\infty}P(|\hat{\theta}_n-\theta|\geq\epsilon)=0
+    $$
+    则称$\hat{\theta}_n$为$\theta$的相合估计。（可理解为依概率收敛：$\hat{\theta}_n\stackrel{p}{\longrightarrow}\theta$）
+    + 例：$\overline{x}$为$EX$的相合估计，$s^2,s^2_n$为$\mathrm{Var}X$的相合估计。
++ 充分条件：
+    1. 设$\hat{\theta}_n=\hat{\theta}_n(x_1,\cdots,x_n)$为参数$\theta$的一个统计量，若
+        $$
+        \lim_{n\to\infty}E(\hat{\theta}_n)=\theta,\lim_{n\to\infty}\mathrm{Var}(\hat{\theta}_n)=0
+        $$
+        则$\hat{\theta}_n$是$\theta$的相合估计。
+    2. 若$\hat{\theta}_{n1},\cdots,\hat{\theta}_{nk}$分别是$\theta_1,\cdots,\theta_k$的相合估计，$\eta=g(\theta_1,\cdots,\theta_k)$是$\theta_1,\cdots,\theta_k$的连续函数，则$\hat{\eta}_n=g(\hat{\theta}_{n1},\cdots,\hat{\theta}_{nk})$是$\eta$的相合估计。
++ 矩估计一般都具有相合性。
+## 最大似然估计与EM算法
++ 似然函数：设总体的概率函数为$p(x;\theta),\theta\in\Theta$，$\theta$为未知参数（或向量），$x_1,\cdots,x_n$为总体的样本，将样本联合概率密度函数看作$\theta$的函数，用$L(\theta;x_1,\cdots,x_n)$表示（简记为$L(\theta)$），则称
+    $$
+    L(\theta)=\prod_{i=1}^np(x_i;\theta)
+    $$
+    为参数$\theta$的似然函数。（可去除与$\theta$无关因子）
++ **最大似然估计**（MLE）：若某统计量$\hat{\theta}=\hat{\theta}(x_1,\cdots,x_n)$满足
+    $$
+    L(\hat{\theta})=\max_{\theta\in\Theta}L(\theta)
+    $$
+    则称$\displaystyle\hat{\theta}=\argmax_{\theta}L(\theta)$是$\theta$的最大似然估计。
++ 对数似然函数：称$l(\theta)=\ln L(\theta)$为对数似然函数。
+    + 其最大值对应$\theta$与似然函数相同，主要用于简化运算（化幂次为加乘）。
+> 特殊情形：$L(\theta)$包含关于$\theta$的示性函数，此时需要考虑$\argmax_{L(\theta)}$是否在示性函数指定范围内。
++ 最大似然估计的**不变性**：若$\hat{\theta}$是$\theta$的最大似然估计，则对任一函数$g(\theta)$，$g(\hat{\theta})$为其极大似然估计。
+    > 注：若$g$不是单射，即一个$g(\theta)$可能对应多个$\theta$，则取$g(\argmax_{\theta}L(\theta))$.
+### EM算法
+> 由Dempster等人提出，在[人工智能导论](/posts/computer-science/introduction-to-ai/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E5%AF%BC%E8%AE%BA-ch6-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8B/#%E6%9C%9F%E6%9C%9B%E6%9C%80%E5%A4%A7%E5%8C%96expectation-maximization-em)中亦有记载。
++ 用于解决似然函数复杂（分布中有多余参数）或数据缺失的问题
++ 核心：求期望（去掉多余部分）+求极大值【迭代】
++ 具体方法：
+    1. 设观测数据$y=(y_1,\cdots,y_n)$的联合分布为$p(y,\theta)$；
+    2. 按情况引入适当的随机变量$z$（也称为**潜变量**）构成**完全数据**$\{y,z\}$，然后给定$\theta,y$，求$z$的条件密度$p(z|y,\theta)$；
+    3. 计算完全数据联合密度$p(y,z|\theta)=p(z|y,\theta)p(y|\theta)$，得到对数似然函数$l(\theta)=\ln(p(y,z|\theta))$；
+    4. E步：计算$\displaystyle Q(\theta|y,\theta^{(i)})=E_z[\ln(p(y,z|\theta))|y,\theta^{(i)}]=\int\ln(p(y,z|\theta^{(i)}))p(z|y,\theta^{(i)})dz$；
+    5. M步：计算$\theta^{(i+1)}=\argmax_{\theta}Q(\theta|y,\theta^{(i)})$
+
+    之后不断迭代E步与M步，直到$\theta$收敛（变化量小于指定值）。【可证明EM算法收敛】
+    > 注：有时$\theta$会有预先条件，在迭代时如果不满足条件需要进行调整（如调换参数顺序等）

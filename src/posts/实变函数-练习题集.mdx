@@ -56,7 +56,7 @@ sticky: true
       \end{aligned}
       $$
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
       均成立。直观理解：   
@@ -75,7 +75,7 @@ sticky: true
     $$
     其中$\chi_A(x)$表示$A$的示性函数。
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
     证明：以第一个式子为例，  
@@ -94,7 +94,7 @@ sticky: true
     $$
     证明集合$E=\{x\in[0,1]: f(x)\neq 0\}$为可数集.
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
     证明：设集列$E_n=\{x\in[0,1]: |f(x)|\geq\frac{1}{n},n\in \Z^+\}$，则$\displaystyle E=\bigcup_{n=1}^\infty E_n$。
@@ -115,17 +115,17 @@ sticky: true
   </div>
   <div class="quiz-item">
     <div class="quiz-question">
-    证明$x\in A'$当且仅当对任意的$\epsilon>0$，$(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$.
+    证明$x\in A'$当且仅当对任意的$\epsilon>0$，$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$.
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
     证明：  
-    充分性：若$x\in A'$，则任意$\epsilon>0$，$U(x,\epsilon)$包含$A$的无穷多个点。所以$(U(x,\epsilon)\backslash\{x\})$一定包含$A$的无穷多个点（否则邻域只有$A$的有限多个点），故与$A$的交集一定非空。  
-    必要性：若对任意的$\epsilon>0$,$(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$，
-    那么可以令$\epsilon=\epsilon_0$（任意值），并取$x_0\in(U(x,\epsilon)\backslash\{x\})\cap A\neq\emptyset$；  
-    再令$\epsilon=\min\left(\dfrac{\epsilon_0}{2},d(x_0,x)\right)$，再取$x_1\in(U(x,\epsilon)\backslash\{x\})\cap A$；  
-    以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\backslash\{x\})\cap A$内，故$x\in A'$.
+    充分性：若$x\in A'$，则任意$\epsilon>0$，$U(x,\epsilon)$包含$A$的无穷多个点。所以$(U(x,\epsilon)\setminus\{x\})$一定包含$A$的无穷多个点（否则邻域只有$A$的有限多个点），故与$A$的交集一定非空。  
+    必要性：若对任意的$\epsilon>0$,$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$，
+    那么可以令$\epsilon=\epsilon_0$（任意值），并取$x_0\in(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$；  
+    再令$\epsilon=\min\left(\dfrac{\epsilon_0}{2},d(x_0,x)\right)$，再取$x_1\in(U(x,\epsilon)\setminus\{x\})\cap A$；  
+    以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\setminus\{x\})\cap A$内，故$x\in A'$.
     </div>
     </details>
   </div>
@@ -146,21 +146,21 @@ sticky: true
     （1）$G_{\delta}$型集和$F_{\delta}$型集都是Borel集.  
     （2）$G_{\delta}$型集未必是开集，$F_{\delta}$型集未必是闭集.  
     （3）闭集一定是$G_{\delta}$型集，开集一定是$F_{\delta}$型集.
-    > 补充定义1：若$E\subset\R^n$是可列个开集的交集，则称$E$为$G_\delta$型集；若$E$是可列个闭集的并集，则称$E$是$F_\delta$型集。   
+    > 补充定义1：若$E\subset\R^n$是可列个开集的交集，则称$E$为$G_\delta$型集；若$E$是可列个闭集的并集，则称$E$是$F_\sigma$型集。   
     > 补充定义2：由$\R^n$所有开子集构成集类生成的$\sigma-$代数记称为Borel$-\sigma$代数（记为$\mathcal{B}$），其元素称为Borel集。
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
     （1）证明：设$G$为$G_\delta$型集，则$G=\bigcap G_i$（$G_i$均为开集），那么$G_i\in\mathcal{B}$。而Borel集对可列交封闭，所以$G\in\mathcal{B}$；   
-    设$F$为$F_\delta$型集，则$F=\bigcup F_i$（$F_i$均为闭集），那么$F_i^c\in\mathcal{B}$（因为$F_i^c$为开集），所以$F_i\in\mathcal{B}$（$\sigma-$代数性质），进而$F\in\mathcal{B}$。   
+    设$F$为$F_\sigma$型集，则$F=\bigcup F_i$（$F_i$均为闭集），那么$F_i^c\in\mathcal{B}$（因为$F_i^c$为开集），所以$F_i\in\mathcal{B}$（$\sigma-$代数性质），进而$F\in\mathcal{B}$。   
     （2）先给出原命题反例：  
     $G_\delta$型集：$\displaystyle G=\bigcap_{n=1}^\infty  G_n$，其中$G_n=\left(-\dfrac{1}{n},\dfrac{1}{n}\right)$，那么$G=\{0\}$不是开集；
-    $F_\delta$型集：对上面的每个$G_n$取补集即可。（$G^c=\R\backslash\{0\}$不是闭集）  
+    $F_\sigma$型集：对上面的每个$G_n$取补集即可。（$G^c=\R\setminus\{0\}$不是闭集）  
     （3）设$F$为闭集，令$G_k=\{x\in\R^n:d(x,F)< \frac{1}{k}\}$，则任意$y\in G_k$，取$\epsilon_y=\min\{d(y,F),\frac{1}{k}-d(y,F)\}$，则$U(y,\epsilon_y)\subset G_k$，$y$属于$G_k$内部，即$G_k$为开集；  
     下面证$F=\bigcap G_k$：  
     因为任意$z\in F$，$z\in\bigcap G_k$，而任意$w\notin F$，总存在$k_0\in N$使$d(w,F)\geq\frac{1}{k_0}$，即$w\notin G_{k_0}\Rightarrow w\notin\bigcap G_k$。所以$F=\bigcap G_k$。   
-    综上，$F$属于$G_\delta$型集。（同理可证开集属于$F_\delta$型集，只需要$F$和$\bigcup G_k$取补集即可）
+    综上，$F$属于$G_\delta$型集。（同理可证开集属于$F_\sigma$型集，只需要$F$和$\bigcup G_k$取补集即可）
     </div>
     </details>
   </div>
@@ -169,7 +169,7 @@ sticky: true
     <div class="quiz-question">
     证明：设$f$是定义在$\R^n$上的实值函数，则$f\in\mathcal{C}(\R^n)$当且仅当对任意的$G\in\mathcal{O}(\R^1),f^{-1}(G)\in\mathcal{O}(\R^n)$.
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
     必要性：即证当$f$为$\R^n$上连续函数时，对任意$\R^1$上开集$G$，$f^{-1}(G)$为开集。  
@@ -186,7 +186,7 @@ sticky: true
     <div class="quiz-question">
     设$f(x)$是定义在$\R^1$上的实值函数，证明$f$的连续点集为$G_\delta$型集.
     </div>
-    <details class="mdx-collapse primary" style="--note-border: var(--color-green);--note-bg: oklch(0.96 0.03 130);--note-text: var(--color-green);--note-hover: oklch(0.6 0.16 140);">
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
     证明：构造$G_\delta$型集$\bigcap G_n$，其中$G_n=\{x: |f(x_1)-f(x_2)|< \dfrac{1}{n},x_1,x_2\in(x-\delta_x,x+\delta_x)\}$，下面分两步证明：   
@@ -201,3 +201,95 @@ sticky: true
 </div>
 
 # 可测集
+<div class="quiz-group">
+  <div class="quiz-item">
+      <div class="quiz-question">
+      （1）设$A,B\subset\R^n$,且$m^*(A),m^*(B)< \infty$,证明$|m^*(A)-m^*(B)|\leq m^*(A\triangle B)$.  
+      （2）设$A,B,C\subset\R^n$,且$m^*(A\triangle B)=m^*(B\triangle C)=0$，证明$m^*(A\triangle C)=0$.
+      > $A\triangle B$表示$A$和$B$的对称差（$(A\setminus B)\cup(B\setminus A)$）
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）证明：因为  
+        $$
+        m^*(A)\leq m^*((A\triangle B)\cup B)\leq m^*(A\triangle B)+m^*(B)
+        $$
+          同理$m^*(B)\leq m^*(A\triangle B)+m^*(A)$，又由$m^*(A),m^*(B)< \infty$，因此$|m^*(A)-m^*(B)|\leq m^*(A\triangle B)$.  
+      （2）证明：因为
+        $$
+        0=m^*(A\triangle B)+m^*(B\triangle C)\geq m^*((A\triangle B)\cup(B\triangle C))=m^*((A\cup B\cup C)\setminus(A\cap B\cap C))\geq m^*(A\triangle C)
+        $$
+        所以$m^*(A\triangle C)=0$.
+      </div>
+      </details>
+  </div>
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$\{E_n, n \geq 1\}$是$\mathbb{R}^n$中的可测集列，若
+      $$
+      m\left( \bigcup_{n=1}^{\infty} E_n \right) < \infty,
+      $$ 
+      证明  
+      $$
+      m\left( \varlimsup_{n \to \infty} E_n \right) \geq \varlimsup_{n \to \infty} m(E_n).
+      $$
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：设$\displaystyle\bigcup_{k=n}^\infty E_k=A_n$，则$A_n\in\mathcal{M}$且$E_n\subset A_n$，所以$m(E_n)\leq m(A_n)$。又因为$\{A_n,n\geq 1\}$单调不增，所以$\{A_n\}$收敛，进而$\displaystyle\varlimsup_{n\to\infty}m(E_n)\leq\varlimsup_{n\to\infty}m(A_n)$；  
+      又由$\{A_n,n\geq 1\}$的上连续性，
+      $$
+      m\left(\varlimsup_{n\to\infty}E_n\right)=m\left(\bigcap_{n=1}^\infty A_n\right)=m\left(\lim_{n\to\infty}A_n\right)=m\left(\varlimsup_{n\to\infty}A_n\right)
+      $$
+      综上，$\displaystyle m\left( \varlimsup_{n \to \infty} E_n \right) \geq \varlimsup_{n \to \infty} m(E_n).$
+      </div>
+      </details>
+  </div>
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$E\subset\R^n$，证明存在$G_\delta$型集$G$,使得$G\supset E$，且$m^*(G)=m^*(E)$.
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：
+      若$m^*(E)=\infty$，则取$G=\R^n$，则$G$为$G_\delta$型集且$G\supset E,m^*(G)=\infty=m^*(E).$  
+      当$m^*(E)< \infty$，对任意正整数$j$，存在$E$的一个$L$-覆盖$\{I_{j,k},k\geq 1\}$，满足
+        $$
+        \displaystyle\sum_{k=1}^\infty|I_{j,k}|< m^*(E)+\frac{1}{j}
+        $$
+        令$\displaystyle A_j=\bigcup_{k=1}^\infty I_{j,k}$，则$A_j$为开集且
+        $$
+        A_j\supset E,\quad m^*(A_j)\leq\sum_{k=1}^\infty|I_{j,k}|< m^*(E)+\frac{1}{j}
+        $$
+        再令$\displaystyle G=\bigcap_{j=1}^\infty A_j$，则$G$为$G_\delta$型集且$E\subset G$，另有
+        $$
+        m^*(E)\leq m^*(G)\leq m^*(A_j)< m^*(E)+\frac{1}{j},\quad \forall j\geq 1
+        $$
+        令$j\to\infty$，则$m^*(G)=m^*(E)$.
+      </div>
+      </details>
+  </div>
+  <div class="quiz-item">
+      <div class="quiz-question">
+      证明$E\in\mathcal{M}$当且仅当对任意的$\epsilon>0$，存在开集$G_1,G_2$，使得$G_1\supset E,G_2\supset E^c$且$m(G_1\cap G_2)< \epsilon$.
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      必要性：因为$E\in\mathcal{M}$，所以任意$\epsilon>0$，存在开集$G$与闭集$F$满足$F\subset E\subset G$，且$m(G\setminus E)< \dfrac{\epsilon}{2},m(E\setminus F)< \dfrac{\epsilon}{2}$。令$G_1=G,G_2=F^c$，则
+        $$
+        m(G_1\cap G_2)\leq m(G\setminus E)+m(F^c\setminus E^c)=m(G\setminus E)+m(E\setminus F)\leq\epsilon
+        $$
+      充分性：由条件得任意正整数$k$，存在$G_{1k}\supset E,G_{2k}\supset E^c$，满足$m^*(G_{1k}\setminus E)\leq m(G_{1k}\cap G_{2k})< \dfrac{1}{k}$.  
+      令$\displaystyle G^*=\bigcap_{k=1}^\infty G_{1k}$，则$G^*$为$G_{\delta}$型集，$G^*\supset E$且
+        $$
+        m^*(G^*\setminus E)\leq m^*(G_{1k}\setminus E)< \frac{1}{k}\to 0,\quad k\to\infty
+        $$
+        所以$m^*(G^*\setminus E)=0$，即$G^*\setminus E\in\mathcal{M}$。又因为$G^*\in\mathcal{M}$，所以$E=G^*\setminus(G^*\setminus E)\in\mathcal{M}$.
+      </div>
+      </details>
+  </div>
+</div>

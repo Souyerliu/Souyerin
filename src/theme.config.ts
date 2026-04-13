@@ -183,7 +183,7 @@ export default defineConfig({
         cover: "/images/EECS127.png",
       }
     ],
-    pageSize: 5,
+    pageSize: 10,
     title: {
       behavior: "default",
       customTitle: "",

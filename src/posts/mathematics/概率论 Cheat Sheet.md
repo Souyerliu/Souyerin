@@ -66,7 +66,7 @@ cover: ./概率论 Cheat Sheet/folder.png
 + 独立事件不一定互斥（如掷骰子，$A=\{1,2,3\},B=\{1,4\}$），互斥事件不一定独立（比如两个事件概率均不为$0$）
 + 多个随机事件的独立：
   + 两两独立、三三独立、相互独立（简称独立）
-  + 若$A,B,C$相互独立，则$A\cup B$与$C$独立，$A\cap B$与$C$独立，$A\backslash B$与$C$独立
+  + 若$A,B,C$相互独立，则$A\cup B$与$C$独立，$A\cap B$与$C$独立，$A\setminus B$与$C$独立
 + 相互独立条件下的庞加莱公式：
   $$
   P(\bigcup_{k=1}^m A_k)=1-\prod_{k=1}^n(1-P(A_k))
@@ -488,7 +488,7 @@ cover: ./概率论 Cheat Sheet/folder.png
   + $(X,Y)$取值有限对或可列对
   + 称$p_{ij}=P(X=x_i,Y=y_j),i,j=1,2,\cdots$为$(X,Y)$的联合分布列
   + 形式：
-    |$X\backslash Y$|$y_1$|$y_2$|$\cdots$|$y_j$|$\cdots$|
+    |$X\setminus Y$|$y_1$|$y_2$|$\cdots$|$y_j$|$\cdots$|
     |:-------------:|:---:|:---:|:------:|:---:|:------:|
     |$x_1$|$p_{11}$|$p_{12}$|$\cdots$|$p_{1j}$|$\cdots$|
     |$x_2$|$p_{21}$|$p_{22}$|$\cdots$|$p_{2j}$|$\cdots$|
