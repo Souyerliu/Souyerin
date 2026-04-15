@@ -119,17 +119,25 @@ export default defineConfig({
     recentCommentsLimit: 10,
   },
   comments: {
-    enable: false,
+    enable: true,
     waline: {
       // 替换为你的 Waline 服务端地址，例如: https://comments.example.com
-      serverURL: "",
+      serverURL: "https://souyerin-comments-souyerlius-projects.vercel.app/",
       // 推荐与站点语言保持一致
       lang: "zh-CN",
+      emoji: [
+        "https://unpkg.com/@waline/emojis@1.0.1/weibo",
+        "https://unpkg.com/@waline/emojis@1.0.1/alus",
+        "https://unpkg.com/@waline/emojis@1.0.1/bilibili",
+        "https://unpkg.com/@waline/emojis@1.0.1/qq",
+        "https://unpkg.com/@waline/emojis@1.0.1/tieba",
+        "https://unpkg.com/@waline/emojis@1.0.1/tw-emoji"
+      ],
     },
   },
   hyc: {
     // HYC 扩展总开关：关闭后其所有子功能不可用
-    enable: true,
+    enable: false,
     aiSummary: {
       // AI 摘要卡片开关（受 hyc.enable 总开关控制）
       enable: true,

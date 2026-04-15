@@ -10,6 +10,7 @@
     dark?: boolean | string;
     path?: string;
     pagePath?: string;
+    emoji?: any; 
   }
 
   const {
@@ -18,6 +19,7 @@
     dark = false,
     path = "",
     pagePath = "",
+    emoji = [],
   }: Props = $props();
 
   let walineEl = $state<HTMLDivElement | null>(null);
@@ -38,6 +40,7 @@
       path: finalPath,
       lang,
       dark,
+      emoji,
     });
 
     return () => {

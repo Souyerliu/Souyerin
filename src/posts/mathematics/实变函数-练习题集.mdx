@@ -104,7 +104,7 @@ sticky: true
     $$
     A^+=\{x\in A:f(x)>\frac{1}{n_0}\},A^-=\{x\in A:f(x)< -\frac{1}{n_0}\}
     $$
-    那么$A^+$与$A^-$之中一定有一个不可数集，不妨设是$A^+$。那么就能从中取任意$k$个数$x_1,x_2,\cdots,x_k$，有
+    那么$A^+$与$A^-$之中一定有一个不可数集，不妨设是$A^+$。那么就能从中取任意$k$个不相同的数$x_1,x_2,\cdots,x_k$，有
     $$
     |f(x_1)+f(x_2)+\cdots+f(x_k)|>\frac{k}{n_0}
     $$
@@ -122,10 +122,13 @@ sticky: true
     <div class="mdx-collapse__content">
     证明：  
     充分性：若$x\in A'$，则任意$\epsilon>0$，$U(x,\epsilon)$包含$A$的无穷多个点。所以$(U(x,\epsilon)\setminus\{x\})$一定包含$A$的无穷多个点（否则邻域只有$A$的有限多个点），故与$A$的交集一定非空。  
-    必要性：若对任意的$\epsilon>0$,$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$，
+    必要性：  
+    法1：若对任意的$\epsilon>0$，$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$，
     那么可以令$\epsilon=\epsilon_0$（任意值），并取$x_0\in(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$；  
     再令$\epsilon=\min\left(\dfrac{\epsilon_0}{2},d(x_0,x)\right)$，再取$x_1\in(U(x,\epsilon)\setminus\{x\})\cap A$；  
-    以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\setminus\{x\})\cap A$内，故$x\in A'$.
+    以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\setminus\{x\})\cap A$内，故$x\in A'$.  
+    法2（反证法）：若$\forall\epsilon>0$，$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$，且$x\notin A'$，那么$U(x,\epsilon)\setminus\{x\}$只包含$A$的有限个点，记为$x_1,x_2,\cdots,x_k$。
+    那么取$\epsilon' =\dfrac{1}{2}\min\{d(x_1,x),d(x_2,x),\cdots,d(x_k,x)\}$，则$(U(x,\epsilon')\setminus\{x\})\cap A=\emptyset$，矛盾，故$x\in A'$。
     </div>
     </details>
   </div>

@@ -67,7 +67,7 @@ sticky: true
     中各取一个随机变量，它们都是相互独立的。
     </Note>
 ### 条件概率公式
-+ $P(AB|C)=PP(B|AC)(A|C)=P(A|BC)P(B|C)$.
++ $P(AB|C)=P(B|AC)P(A|C)=P(A|BC)P(B|C)$.
     <Note type="primary" title="证明">
     $$
     \begin{aligned}
@@ -431,14 +431,16 @@ sticky: true
             \end{cases}     
             \end{aligned}
             $$
-        + $i=0$时，  
-            $P(\tau_0 = 2k + 1|W_0 = 0) = 0$；
-            $$
-            P(\tau_0 = 2k \mid W_0 = 0) = 2 \frac{(2k - 2)!}{k! (k - 1)!} q^k p^k = 
+        + $i=0$时，
+            $$  
+            \begin{aligned}
+            &P(\tau_0 = 2k + 1|W_0 = 0) = 0\\
+            &P(\tau_0 = 2k \mid W_0 = 0) = 2 \frac{(2k - 2)!}{k! (k - 1)!} q^k p^k = 
             \begin{cases} 
             2pq, & k = 1\\
             \displaystyle \frac{(2k-3)!!}{(2k)!} \cdot \frac{(4pq)^k}{k!}, & k \geq 2.
             \end{cases}
+            \end{aligned}
             $$
     3. 反射原理
         + 设$W$为简单随机游动，对任意正整数$x,y$,从$(n,x)$到$(n+m,y)$并途中位置回到零点的轨道数与从$(n,-x)$到$(n+m,y)$的轨道数相同。

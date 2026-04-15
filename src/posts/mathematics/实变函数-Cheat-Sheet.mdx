@@ -156,3 +156,115 @@ sticky: true
     + $C$具有连续基数$c$，即$\overline{\overline{C}}=c$；
     + 被挖去的小区间长度和为$1$.
 # 测度论
++ 定义广义实数集$\overline{\R}^1=\R^1\cup\{-\infty,\infty\}$，规定以下计算规则（设$a\in\R^1$）：
+    + $a\pm\infty=\pm\infty,+\infty+(+\infty)=+\infty,-\infty-(+\infty)=-\infty$；
+    + $(\pm\infty)\cdot(\pm\infty)=+\infty,(+\infty)\cdot(-\infty)=-\infty,\dfrac{a}{\pm\infty}=0$；
+    + $$
+        a\cdot(\pm\infty)=\begin{cases}
+            \pm\infty,&a>0\\
+            0,&a=0\\
+            \mp\infty,&a<0
+        \end{cases}
+      $$
+    > 特别声明$+\infty-(+\infty)$没有意义.
+## 外测度
++ **开矩体**：称集合$I =\{(x_1,x_2,\cdots ,x_n)\in\R^n: a_k< x_k< b_k, a_k,b_k\in\R,a_k< b_k,k=1,2,\cdots,n\}$为$\R^n$中的一个开矩体。规定$I$的长度为
+    $$
+    |I|=\prod_{k=1}^n(b_k-a_k)
+    $$
+    > 类似可以定义$\R^n$中的**闭矩体**、**半开闭矩体**等，其长度均定义为边长乘积。
++ **L-覆盖**：设集合$E\subset\R^n$，若可数个开矩体$I_1,I_2,\cdots$，使得$\displaystyle\bigcup_{k=1}^\infty I_k\supset E$，则称$\{I_1，I_2,\cdots\}$为$E$的一个L-覆盖。
+    + 性质：
+    1. 若$E\subset F$,则$F$的L-覆盖必是$E$的L-覆盖；
+    2. 记$I_k=(-k,k),J_k=(-2k,2k),k=1,2,\cdots$,则$\{I_k,k\geq 1\}$和$\{J_k,k\geq 1\}$都是$\R$的L-覆盖；
+    3. 任何集合$E\subset\R^n$都存在一个L-覆盖，且不唯一.
++ （Lebesgue）外测度定义：设集合$E\subset\R^n$，称
+    $$
+    m^*(E)=\inf\left\{\sum_{k=1}^\infty|I_k|:\{I_k,k\geq 1\}\text{为}E\text{的一个L-覆盖}\right\}
+    $$
+    为$E$的**Lebesgue外测度**。
+    + 任何集合$E\subset\R^n$的外测度$m^*(E)$均存在；
+    + 单点集的外测度为$0$。
++ 称外测度为$0$的集合为**零测集**。
+    + Cantor集，可数集均为零测集。
++ 设$I$为开矩体，则$m^*(I)=|I|$.
++ 性质：
+    1. **非负性**：任意$E \subset \mathbb{R}^n$，都有$m^*(E) \geq 0$；
+    2. **单调性**：若$E_1 \subset E_2$，则$m^*(E_1) \leq m^*(E_2)$；
+    3. **次可加性**：$\displaystyle m^* \left( \bigcup_{k=1}^{\infty} E_k \right) \leq \sum_{k=1}^{\infty} m^*(E_k)$.
++ 外测度不具有可加性，需要限制条件：
+    + 若$A, B \subset \mathbb{R}^n,d(A, B) = \inf\{d(x, y) : x \in A, y \in B\} > 0$，则有 
+        $$
+        m^*(A \cup B) = m^*(A) + m^*(B).
+        $$
+## 测度
+> 测度的引入目的是为了解决外测度的不可加性问题
++ 定义（Carathéodory条件，简称**卡氏条件**）：设$E\subset\R^n$，若对任意的$T\subset\R^n$（也称为**试验集**），都有
+    $$
+    m^*(T)=m^*(T\cap E)+m^*(T\cap E^c)
+    $$
+    成立，则称$E$为Lebesgue可测集，简称$E$为**可测集**或$E$可测，记为$E\in\mathcal{M}$（$\mathcal{M}$表示所有可测集组成的全体）；$m^*(E)$称为$E$的**测度**，记为$m(E)$.
+    + 零测集必可测，且测度为$0$；
+    + 由外测度的次可加性，卡氏条件可化为$m^*(T)\geq m^*(T\cap E)+m^*(T\cap E^c)$
++ 等价条件：$E\in\mathcal{M}\Longleftrightarrow$任意$A\subset E,B\subset E^c$，有$m^*(A\cup B)=m^*(A)+m^*(B)$
+    + 推论：若$E_1,E_2\in\mathcal{M}$，且$E_1\cap E_2=\emptyset$，则对任意的$T\subset\R^n$，都有
+        $$
+        m^*(T\cap(E_1\cup E_2))=m^*(T\cap E_1)+m^*(T\cap E_2)
+        $$
+        特别地，令$T=\R^n$，则
+        $$
+        m^*(E_1+E_2)=m^*(E_1)+m^*(E_2)
+        $$
+        （即推出测度的有限可加性）
+        > 在上面的推论中，可以不要求$E_2$可测（因为$(T\cup E_2)\subset E_2\subset E_1^c$）
++ 卡氏条件简化版本：$E\in\mathcal{M}\Longleftrightarrow$对任意的开矩体$I$，有
+    $$
+    |I|\geq m^*(I\cap E)+m^*(I\cap E^c).
+    $$
+### 可测集的性质
+1. $E \in \mathcal{M}\Longleftrightarrow E^c \in \mathcal{M}$;
+2. 若$E_1, E_2 \in \mathcal{M}$，则$E_1 \cup E_2, E_1 \cap E_2$和$E_1 \setminus E_2$都在$\mathcal{M}$中;
+3. 若$E_1, E_2, \dots \in \mathcal{M}$，且当$i \neq j$时，还有$E_i \cap E_j = \emptyset$，则$\displaystyle\sum_{k=1}^\infty E_k \in \mathcal{M}$，且
+    $$
+    m\left(\sum_{k=1}^\infty E_k\right) = \sum_{k=1}^\infty m(E_k)
+    $$
+    （测度可列可加性）
+4. 若$E_1, E_2, \dots \in \mathcal{M}$，则$\bigcup_{k=1}^\infty E_k \in \mathcal{M}$.
+### 测度的性质
+1. $m(\emptyset) = 0$;
+2. $\displaystyle m\left(\sum_{k=1}^{\infty} A_k\right) = \sum_{k=1}^{\infty} m(A_k)$；
+3. $m(A + B) = m(A) + m(B)$；
+4. 若 $A \subset B$，则 $m(A) \leq m(B)$；
+5. 若 $A \subset B$, $m(A) < \infty$，则 $m(B \setminus A) = m(B) - m(A)$；
+6. 若 $m(AB) < \infty$，则 $m(B \setminus A) = m(B) - m(AB)$；
+7. $\displaystyle m\left(\bigcup_{k=1}^{\infty} E_k\right) \leq \sum_{k=1}^{\infty} m(E_k)$
++ 测度的上、下连续性：设$\{E_n,n\geq 1\}\in\mathcal{M}$，
+    + **测度的下连续性**：若$E_1 \subset E_2 \subset \cdots$，则$\displaystyle\lim_{k \to \infty} m(E_k) = \lim_{k \to \infty} m(E_k)$；
+    + **测度的上连续性**：若$m(E_1) < \infty, \, E_1 \supset E_2 \supset \cdots$，则$\displaystyle\lim_{k \to \infty} m(E_k) = \lim_{k \to \infty} m(E_k)$。
+## 可测集与开集
++ $\R^n$中的任意开矩体都是可测集$\Longrightarrow\R^n$中的任意开集都是可测集
+    + 闭集为可测集；$G_\delta$型集和$F_\sigma$型集都是可测集；Borel集是可测集。
++ 可测集的特征：
+    + 对任意的$\epsilon>0$，存在开集$G$和闭集$F$，使得$F\subset E\subset G$，且
+        $$
+        m(G\setminus E)< \epsilon,\quad m(E\setminus F)< \epsilon
+        $$
+    + 存在$G_\delta$型集$G^*$和$F_\sigma$型集$F^*$。使得$G^*\supset E\supset F^*$且
+        $$
+        m(G^*\setminus E) = m(E\setminus F^*)=0
+        $$
+    > 由此可见，可测集“差不多”就是开（闭）集。
+## 不可测集
++ 平移：设集合$A\subset\R^1$ ，称集合$a+A=\{a+x:x\in A\}$为$A$的一个**平移**。
++ 定理：设$a \in \mathbb{R}^1$。
+    1. 对任意的$A \subset \mathbb{R}^1$，有$A = a + ((-a) + A)$。
+    2. 设$I$ 是开区间，则$a + I$ 也是开区间，且$|a + I| = |I|$；
+    3. 设$A \subset \mathbb{R}^1$，则$m^*(a + A) = m^*(A)$；
+    4. 若$A \in \mathcal{M}$，则$a + A \in \mathcal{M}$，且$m(a + A) = m(A)$。
++ 在$[0,1]$中定义等价关系$\sim$，即若$x,y\in[0,1]$且$x-y\in\mathbb{Q}$，则$x\sim y$。
+    + 由此，$[0,1]$被分为一些等价类集合，由选择公理，我们可以在每个等价类中选择且仅选择一个元素，这样构成的集合记为$E$。则$E\subset [0,1]$且$E$是Lebesgue不可测集。
+    + 推论：存在两个不相交的实数集$A$和$B$，使得
+        $$
+        m^*(A\cup B) < m^*(A) + m^*(B).
+        $$
+    

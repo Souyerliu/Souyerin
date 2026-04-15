@@ -8,7 +8,7 @@ tags:
 cover: ./随机过程-思考题集/folder.png
 sticky: true
 ---
-本系列题集将在本学期长期更新，收集老师课上布置的部分课堂习题及“黑脸”（难度较大的）作业题。
+本系列题集将在本学期长期更新，收集老师课上布置的部分课堂习题、“黑脸”（难度较大的）作业题及部分小测题。
 # 预备知识（概率论回顾与拓展）
 <div class="quiz-group">
   <div class="quiz-item">
@@ -451,7 +451,8 @@ sticky: true
       <div class="quiz-question">
       定义随机过程$Z=\{Z_t;t\geq0\}$，其中$Z_t=X\cos\left(2\pi t\right)+Y\sin\left(2\pi t\right)$, 其中$X$，$Y$是两个不相关的随机变量，分布不同但$E[X]=E[Y]=0,D[X]=D[Y]=1$.  
       （1）证明$Z$是平稳过程.  
-      （2）若进一步假设$X$，$Y$独立且都服从正态分布, 证明$Z$是严平稳过程.
+      （2）若进一步假设$X$，$Y$独立且都服从正态分布, 证明$Z$是严平稳过程.  
+      （3）求$Z$的二维分布概率密度函数族.
       </div>
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
@@ -493,9 +494,10 @@ sticky: true
       &=(X\cos2\pi h+Y\cos2\pi h)\cos2\pi t-(-X\sin2\pi h+Y\sin2\pi h)\sin2\pi t
       \end{aligned}
       $$
-      记$X'=X\cos2\pi h+Y\cos2\pi h,Y'=-X\sin2\pi h+Y\sin2\pi h$，则$(X,Y)$到$(X',Y')$是单位正交变换，所以$(X',Y')$同样满足二元标准正态分布。
+      记$X'=X\cos2\pi h+Y\cos2\pi h,Y'=-X\sin2\pi h+Y\sin2\pi h$，则$(X,Y)$到$(X',Y')$是单位正交变换，所以$(X',Y')$同样满足二维标准正态分布。
       所以$Z_{t+h}$与$Z_t$同分布，进而任意$t_1< t_2\cdots< t_n$与$h$，
-      $(Z_{t_1},Z_{t_2},\cdots,Z_{t_n})$与$(Z_{t_{1+h}},Z_{t_{2+h}},\cdots,Z_{t_{n+h}})$同分布，$Z$为严平稳过程。
+      $(Z_{t_1},Z_{t_2},\cdots,Z_{t_n})$与$(Z_{t_{1+h}},Z_{t_{2+h}},\cdots,Z_{t_{n+h}})$同分布，$Z$为严平稳过程。  
+      （3）即求$(Z_s,Z_t)(\forall 0\leq s< t)$的概率密度函数。由前两问可知，$(Z_s,Z_t)$服从二维正态分布$N(0,0,1,1,\cos(2\pi(s-t)))$（具体概率密度函数略）
       </div>
       </details>
    </div>
@@ -814,4 +816,46 @@ sticky: true
       </div>
       </details>
    </div>
+   <div class="quiz-item">
+      <div class="quiz-question">
+      某个零件在运行过程中收到撞击，用$N(t)$表示$(0,t]$时间段内该零件受到的撞击次数。经验表明$N=(N(t):t\geq 0)$为参数$\lambda$的泊松过程。
+      每次撞击会给零件带来一定的磨损，假定每次磨损量为$\xi_1,\xi_2,\cdots$均服从参数为$\beta$的指数分布且相互独立。若磨损总量达到或超过$\alpha>0$就要更换零件，问该零件的平均寿命。
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      设零件的寿命为$X$，则
+         $$
+         X=\inf\left\{t;\sum_{i=1}^{N(t)}\xi_i\geq \alpha\right\}
+         $$
+         则
+         $$
+         \begin{aligned}
+         EX&=\int_{0}^\infty tdF(t)=\int_{0}^\infty P(X>t)dt\\
+         &=\int_{0}^\infty P\left(\sum_{i=1}^{N(t)}\xi_i< \alpha\right)dt\\
+         &=\int_{0}^\infty\sum_{k=0}^\infty P\left(\sum_{i=1}^{N(t)}\xi_i< \alpha|N(t)=k\right)P(N(t)=k)dt\\
+         &=\int_{0}^\infty\sum_{k=0}^\infty P\left(\sum_{i=1}^k\xi_i< \alpha\right)P(N(t)=k)dt
+         \end{aligned}
+         $$
+         又$\{\xi_i,i\geq 1\}$均服从$\mathrm{Exp}(\beta)$，所以可以将$\displaystyle T_k'=\left\{\sum_{i=1}^k\xi_i,k\geq 1\right\}$看作强度为$\beta$的泊松过程$\{N'(t),t\geq 0\}$的到达时间。于是
+         $$
+         P\left(\sum_{i=1}^k\xi_i< \alpha\right)=P(N'(\alpha)\geq k)=1 - \sum_{n=0}^k e^{-\beta\alpha} \frac{(\beta\alpha)^n}{n!} = e^{-\beta \alpha} \sum_{n=k+1}^\infty \frac{(\beta \alpha)^n}{n!}
+         $$
+         因此
+         $$
+         \begin{aligned}
+         EX&=\int_{0}^\infty\sum_{k=0}^\infty\left[e^{-\beta \alpha} \sum_{n=k+1}^\infty\frac{(\beta \alpha)^n}{n!}\right]\cdot\frac{(\lambda t)^k}{k!}e^{-\lambda t}dt\\
+         &=\int_{0}^{\infty} e^{-\beta\alpha} \sum_{n=1}^{\infty} \frac{(\beta\alpha)^n}{n!} \left[ \sum_{k=0}^{n-1} \frac{(\lambda t)^k}{k!} \right] e^{-\lambda t}dt\\
+         &=\int_{0}^{\infty} e^{-\beta\alpha} \sum_{n=1}^{\infty} \frac{(\beta\alpha)^n}{n!} P(N(t) \leq n-1)dt\\
+         &=e^{-\beta\alpha} \sum_{n=1}^{\infty} \frac{(\beta\alpha)^n}{n!} \int_{0}^{\infty} P(N(t) \leq n-1)dt\\
+         &= e^{-\beta \alpha} \sum_{n=1}^\infty \frac{(\beta \alpha)^n}{n!} \cdot \frac{n}{\lambda}\\
+         &=\frac{1}{\lambda} e^{-\beta \alpha} \sum_{n=1}^\infty \frac{n(\beta \alpha)^n}{n!}\\
+         &=\frac{1}{\lambda} e^{-\beta \alpha} \cdot (\beta \alpha) e^{\beta \alpha}\\
+         &=\frac{\beta\alpha}{\lambda}.
+         \end{aligned}
+         $$
+      </div>
+      </details>
+   </div>
 </div>
+# 离散时间马氏链
