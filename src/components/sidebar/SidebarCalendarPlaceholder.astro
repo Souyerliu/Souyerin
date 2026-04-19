@@ -65,14 +65,13 @@ const monthLabel = new Intl.DateTimeFormat(locale, {
 
 <style>
   .calendar-card {
-    background:
-      linear-gradient(180deg, var(--grey-0) 0%, var(--grey-1) 100%) no-repeat,
-      var(--grey-0);
+    position: relative;
+    background: var(--grey-0);
     border: 0.0625rem solid var(--grey-3);
-    border-radius: 1rem;
-    box-shadow: 0 1rem 1.75rem -1.25rem var(--box-bg-shadow);
+    border-radius: 0.875rem;
+    box-shadow: var(--shadow-card-base);
     overflow: hidden;
-    padding: 0.875rem;
+    padding: 0.95rem 0.95rem 1rem;
     transition:
       transform 0.3s ease,
       box-shadow 0.3s ease,
@@ -80,27 +79,30 @@ const monthLabel = new Intl.DateTimeFormat(locale, {
   }
 
   .calendar-card:hover {
-    border-color: var(--color-pink-a3);
-    box-shadow: 0 1.25rem 2.25rem -1.5rem var(--box-bg-shadow);
+    border-color: color-mix(in srgb, var(--color-pink) 24%, var(--grey-3));
+    box-shadow: 0 0 2rem var(--box-bg-shadow);
     transform: translateY(-0.1875rem);
   }
 
   .card-head {
+    position: relative;
+    z-index: var(--z-content);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.85rem;
   }
 
   h3 {
-    color: var(--grey-8);
+    color: var(--primary-color, var(--color-pink));
     font-size: 1.125rem;
     margin: 0;
   }
 
   .badge {
-    background: var(--nav-bg);
+    background: color-mix(in srgb, var(--color-pink) 10%, var(--grey-1));
+    border: 0.0625rem solid color-mix(in srgb, var(--color-pink) 18%, var(--grey-3));
     border-radius: 999px;
     color: var(--grey-7);
     display: inline-flex;
@@ -112,6 +114,8 @@ const monthLabel = new Intl.DateTimeFormat(locale, {
   }
 
   .calendar-grid {
+    position: relative;
+    z-index: var(--z-content);
     display: grid;
     gap: 0.25rem;
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -133,7 +137,7 @@ const monthLabel = new Intl.DateTimeFormat(locale, {
   }
 
   .date {
-    background: var(--grey-2-a0);
+    background: color-mix(in srgb, var(--grey-1) 92%, transparent);
     border: 0.0625rem solid var(--grey-3);
     border-radius: 0.65rem;
     color: var(--grey-6);
@@ -147,7 +151,7 @@ const monthLabel = new Intl.DateTimeFormat(locale, {
   }
 
   .date:not(.empty):hover {
-    border-color: var(--color-pink-a3);
+    border-color: color-mix(in srgb, var(--color-pink) 26%, var(--grey-3));
     color: var(--grey-8);
     transform: translateY(-0.0625rem);
   }
@@ -169,12 +173,12 @@ const monthLabel = new Intl.DateTimeFormat(locale, {
   }
 
   :global(:root[data-theme="dark"]) .calendar-card {
-    box-shadow: var(--shadow-dark-elevated);
+    box-shadow: var(--shadow-card-base);
   }
 
   :global(:root[data-theme="dark"]) .date.today,
   :global(:root[data-theme="dark"]) .badge {
-    color: var(--grey-9);
+    color: var(--grey-7);
   }
 
   :global(:root[data-theme="dark"]) .date.today {

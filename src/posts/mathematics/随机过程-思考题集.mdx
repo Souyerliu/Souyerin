@@ -859,3 +859,152 @@ sticky: true
    </div>
 </div>
 # 离散时间马氏链
+<div class="quiz-group">
+   <div class="quiz-item">
+      <div class="quiz-question">
+      （存储模型）设$\xi_i, i = 1, 2, \dots$为独立同分布的非负整数值随机变量，令
+         $$
+         X_0 = K, \quad X_n = 
+         \begin{cases} 
+         0 \lor (X_{n-1} - \xi_n), & k < X_{n-1} \leq K, \\ 
+         0 \lor (K - \xi_n), & X_{n-1} \leq k, 
+         \end{cases}
+         \quad n \geq 1,
+         $$
+         其中$k < K$为给定的两个正整数。  
+      （1）证明$X = \{X_n, n \geq 0\}$为离散时间马氏链。  
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）证明：显然$X$的状态空间$S = \{0, 1, \cdots, K\}$。对任意$n \geq 1$以及$i_1, \cdots, i_{n+1} \in S$，
+         $$
+         \begin{aligned}
+         &\mathbb{P}(X_{n+1} = i_{n+1} | X_n = i_n, \cdots, X_1 = i_1, X_0 = K) \\ 
+         &=\begin{cases} 
+         \mathbb{P}((K - \xi_{n+1}) \lor 0 = i_{n+1} | X_n = i_n, \cdots, X_0 = K), & i_n \leq k, \\ 
+         \mathbb{P}((i_n - \xi_{n+1}) \lor 0 = i_{n+1} | X_n = i_n, \cdots, X_0 = K), & k < i_n \leq K,
+         \end{cases}
+         \end{aligned}
+         $$
+         对任意$i \geq 1$, 由$X_i$的定义可知$X_i$为$X_{i-1}$与$\xi_i$的函数，如此递归代入后可知$X_i$是随机变量$\xi_1, \cdots, \xi_i$的函数。这表明事件
+         $$
+         \{X_n = i_n, \cdots, X_1 = i_1, X_0 = K\}
+         $$
+         由随机变量$\xi_1, \cdots, \xi_n$确定。再由$\{ \xi_i, i \geq 1 \}$的独立性，
+         $$
+         \begin{aligned}
+         &\mathbb{P}(X_{n+1} = i_{n+1} | X_n = i_n, \cdots, X_1 = i_1, X_0 = K) \\
+         &=\begin{cases} 
+         \mathbb{P}((K - \xi_{n+1}) \lor 0 = i_{n+1}), & i_n \leq k, \\ 
+         \mathbb{P}((i_n - \xi_{n+1}) \lor 0 = i_{n+1}), & k < i_n \leq K, 
+         \end{cases}\\
+         &=\begin{cases} 
+         \mathbb{P}((K - \xi_{n+1}) \lor 0 = i_{n+1} | X_n = i_n), & i_n \leq k, \\ 
+         \mathbb{P}((i_n - \xi_{n+1}) \lor 0 = i_{n+1} | X_n = i_n), & k < i_n \leq K, 
+         \end{cases}\\
+         &= \mathbb{P}(X_{n+1} = i_{n+1} | X_n = i_n).
+         \end{aligned}
+         $$
+      所以$X$为离散时间马氏链。
+      </div>
+      </details>
+      （2） 设$P(\xi_n = 0) = P(\xi_n = 2) = 1/4,\ P(\xi_n = 1) = 1/2$。当$k = 1, K = 3$时，写出$X$的转移概率矩阵。  
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （2）当$X_{n-1}=0$时，$X_{n}=3-\xi_n$，故矩阵第一行为
+         $$
+         \left(0\quad\frac{1}{4}\quad\frac{1}{2}\quad\frac{1}{4}\right)
+         $$
+         类似可得到剩下三行转移概率（请读者自行推导），最终得到转移概率矩阵为
+         $$
+         P=\begin{pmatrix}
+         0&\dfrac{1}{4}&\dfrac{1}{2}&\dfrac{1}{4}\\[10pt]
+         0&\dfrac{1}{4}&\dfrac{1}{2}&\dfrac{1}{4}\\[10pt]
+         \dfrac{1}{4}&\dfrac{1}{2}&\dfrac{1}{4}&0\\[10pt]
+         0&\dfrac{1}{4}&\dfrac{1}{2}&\dfrac{1}{4}
+         \end{pmatrix}.
+         $$
+      </div>
+      </details>
+      （3） 在（2）的条件下求$X_3$的分布。
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （3）初始分布为
+      $$
+      \pi^{(0)}=(0\quad 0\quad 0\quad 1)
+      $$
+      则$X_3$分布为
+      $$
+      \pi^{(3)}=\pi^{(0)}P^3=\left(\frac{3}{32}\quad\frac{11}{32}\quad\frac{3}{8}\quad\frac{3}{16}\right).
+      $$
+      </div>
+      </details>
+      
+      
+   </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      设$X$是不可约$d$周期马氏链，状态空间为$S$。对任意$i \in S$，令
+      $$
+      S_k = \{ j \in S; \, p_{i,j}^{(nd+k)} > 0, \, n \geq 0\}, \quad k = 0, \dots, d-1.
+      $$
+      证明：
+      </div>  
+      （1）$S_k, 0 \leq k \leq d-1$，互不相交而且$\displaystyle S = \bigcup_{k=0}^{d-1} S_k$。 
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）先证明$\displaystyle S = \bigcup_{k=0}^{d-1} S_k$：显然$\displaystyle \bigcup_{k=0}^{d-1} S_k\subseteq S$，而对任意$j\in S$，因为$X$不可约，所以存在正整数$m$使$p_{ij}^{(m)}>0$.
+      那么取$k\equiv m(\mathrm{mod}\hspace{0.2em}d)$，则$j\in S_k$，故$\displaystyle S\subseteq\bigcup_{k=0}^{d-1} S_k$，所以$\displaystyle S = \bigcup_{k=0}^{d-1} S_k$；   
+      再证明$S_k$互不相交：若存在$k_1\neq k_2$使$S_{k_1}\cap S_{k_1}\neq\emptyset$，则存在$j\in S_k\cap S_l$，于是存在$n_1,n_2\in\N$，使
+      $$
+      p_{i,j}^{(n_1d+k_1)}>0,\,\quad p_{i,j}^{(n_2d+k_2)}>0.
+      $$
+      又因为$X$不可约，所以$j\to i$，存在$l\in N$使$p_{j,i}^{(l)}>0$，那么
+      $$
+      \begin{aligned}
+      p_{ii}^{(n_1d+k_1+l)}\geq p_{i,j}^{(n_1d+k_1)}p_{j,i}^{(l)}>0,\\
+      p_{ii}^{(n_2d+k_2+l)}\geq p_{i,j}^{(n_2d+k_2)}p_{j,i}^{(l)}>0
+      \end{aligned}
+      $$
+      所以$d\mid n_1d+k_1+l,d\mid n_2d+k_2+l\Longrightarrow d\mid (n_1-n_2)d+(k_1-k_2)$，于是$d\mid (k_1-k_2)$。
+      但$k_1,k_2\in\{0,1,\cdots,d-1\}$，故$|k_1-k_2|< d$，矛盾。故$S_k$互不相交。
+      </div>
+      </details> 
+      （2）令$Y_n = X_{nd}$，那么$Y = \{ Y_n; \, n \geq 0 \}$是以$P^{(d)}$为一步转移概率矩阵的非周期马氏链。特别地，若$X_0 \in S_k$，那么$Y$是状态空间为$S_k$的非周期马氏链。
+      
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （2）证明分三步：
+      1. 证明$Y$是马氏链，且转移概率矩阵为$P^{(d)}$  
+      由$X$的马氏性，
+      $$
+      \begin{aligned}
+      \mathbb{P}\{Y_{n+1} = l \mid Y_0, Y_1, \dots, Y_n = j\} &= \mathbb{P}\{X_{(n+1)d} = l \mid X_0, X_d, \dots, X_{nd} = j\}\\
+      &= \mathbb{P}\{X_{nd+d} = l \mid X_{nd} = j\}\\
+      &= p_{jl}^{(d)}.
+      \end{aligned}
+      $$
+      所以$Y$是马氏链，且一步转移概率矩阵为$P^{(d)}$。  
+      2. 证明$Y$是非周期马氏链  
+      对任意状态$j\in S$，记$Y$中$j$的周期为$d_Y(j)=\gcd\{m\geq1:p_{jj}^{(md)}>0\}$，而在$X$中如果$j$存在周期，则一定存在$s\in\N$，使$p_{jj}^{(sd)}>0$，所以$d_Y(j)=1$，$Y$是非周期马氏链。  
+      3. 证明若$X_0 \in S_k$，那么$Y$是状态空间为$S_k$的非周期马氏链  
+      若 $u \in S_a$，且 $p_{uv}^{(t)} > 0$，$t = sd + b$，则 $v \in S_{(a+b) \bmod d}$。  
+      现 $Y_n$ 的一步转移对应原链走 $d$ 步：$t = d = 1 \cdot d + 0$，余数 $b = 0$。
+      若初态 $X_0 = i \in S_k$，则
+      $$
+      u \in S_k,\quad p_{uv}^{(d)} > 0 \implies v \in S_{(k+0) \bmod d} = S_k.
+      $$
+      即转移矩阵 $P^{(d)}$ 仅在 $S_k$ 内部转移，不会跑到其余 $S_l (l \ne k)$。
+      又原链不可约，故对任意 $u, v \in S_k$，存在 $m$ 使得 $p_{uv}^{(md)} > 0$，因此 $P^{(d)}$ 在 $S_k$ 上不可约。
+      所以$Y$是状态空间为$S_k$的非周期马氏链。
+      </div>
+      </details>
+   </div>
+
+</div>

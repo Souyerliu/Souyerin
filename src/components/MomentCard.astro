@@ -53,7 +53,7 @@ const content = moment.body || "";
 
     {
       images.length > 0 && (
-        <div class="moment-images" data-count={images.length}>
+        <div class="moment-images" data-count={images.length} data-image-zoom-gallery>
           {images.map((src, index) => (
             <div class="image-wrapper bg-grey-2">
               <image-zoom>

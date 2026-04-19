@@ -51,6 +51,9 @@
   --primary-color: var(--color-red);
   --surface-code: var(--grey-3);
   --surface-code-header: var(--grey-2);
+  --surface-inline-code: oklch(0.965 0.008 15);
+  --surface-inline-code-border: oklch(0.892 0.01 15);
+  --surface-inline-code-text: oklch(0.421 0.089 15.6);
 
   /* Layer tokens */
   --z-behind: -1;
@@ -215,6 +218,7 @@
   --border-color-muted: var(--grey-4);
   --surface-code: var(--grey-3);
   --surface-code-header: var(--grey-2);
+  --surface-inline-code-border: oklch(0.43 0.018 274);
 
   --codeblock-shadow: none;
   --codeblock-action-color: var(--text-color-muted);

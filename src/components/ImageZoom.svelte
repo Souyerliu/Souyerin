@@ -9,6 +9,8 @@
   let isOpen = $state(false);
   let previewSrc = $state("");
   let previewAlt = $state("");
+  let previewImages = $state<{ src: string; alt: string }[]>([]);
+  let previewIndex = $state(0);
 
   let cleanupImageListeners: (() => void) | null = null;
   let cleanupSlotListener: (() => void) | null = null;
@@ -16,6 +18,8 @@
   let isClosing = $state(false);
 
   const CLOSE_ANIMATION_MS = 220;
+  type PreviewImage = { src: string; alt: string };
+  type PreviewImageCandidate = PreviewImage & { element: HTMLImageElement };
 
   let releaseBodyScrollLock: (() => void) | null = null;
 
@@ -29,6 +33,8 @@
     isClosing = false;
     previewSrc = "";
     previewAlt = "";
+    previewImages = [];
+    previewIndex = 0;
 
     if (closeTimer) {
       clearTimeout(closeTimer);
@@ -64,12 +70,37 @@
     }, closeAnimationMs);
   };
 
+  const syncPreviewWithIndex = () => {
+    const currentImage = previewImages[previewIndex];
+    if (!currentImage) {
+      return;
+    }
+
+    previewSrc = currentImage.src;
+    previewAlt = currentImage.alt;
+  };
+
+  const resolvePreviewImages = (image: HTMLImageElement): PreviewImageCandidate[] => {
+    const galleryRoot = image.closest("[data-image-zoom-gallery]");
+    const galleryImages = galleryRoot
+      ? Array.from(galleryRoot.querySelectorAll<HTMLImageElement>("image-zoom img"))
+      : [image];
+
+    return galleryImages
+      .map((galleryImage) => ({
+        element: galleryImage,
+        src: galleryImage.currentSrc || galleryImage.src,
+        alt: galleryImage.alt || "",
+      }))
+      .filter((galleryImage) => Boolean(galleryImage.src));
+  };
+
   const openPreview = (image: HTMLImageElement, event?: Event) => {
     event?.preventDefault();
     event?.stopPropagation();
 
-    const source = image.currentSrc || image.src;
-    if (!source) {
+    const galleryImages = resolvePreviewImages(image);
+    if (galleryImages.length === 0) {
       return;
     }
 
@@ -79,8 +110,12 @@
     }
 
     isClosing = false;
-    previewSrc = source;
-    previewAlt = image.alt || "";
+    previewImages = galleryImages.map(({ src, alt }) => ({ src, alt }));
+    previewIndex = Math.max(
+      0,
+      galleryImages.findIndex((galleryImage) => galleryImage.element === image),
+    );
+    syncPreviewWithIndex();
     isOpen = true;
 
     if (typeof document !== "undefined" && typeof window !== "undefined" && !releaseBodyScrollLock) {
@@ -89,6 +124,32 @@
         getComputedPaddingInlineEnd: () => window.getComputedStyle(document.body).paddingInlineEnd,
       });
     }
+  };
+
+  const hasMultiplePreviewImages = () => previewImages.length > 1;
+
+  const showPreviousPreview = (event?: Event) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (!hasMultiplePreviewImages()) {
+      return;
+    }
+
+    previewIndex = (previewIndex - 1 + previewImages.length) % previewImages.length;
+    syncPreviewWithIndex();
+  };
+
+  const showNextPreview = (event?: Event) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (!hasMultiplePreviewImages()) {
+      return;
+    }
+
+    previewIndex = (previewIndex + 1) % previewImages.length;
+    syncPreviewWithIndex();
   };
 
   $effect(() => {
@@ -164,7 +225,11 @@
 
   const handleOverlayClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement | null;
-    if (target?.closest(".image-zoom-content")) {
+    if (
+      target?.closest(".image-zoom-content") ||
+      target?.closest(".image-zoom-close") ||
+      target?.closest(".image-zoom-nav")
+    ) {
       return;
     }
 
@@ -172,8 +237,22 @@
   };
 
   const handleWindowKeydown = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && isOpen) {
+    if (!isOpen) {
+      return;
+    }
+
+    if (event.key === "Escape") {
       requestClosePreview();
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      showPreviousPreview(event);
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      showNextPreview(event);
     }
   };
 
@@ -235,6 +314,16 @@
     }
   }}
 >
+  {#if hasMultiplePreviewImages()}
+    <button
+      type="button"
+      class="image-zoom-nav image-zoom-nav-prev"
+      aria-label="查看上一张图片"
+      onclick={showPreviousPreview}
+    >
+      ‹
+    </button>
+  {/if}
   <button
     type="button"
     class="image-zoom-close"
@@ -254,6 +343,16 @@
   {/if}
   {#if previewAlt}
     <p class="image-zoom-caption">{previewAlt}</p>
+  {/if}
+  {#if hasMultiplePreviewImages()}
+    <button
+      type="button"
+      class="image-zoom-nav image-zoom-nav-next"
+      aria-label="查看下一张图片"
+      onclick={showNextPreview}
+    >
+      ›
+    </button>
   {/if}
 </dialog>
 
@@ -359,6 +458,38 @@
     transform: scale(1.06);
   }
 
+  .image-zoom-nav {
+    position: absolute;
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(17, 25, 40, 0.58);
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+    animation: image-zoom-ui-in 220ms ease forwards;
+  }
+
+  .image-zoom-nav:hover {
+    background: rgba(17, 25, 40, 0.8);
+    transform: translateY(-50%) scale(1.06);
+  }
+
+  .image-zoom-nav-prev {
+    left: max(1rem, calc(50vw - min(46vw, 550px) - 3.75rem));
+  }
+
+  .image-zoom-nav-next {
+    right: max(1rem, calc(50vw - min(46vw, 550px) - 3.75rem));
+  }
+
   .image-zoom-caption {
     margin: 0.8rem 0 0;
     font-size: 0.9rem;
@@ -370,6 +501,10 @@
   }
 
   .image-zoom-overlay.closing .image-zoom-caption {
+    animation: image-zoom-ui-out 220ms ease forwards;
+  }
+
+  .image-zoom-overlay.closing .image-zoom-nav {
     animation: image-zoom-ui-out 220ms ease forwards;
   }
 
@@ -443,7 +578,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     :global(image-zoom .image-zoom-trigger),
-    .image-zoom-close {
+    .image-zoom-close,
+    .image-zoom-nav {
       transition: none;
     }
 
@@ -453,6 +589,8 @@
     .image-zoom-overlay.closing .image-zoom-content,
     .image-zoom-caption,
     .image-zoom-overlay.closing .image-zoom-caption,
+    .image-zoom-nav,
+    .image-zoom-overlay.closing .image-zoom-nav,
     .image-zoom-overlay.closing .image-zoom-close {
       animation: none;
     }

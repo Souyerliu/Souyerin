@@ -5,9 +5,110 @@ categories: [计算机科学,CS61A]
 tags: 
  - python
 cover: ./61A-header.png
-draft: true
 ---
 # 并发（Concurrency）
 > 注：本部分内容CS61A没有对应的公开Lecture Video，且SP26已经删去了这一部分，故仅作参考（基于FA25的Slides，Discussion和Code整理）。  
 > 关于python并发的相关知识可另外参考[廖雪峰python教程](https://liaoxuefeng.com/books/python/async-io/index.html)、[菜鸟教程](https://www.runoob.com/python3/python-asyncio.html)。
-+ 首先，我们需要明确**并发**（Concurrency）和**并行**（Parallelism）的区别：
+
+首先我们梳理几个概念：
+1. **进程**（Process）：操作系统进行资源分配和调度的基本单位，拥有独立的内存空间、程序计数器和运行状态，彼此之间的执行逻辑通常不直接干扰。
+    + 部分公共资源（如网络连接等）会被多个进程共享。
+2. **线程**（Thread）：进程内的执行单元，共享所属进程的全部资源（如内存空间、全局变量等），但拥有独立的栈空间和程序计数器。
+    + 一个线程崩溃可能导致整个进程终止。
+    + 多进程适用**CPU密集型任务**（如大规模计算），而多线程适用**IO密集型任务**（如网络请求、文件读写等）。
+3. **并发**（Concurrency）：多个任务在时间上重叠执行（任务B在任务A完成前开始）
+    + 通过任务切换实现（可在CPU单核上实现）
+4. **并行**（Parallelism）
+    + 多个任务在同一时刻物理上同时运行（通过多核/多设备实现）
+    + 并发适用多线程任务、而并行使用多进程任务
++ 因为Python存在**全局解释锁**（Global Interpreter Lock，GIL），所以任何时候都只有一个线程可以控制Python解释器。
+    + 这导致Python中多线程在CPU密集型任务中无法实现并行，只能通过并发（任务切换）提升效率。
+## 异步IO
++ 一般的读写任务都需要远程获取数据，这就会产生等待时间的损耗（后面的任务需要待前面的任务得到数据后才能开始）。
+    + 为解决这一问题，并发采用的策略是：在<Text type="red">任务1</Text>等待时启动<Text type="green">任务2</Text>，在<Text type="green">任务2</Text>等待时启动<Text type="blue">任务3</Text>……
+    + 不过这又会带来另一个问题：假设程序只有单线程，那么如果<Text type="blue">任务3</Text>在<Text type="green">任务2</Text>之前完成（此时<Text type="green">任务2</Text>正在执行），而之后又需要执行<Text type="blue">任务3</Text>时，应该如何处理？实际上，我们需要先等<Text type="green">任务2</Text>执行完才能重新启动<Text type="blue">任务3</Text>。
+### 协程（Coroutine）
++ 在python中，多任务并发往往不是通过强制调度实现的，而是程序主动使用“协程”（来自`asyncio`库）进行协作式多任务处理。
+    + 具体而言，协程会一直执行，直到遇到`await`关键字时主动暂停，将控制权交还给事件循环（Event Loop），允许其他协程运行。
++ 下面是具体的示例代码：
+```python
+import asyncio
+async def apollo(): # async定义异步函数
+    await asyncio.sleep(600) # 等待600秒后再执行
+async def kay():
+    await doordash_boba() # 待doordash_boba()执行完后再执行
+async def harry():
+    await cupcake()
+async def start():
+    await asyncio.gather( # 可等待多个任务执行（并发）完成后再执行
+        apollo(),
+        kay(),
+        harry(),
+    )
+asyncio.run(start()) # 启动事件循环，控制并发运行
+```
++ 接下来我们聚焦于并发时间的计算，比较不同代码对并发运行的控制：
+    + 代码1：
+    ```python
+        async def sleep1():
+            await asyncio.sleep(2) 
+            await asyncio.sleep(2) 
+            await asyncio.sleep(2) 
+        asyncio.run(sleep1())
+        ```
+        这段代码依次执行三次`asyncio.sleep(2)`，因此总耗时`6`秒。（没有并发）
+    + 代码2：
+        ```python
+        async def sleep2(): 
+            await asyncio.gather( 
+                asyncio.sleep(2), 
+                asyncio.sleep(2), 
+                asyncio.sleep(2)
+            ) 
+        asyncio.run(sleep2())
+        ```
+        这段代码使用了`asyncio.gather`进行并发，因此总耗时`2`秒。
+    + 代码3：
+        ```python
+        async def blocking_sleep(seconds): 
+            time.sleep(seconds) 
+        async def sleep3():
+            await asyncio.gather( 
+                blocking_sleep(2), 
+                blocking_sleep(2), 
+                blocking_sleep(2)
+                ) 
+        asyncio.run(sleep3())
+        ```
+        这段代码虽然用了`asyncio.gather`，但是其中的任务是强制等待`2`秒，所以属于**阻塞**任务，总耗时仍然为`6`秒。
+    + 代码4：
+        ```python
+        async def new_blocking_sleep(seconds): 
+            await asyncio.to_thread(lambda: time.sleep(seconds)) 
+        async def sleep4():
+            await asyncio.gather(
+                new_blocking_sleep(2), 
+                new_blocking_sleep(2), 
+                new_blocking_sleep(2)
+            ) 
+        asyncio.run(sleep4())
+        ```
+        相比代码3，这段代码使用`asyncio.to_thread`主动将阻塞任务放到新的线程中执行，总耗时为`2`秒（相当于实现了“并发（并行）”的效果）。
++ 补充一些`asyncio`库相关函数的功能：
+    + `x = await c`：将执行`c`任务的返回值赋给`x`；
+    + `task = asyncio.create_task(c)`：创建任务（`c`是定义好的协程），通过`await task`将协程加入到事件循环中；
+    + `asyncio.run(c)`：执行特定的任务`c`（分配线程），开启事件循环；（所以运行代码后协程不会直接执行，这一点类似迭代器）
+    + `c_val, d_val = await asyncio.gather(c, d)`：并发执行`c`和`d`，待全部执行完后将返回值分别赋给`c_val`和`d_val`。
+## 共享状态（Shared State）
++ 由于并发的任务可能会对同一个对象进行操作，所以在进行协程调度时可能产生冲突（一个任务的操作内容在等待时被另一个任务覆盖）
++ 因此，在异步任务中使用并发时要合理安排`await`调用的时机，以避免这种冲突。
+
+# Scheme
+在之前的章节中，我们主要讨论了编程的两大要素：函数与数据。而从本节开始，我们会聚焦于编程的第三个要素，即程序本身（具体而言，就是程序的**解释器**）。而我们会先暂时告别python，转而使用另一种更加原始的语言——[Scheme](https://www.scheme.org/)。
++ 实际上，解释器本身也是一种程序，其作用就是理解并执行另一个程序。
++ 而解释器普遍具有一种结构——两个互相递归的函数：第一个函数求解环境中的表达式，第二个函数将函数应用于参数上（或者说函数的调用）。
+    + 具体而言，用一个函数需要求解其函数体中的表达式，而求解一个表达式可能涉及调用一个或多个函数。
++ 关于Scheme：
+    + Scheme是[Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language))的一种方言，而Lisp是第二古老的编程语言（仅次于Fortran），拥有60多年的历史。
+    + 相比python等现代高级语言而言，Scheme的语法更为简单，但它却同样具备构建复杂程序的能力。
+    + 如果想尝试体验，可以在[try.scheme](https://try.scheme.org/)上在线运行代码。

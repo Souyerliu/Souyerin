@@ -485,6 +485,17 @@ interface HycConfig {
   aiSummary?: HycAiSummaryConfig;
 }
 
+interface DiagnosticsConfig {
+  /**
+   * 是否屏蔽开发/构建/检查期间由 FSWatcher 触发的
+   * `MaxListenersExceededWarning` 输出。
+   * - true：隐藏该已知工具链警告
+   * - false：保留原始 warning 输出
+   */
+  suppressFsWatcherMaxListenersWarning?: boolean;
+}
+
+
 /**
  * 协议类型
  * CC 4.0 系列：BY, BY-SA, BY-ND, BY-NC, BY-NC-SA, BY-NC-ND
@@ -612,6 +623,11 @@ export interface ShokaXThemeConfig {
    * - enable 为总开关，关闭后所有 HYC 子功能不可用
    */
   hyc?: HycConfig;
+
+   /**
+   * 诊断与命令行输出配置。
+   */
+  diagnostics?: DiagnosticsConfig;
 }
 
 const DEFAULT_THEME_COLORS = {

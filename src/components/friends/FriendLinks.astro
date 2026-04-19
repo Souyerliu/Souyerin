@@ -64,6 +64,8 @@ const { links } = Astro.props;
               >
                 {link.title}
               </a>
+            </div>
+            <div class="friend-meta">
               <span class="friend-author">by {link.author}</span>
             </div>
             <p class="friend-desc">{link.desc}</p>
@@ -85,17 +87,31 @@ const { links } = Astro.props;
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.15rem 1.35rem;
-    border-radius: 1rem;
-    background: linear-gradient(135deg, var(--grey-0), var(--grey-1));
-    border: 1px solid var(--grey-3);
-    box-shadow: 0 0.75rem 1.5rem var(--box-bg-shadow);
+    min-height: 12rem;
+    padding: 1.15rem 1.25rem 1.25rem;
+    border-radius: 0.875rem;
+    background: var(--grey-0);
+    border: 1px solid color-mix(in srgb, var(--friend-accent) 14%, var(--grey-3));
+    box-shadow: var(--shadow-card-base);
     overflow: hidden;
     will-change: transform, box-shadow;
     transition:
       transform 0.3s ease,
-      box-shadow 0.3s ease;
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .friend-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.26rem;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--friend-accent) 88%, white),
+      color-mix(in srgb, var(--friend-accent) 62%, var(--color-orange))
+    );
+    z-index: var(--z-content);
   }
 
   .friend-card::after {
@@ -104,16 +120,17 @@ const { links } = Astro.props;
     inset: 0;
     background: radial-gradient(
       circle at top right,
-      var(--grey-2) 0%,
-      transparent 60%
+      color-mix(in srgb, var(--friend-accent) 10%, transparent) 0%,
+      transparent 58%
     );
-    opacity: 0.6;
+    opacity: 0.9;
     pointer-events: none;
   }
 
   .friend-card:hover {
     transform: translateY(-0.3rem);
-    box-shadow: 0 1rem 1.8rem var(--box-bg-shadow);
+    border-color: color-mix(in srgb, var(--friend-accent) 28%, var(--grey-3));
+    box-shadow: 0 0 2rem var(--box-bg-shadow);
   }
 
   .friend-body {
@@ -121,7 +138,7 @@ const { links } = Astro.props;
     z-index: var(--z-content);
     display: flex;
     gap: 1rem;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .friend-avatar {
@@ -133,12 +150,12 @@ const { links } = Astro.props;
   .friend-avatar img {
     width: 4.5rem;
     height: 4.5rem;
-    border-radius: 0.9rem;
+    border-radius: 1rem;
     object-fit: cover;
     background: var(--grey-2);
-    border: 1px solid var(--grey-3);
-    box-shadow: 0 0.4rem 0.8rem var(--grey-9-a1);
-    will-change: box-shadow;
+    border: 1px solid color-mix(in srgb, var(--friend-accent) 18%, var(--grey-3));
+    box-shadow: 0 0.45rem 0.9rem var(--grey-9-a1);
+    will-change: transform, box-shadow;
     transition: box-shadow 0.3s ease;
   }
 
@@ -146,33 +163,60 @@ const { links } = Astro.props;
     position: relative;
     z-index: var(--z-content);
     flex: 1;
+    min-width: 0;
   }
 
   .friend-title-row {
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+    gap: 0.35rem;
   }
 
   .friend-title {
-    font-size: 1.1rem;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.12rem;
     font-weight: 700;
     color: var(--grey-7);
     text-decoration: none;
     transition: color 0.3s ease;
   }
 
+  .friend-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    flex-wrap: wrap;
+  }
+
   .friend-author {
-    font-size: 0.85rem;
-    color: var(--grey-6);
+    display: inline-flex;
+    align-items: center;
+    height: 1.55rem;
+    padding: 0 0.65rem;
+    border-radius: 999px;
+    font-size: 0.77rem;
+    font-weight: 600;
+    line-height: 1;
+    color: color-mix(in srgb, var(--friend-accent) 70%, var(--grey-7));
+    background: color-mix(in srgb, var(--friend-accent) 10%, var(--grey-1));
+    border: 1px solid color-mix(in srgb, var(--friend-accent) 18%, var(--grey-3));
   }
 
   .friend-desc {
-    margin: 0.45rem 0 0;
+    margin: 0.65rem 0 0;
     color: var(--grey-6);
     font-size: 0.95rem;
-    line-height: 1.7;
+    line-height: 1.75;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     transition: color 0.3s ease;
   }
 
@@ -185,9 +229,10 @@ const { links } = Astro.props;
 
   .friend-card:hover .friend-avatar img,
   .friend-card:focus-within .friend-avatar img {
+    transform: translateY(-0.15rem);
     box-shadow:
       0 0.45rem 0.9rem var(--grey-9-a1),
-      0 0 0.75rem color-mix(in srgb, var(--friend-accent) 70%, transparent);
+      0 0 0.75rem color-mix(in srgb, var(--friend-accent) 42%, transparent);
   }
 
   .site-preview {
@@ -196,11 +241,11 @@ const { links } = Astro.props;
     height: 9rem;
     max-height: 0;
     margin-bottom: 0;
-    border-radius: 0.85rem;
+    border-radius: 0.75rem;
     overflow: hidden;
-    border: 1px solid var(--grey-3);
+    border: 1px solid color-mix(in srgb, var(--friend-accent) 16%, var(--grey-3));
     background: var(--grey-1);
-    box-shadow: 0 0.6rem 1.2rem var(--box-bg-shadow);
+    box-shadow: var(--shadow-card-base);
     transform: translateY(-0.75rem);
     opacity: 0;
     pointer-events: none;
@@ -224,12 +269,14 @@ const { links } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
     color: var(--grey-0);
     background: linear-gradient(
       120deg,
       var(--grey-9-a2),
-      color-mix(in oklch, var(--grey-9) 55%, transparent)
+      color-mix(in oklch, var(--friend-accent) 38%, var(--grey-9-a6))
     );
     opacity: 0;
     will-change: opacity;
@@ -253,6 +300,7 @@ const { links } = Astro.props;
   @media (max-width: 768px) {
     .friend-card {
       padding: 1rem;
+      min-height: auto;
     }
 
     .friend-body {
@@ -267,6 +315,10 @@ const { links } = Astro.props;
 
     .friend-content {
       padding-right: 0;
+    }
+
+    .friend-title {
+      white-space: normal;
     }
 
     .site-preview {

@@ -122,7 +122,7 @@ export default defineConfig({
     enable: true,
     waline: {
       // 替换为你的 Waline 服务端地址，例如: https://comments.example.com
-      serverURL: "https://souyerin-comments-souyerlius-projects.vercel.app/",
+      serverURL: "https://souyer-comments.vercel.app",
       // 推荐与站点语言保持一致
       lang: "zh-CN",
       emoji: [

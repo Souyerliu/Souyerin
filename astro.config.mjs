@@ -36,6 +36,12 @@ import spanDirective from "./src/remark-plugins/span-directive.mjs";
 import Font from "vite-plugin-font";
 
 import PlayformInline from "@playform/inline";
+import { installProcessWarningFilter } from "./src/toolkit/suppressWatcherWarning";
+import themeConfig from "./src/theme.config.ts";
+
+if (themeConfig.diagnostics?.suppressFsWatcherMaxListenersWarning !== false) {
+  installProcessWarningFilter();
+}
 
 // https://astro.build/config
 export default defineConfig({

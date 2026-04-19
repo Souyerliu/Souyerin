@@ -18,7 +18,8 @@
 }
 
 .layout-sidebar-column,
-.layout-extra-column {
+.layout-extra-column,
+.layout-main-widgets {
   min-width: 0;
 }
 
