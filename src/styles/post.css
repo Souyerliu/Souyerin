@@ -11,12 +11,12 @@
   overflow-wrap: break-word;
 }
 
-.md :not(pre) > code,
-.md li code,
-.md td code,
-.md th code,
-.md blockquote code,
-.md figcaption code {
+.md p > code,
+.md li > code,
+.md td > code,
+.md th > code,
+.md blockquote p > code,
+.md figcaption > code {
   display: inline-block;
   padding: 0.12em 0.42em;
   margin: 0 0.12em;

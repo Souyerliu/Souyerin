@@ -43,7 +43,7 @@
         "remark-emoji": "^5.0.2",
         "remark-extended-table": "^2.0.3",
         "remark-gfm": "^4.0.1",
-        "remark-ins": "^1.2.3",
+        "remark-ins": "^1.2.4",
         "remark-math": "^6.0.0",
         "remark-ruby-directive": "^0.3.0",
         "svelte": "^5.55.4",

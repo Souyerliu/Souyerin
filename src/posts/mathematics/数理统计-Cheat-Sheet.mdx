@@ -320,3 +320,100 @@ sticky: true
 
     之后不断迭代E步与M步，直到$\theta$收敛（变化量小于指定值）。【可证明EM算法收敛】
     > 注：有时$\theta$会有预先条件，在迭代时如果不满足条件需要进行调整（如调换参数顺序等）
+## 概率极限理论补充
+1. $X_n\stackrel{d}{\longrightarrow}X\Longleftrightarrow$对任意有界连续函数$f$，有$\displaystyle\lim_{n\to\infty}E[f(X_n)]=E[f(X)]$.
+    + 推论（**控制收敛定理**）：对随机变量$X$与$\{X_n,n\geq 1\}$，若$X_n\stackrel{d}{\longrightarrow}X$，且存在随机变量$Z>0,E(Z)< \infty$使$|X|\leq Z,|X_n|< Z(n\geq 1)$，则$\displaystyle\lim_{n\to\infty}E(X_n)=E(X)$。
+    > 本质就是积分与极限交换次序
+2. **Lp收敛**：若对随机变量序列$\{X_n,n\geq 1\}$与随机变量$X$，满足
+    $$
+    \lim_{n\to\infty}E|X_n-X|^p=0
+    $$
+    则称$X_n$ Lp收敛到$X$，记作$X_n\stackrel{L^p}{\longrightarrow}X$。
+    + 性质：Lp收敛可以推出依概率收敛，但与几乎处处收敛无法互相推出。
+    （更多性质应该会在实变函数中详细展开）
+3. 随机变量的收敛速度（$O_p$与$o_p$）
+    + $O_p$（有界概率阶）：记$X_n = O_p(a_n)$，若对任意$\varepsilon > 0$，存在常数$M_\varepsilon > 0$和整数$N_\varepsilon$，使得
+        $$
+        P\left(\left|\frac{X_n}{a_n}\right| > M_\varepsilon\right) < \varepsilon, \quad \forall n \geq N_\varepsilon.
+        $$
+        这意味着$\dfrac{X_n}{a_n}$是**依概率有界**的。
+        + 例：如果 $\sqrt n(\hat{\theta}_n-\theta)\stackrel{d}{\longrightarrow}N(0,\sigma^2)$，那么$\hat{\theta}_n-\theta=O_p\left(\dfrac{1}{\sqrt{n}}\right)$。
+    + $o_p$（概率意义下的高阶无穷小）：记$X_n=o_p(a_n)$，若
+        $$
+        \frac{X_n}{a_n}\stackrel{p}{\longrightarrow}0
+        $$
+        + 若$X_n\stackrel{p}{\longrightarrow}0$，则$X_n=o_p(1)$；
+        + 若$\hat{\theta}_n$是$\theta$的相合估计且$\sqrt n(\hat{\theta}_n-\theta)=O_p(1)$，则$\hat{\theta}_n-\theta=o_p(1)$。
+4. 连续映射定理
+    + 设$X_n\stackrel{d}{\longrightarrow}X,Y_n\stackrel{p}{\longrightarrow}c$（$c$为常数），函数$g(x,y)$在任意$x\in X$的支撑集（非零区域）与$y=c$处连续，则$g(X_n,Y_n)\stackrel{d}{\longrightarrow}g(X,c)$。
+    + Slutsky定理：当$g(x,y)=x+y$时，$X_n+Y_n\stackrel{d}{\longrightarrow}X+c$。（当$Y_n=o_p(1)$时，$X_n+Y_n\stackrel{d}{\longrightarrow}X$）
+5. Delta方法
+    + 设$X_1, X_2, \dots, X_n, \dots$是一列随机变量，且存在某个常数$a$和正常数$b$使得
+        $$
+        n^b (X_n - a) \xrightarrow{d} X,
+        $$
+        假设$g(x)$是一个在$x = a$处连续可导的函数，且$g'(a) \neq 0$，那么
+        $$
+        n^b \{ g(X_n) - g(a) \} \xrightarrow{d} g'(a)X.
+        $$
+        （本质为一阶泰勒展开+Slutsky定理）
+    + 常用形式：
+        设$Y_1, \dots, Y_n, \dots\stackrel{i.i.d}{\sim}Y$且方差有限。记$\displaystyle\mu = \mathbb{E}(Y),\sigma^2 = \text{Var}(Y),X_k = \sum_{j=1}^k\frac{Y_j}{k}$。
+        取$a = \mu = \mathbb{E}(Y),b = 1/2$，那么
+        $$
+        \begin{aligned}
+        \sqrt{n}(X_n - \mu) &\xrightarrow{d} N(0, \sigma^2)\\
+        \sqrt{n}\{g(X_n) - g(\mu)\} &\xrightarrow{d} N(0, \{g'(\mu)\}^2\sigma^2).
+        \end{aligned}
+        $$
+## 渐近正态性
++ 定义：称参数$\theta$的相合估计$\hat{\theta}$为渐近正态的，若存在$0$的非零序列$\sigma_n(\theta)$，使
+    $$
+    \frac{\hat{\theta}_n-\theta}{\sigma_n(\theta)}\stackrel{d}{\longrightarrow}N(0,1)
+    $$
+    也称$\hat{\theta}_n$服从渐近正态分布$N(\theta,\sigma_n^2(\theta))$，记为$\hat{\theta}_n\sim AN(\theta,\sigma_n^2(\theta))$（称$\sigma_n^2(\theta)$为$\hat{\theta}_n$的**渐近方差**）
+    > 可理解为中心极限定理的推广
+    + 大多数渐近正态的相合估计依概率收敛速度均为$\dfrac{1}{\sqrt{n}}$。
+### MLE的渐近正态性
++ **Fisher信息量**：设总体$X$的密度函数为$p(x;\theta),\theta \in \Theta$。假设
+    $$
+    I(\theta) = \int_{-\infty}^{\infty} \left\{ \frac{\partial \ln p(x; \theta)}{\partial \theta} \right\}^2 p(x; \theta) dx = \mathbb{E} \left\{ \frac{\partial \ln p(X; \theta)}{\partial \theta} \right\}^2
+    $$
+    对于任意$\theta \in \Theta$都存在，称$I(\theta)$为参数$\theta$的费希尔信息量。
+    > $\dfrac{\partial \ln p(X; \theta)}{\partial \theta}$也称为**得分函数（score function）**，记作$s(X,\theta)$。其性质如下：
+    >    + $E_\theta[s(X,\theta)]=0,\mathrm{Var}_\theta[s(X,\theta)]=I(\theta)$；
+    >    + $I(\theta)=E_\theta[s^2(X,\theta)]=-E_\theta\left[\dfrac{\partial s(X,\theta)}{\partial\theta}\right]$.
++ 设总体有密度函数$p(x; \theta)$,$\theta \in \Theta$,$\Theta$ 为非退化区间。假设
+    1. $\forall x$，偏导$\dfrac{\partial \ln p}{\partial \theta}$,$\dfrac{\partial^2 \ln p}{\partial \theta^2}$和$\dfrac{\partial^3 \ln p}{\partial \theta^3}$ 对所有的$\theta \in \Theta$ 都存在；
+    2. $\forall \theta \in \Theta$，存在满足
+        $$
+        \int_{-\infty}^{\infty} H_1(x) dx < \infty, \quad \sup_{\theta \in \Theta} \int_{-\infty}^{\infty} H_2(x) p(x; \theta) dx < \infty
+        $$
+        的函数$H_1(x)$ 和$H_2(x)$ 使得
+        $$
+        \left| \frac{\partial p}{\partial \theta} \right| + \left| \frac{\partial^2 p}{\partial \theta^2} \right| < H_1(x), \quad \left| \frac{\partial^3 \ln p}{\partial \theta^3} \right| < H_2(x).
+        $$
+    3. 对于任意$\theta \in \Theta$, 费希尔信息量满足$0 < I(\theta) < \infty$。
+    
+    若$X_1, \ldots, X_n$ 是来自该总体的样本，则未知参数$\theta$ 的最大似然估计$\hat{\theta}_n$ 存在，具有相合性和渐近正态性，$\hat{\theta} \sim AN\left(\theta, \dfrac{1}{nI(\theta)}\right)$。
+    > Fisher信息量越大，渐近方差越小。
++ 渐近方差可用于比较相合估计的好坏
+    + 例（Hardy-Weinberg模型）：$X\sim\begin{pmatrix}1&2&3\\\theta&\theta(1-\theta)&(1-\theta)^2\end{pmatrix}$，则有三个相合估计
+        $$
+        \hat{\theta}_1=\sqrt{\frac{n_1}{n}},\quad\hat{\theta}_2=1-\sqrt{\frac{n_3}{n}},\quad \hat{\theta}_3=\frac{n_1+\dfrac{n_2}{2}}{n}
+        $$
+        则它们满足渐近正态性，且
+        $$
+        \sigma_1^2(\theta)=\frac{1-\theta^2}{4}\quad\sigma_2^2(\theta)=\frac{1-(1-\theta)^2}{4}\quad\sigma_3^2(\theta)=\frac{\theta(1-\theta)}{2}.
+        $$
+        <Note type="primary" title="计算方法">
+        使用如下公式（来自茆诗松《高等数理统计》第二版）：
+        $$
+        \sqrt{n}\left(\hat{\theta}\left(\frac{n_1}{n},\cdots,\frac{n_k}{n}\right)-\theta\right)\stackrel{d}{\longrightarrow}N(0,\sigma_k^2)
+        $$
+        其中
+        $$
+        \sigma_k^2=\sum_{j=1}^kp_j\left(\frac{\partial h}{\partial p_j}\right)^2-\left(\sum_{j=1}^kp_j\frac{\partial h}{\partial p_j}\right)^2
+        $$
+        </Note>
+        由此可知$\sigma_3^2(\theta)$是最好的相合估计（恰为极大似然估计）。
