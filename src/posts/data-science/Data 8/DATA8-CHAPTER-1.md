@@ -12,7 +12,7 @@ cover: ./valentine_logo.png
 + 公开资料仓库：[materials](https://github.com/data-8/materials-fds)
 + 官方教材：[Computational and Inferential Thinking](https://inferentialthinking.com/)
 + DATA 8大致对应国内的数据科学导论（或类似课程），内容比较基础，主要讲述一些基本的数据处理与可视化方法，为后续进阶课程（如DATA 100,DATA 140）做铺垫。
-+ 本课程使用Python+Jupyter Notebook进行数据分析。安装Anaconda（或类似环境）即可满足要求。使用的库主要为python的[datascience](https://data8.org/datascience/)库（由UCB教授们开发）
++ 本课程使用Python+Jupyter Notebook进行数据分析。安装Anaconda（或类似环境）即可满足要求。使用的库主要为python的[datascience](https://data8.org/datascience/)库（由UCB教授们开发）【但为了增强实用性，笔者会使用python的pandas、numpy和matplotlib三件套编写代码】
 # 介绍（Introduction）
 + 什么是数据科学？数据科学是关于通过**探索**、**预测**与**推断**的方式从大而多样的数据集中获得有用结论的学科。
   |方式|目的|使用工具|

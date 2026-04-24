@@ -1,0 +1,140 @@
+---
+title: DATA8 CHAPTER 6
+date: 2026-04-21 10:56:05
+categories: [数据科学,DATA8] 
+tags: 
+ - data science
+ - jupyter notebook
+cover: ./valentine_logo.png
+---
+> 注：本节内容与SQL相通，可以结合[Kaggle SQL入门笔记](/posts/computer-science/kaggle-sql-tutorial/kaggle-sql入门-学习笔记/#group-by)阅读。
+# 分组分类（Group）
++ 在处理数据时，我们常常需要将数据按照某种指标分为若干个组，再对每个组分别进行分析。此时，使用`group_by`函数就非常有用。
++ 我们以下面这个简单的例子演示：
+```python
+import pandas as pd
+cones = pd.DataFrame({
+    'Flavor': ['strawberry', 'chocolate', 'chocolate', 'strawberry', 'chocolate'],
+    'Price': [3.55, 4.75, 6.55, 5.25, 5.25]
+    }) 
+cones
+```
+|Flavor| Price |
+|:-----:|:------:|
+| strawberry| 3.55 |
+| chocolate | 4.75 |
+| chocolate | 6.55 |
+| strawberry| 5.25 |
+| chocolate | 5.25 |
+
++ 使用`group_by`的标准格式是：`.group_by('分组列名').操作`，比如：
+```python
+cones.groupby('Flavor').count()
+```
+|| Price |
+|:-----:|:------:|
+|**Flavor**|  |
+| chocolate | 3 |
+| strawberry| 2 |
+```python
+cones.groupby('Flavor').sum()
+```
+|| Price |
+|:-----:|:------:|
+|**Flavor**|  |
+| chocolate | 16.55 |
+| strawberry| 8.80 |
++ 更多聚合函数可参见[aggregation-methods](https://pandas.ac.cn/docs/user_guide/groupby.html#built-in-aggregation-methods)。
+    + 另外，如果分组列名之外存在非数字的列，则对其作`sum`，`mean`等操作不会返回内容（故建议先提前去掉这些列）。
++ 注：使用`group_by`后，程序会对除了分组列名之外的所有列都进行分组计算操作。
++ 程序分类统计实现的原理也很简单：首先统计分组列中所有不同的名称作为分类，然后用名称筛选对应的行数据，最后对同一列的所有行进行计算。
+## 多变量交叉分类
++ 有时我们分组的标准不止一个变量，那么我们就可以使用多变量交叉分类（同样可用`group_by`）。示例如下：
+```python
+more_cones = pd.DataFrame({
+    'Flavor': ['strawberry', 'chocolate', 'chocolate', 'strawberry', 'chocolate', 'bubblegum'],
+    'Color': ['pink', 'light brown', 'dark brown', 'pink', 'dark brown', 'pink'],
+    'Price': [3.55, 4.75, 5.25, 5.25, 5.25, 4.75]
+})
+```
+| Flavor     | Color         | Price |
+|:----------:|:-------------:|:-----:|
+| strawberry | pink          | 3.55  |
+| chocolate  | light brown   | 4.75  |
+| chocolate  | dark brown    | 5.25  |
+| strawberry | pink          | 5.25  |
+| chocolate  | dark brown    | 5.25  |
+| bubblegum  | pink          | 4.75  |
+
+```python
+more_cones.groupby(['Flavor','Color']).count()
+```
+| Flavor     | Color        | Price |
+|------------|--------------|-------|
+| bubblegum  | pink         | 1     |
+| chocolate  | dark brown   | 2     |
+|            | light brown  | 1     |
+| strawberry           | pink         | 2     |
+
++ 当然，也可以基于三个或更多变量分类，不过这样结果就会比较复杂（交叉分类本质就是排列组合），故一般最多使用两个变量分类。
+### 数据交叉表（pivot table）
++ 对于两变量的交叉分类的结果，我们还可以使用交叉表（也称为列联表）进行展示。示例：
+```python
+pd.pivot_table(more_cones, index='Flavor', columns='Color', aggfunc='size', fill_value=0)
+```
+| Color | dark brown | light brown | pink |
+|:-----:|:----------:|:-----------:|:----:|
+| **Flavor** |            |              |      |
+| bubblegum | 0 | 0 | 1 |
+| chocolate | 2 | 1 | 0 |
+| strawberry | 0 | 0 | 2 |
++ 其中我们也可以设置`values`（表中数据来源）和`aggfunc`（聚合函数）。比如：
+```python
+pd.pivot_table(more_cones, index='Flavor', columns='Color', values='Price',aggfunc='sum', fill_value=0)
+```
+| Color | dark brown | light brown | pink |
+|:-----:|:----------:|:-----------:|:----:|
+| **Flavor** |            |              |      |
+| bubblegum | 0.0|0.00|4.75|
+| chocolate | 10.5|4.75|0.00|
+| strawberry | 0.0| 0.00 | 8.80|
++ 如果`values`或`aggfunc`为列表，则会输出多个表。
++ 相比直接用`group_by`，`pivot_table`的优势在于能够更加直观地展现两变量分类的结果。更多关于`pivot_table`的信息，可见[pandas官方文档](https://pandas.ac.cn/docs/reference/api/pandas.DataFrame.pivot_table.html#pandas.DataFrame.pivot_table)。
+## 表格连接（Joining tables）
++ 在一些情况下，同一组个体的数据分散在不同表格中，而我们希望将不同表格的数据进行合并。以下面两个表格为例：
+```python
+cones = pd.DataFrame({
+    'Flavor': ['strawberry', 'vanilla', 'chocolate', 'strawberry', 'chocolate'],
+    'Price': [3.55, 4.75, 6.55, 5.25, 5.25]
+    }) 
+ratings = pd.DataFrame({
+    'Kind': ['strawberry', 'chocolate', 'vanilla'],
+    'Stars': [2.5, 3.5, 4]
+    })
+```
+| Flavor     | Price |
+|:----------:|:-----:|
+| strawberry | 3.55  |
+| vanilla    | 4.75  |
+| chocolate  | 6.55  |
+| strawberry | 5.25  |
+| chocolate  | 5.75  |
+
+| Kind     | Stars |
+|------------|-------|
+| strawberry | 2.5  |
+| chocolate  | 3.5  |
+| vanilla    | 4 |
++ 这两个表可以通过`Flavor`和`Kind`进行链接。具体代码如下：
+```python
+rated = cones.join(ratings.set_index('Kind'),on='Flavor')
+rated
+```
+| Flavor     | Price | Stars |
+|------------|-------|-------|
+| strawberry | 3.55  | 2.5   |
+| vanilla    | 4.75  | 4.0   |
+| chocolate  | 6.55  | 3.5   |
+| strawberry | 5.25  | 2.5   |
+| chocolate  | 5.25  | 3.5   |
++ 关于`join`的参数，可见[官方文档](https://pandas.ac.cn/docs/reference/api/pandas.DataFrame.join.html#pandas.DataFrame.join)。

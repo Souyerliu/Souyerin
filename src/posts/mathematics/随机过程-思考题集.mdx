@@ -942,8 +942,6 @@ sticky: true
       $$
       </div>
       </details>
-      
-      
    </div>
 
    <div class="quiz-item">
@@ -976,7 +974,6 @@ sticky: true
       </div>
       </details> 
       （2）令$Y_n = X_{nd}$，那么$Y = \{ Y_n; \, n \geq 0 \}$是以$P^{(d)}$为一步转移概率矩阵的非周期马氏链。特别地，若$X_0 \in S_k$，那么$Y$是状态空间为$S_k$的非周期马氏链。
-      
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
@@ -1003,6 +1000,28 @@ sticky: true
       即转移矩阵 $P^{(d)}$ 仅在 $S_k$ 内部转移，不会跑到其余 $S_l (l \ne k)$。
       又原链不可约，故对任意 $u, v \in S_k$，存在 $m$ 使得 $p_{uv}^{(md)} > 0$，因此 $P^{(d)}$ 在 $S_k$ 上不可约。
       所以$Y$是状态空间为$S_k$的非周期马氏链。
+      </div>
+      </details>
+   </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      设$X$是马氏链，$X_0 = i, \tau_i =\inf\{ n > 0; X_n = i\},\tau_i^{(2)} = \inf\{n > \tau_i; X_n=i\}$。证明$\tau_i$与$\tau_i^{(2)}-\tau_i$独立且同分布。
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      对任意正整数$m,n$，
+      $$
+      \begin{aligned}
+      P(\tau_i=m,\tau_i^{(2)}-\tau_i=n)&=P(X_1\neq i,X_2\neq i,\cdots,X_{m-1}\neq i,X_{m}=i,X_{m+1}\neq i,\cdots,X_{m+n-1}\neq i,X_{m+n}=i)\\
+      &=P(X_{m+1}\neq i,\cdots,X_{m+n-1}\neq i,X_{m+n}=i|X_1\neq i,X_2\neq i,\cdots,X_{m-1}\neq i,X_{m}=i)P(X_1\neq i,X_2\neq i,\cdots,X_{m-1}\neq i,X_{m}=i)\\
+      &=P(X_{m+1}\neq i,\cdots,X_{m+n-1}\neq i,X_{m+n}=i|X_{m}=i)P(\tau_i=m)\\
+      &=P(X_{1}\neq i,\cdots,X_{n-1}\neq i,X_{n}=i|X_{0}=i)P(\tau_i=m)\\
+      &=P_i(\tau_i=n)P(\tau_i=m)
+      \end{aligned}
+      $$
+      其中$P_i(\tau_i=n)$表示从$i$出发首次返回$i$的时间为$n$的概率，恰等于$P(\tau_i=n)$，所以$\tau_i$与$\tau_i^{(2)}-\tau_i$独立同分布。
       </div>
       </details>
    </div>
