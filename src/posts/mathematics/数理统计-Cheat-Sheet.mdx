@@ -124,7 +124,7 @@ sticky: true
             $$
             特别地，$x_{(1)}$的密度函数为$n[1-F(x)]^{n-1}p(x)$，$x_{(n)}$的密度函数为$n[F(x)]^{n-1}p(x)$。
         + 当总体分布为$U(0,1)$，则$p_k(x)=\dfrac{n!}{(k-1)!(n-k)!}x^{k-1}(1-x)^{n-k},0< x< 1 $
-            > 可知$x_{(k)}$服从Beta分布$Be(k,n-k+1)$，$EX_{(k)}=\dfrac{k}{n+1}$。
+            > 可知$x_{(k)}$服从Beta分布$Be(k,n-k+1)$，$EX_{(k)}=\dfrac{k}{n+1}$，$\text{Var}(X_{(k)})=\dfrac{k(n-k+1)}{(n+1)^2(n+2)}$。
     2. 多个次序统计量
         + 二元情形：$(X_{(i)},X_{(j)})$（$i< j$）的联合概率密度函数为
             $$
@@ -200,11 +200,12 @@ sticky: true
         > $n=1$时，$p(x)=\dfrac{1}{\pi(1+x^2)}$，即服从柯西分布。
 + 性质：
     + 记$t(n)$的下侧$\alpha$-分位数为$t_\alpha(n)$，则$t_{1-\alpha}(n)=-t_\alpha(n)$；
-    + $n>1$时期望为$0$，$n>2$时方差为$\frac{n}{n-2}$
+    + $n>1$时期望（和奇数阶矩）为$0$，$n>2$时方差为$\dfrac{n}{n-2}$；
+    + 与F分布的关系：若$T\sim t(n)$，则$T^2\sim F(1,n)$.
 + 应用：设$x_1,\cdots,x_n$为$N(\mu,\sigma^2)$的样本，样本均值$\overline{x}$，样本方差$s^2$，则$\dfrac{\sqrt{n}(\overline{x}-\mu)}{s}\sim t(n-1)$
-    + 推论：设$x_1,\cdots,x_n$为$N(\mu_1,\sigma_1)$的样本，$y_1,\cdots,y_m$为$N(\mu_2,\sigma_2)$的样本，且相互独立。两个样本的均值方差分别记为$\overline{x},s_x^2$和$\overline{y},s_y^2$，则
+    + 推论：设$x_1,\cdots,x_n$为$N(\mu_1,\sigma_1)$的样本，$y_1,\cdots,y_m$为$N(\mu_2,\sigma_2)$的样本，且相互独立。两个样本的均值与方差分别记为$\overline{x},s_x^2$和$\overline{y},s_y^2$，则对任意非零常数$c,d>0$，
         $$
-        \frac{\overline{x}-\overline{y}-(\mu_1-\mu_2)}{s_w\sqrt{\frac{1}{m}+\frac{1}{n}}}\sim t(m+n-2)
+        \frac{c(\overline{x}-\mu_1)-d(\overline{y}-\mu_2)}{s_w\sqrt{\dfrac{c^2}{m}+\dfrac{d^2}{n}}}\sim t(m+n-2)
         $$
         其中$s_w^2=\dfrac{(m-1)s_x^2+(n-1)s_y^2}{m+n-2}$.
 ## 充分统计量
@@ -305,7 +306,7 @@ sticky: true
 + 对数似然函数：称$l(\theta)=\ln L(\theta)$为对数似然函数。
     + 其最大值对应$\theta$与似然函数相同，主要用于简化运算（化幂次为加乘）。
 > 特殊情形：$L(\theta)$包含关于$\theta$的示性函数，此时需要考虑$\argmax_{L(\theta)}$是否在示性函数指定范围内。
-+ 最大似然估计的**不变性**：若$\hat{\theta}$是$\theta$的最大似然估计，则对任一函数$g(\theta)$，$g(\hat{\theta})$为其极大似然估计。
++ 最大似然估计的**不变性**：若$\hat{\theta}$是$\theta$的最大似然估计，则对任一函数$g(\theta)$，$g(\hat{\theta})$为其最大似然估计。
     > 注：若$g$不是单射，即一个$g(\theta)$可能对应多个$\theta$，则取$g(\argmax_{\theta}L(\theta))$.
 ### EM算法
 > 由Dempster等人提出，在[人工智能导论](/posts/computer-science/introduction-to-ai/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E5%AF%BC%E8%AE%BA-ch6-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8B/#%E6%9C%9F%E6%9C%9B%E6%9C%80%E5%A4%A7%E5%8C%96expectation-maximization-em)中亦有记载。
@@ -328,7 +329,7 @@ sticky: true
     $$
     \lim_{n\to\infty}E|X_n-X|^p=0
     $$
-    则称$X_n$ Lp收敛到$X$，记作$X_n\stackrel{L^p}{\longrightarrow}X$。
+    则称$X_n$Lp收敛到$X$，记作$X_n\stackrel{L^p}{\longrightarrow}X$。
     + 性质：Lp收敛可以推出依概率收敛，但与几乎处处收敛无法互相推出。
     （更多性质应该会在实变函数中详细展开）
 3. 随机变量的收敛速度（$O_p$与$o_p$）
@@ -346,6 +347,7 @@ sticky: true
         + 若$\hat{\theta}_n$是$\theta$的相合估计且$\sqrt n(\hat{\theta}_n-\theta)=O_p(1)$，则$\hat{\theta}_n-\theta=o_p(1)$。
 4. 连续映射定理
     + 设$X_n\stackrel{d}{\longrightarrow}X,Y_n\stackrel{p}{\longrightarrow}c$（$c$为常数），函数$g(x,y)$在任意$x\in X$的支撑集（非零区域）与$y=c$处连续，则$g(X_n,Y_n)\stackrel{d}{\longrightarrow}g(X,c)$。
+        > 当条件均改为依概率收敛（几乎处处收敛），则结论（改为依概率收敛/几乎处处收敛）仍然成立。
     + Slutsky定理：当$g(x,y)=x+y$时，$X_n+Y_n\stackrel{d}{\longrightarrow}X+c$。（当$Y_n=o_p(1)$时，$X_n+Y_n\stackrel{d}{\longrightarrow}X$）
 5. Delta方法
     + 设$X_1, X_2, \dots, X_n, \dots$是一列随机变量，且存在某个常数$a$和正常数$b$使得
@@ -358,8 +360,8 @@ sticky: true
         $$
         （本质为一阶泰勒展开+Slutsky定理）
     + 常用形式：
-        设$Y_1, \dots, Y_n, \dots\stackrel{i.i.d}{\sim}Y$且方差有限。记$\displaystyle\mu = \mathbb{E}(Y),\sigma^2 = \text{Var}(Y),X_k = \sum_{j=1}^k\frac{Y_j}{k}$。
-        取$a = \mu = \mathbb{E}(Y),b = 1/2$，那么
+        设$Y_1, \dots, Y_n, \dots\stackrel{i.i.d}{\sim}Y$且方差有限。记$\displaystyle\mu = E(Y),\sigma^2 = \text{Var}(Y),X_k = \sum_{j=1}^k\frac{Y_j}{k}$。
+        取$a = \mu = E(Y),b = 1/2$，那么
         $$
         \begin{aligned}
         \sqrt{n}(X_n - \mu) &\xrightarrow{d} N(0, \sigma^2)\\
@@ -377,25 +379,25 @@ sticky: true
 ### MLE的渐近正态性
 + **Fisher信息量**：设总体$X$的密度函数为$p(x;\theta),\theta \in \Theta$。假设
     $$
-    I(\theta) = \int_{-\infty}^{\infty} \left\{ \frac{\partial \ln p(x; \theta)}{\partial \theta} \right\}^2 p(x; \theta) dx = \mathbb{E} \left\{ \frac{\partial \ln p(X; \theta)}{\partial \theta} \right\}^2
+    I(\theta) = \int_{-\infty}^{\infty} \left\{ \frac{\partial \ln p(x; \theta)}{\partial \theta} \right\}^2 p(x; \theta) dx = E \left\{ \frac{\partial \ln p(X; \theta)}{\partial \theta} \right\}^2
     $$
     对于任意$\theta \in \Theta$都存在，称$I(\theta)$为参数$\theta$的费希尔信息量。
     > $\dfrac{\partial \ln p(X; \theta)}{\partial \theta}$也称为**得分函数（score function）**，记作$s(X,\theta)$。其性质如下：
     >    + $E_\theta[s(X,\theta)]=0,\mathrm{Var}_\theta[s(X,\theta)]=I(\theta)$；
     >    + $I(\theta)=E_\theta[s^2(X,\theta)]=-E_\theta\left[\dfrac{\partial s(X,\theta)}{\partial\theta}\right]$.
-+ 设总体有密度函数$p(x; \theta)$,$\theta \in \Theta$,$\Theta$ 为非退化区间。假设
-    1. $\forall x$，偏导$\dfrac{\partial \ln p}{\partial \theta}$,$\dfrac{\partial^2 \ln p}{\partial \theta^2}$和$\dfrac{\partial^3 \ln p}{\partial \theta^3}$ 对所有的$\theta \in \Theta$ 都存在；
++ 设总体有密度函数$p(x; \theta)$,$\theta \in \Theta$,$\Theta$为非退化区间。假设
+    1. $\forall x$，偏导$\dfrac{\partial \ln p}{\partial \theta}$,$\dfrac{\partial^2 \ln p}{\partial \theta^2}$和$\dfrac{\partial^3 \ln p}{\partial \theta^3}$对所有的$\theta \in \Theta$都存在；
     2. $\forall \theta \in \Theta$，存在满足
         $$
         \int_{-\infty}^{\infty} H_1(x) dx < \infty, \quad \sup_{\theta \in \Theta} \int_{-\infty}^{\infty} H_2(x) p(x; \theta) dx < \infty
         $$
-        的函数$H_1(x)$ 和$H_2(x)$ 使得
+        的函数$H_1(x)$和$H_2(x)$使得
         $$
         \left| \frac{\partial p}{\partial \theta} \right| + \left| \frac{\partial^2 p}{\partial \theta^2} \right| < H_1(x), \quad \left| \frac{\partial^3 \ln p}{\partial \theta^3} \right| < H_2(x).
         $$
     3. 对于任意$\theta \in \Theta$, 费希尔信息量满足$0 < I(\theta) < \infty$。
     
-    若$X_1, \ldots, X_n$ 是来自该总体的样本，则未知参数$\theta$ 的最大似然估计$\hat{\theta}_n$ 存在，具有相合性和渐近正态性，$\hat{\theta} \sim AN\left(\theta, \dfrac{1}{nI(\theta)}\right)$。
+    若$X_1, \ldots, X_n$是来自该总体的样本，则未知参数$\theta$的最大似然估计$\hat{\theta}_n$存在，具有相合性和渐近正态性，$\hat{\theta} \sim AN\left(\theta, \dfrac{1}{nI(\theta)}\right)$。
     > Fisher信息量越大，渐近方差越小。
 + 渐近方差可用于比较相合估计的好坏
     + 例（Hardy-Weinberg模型）：$X\sim\begin{pmatrix}1&2&3\\\theta&\theta(1-\theta)&(1-\theta)^2\end{pmatrix}$，则有三个相合估计
@@ -416,4 +418,102 @@ sticky: true
         \sigma_k^2=\sum_{j=1}^kp_j\left(\frac{\partial h}{\partial p_j}\right)^2-\left(\sum_{j=1}^kp_j\frac{\partial h}{\partial p_j}\right)^2
         $$
         </Note>
-        由此可知$\sigma_3^2(\theta)$是最好的相合估计（恰为极大似然估计）。
+        由此可知$\sigma_3^2(\theta)$是最好的相合估计（恰为最大似然估计）。
+## 最小方差无偏估计
+### 均方误差
++ 之前的相合性和渐近正态性都是基于依概率/分布收敛对估计量进行刻画，但这不适用于有限样本。
++ 对于样本量有限的样本，一般使用$E|\hat{\theta}-\theta|^\alpha$进行度量【$\alpha=2$时为均方误差，最常用】
+    + $\mathrm{MSE}(\hat{\theta})=E(\hat{\theta}-\theta)^2=\underbrace{\mathrm{Var}(\hat{\theta})}_{\text{点估计方差}}+\underbrace{(E\hat{\theta}-\theta)^2}_{\text{偏差（无偏估计时为}0\text{）}}$
+    + 均方误差下一些有偏估计会优于无偏估计
++ 定义：设有样本$x_1,\cdots,x_n$，对参数$\theta$，设有估计类$\Omega$，若对该类的点估计$\hat{\theta}=\hat{\theta}(x_1,\cdots,x_n)\in\Omega$，满足对任意$\theta$，任意$\tilde{\theta}\in\Omega$，有
+    $$
+    \mathrm{MSE}_{\theta}(\hat{\theta})\leq\mathrm{MSE}_{\theta}(\tilde{\theta})
+    $$
+    则称$\hat{\theta}$为估计类$\theta$中的**一致最小均方误差估计**。
+### 一致最小方差无偏估计（UMVUE）
++ 不加限制时，一致最小均方误差估计一般不存在。所以将其限制为无偏估计（即$\mathrm{MSE}(\hat{\theta})=\mathrm{Var}(\hat{\theta})$），此时称其为**一致最小方差无偏估计**，简称UMVUE。
++ 充要条件：设$\hat{\theta}$为$\theta$的一个无偏估计，$\mathrm{Var}(\hat{\theta})< \infty$。则$\hat{\theta}$是UMVUE$\Longleftrightarrow$对任意满足$E[\varphi(\mathbf{X})]=0,\mathrm{Var}(\mathbf{X})< \infty$的统计量$\varphi(\mathbf{X})$，
+    $$
+    \mathrm{Cov}_\theta(\hat{\theta}(\mathbf{X}),\varphi(\mathbf{X}))=E_\theta(\hat{\theta}(\mathbf{X})\varphi(\mathbf{X}))=0,\quad \forall\theta\in\Theta
+    $$
++ 性质：
+    1. 设$\hat{\theta}_1$和$\hat{\theta}_2$分别是两个可估参数$\theta_1$和$\theta_2$的UMVUE，那么对于任意常数$c_1$和$c_2$，有$c_1\hat{\theta}_1 + c_2\hat{\theta}_2$是$c_1\theta_1 + c_2\theta_2$的UMVUE。
+    2. 设$\hat{\theta}_1$和$\hat{\theta}_2$均为可估参数$\theta$的UMVUE，则$P(\hat{\theta}_1=\hat{\theta}_2)=1$。
+### 充分性原则
+> 注：需要和前面的充分性原则作区分。
++ 核心：如果充分统计量和UMVUE均存在，则UMVUE一定可表示为充分统计量的函数。
++ **Rao-Blackwell定理**：设总体概率函数是$p(x, \theta)$，设$X_1, \ldots, X_n$是来自该总体的简单随机样本，$T = T(X_1, \ldots, X_n)$是充分统计量，则对$\theta$的任意无偏估计$\hat{\theta} = \hat{\theta}(X_1, \ldots, X_n)$，令$\tilde{\theta} = E(\hat{\theta}|T)$，那么$\tilde{\theta}$也是$\theta$的无偏估计，且  
+    $$
+    \text{Var}(\tilde{\theta}) \leq \text{Var}(\hat{\theta}).
+    $$
++ **充分完备统计量**（本质：排除了与$\theta$无关的噪声）：
+    + 定义：设$\{p(x; \theta) : \theta \in \Theta\}$是一个分布族，$X_1, \ldots, X_n$是来自$p(x; \theta)$的样本，其中参数$\theta$未知。如果统计量$T = T(X_1, \ldots, X_n)$满足
+        $$
+        E_\theta \{f(T)\} = 0
+        $$
+        对于所有$\theta \in \Theta$都成立$\implies$函数$f\equiv 0$，则称$T$是关于分布族$\{p(x; \theta) : \theta \in \Theta\}$的完备统计量，简称完备统计量。
+    + **Lehmann-Scheff定理**：设$\{p(x; \theta) : \theta \in \Theta\}$是一个分布族，$X = (X_1, \ldots, X_n)$是来自$p(x; \theta)$的样本，其中参数$\theta$未知。假设统计量$T = T(X)$是关于分布族$\{p(x; \theta) : \theta \in \Theta\}$的充分完备统计量。如果$g(\theta)$存在一个无偏估计$\varphi(X)$，那么它的UMVUE是$E\{\varphi(X)|T\}$。
+    + 构造$g(\theta)$的UMVUE的简单办法：
+        1. 找到$g(\theta)$的一个无偏估计$\varphi(X)$和分布族$\{p(x; \theta) : \theta \in \Theta\}$下的充分完备统计量$T(X)$。
+        2. 计算$E\{\varphi(X)|T\}$，这就是所要的UMVUE。
++ 如何构造充分完备统计量：
+    + **指数型分布族**：假设总体概率函数具有如下形式
+        $$
+        p(x; \theta) = c(\theta) \exp \left\{ \sum_{j=1}^k c_j(\theta) T_j(x) \right\} h(x),
+        $$
+        其中  
+        + $0 < c(\theta) < \infty, \, c_1(\theta), \ldots, c_k(\theta) < \infty$；
+        + 所有$T_j(x)$（$j = 1, \ldots, k$）和$h(x)$都不含参数$\theta$；
+        + 支撑集$\{ x : p(x; \theta) > 0 \}$不依赖于$\theta$。  
+
+        则称$\{ p(x; \theta) : \theta \in \Theta \}$为指数型分布族或指数族。
+        > 二项分布（多项分布）、泊松分布、负二项分布、几何分布、Gamma分布、正态分布、Beta分布均属于指数型分布族。
+    + 在上述指数族中，记$\gamma_j = c_j(\theta)\,(j = 1, \ldots, k)$和$\gamma = (\gamma_1, \ldots, \gamma_k)$。假设能从中唯一的解出$\theta = \theta(\gamma)$对所有的$\gamma$都成立。记$c^*(\gamma) = c(\theta(\gamma))$，那么指数族概率函数可重新表示为
+        $$
+        p(x; \gamma) = c^*(\gamma) \exp \left\{ \sum_{j=1}^k \gamma_j T_j(x) \right\} h(x).
+        $$
+        这种形式称作指数族分布的**标准形式**，新的参数空间记为$\Omega$。
+    + **指数族下的充分完备统计量**：假设$X_1, \ldots, X_n$是来自某总体的样本。如果总体概率函数具有如上所述的标准指数族形式，且参数空间$\Omega$包含有$k$维空间的内点，那么
+        $$
+        \left(\sum_{i=1}^n T_1(X_i), \ldots, \sum_{i=1}^n T_k(X_i)\right)
+        $$
+        是$\theta$的充分完备统计量。（$T_k(X_i)$常为$X_i$或$X_i^2$）
+### C-R不等式（Cramer-Rao 不等式）
++ 设总体分布$p(x; \theta)$满足定义 6.4.3 的条件，$x_1, x_2, \cdots, x_n$是来自该总体的样本，$T = T(x_1, x_2, \cdots, x_n)$是$g(\theta)$的任一个无偏估计，$g'(\theta) = \dfrac{\partial g(\theta)}{\partial \theta}$存在，且对$\theta$中一切$\theta$，对
+    $$
+    g(\theta) = \int_{-\infty}^{\infty} \cdots \int_{-\infty}^{\infty} T(x_1, \cdots, x_n) \prod_{i=1}^n p(x_i; \theta) \, dx_1 \cdots dx_n
+    $$
+    的微商可在积分号下进行，即
+    $$
+    g'(\theta) = \int_{-\infty}^{\infty} \cdots \int_{-\infty}^{\infty} T(x_1, \cdots, x_n) \left( \frac{\partial}{\partial \theta} \ln \prod_{i=1}^n p(x_i; \theta) \right) \, dx_1 \cdots dx_n.
+    $$
+    （对离散总体，则将上述积分改为求和符号后，等式仍然成立。）则有
+    $$
+    \text{Var}(T) \geq\frac{[g'(\theta)]^2}{nI(\theta)}.
+    $$
+    + 称$\dfrac{[g'(\theta)]^2}{nI(\theta)}$为$g(\theta)$的**C-R下界**。特别地，对$\theta$的无偏估计$\hat{\theta}$，有
+        $$
+        \text{Var}(T) \geq\frac{1}{nI(\theta)}.
+        $$
+    + 若上述不等式能取到等号，则称$T=T(x_1,\cdots,x_n)$为$\theta$的**有效估计**。有效估计一定是UMVUE。
+    > 需要指出的是：能达到C-R下界的无偏估计并不多，大多数场合无偏估计（UMVUE）都达不到C-R下界。
++ 渐近有效性：如果当$n\to\infty$时，估计量$\theta$的渐近方差达到C-R下界，则称其满足渐近有效性。
+    + 设$X_1, \dots, X_n$是来自概率函数$f(x, \theta)$的简单样本，假设C-R不等式成立的所有正规条件都成立。如果参数$\theta$的估计量$T_n$满足
+        $$
+        T_n - g(\theta) = \frac{1}{n} \sum_{i=1}^n U(X_i, \theta) + e_n
+        $$
+        其中
+        + $E\{U(X_i, \theta)\} = 0$；
+        + $\sigma^2(\theta) = \mathrm{Var}\{U(X_i, \theta)\} < \infty$；
+        + $Ee_n^2 < \infty$；
+        + $e_n = o_p(n^{-1/2})$，
+
+        那么
+        $$
+        \sqrt{n}(T_n - g(\theta)) \xrightarrow{d} N(0, \sigma^2(\theta)).
+        $$
+    + 对于参数$\theta$，用$I(\theta)$表示概率函数$f(x, \theta)$下的Fisher信息量，那么
+        $$
+        \sigma^2(\theta) \geq \frac{\{g'(\theta)\}^2}{I(\theta)}.
+        $$
+        而当$T_n$是$g(\theta)$的最大似然估计，则取到等号。即在渐近意义下，最大似然估计是估计类中的最优估计。

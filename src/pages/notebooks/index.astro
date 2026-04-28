@@ -1,0 +1,172 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+const notebooks = [
+  {
+    name: "Logistic Regression Demo",
+    url: "/notebooks/abalone-stu.html",
+    date: "2026-04-20",
+  },
+  {
+    name: "Active learning",
+    url: "/notebooks/Active-learning.html",
+    date: "2025-04-24",
+  }
+];
+// 👉 简单排序（按时间倒序）
+notebooks.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+const grouped = {};
+for (const nb of notebooks) {
+  const year = new Date(nb.date).getFullYear();
+  if (!grouped[year]) grouped[year] = [];
+  grouped[year].push(nb);
+}
+
+// ✅ 新增：年份列表
+const years = Object.keys(grouped).sort((a, b) => b - a);
+
+// ✅ 原函数保留
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${m}-${day}`;
+}
+---
+
+<Layout pageTitle="项目">
+  <div class="wrap">
+    <div class="timeline">
+
+      <!-- 头部 -->
+      <h2 class="item header">
+        <a href="/">首页</a>
+        <small>/</small>
+        项目
+      </h2>
+
+      <!-- 列表 -->
+      <li>存档一些自己写的project（Jupyter Notebook）。</li>
+      {
+        years.map((year) => (
+          <>
+            <h3 class="item section">
+              <span>{year}</span>
+              <small>({grouped[year].length})</small>
+            </h3>
+
+            {
+              grouped[year].map((nb) => (
+                <article class="item normal">
+                  <div class="meta">
+                    <time>{formatDate(nb.date)}</time>
+                  </div>
+
+                  <div class="title">
+                    <a
+                      href={nb.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="external"
+                    >
+                      <span>{nb.name}</span>
+                      <i class="i-ri-external-link-line"></i>
+                    </a>
+                  </div>
+                </article>
+              ))
+            }
+          </>
+        ))
+      }
+
+    </div>
+  </div>
+</Layout>
+
+<style>
+/* 页面容器 */
+.wrap {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* ====== 关键：补齐 ShokaX 风格 ====== */
+
+/* 时间轴结构 */
+.timeline {
+  position: relative;
+}
+
+/* 每一项 */
+.item.normal {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 0;
+}
+
+/* 时间 */
+.meta time {
+  font-size: 0.85rem;
+  color: var(--grey-5);
+  margin-right: 1rem;
+  min-width: 3rem;
+}
+
+/* 标题 */
+.title {
+  font-size: 1rem;
+}
+
+/* ✅ 核心：链接颜色（你缺的就是这个） */
+.title a {
+  color: var(--color-pink);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+/* hover 效果 */
+.title a:hover {
+  color: var(--color-link-hover);
+}
+
+/* 外链图标 */
+.title i {
+  margin-left: 0.3rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+/* header */
+.item.header {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: var(--grey-7);
+}
+
+/* 分隔符 */
+.item.header small {
+  margin: 0 0.3rem;
+  color: var(--grey-5);
+}
+
+/* 轻微 hover 动效（可选） */
+.item.normal:hover {
+  transform: translateX(4px);
+  transition: 0.15s ease;
+}
+
+.item.section {
+  margin: 1.2rem 0 0.5rem;
+  font-weight: bold;
+  color: var(--grey-7);
+}
+
+.item.section small {
+  margin-left: 0.4rem;
+  color: var(--grey-5);
+  font-weight: normal;
+}
+</style>
