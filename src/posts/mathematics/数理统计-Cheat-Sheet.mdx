@@ -16,7 +16,7 @@ sticky: true
 + **总体**：研究对象的全体
     + 可用一个分布描述，因此也可指服从某一分布的随机变量（用分布列/分布函数表示）
 + **个体**：组成总体的每个成员
-+ **样本**：从总体中（随机）抽取的$n$个个体，记为$\mathbf{X}=(X_1,X_2,\cdots,X_n)$。下面讨论这种情况的路径数。
++ **样本**：从总体中（随机）抽取的$n$个个体，记为$\mathbf{X}=(X_1,X_2,\cdots,X_n)$。
     + $n$称为样本量；
     + **样本的二重性**：样本可同时作为随机变量（观测前）【用于计算估计量】，也可作为确定的观测值（观测后）【实际应用】。样本的观察值用$X=(x_1,x_2,\cdots,x_n)$表示。
     + 后续样本均以小写表示。
@@ -65,7 +65,7 @@ sticky: true
         $$
         \overline{x}=\frac{x_1+x_2+\cdots+x_n}{n}=\frac{1}{n}\sum_{i=1}^nx_i
         $$
-        > 对于分组样本：$\displaystyle\overline{x}=\frac{x_1f_1+\cdots+x_kf_k}{n},n=\sum_{i=1}^nx_i$（$x_i$为组中值，$f_i$为频数）
+        > 对于分组样本：$\displaystyle\overline{x}=\frac{x_1f_1+\cdots+x_kf_k}{n},n=\sum_{i=1}^nf_i$（$x_i$为组中值，$f_i$为频数）
     + 性质：
         + 样本观测值与样本均值之差称为**偏差**。总偏差之和$\displaystyle\sum_{i=1}^n(x_i-\overline{x})=0$；
         + 观测值与样本均值偏差平方和最小（$\displaystyle\sum_{i=1}^n(x_i-\overline{x})^2\leq\sum_{i=1}^n(x_i-c)^2,\forall c\in\R$）
@@ -88,7 +88,7 @@ sticky: true
         + 设总体$X$二阶矩存在，记$EX=\mu,\mathrm{var}{X}=\sigma^2$，$x_1,\cdots,x_n$为从$X$得到的样本，样本均值为$\overline{x}$，样本方差为$s^2$，则
             $$
             \begin{aligned}
-            &E\overline{X}=\mu,\quad\mathrm{Var}\overline{X}=\frac{\sigma^2}{n}\\
+            &E\overline{x}=\mu,\quad\mathrm{Var}\overline{x}=\frac{\sigma^2}{n}\\
             &Es^2=\sigma^2,\quad Es_n^2=\frac{n-1}{n}\sigma^2
             \end{aligned}
             $$
@@ -517,3 +517,19 @@ sticky: true
         \sigma^2(\theta) \geq \frac{\{g'(\theta)\}^2}{I(\theta)}.
         $$
         而当$T_n$是$g(\theta)$的最大似然估计，则取到等号。即在渐近意义下，最大似然估计是估计类中的最优估计。
+��优估计。
+ty$；
+        + $Ee_n^2 < \infty$；
+        + $e_n = o_p(n^{-1/2})$，
+
+        那么
+        $$
+        \sqrt{n}(T_n - g(\theta)) \xrightarrow{d} N(0, \sigma^2(\theta)).
+        $$
+    + 对于参数$\theta$，用$I(\theta)$表示概率函数$f(x, \theta)$下的Fisher信息量，那么
+        $$
+        \sigma^2(\theta) \geq \frac{\{g'(\theta)\}^2}{I(\theta)}.
+        $$
+        而当$T_n$是$g(\theta)$的最大似然估计，则取到等号。即在渐近意义下，最大似然估计是估计类中的最优估计。
+�计。
+

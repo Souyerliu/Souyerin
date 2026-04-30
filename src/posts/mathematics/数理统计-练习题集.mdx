@@ -146,7 +146,7 @@ sticky: true
    </div>
   <div class="quiz-item">
     <div class="quiz-question">
-    设总体$X$的$3$阶中心矩$\nu_3=\mathbb{E}\{X-\mathbb{E}(X)\}^3$存在。若$x_1,\ldots,x_n$是来自该总体的样本，样本均值和样本方差分别记作$\overline{x}$和$s^2$，求证：
+    设总体$X$的$3$阶中心矩$\nu_3=E\{X-E(X)\}^3$存在。若$x_1,\ldots,x_n$是来自该总体的样本，样本均值和样本方差分别记作$\overline{x}$和$s^2$，求证：
     $$
     \text{Cov}(\overline{x},s^2)=\frac{\nu_3}n.
     $$
@@ -273,7 +273,7 @@ sticky: true
       \end{aligned}
       $$
       > 这说明指数分布下$R_n$与$n-1$个样本的最大次序统计量同分布。
-      > 另外，均匀分布$U(a,b)$下$\frac{R_n}{b-a}$的分布为$\mathrm{Be}(n-1,2)$.
+      > 另外，均匀分布$U(a,b)$下$\dfrac{R_n}{b-a}$的分布为$\mathrm{Be}(n-1,2)$.
       </div>
       </details>
    </div>
@@ -363,6 +363,34 @@ sticky: true
       </div>
       </details>
    </div>
+
+   <div class="quiz-item">
+    <div class="quiz-question">
+    设$X_1, \ldots, X_n, X_{n+1}$是来自$N(\mu, \sigma^2)$的样本，记
+    $$
+    \overline{X}_n = \frac{1}{n} \sum_{i=1}^n X_i,\quad S_n^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \overline{X}_n)^2
+    $$
+    计算$E(S_n^3)$。
+    </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      设$Y=\dfrac{(n-1)S_n^2}{\sigma^2}$，则$Y\sim\chi^2(n-1)$，那么
+      $$
+      E(S_n^3)=E\left[\left(\frac{\sigma^2 Y}{n-1}\right)^\frac{3}{2}\right]=\frac{\sigma^3}{(n-1)^{\frac{3}{2}}}E[Y^{\frac{3}{2}}]
+      $$
+      又因为$\displaystyle Y\sim\mathrm{Ga}\left(\dfrac{n-1}{2},\dfrac{1}{2}\right)$，所以
+      $$
+      \begin{aligned}
+      E[Y^{\frac{3}{2}}]&=\int_{0}^\infty\frac{1}{2^{\frac{n-1}{2}}\Gamma\left(\dfrac{n-1}{2}\right)}y^{\frac{n}{2}}e^{-\frac{y}{2}}dy\\
+      &=\frac{2^{\frac{3}{2}}\Gamma\left(\dfrac{n+2}{2}\right)}{\Gamma\left(\dfrac{n-1}{2}\right)}.
+      \end{aligned}
+      $$
+      故$\displaystyle E(S_n^3)=\frac{\sigma^3}{(n-1)^{\frac{3}{2}}}\cdot\frac{2^{\frac{3}{2}}\Gamma\left(\frac{n+2}{2}\right)}{\Gamma\left(\frac{n-1}{2}\right)}.$
+      </div>
+      </details>
+   </div>
+
   <div class="quiz-item">
     <div class="quiz-question">
     设$\displaystyle x_1, x_2, \cdots, x_n\stackrel{i.i.d}{\sim}N(\mu, \sigma^2),\overline{x} = \frac{1}{n} \sum_{i=1}^n x_i,s^2 = \frac{1}{n-1} \sum_{i=1}^n (x_i - \overline{x})^2$。  
@@ -400,6 +428,119 @@ sticky: true
 <div class="quiz-group">
   <div class="quiz-item">
     <div class="quiz-question">
+    设简单样本$X_1, \ldots, X_n \sim F$。对给定常数$x_0$，令
+      $$
+      F_n(x_0) = \frac{1}{n} \sum_{i=1}^n I(X_i \leq x_0)
+      $$
+      回答以下问题：  
+      （1）证明$F_n(x_0)$是$F(x_0)$的无偏估计；  
+      （2）证明$F_n(x_0)$是$F(x_0)$的相合估计；  
+      （3）证明$F_n(x_0)$的渐近正态性。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）证明：
+      $$
+      \begin{aligned}
+      E(F_n(x_0))&=\frac{1}{n}E\left[\sum_{i=1}^nI(X_i\leq x_0)\right]\\
+      &=\frac{1}{n}\sum_{i=1}^nP(X_i\leq x_0)\\
+      &=\frac{1}{n}\sum_{i=1}^nF(x_0)\\
+      &=F(x_0)
+      \end{aligned}
+      $$
+      所以$F_n(x_0)$是$F(x_0)$的无偏估计。  
+      （2）设随机变量$I_i=I(X_i \leq x_0)$，则$I_1,\cdots,I_n$独立同分布且$E(I_j)=F(x_0)(1\leq j\leq n)$，所以由辛钦大数定律，
+      $$
+      F_n(x_0)=\frac{1}{n}\sum_{j=1}^nI_i\stackrel{p}{\longrightarrow}F(x_0)
+      $$
+      即$F_n(x_0)$是$F(x_0)$的相合估计。  
+      （3）因为$\{I_j\}$独立同分布且$\mathrm{Var}(I_j)=F(x_0)(1-F(x_0))$有限，所以由Lindeberg-Lévy中心极限定理，
+      $$
+      \frac{\sum_{i=1}^n I_i - nE[I_1]}{\sqrt{n\mathrm{Var}(I_1)}} \stackrel{d}{\longrightarrow} N(0, 1)
+      $$
+      即
+      $$
+      \frac{\frac{1}{n} \sum_{j=1}^n I_j - E[I_1]}{\sqrt{\frac{Var(I_1)}{n}}} = \frac{F_n(x_0) - F(x_0)}{\sqrt{\frac{F(x_0)(1-F(x_0))}{n}}} \xrightarrow{d} N(0, 1)
+      $$
+      故$F_n(x_0)$具有渐近正态性，$\sqrt{n}(F_n(x_0) - F(x_0)) \xrightarrow{d} N(0, F(x_0)(1 - F(x_0)))$。
+      </div>
+      </details>
+   </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+    设随机变量$Y_1, \ldots, Y_n$满足
+    $$
+    Y_i = x_i \beta + \varepsilon_i, \, i = 1, \ldots, n
+    $$
+    其中$x_1, \ldots, x_n$是固定常数，$\varepsilon_1, \ldots, \varepsilon_n$独立同分布于$N(0, \sigma^2)$，其中$\sigma^2$未知。回答以下问题：  
+    （1）求关于$(\beta, \sigma^2)$的一个二维充分统计量；  
+    （2）求$\beta$的 MLE 并证明它是$\beta$的一个无偏估计；  
+    （3）求$\beta$的 MLE 的分布。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）因为$\varepsilon_1, \ldots, \varepsilon_n\stackrel{i.i.d}{\sim}N(0,\sigma^2)$，所以$Y_i\sim N(x_i\beta,\sigma^2)$，那么$(Y_1,\cdots,Y_n)$的联合概率密度函数为
+      $$
+      \begin{aligned}
+      p(y_1,\cdots,y_n;\beta,\sigma^2) &= \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - x_i\beta)^2}{2\sigma^2}\right)\\
+      &=(2\pi\sigma^2)^{-n/2} \exp\left(-\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i^2 - 2\beta x_i y_i + \beta^2 x_i^2)\right)\\
+      &=(2\pi\sigma^2)^{-n/2} \exp\left(-\frac{1}{2\sigma^2} \left[\sum_{i=1}^n y_i^2 - 2\beta \sum_{i=1}^n x_i y_i + \beta^2 \sum_{i=1}^n x_i^2\right]\right)
+      \end{aligned}
+      $$
+      由因子分解定理，可取$\displaystyle T(\mathbf{y})=\left( \sum_{i=1}^n y_i^2,\; \sum_{i=1}^n x_i y_i \right)$，则
+        $$
+        p(y_1,\cdots,y_n;\beta,\sigma^2)=g(T(\mathbf{y}),\beta,\sigma^2)\cdot\underbrace{h(\mathbf{y})}_{=1}
+        $$
+        所以$T(\mathbf{y})$是$(\beta, \sigma^2)$的一个二维充分统计量。  
+      （2）取对数似然函数
+      $$
+      \begin{aligned}
+      \ell(\beta,\sigma^2)&=\ln p(y_1,\cdots,y_n;\beta,\sigma^2)\\
+      &=-\frac{n}{2} \ln(2\pi) - \frac{n}{2} \ln(\sigma^2) - \frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - x_i\beta)^2
+      \end{aligned}
+      $$
+      对$\beta$求偏导，使其为$0$：
+      $$
+      \begin{aligned}
+      \frac{\partial l}{\partial \beta} &= -\frac{1}{2\sigma^2} \sum_{i=1}^n 2(y_i - x_i\beta)(-x_i) \\
+      &= \frac{1}{\sigma^2} \sum_{i=1}^n (x_iy_i - x_i^2\beta) = 0
+      \end{aligned}
+      $$
+      解得
+      $$
+      \hat{\beta}=\frac{\sum_{i=1}^nx_iY_i}{\sum_{i=1}^nx_i^2}.
+      $$
+      下证其无偏性：
+      $$
+      \begin{aligned}
+      E[\hat{\beta}] &= E\left[ \frac{\sum_{i=1}^n x_i Y_i}{\sum_{i=1}^n x_i^2} \right]\\
+      &= \frac{1}{\sum_{i=1}^n x_i^2} \sum_{i=1}^n x_i E[Y_i]\\
+      &=\frac{1}{\sum_{i=1}^n x_i^2} \sum_{i=1}^n x_i (x_i \beta) \\
+      &= \frac{\beta\sum_{i=1}^n x_i^2}{\sum_{i=1}^n x_i^2}= \beta.
+      \end{aligned}
+      $$
+      所以$\hat{\beta}$是$\beta$的一个无偏估计。  
+      （3）因为$\hat{\beta}$是$Y_i$的线性组合，所以$\hat{\beta}$也服从正态分布。
+      又因为
+      $$
+      \begin{aligned}
+      E[\hat{\beta}]&=\beta,\\
+      \mathrm{Var}(\hat{\beta})&=\mathrm{Var}\left(\frac{\sum_{i=1}^n x_i Y_i}{\sum_{i=1}^n x_i^2}\right)\\
+      &= \frac{1}{(\sum_{i=1}^n x_i^2)^2} \sum_{i=1}^n \mathrm{Var}(x_i Y_i)\\
+      &=\frac{1}{(\sum_{i=1}^n x_i^2)^2} \sum_{i=1}^n x_i^2 \sigma^2 \\
+      &= \frac{\sigma^2\sum_{i=1}^n x_i^2}{(\sum_{i=1}^n x_i^2)^2} = \frac{\sigma^2}{\sum_{i=1}^n x_i^2}.
+      \end{aligned}
+      $$
+      所以$\hat{\beta}\sim N\left(\beta,\dfrac{\sigma^2}{\sum_{i=1}^n x_i^2}\right)$。
+      </div>
+      </details>
+   </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
     一个零膨胀泊松分布的概率函数是
     $$
     f(x; \lambda, \pi) =
@@ -408,7 +549,7 @@ sticky: true
     \pi \dfrac{e^{-\lambda} \lambda^x}{x!} & x = 1, 2, \dots
     \end{cases}
     $$
-    其中$\pi \in [0, 1]$,$\lambda > 0$都是未知参数。设$X_1, \cdots, X_n$是来自$f(x; \lambda, \pi)$的一组简单随机样本，其中$\theta \in (0, 1)$。  
+    其中$\pi \in [0, 1],\lambda > 0$都是未知参数。设$X_1, \cdots, X_n$是来自$f(x; \lambda, \pi)$的一组简单随机样本，其中$\theta \in (0, 1)$。  
     （1）求参数$(\lambda, \pi)$的矩估计；  
     （2）请写出参数$(\lambda, \pi)$的对数似然函数；  
     （3）请写出计算参数$(\lambda, \pi)$的最大似然估计的EM算法。  
@@ -517,18 +658,26 @@ sticky: true
           $$
           \begin{aligned}
           \ell(\theta)&=n_1\ln\left(\frac{1 - \theta}{2}\right)+n_2\ln\frac{1}{2}+n_3\ln\frac{\theta}{2}\\
-          \frac{\partial\ell(\theta)}{\partial\theta}&=-\frac{n_1}{1-\theta}+\frac{n_3}{\theta}=0\Longrightarrow\hat{\theta}_1=\frac{n_3}{n_1+n_3}.
+          \frac{\partial\ell(\theta)}{\partial\theta}&=-\frac{n_1}{1-\theta}+\frac{n_3}{\theta}=0.
           \end{aligned}
           $$
-          又因为
+          所以
           $$
-          E(\hat{\theta}_1)=E\left[E\left(\left.\frac{n_3}{n_1+n_3}\right|n_1+n_3\right)\right],
+          \hat{\theta}_1=\begin{cases}
+          \dfrac{n_3}{n_1+n_3},&n_1+n_3\neq 0\\
+          0,&n_1+n_3= 0
+          \end{cases}
           $$
-          而$n_3|n_1+n_3=m\sim b(m,\theta)$，所以$E[n_3|n_1+n_3=m]=\theta$，从而
+          下面计算$E(\hat{\theta}_1)$：
           $$
-          E\left(\left.\frac{n_3}{n_1+n_3}\right|n_1+n_3=m\right)=\frac{1}{m}E[n_3|n_1+n_3=m]=\theta
+          \begin{aligned}
+          E(\hat{\theta}_1)&=E(E(\hat{\theta}_1|n_1+n_3))\\
+          &=P(n_1+n_3=0)\cdot 0+\sum_{m=1}^\infty P(n_1+n_3=m)\cdot E(\hat{\theta}_1|n_1+n_3=m)\\
+          &=\left(1-\left(\frac{1}{2}\right)^n\right)\cdot E\left(\frac{n_3}{m} \mid n_1+n_3 = m\right)\\
+          &=\left(1-\left(\frac{1}{2}\right)^n\right)\cdot\theta = \theta\left(1-\left(\frac{1}{2}\right)^n\right)
+          \end{aligned}
           $$
-          故$E(\hat{\theta}_1)=E[\theta]=\theta$，$\hat{\theta}_1$是$\theta$的无偏估计。  
+          所以$\hat{\theta}_1$不是$\theta$的无偏估计，而是渐近无偏估计。  
       （2）因为  
           $$
           E(x_1)=-1\cdot\left(\frac{1-\theta}{2}\right)+1\cdot\frac{\theta}{2}=\theta-\frac{1}{2}
@@ -547,7 +696,7 @@ sticky: true
           I(\theta) &= E\left(\frac{d \ln p(x; \theta)}{d\theta}\right)^2 = \left(-\frac{1}{1 - \theta}\right)^2\cdot\frac{1 - \theta}{2}+\left(\frac{1}{\theta}\right)^2\cdot\frac{\theta}{2}
           &= \frac{1}{2} \left(\frac{1}{1 - \theta} + \frac{1}{\theta}\right) = \frac{1}{2\theta(1 - \theta)},
           \end{aligned}
-          $$ 
+          $$
           所以，$\theta$的无偏估计的方差的 C-R 下界为$\dfrac{2\theta(1 - \theta)}{n}$.
       </div>
       </details>
@@ -602,4 +751,60 @@ sticky: true
       </div>
       </details>
    </div>
+
+   <div class="quiz-item">
+    <div class="quiz-question">
+    设$X_1, X_2, \ldots, X_n$是来自$N(\mu, 1)$的简单随机样本，其中$\mu$未知。用$\overline{X}$表示样本均值。令$p = P(X_1 \geq 0)$。回答以下问题：    
+    （1）求$p$的最大似然估计$\hat{p}$；  
+    （2）求$\sqrt{n}(\hat{p} - p)$的极限分布；    
+    （3）求$p$的UMVUE.
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      （1）因为$X_1\sim N(\mu,1)$，所以
+      $$
+      p = P(X_1 \geq 0) = P\left(\frac{X_1 - \mu}{1} \geq \frac{0 - \mu}{1}\right) = P(Z \geq -\mu) = 1 - \Phi(-\mu) = \Phi(\mu)
+      $$
+      其中$\Phi(\cdot)$为标准正态分布的分布函数。又因为$\overline{X}$是$\mu$的最大似然估计，根据MLE的不变性原理，
+      $$
+      p=\Phi(\mu)\Longrightarrow \hat{p}=\Phi(\overline{X}).
+      $$
+      （2）根据中心极限定理，
+      $$
+      \sqrt{n}(\overline{X}-\mu)\sim N(0,1)
+      $$
+      则利用Delta方法，令$g(\mu)=\Phi(\mu)$，则
+      $$
+      g'(\mu)=\phi(\mu)=\frac{1}{\sqrt{2\pi}}e^{-\frac{\mu^2}{2}}
+      $$
+      所以
+      $$
+      \sqrt{n}(g(\overline{X})-g(\mu))\stackrel{d}{\longrightarrow} N(0,[g'(\mu)]^2)\Longrightarrow \sqrt{n}(\hat{p}-p)\stackrel{d}{\longrightarrow}N\left(0,\frac{1}{2\pi}e^{-\mu^2}\right).
+      $$
+      （3）先找一个无偏估计量：$\hat{p}_1=I(X_1\geq 0)$（$E(\hat{p}_1)=P(X_1\geq 0)=p$），又因为$\overline{X}$是充分完备统计量，所以只需要求$E[\hat{p}_1|\overline{X}]=P(X_1\geq 0|\overline{X})$即可。  
+      因为在正态总体下，$(X_1, \overline{X})$服从二元正态分布。其均值均为$\mu$，
+      $$
+      \text{Var}(X_1) = 1,\text{Var}(\overline{X}) = \frac{1}{n},\text{Cov}(X_1, \overline{X}) = \frac{1}{n}
+      $$
+      由此可得 $X_1$在给定 $\overline{X} = a$条件下的分布仍为正态分布，且
+      $$
+      \begin{aligned}
+      E[X_1 | \overline{X}] &= \mu + \frac{\frac{1}{n}}{\frac{1}{n}} (\overline{X} - \mu) = \overline{X},\\
+      \text{Var}(X_1 | \overline{X}) &= \text{Var}(X_1) - \frac{\text{Cov}(X_1, \overline{X})^2}{\text{Var}(\overline{X})} \\
+      &= 1 - \frac{(\frac{1}{n})^2}{\frac{1}{n}} = 1 - \frac{1}{n} = \frac{n-1}{n}.
+      \end{aligned}
+      $$
+      所以$X_1|\overline{X}\sim N\left(\overline{X},\dfrac{n-1}{n}\right)$，故
+      $$
+      \begin{aligned}
+      P(X_1 \geq 0 \mid \overline{X}) &= P\left(\frac{X_1 - \overline{X}}{\sqrt{\frac{n-1}{n}}} \geq \frac{0 - \overline{X}}{\sqrt{\frac{n-1}{n}}}\right) \\
+      &= \Phi\left(\frac{\overline{X}}{\sqrt{\frac{n-1}{n}}}\right)
+      \end{aligned}
+      $$
+      故$p$的UMVUE为$\displaystyle\Phi\left(\overline{X}\sqrt{\frac{n}{n-1}}\right)$。
+      </div>
+      </details>
+   </div>
+
 </div>

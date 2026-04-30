@@ -8,4 +8,89 @@ tags:
 draft: true
 ---
 # 异常（Exceptions）
-+ 抛出异常（raising an exception）是python特有的报错方式，其会自动中断程序并输出错误信息。当然，我们也可以在程序中加入`raise`或`assert`语句主动设置异常抛出。
++ 抛出异常（raising an exception）是python特有的报错方式，其会自动中断程序并输出错误信息（可见[官方文档](https://docs.python.org/zh-cn/3.14/reference/simple_stmts.html#the-raise-statement)）。当然，我们也可以在程序中加入`raise`或`assert`语句主动设置异常抛出。比如：
+    ```python
+    >>> raise Exception(' An error occurred')
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    Exception:  An error occurred
+    ```
+    在IDLE中，抛出异常后解释器将返回到初始交互状态；而在运行代码时抛出异常则会直接中止程序。
+## 处理异常（try...except）
++ 为了让代码在遇到异常后不会直接中止程序，我们可以设置`try`和`except`语句（类似条件分支语句），格式如下：
+    ```python
+    try:
+        <try suite>
+    except <exception class> as <name>:
+        <except suite>
+    ```
++ 具体而言，程序会先执行`try`块内的`<try suite>`，如果遇到异常，`except`语句就会根据`<exception class>`处理对应的异常类。
++ 异常类的内容会绑定到`<name>`上（属于局部变量，一般不会用到），然后通过执行`<except suite>`处理异常。下面是一个具体的示例：
+    ```python
+    >>> try:
+		    x = 1 / 0
+        except ZeroDivisionError as e:
+            print('handling a', type(e))
+            x = 0
+    handling a <class 'ZeroDivisionError'>
+    >>> x
+    0
+    ```
+    另外，当`<try suite>`中存在函数调用，且抛出异常，那么它就会立刻逐层向外找被包含的`try`和对应的`except`语句。也就是说，无论`try`里面套了多少层函数，只要异常没有在更里面被捕获，它最终都会回到当前`try`的`except`。比如：
+    ```python
+    def f1():
+        f2()
+
+    def f2():
+        f3()
+
+    def f3():
+        raise ValueError("Error f3")
+
+    try:
+        f1()
+        print("blablabla")
+    except ValueError:
+        print("Error outer try")
+    ```
+    只会输出`Error outer try`。
+## 异常对象（Exception Object）
++ 由于异常本身也是一种对象，所以我们也可以使用面向对象的方法构造异常对象，以实现除了输出报错位置与信息之外的功能。
++ 我们以之前的[牛顿法](https://souyerin.pages.dev/posts/computer-science/cs61a/cs61a-chapter-4/#%E7%A4%BA%E4%BE%8B%E7%89%9B%E9%A1%BF%E6%B3%95)为例，尝试在出现异常时返回当前的最优估计值。我们建立一个新的异常类`IterImproveError`，继承自`Exception`（python内置异常类）：
+    ```python
+    >>> class IterImproveError(Exception):
+            def __init__(self, last_guess):
+                self.last_guess = last_guess
+    ```
++ 然后将这个异常类加到通用函数`improve`中（与之前的定义略有区别，迭代结束的条件不是误差小到一定程度，而是精确求得零点/达到最大迭代次数/抛出异常）：
+    ```python
+    >>> def improve(update, done, guess=1, max_updates=1000):
+        k = 0
+        try:
+            while not done(guess) and k < max_updates:
+                guess = update(guess)
+                k = k + 1
+            return guess
+        except ValueError:
+            raise IterImproveError(guess)
+    ```
++ 接着，重新编写`find_zero`函数，引入处理异常语句：
+    ```python
+    >>> def find_zero(f, df, guess=1):
+            def done(x):
+                return f(x) == 0
+            try:
+                return improve(newton_update(f, df), done, guess)
+            except IterImproveError as e:
+                return e.last_guess
+    ```
+    其中`newton_update`定义和之前的完全一样。
++ 下面以一个会触发异常的例子进行测试（求函数$2x^2+\sqrt{x}$的零点）：
+    ```python
+    >>> from math import sqrt
+    >>> find_zero(lambda x: 2*x*x + sqrt(x),lambda x: 4*x + 1 / (2 * sqrt(x))
+    -0.030214676328644885
+    ```
+    虽然没能达到精确解$0$，但是比之前输入后直接报错（负数开根号）好一些。
++ 另外，python将`try`与`except`氛围两个模块，也有利于我们分别对二者进行调整，并将其融入对象系统。
++ 具有的。

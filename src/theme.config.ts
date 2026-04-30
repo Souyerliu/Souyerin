@@ -35,11 +35,11 @@ export default defineConfig({
         ],
       },
     },
-    {
-      text: "项目",
-      href: "/notebooks/",
-      icon: "i-ri-booklet-line",
-    },
+    // {
+    //   text: "项目",
+    //   href: "/notebooks/",
+    //   icon: "i-ri-booklet-line",
+    // },
     {
       text: "友链",
       href: "/friends/",

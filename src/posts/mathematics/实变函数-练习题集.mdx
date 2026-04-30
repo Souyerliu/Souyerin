@@ -297,3 +297,37 @@ sticky: true
   </div>
 </div>
 # 可测函数
+<div class="quiz-group">
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$f$是定义在$\mathbb{R}^n$上的实值函数，则$f \in \mathcal{M}(\mathbb{R}^n)$当且仅当对任意的$G \in \mathcal{O}(\mathbb{R}^1)$，$f^{-1}(G)\in \mathcal{M}$。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      必要性显然：对任意$t\in\R^1$，取$G=(t,\infty)\in\mathcal{O}(\R^1)$，则有$\{x\in\R^1:f(x)>t\}=f^{-1}(G)\in\mathcal{M}$，所以$f\in\mathcal{M}(\R^n)$。  
+      充分性：  
+      如果$f \in \mathcal{M}(\mathbb{R}^n)$，那么$\forall s,t\in\R^1$，$s< t$，有
+      $$
+      \{x\in\R^n:s< f(x)< t\}=\{x\in\R^1:f(x)< t\}\cap\{x\in\R^n:f(x)>s\}\in\mathcal{M}
+      $$
+      因此$f^{-1}(s,t)\in\mathcal{M}$。又由开集构造定理，任意$G \in \mathcal{O}(\mathbb{R}^1)$，有$\displaystyle G=\bigcup_{k=1}^\infty(a_k,b_k)$，所以
+      $$
+      f^{-1}(G)=f^{-1}\left(\bigcup_{k=1}^\infty(a_k,b_k)\right)=\bigcup_{k=1}^\infty f^{-1}\left((a_k,b_k)\right)\in\mathcal{M}.
+      $$
+      </div>
+      </details>
+  </div>
+
+  <div class="quiz-item">
+      <div class="quiz-question">
+
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+  </div>
+</div>
