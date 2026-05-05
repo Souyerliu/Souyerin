@@ -19,7 +19,7 @@ sticky: true
     \varlimsup_{n\to\infty}A_n=\varlimsup_{n\to\infty}B_n\cup\varlimsup_{n\to\infty}C_n
     $$
       <div class="quiz-answer">
-      直观理解：当$x\in\varlimsup_{n\to\infty}A_n$，说明$x$属于无穷多个$A_n$，
+      直观理解：当$\displaystyle x\in\varlimsup_{n\to\infty}A_n$，说明$x$属于无穷多个$A_n$，
       那么$x$要么属于无穷多个$B_n$，要么属于无穷多个$C_n$（否则存在一个充分大的$N$，使得$x\notin A_N$，矛盾）
       ___
       注：如果改为下极限则结论不一定成立。实际上，
@@ -321,7 +321,45 @@ sticky: true
 
   <div class="quiz-item">
       <div class="quiz-question">
+      设$m(E) < \infty$，对任意的$n \geq 1$，$f_n \in \mathcal{M}(E)$，且$f_n \xrightarrow{a.e.} f$。证明存在一列可测集$E_k \subset E$，$k \geq 1$，使得 
+      $\displaystyle m\left( E \setminus \bigcup_{k=1}^{\infty} E_k \right) = 0$，且$\{f_n, n \geq 1\}$ 在每个$E_k$ 上一致收敛到$f$。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+  </div>
 
+  <div class="quiz-item">
+      <div class="quiz-question">
+      利用Riesz定理证明：设函数$f, g, f_n, g_n (n \geq 1)$ 都是$E$ 上的可测函数，$m(E) < \infty$ 且$f_n \xrightarrow{m} f$，$g_n \xrightarrow{m} g$，则$f_n g_n \xrightarrow{m} f g$。
+      > Riesz 定理：设在$E$上$f_n \xrightarrow{m} f$，则存在子列$\{f_{n_k}, k \geq 1\}$使得$f_{n_k} \xrightarrow{a.e.} f$成立。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+  </div>
+
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$f$为定义在$E \subset \mathbb{R}^n$上的广义实值函数，对任意的$\delta > 0$，存在闭子集$F \subset E$，使得$m(E\setminus F) < \delta$，$f$在$F$上连续，证明$f \in\mathcal{M}(E)$。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+  </div>
+
+  <div class="quiz-item">
+      <div class="quiz-question">
+      证明：设$f$为$\mathbb{R}^1$上的单调函数，则$f \in \mathcal{M}(\mathbb{R}^1)$。
       </div>
       <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
       <summary class="mdx-collapse__summary">点击查看答案</summary>

@@ -4,16 +4,15 @@ date: 2026-04-24 14:47:58
 categories: [计算机科学,CS61A] 
 tags: 
  - python
-# cover: ./61A-header.png
-draft: true
+cover: ./61A-header.png
 ---
 # 异常（Exceptions）
 + 抛出异常（raising an exception）是python特有的报错方式，其会自动中断程序并输出错误信息（可见[官方文档](https://docs.python.org/zh-cn/3.14/reference/simple_stmts.html#the-raise-statement)）。当然，我们也可以在程序中加入`raise`或`assert`语句主动设置异常抛出。比如：
     ```python
-    >>> raise Exception(' An error occurred')
+    >>> raise Exception('An error occurred')
     Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    Exception:  An error occurred
+    Exception: An error occurred
     ```
     在IDLE中，抛出异常后解释器将返回到初始交互状态；而在运行代码时抛出异常则会直接中止程序。
 ## 处理异常（try...except）
@@ -92,5 +91,17 @@ draft: true
     -0.030214676328644885
     ```
     虽然没能达到精确解$0$，但是比之前输入后直接报错（负数开根号）好一些。
-+ 另外，python将`try`与`except`氛围两个模块，也有利于我们分别对二者进行调整，并将其融入对象系统。
-+ 具有的。
++ 另外，python将`try`与`except`分为两个模块，也有利于我们分别对二者进行调整，并将其融入对象系统。
+# 编程语言
++ 在继续Scheme之前，先简单说明高级语言与机器语言/汇编语言的区别：
+    + 机器语言/汇编语言直接通过硬件本身进行解释。具体而言，其通过执行CPU预设的特定指令组合实现，与硬件的内存地址有关，无法进行进一步抽象；
+    + 而高级语言程序的语句和表达式可以通过另一个程序进行解释或通过编译转为另一种语言，因此提供了抽象的方法（如名称指代、定义函数与对象等）。这使得高级语言程序可以在不同机器、甚至不同系统上运行。
+        + 当然，高级语言之间也有层次区分：比如C语言就比python语言更接近机器语言（C语言通过编译可直接转为机器语言，而python的解释器主要通过C语言构造）
+        + 可以通过python的[dis](https://docs.python.org/zh-cn/3/library/dis.html)语句对python程序进行反汇编，查看其解释器实现的字节码。
+## 编程语言的基本要素
++ 语法（syntax）：合法的语句与表达式（作为语言的组成形式）
++ 语义（semantics）：语句和表达式的评估方法/执行规则。
+
+这两个要素要么通过规范（文档），要么通过构建解释器/编译器进行实现。
+
+> 更多细节可以参考国内的计算机组成原理、编译原理或相关课程。

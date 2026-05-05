@@ -432,7 +432,7 @@ sticky: true
             \end{aligned}
             $$
         + $i=0$时，
-            $$  
+            $$ 
             \begin{aligned}
             &P(\tau_0 = 2k + 1|W_0 = 0) = 0\\
             &P(\tau_0 = 2k \mid W_0 = 0) = 2 \frac{(2k - 2)!}{k! (k - 1)!} q^k p^k = 
@@ -493,17 +493,261 @@ sticky: true
 + <Text type = "red">$N$为泊松过程当且仅当$N$是初值为$0$的非零简单计数过程且具有平稳独立增量。</Text>
 
 ### 到达时间的条件分布
-+ 设 $\{T_n; n \geq 1\}$ 是强度为 $\lambda$ 的泊松过程 $N = \{N(t); t \geq 0\}$ 的到达时刻序列，那么对任意 $0 \leq s_1 < t_1 \leq s_2 < \cdots \leq s_n < t_n \leq t$，
++ 设 $\{T_n; n \geq 1\}$是强度为 $\lambda$的泊松过程 $N = \{N(t); t \geq 0\}$的到达时刻序列，那么对任意 $0 \leq s_1 < t_1 \leq s_2 < \cdots \leq s_n < t_n \leq t$，
 $$
 P(T_j \in (s_j, t_j], 1 \leq j \leq n \mid N(t) = n) = \frac{n!}{t^n} \prod_{j=1}^n (t_j - s_j).
 $$
 + <Text type = "red">设$X_{(1)},X_{(2)},\cdots,X_{(n)}$为$(0, t]$上均匀分布随机变量的次序统计量，则$(X_{(1)},X_{(2)},\cdots,X_{(n)})$的联合分布与给定$N(t) = n$的条件下的$(T_1, T_2,\cdots,T_n)$的联合分布相同。</Text>
     > $T_1,\cdots, T_n$可看作$n$个独立的$(0, t]$上均匀分布随机变量的次序统计量.
 ### 稀疏过程
-+ 定义：若将计数过程$N = \{N(t)\}$记录的每一个随机事件都能独立于其他事件以概率$p_i$归为第$i$类事件，其中$\displaystyle\sum_{i=1}^m p_i = 1$，那么称记录第$ i$类事件发生次数的计数过程$ N_i = \{N_i(t)\}$为$N$的稀疏过程。
-+ 若$ N$是强度为$ \lambda$的泊松过程，那么它的稀疏过程$ N_1, N_2, \cdots, N_m$是独立的泊松过程，强度分别$\lambda p_1, \cdots, \lambda p_m$。
++ 定义：若将计数过程$N = \{N(t)\}$记录的每一个随机事件都能独立于其他事件以概率$p_i$归为第$i$类事件，其中$\displaystyle\sum_{i=1}^m p_i = 1$，那么称记录第$i$类事件发生次数的计数过程$N_i = \{N_i(t)\}$为$N$的稀疏过程。
++ 若$N$是强度为$\lambda$的泊松过程，那么它的稀疏过程$N_1, N_2, \cdots, N_m$是独立的泊松过程，强度分别$\lambda p_1, \cdots, \lambda p_m$。
 ### 复合泊松过程
 + 定义：若$N=\{N(t);t\geq 0\}$为泊松过程，$\{Y_n; n\geq 1\}$为一列独立同分布的随机变量且与$N$独立。对任意$t\geq 0$，令$\displaystyle X(t)=\sum_{n=1}^{N(t)}Y_n$，则称$X=\{X(t);t\geq 0\}$为复合泊松过程。
 + 性质：$E(X(t)) = \lambda tE(Y_1),E(X^2(t))= [\lambda tE(Y_1)]^2 +\lambda tE(Y_1^2)$.
 
 # 离散状态马尔科夫链
+## 条件独立性与马尔科夫过程
++ 条件独立性定义：给定时间$A,B,C$，$P(C)>0$，若$P(AB|C)=P(A|C)P(B|C)$，则称$A,B$在给定$C$下条件独立。
+    + 等价条件：$P(A|BC)=P(A|C)$；$P(B|AC)=P(B|C)$。
++ 马尔可夫性：对任意时刻$t$，已知$t$时刻状态，那么$t$之后的状态与$t$之前的状态无关，即：
+    $$
+    P(A_F(t)B_H(t)|C_N(t))=P(A_F(t)|C_N(t))P(B_H(t)|C_N(t))
+    $$
++ 马尔科夫过程：具有马尔科夫性的随机过程。【也称马尔科夫链，简称马氏过程/马氏链】
+    + 平稳独立增量过程（如直线上简单随机游动，泊松过程）一定是马尔科夫过程。
+    > 注：马尔科夫过程要求当前状态$X_n$已知且唯一。
++ 离散状态离散时间马尔科夫过程的刻画：$X=\{X_n;n\geq 0\},S\subset\Z$，对任意时刻$n\geq 1$，任意状态$i_0,\cdots,i_{n-1},i,j\in S$，有
+    $$
+    P(X_{n+1}=j|X_0=i_0,\cdots,X_{n-1}=i_{n-1},X_n=i)=P(X_{n+1}=j|X_n=i)
+    $$
+    > 如无特殊说明，下述马氏链均表示离散状态离散时间马尔科夫过程。
+    + 等价刻画：$X$是马氏链当且仅当对任意$n \geq 1$，以及任意一个时刻$n$之后的随机事件
+        $$
+        A = \{X_{n+k_1} = i_{n+1}, \dots, X_{n+k_l} = i_{n+l}\}
+        $$
+        和任意一个$n$之前的随机事件
+        $$
+        B = \{X_{t_1} = i_1, \dots, X_{t_m} = i_m\}
+        $$
+        其中$0 \leq t_1 < \cdots < t_m < n$，都有  
+        $$
+        P(A \mid X_n = i_n, B) = P(A \mid X_n = i_n).
+        $$
+## 转移概率矩阵与C-K方程
+### 转移概率矩阵
++ 转移概率定义：称$P(X_{n+m} = j \mid X_n = i)$为马氏链$X$从$n$时状态$i$到$n+m$时状态$j$的$m$步转移概率，记作$p_{ij}^{(n, n+m)}$或$p(n, i; n+m, j)$.
+    + 若对任意$i, j, n, m$,  
+        $$
+        P(X_{n+m} = j \mid X_n = i) = P(X_m = j \mid X_0 = i),
+        $$
+        则称转移概率是平稳的。
+    + 此时转移概率可简记为$p_{ij}^{(m)}$（或$p(i, j; m)$），简称为从状态$i$到$j$的$m$步转移概率。
+    + 特别简记$p_{ij}^{(1)}$为$p_{ij}$，并简称为从状态$i$到$j$的转移概率。
+    + 约定  
+        $$
+        p_{ij}^{(0)} = \delta_{ij} =
+        \begin{cases} 
+        1, & i = j \\
+        0, & i \neq j.
+        \end{cases}
+        $$
++ 如果马氏链$X$的转移概率是平稳的，则称$X$是时齐的。
+    > 若无特别说明，以下马氏链$X$都是时齐的。
++ 转移概率矩阵：任意$n\in\N$，将马氏链$X$的所有$n$步转移概率排为矩阵$(p_{i,j}^{(n)})_{i,j\in S}$，称其为$X$的$n$步转移概率矩阵，记作$\mathbf{P}^{(n)}$。
+    + $n=0$时矩阵为单位矩阵，$n=1$时可简称为转移概率矩阵，记作$\mathbf{P}$。【最常使用】
+    + 性质：矩阵的所有元素均非负，且每行都是一个概率分布（和为$1$）
+### C-K方程
++ 设$X = \{X_n; n \geq 0\}$是时齐马氏链，则对任意$n, m \geq 1$及$i, j \in S$,
+    $$
+    p_{i,j}^{(n+m)} = \sum_{k \in S} p_{i,k}^{(n)} p_{k,j}^{(m)}.
+    $$
+    + 推论：（转移概率矩阵计算公式）无论状态是否无穷，都有
+        $$
+        \mathbf{P}^{(n+m)}=\mathbf{P}^{n}\mathbf{P}^{m}=\mathbf{P}^{n+m}.
+        $$
+        （本质是矩阵乘法）
+### 有限维分布族
++ 设马氏链$X$的转移概率矩阵为$(p_{i,j})_{i,j \in S}$，初始分布为$(\mu_i)_{i \in S}$。那么对任意$0 = t_0 \leq t_1 < t_2 < \cdots < t_n$以及$i_1, \cdots, i_n \in S$,
+    $$
+    P(X_{t_1} = i_1, X_{t_2} = i_2, \cdots, X_{t_n} = i_n) = \sum_{i \in S} \mu_i p^{(t_1-t_0)}_{i,i_1} p^{(t_2-t_1)}_{i_1,i_2} \cdots p^{(t_n-t_{n-1})}_{i_{n-1},i_n}.
+    $$
+    这说明马氏链可以用转移概率矩阵等价刻画。
+## 状态分类
+### 互通性
++ 如果存在$n \geq 0$使得$p_{i,j}^{(n)} > 0$，则称状态$i$**可达**状态$j$，记作$i \to j$。反之，则对任意$n \geq 0$，$p_{i,j}^{(n)} = 0$，称状态$i$**不可达**状态$j$，记作$i\nrightarrow j$。
++ 若$i \to j$且$j \to i$，则称$i, j$**互通**，记作$i \leftrightarrow j$。
++ 互通是一种等价关系，即满足自反性（$i\leftrightarrow j$）、对称性（$i\leftrightarrow j\Longleftrightarrow j\leftrightarrow i$）；
++ 互通类：对任意状态$i$，定义$C(i)=\{k\in S;k\leftrightarrow i\}$为包含状态$i$的互通类。
+    + 性质：$C(i)\cap C(j)\neq\emptyset\Longleftrightarrow C(i)=C(j)$。
++ 状态一步转移图表示：状态用点表示；如果$p_{i,j}>0$，则用有向边$i\longrightarrow j$表示。
+    + 由图可知，如果状态$i$与$j$连通（存在从$i$到$j$的路径），则$i$可达$j$；所有与$i$相互连通的状态构成包含$i$的互通类，记为$C(i)$。
+    > 注：状态一步转移图中不会直接表示出$i\leftrightarrow i$（如果$p_{i,i}=0$），因此划$C(i)$时不要忘掉$i$本身。
++ 本质状态：如果对任意满足$i\rightarrow j$的状态$j$，都有$j\rightarrow i$，那么就称$i$是本质的。
+    + 如果状态$i$是本质的，则$C(i)$的所有状态都是本质的，此时称$C(i)$为本质类。
++ 吸收状态：若$p_{i,i}=1$，则称$i$是吸收的。
+    + 由此可知一定有$C(i)=\{i\}$，即吸收态一定是本质态。
+    + 吸收态在状态一步转移图中从自己出发的路径只有指向自己的环。
++ 不可约马氏链：若马氏链$X$的所有状态均互通（存在状态$i\in S$使$C(i)=S$），则称$X$不可约。
+    + 不可约马氏链的所有状态都是本质状态，$S$一定是本质类。
+### 周期性
++ 周期的定义：设$i$为马氏链$X$的一个状态，如果存在正整数$m$使$p_{i,i}^{(m)}>0$，则称使$p_{i,i}^{(n)}>0$的所有正整数$n$的最大公因数为状态$i$的周期，记为$d_i$。
+    + 若任意正整数$n$，$p_{i,i}^{(n)}=0$，则约定$i$的周期为$\infty$；若$i$的周期为$1$（$d_i=1$），则称$i$为非周期状态。
++ 性质：
+    + 同一互通类中状态周期均相同（$\forall j\in C(i),d_i=d_j$）；
+    + 若状态$i$的周期为$d$，则存在正整数$N$使任意$n\geq N,p_{i,i}^{(nd)}>0$；
+    + 若状态$i$的周期为$d$，且$p_{i,i}^{(m)}>0$，则存在$N\geq 0$使$\forall n\geq N,p_{i,i}^{(m+nd)}>0$；
+    + 若状态$i$为非周期状态，则存在$N>0$使$\forall n\geq N,p_{i,i}^{(n)}>0$。
++ 任意不可约且周期为$d$的马氏链的状态空间都可以分解为$d$个子类，其构成的马氏链都是非周期不可约的。【详见[思考题集](https://souyerin.pages.dev/posts/mathematics/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B-%E6%80%9D%E8%80%83%E9%A2%98%E9%9B%86/#%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E9%A9%AC%E6%B0%8F%E9%93%BE)】
+### 常返性
++ 首回时定义：对任意状态$i\in S$，记$\tau_i=\inf\{n\geq 1;X_n=i\}$（约定$\inf\emptyset=\infty$）为$X$首次回到$i$的时刻，简称首回时。
+    + 和随机游动的定义一样，首回时$\tau_i$也是停时：$\displaystyle\{\tau_i\leq n\}=\bigcup_{k=1}^n\{\tau_i=k\}=\bigcup_{k=1}^n\{X_k=i,X_i\neq i,1\leq i\leq k-1\}$
++ 首回时的分布：定义概率
+    $$
+    \begin{aligned}
+    f_{i,j}^{(n)}&=P(\tau_j=n|X_0=i)=P(X_n= j,X_{n-1}\neq j,\cdots,X_1\neq j|X_0=i),\\
+    f_{i,j}&=P(\tau_j< \infty)=\sum_{n=1}^\infty f_{i,j}^{(n)}
+    \end{aligned}
+    $$
+    + 不等式关系：$0\leq f_{i,j}^{(n)}\leq p_{i,j}^{(n)}\leq f_{i,j}\leq 1$
++ 转移概率分解：
+    1. 首回时分解
+        $$
+        p_{i,j}^{(n)}=\sum_{k=1}^nf_{i,j}^{(k)}p_{j,j}^{(n-k)},\quad \forall i,j\in S,n\geq 1
+        $$
+    2. 末离时分解：定义从$i$出发，中间不经过$i$而在第$n$步到达$j$的概率$e_{i,j}^{(n)}=p_i(X_n=j,\tau_i\geq n)$（也被称为禁忌概率），则
+        $$
+        p_{i,j}^{(n)}=\sum_{k=1}^np_{i,i}^{(n-k)}e_{i,j}^{(k)},\quad \forall i,j\in S,n\geq 1
+        $$   
++ 常返定义：如果$f_{i,i}=1$（即从$i$出发后经过有限时间一定能回到$i$），则称状态$i$是常返的，否则称其是非常返的（或暂留的）。
++ 性质：
+    + 如果$i$常返且$i\rightarrow j$，则$f_{j,i}=1$；
+    + 在一个互通类中，要么所有状态均常返（常返类），要么所有状态均为非常返（非常返类）；
+    + 常返类一定是本质类，有限状态的本质类一定是常返类；
+    + 状态$i$常返$\Longleftrightarrow \displaystyle\sum_{n=0}^\infty p_{i,j}^{(n)}=\infty$，状态$i$非常返$\Longleftrightarrow\displaystyle\sum_{n=0}^\infty p_{i,i}^{(n)}=\frac{1}{1-f_{i,i}}< \infty$。
++ 平面上简单对称随机游动是常返的（在高位空间中则非常返）。
++ 对$m \geq 1$，记  
+    $$
+    g_{i,i}(m) = P_i (\text{至少有} m \text{ 个 } n \geq 1 \text{ 使得 } X_n = i),  
+    $$
+    再记$g_{i,i} = P_i(\{X_n = i\}, \text{i.o.})$，那么$g_{i,i}(m) = (f_{i,i})^m$。
+    + 因此若$i$常返则$g_{i,i} = 1$；若$i$非常返则$g_{i,i} = 0$。  
+    > 若$i$常返，那么从$i$出发几乎必然可无穷次回访$i$；  
+    > 若$i$非常返（暂留）的，由$P_i(\{X_n = i\}, \text{i.o.}) = 0$可知，对几乎所有的$\omega$，都存在一个时刻$N(\omega)$使得对任意$n > N(\omega)$，$X_n(\omega) \neq i$，即在$N(\omega)$后$X$不再访问$i$。
+## 首访概率与期望
+1. 求$f_{i,j}^{(n)}$
+    + 定义$\displaystyle F_{i,j}(u)=\sum_{n=1}^\infty f_{i,j}^{(n)}u^n$（$u\in[0,1]$），则$f_{i,j}=F_{i,j}(1)$
+        + 当$f_{i,j}=1$时，$F_{i,j}(u)$就是$X_0=i$条件下$\tau_i$的概率母函数（$\{f_{i,j}^{(n)}\}$为条件分布列）；
+        + $f_{i,j}< 1$时，$F_{i,j}(u)$的$n$阶导数在$u=0$处的值为$n!f_{i,j}^{(n)}$；
+        + 若$i\nrightarrow j$，则$F_{i,j}(u)\equiv 0$。
+    + 定理：对任意给定$j\in S$，$\{F_{i,j}(u);i\in S,u\in[0,1]\}$是线性方程组
+        $$
+        z_i=\sum_{k\neq j}up_{i,k}z_k+up_{i,j}\quad i\in S
+        $$
+        的最小非负解。
+        + 推论：对任意给定$j\in S$，$\{f_{i,j};i\in S\}$是线性方程组
+            $$
+            z_i=\sum_{k\neq j}p_{i,k}z_k+p_{i,j}\quad i\in S
+            $$
+            的最小非负解。
+2. 求平均访问时间$m_{i,j}$（只考虑$f_{i,j}=1$）
+    + 定义：$\displaystyle m_{i,j}=E_i(\tau_j)=\sum_{n=1}^\infty nf_{i,j}^{(n)}$表示从状态$i$出发首次到达状态$j$的平均时间（若$i$常返且$j=i$则表示平均回访时间）
+    + 直接求解：$\displaystyle m_{i,j}=\left.\frac{d F_{i,j}(u)}{du}\right|_{u=1}$
+    + 线性方程组求解：$\{m_{i,j},i\in S\}$是
+        $$
+        z_i=\sum_{k\neq j}p_{i,k}z_k+f_{i,j}\quad i\in S
+        $$
+        的最小非负解。
++ $f_{i,j}$与$m_{i,j}$不会受到$f_{j,j}$与$m_{j,j}$（即到达状态的回访分布）的影响，因此改变从$j$出发的状态转移概率不影响$f_{i,j}^{(n)}$和$m_{i,j}$的值。
+### 随机游动的一般化
++ 定义状态空间为$\Z$的马氏链$X$为随机游动，如果对任意状态$i\in\Z$，转移概率满足$\begin{cases}p_{i,i+1}=p_i\\p_{i,i}=r_i\\p_{i,i-1}=q_i\end{cases}$，其中$p_i+q_i+r_i=1$。
++ 若状态空间为非负整数，则称$X$为带一个壁的随机游动。按$r_0$的取值作如下分类（$q_0$不存在）：
+    + 若$r_0=1$，则称状态$0$为吸收壁；
+    + 若$r_0=0$，则称状态$0$为反射壁；
+    + 若$0< r_0< 1$，则称状态$0$为粘性壁。
++ 若状态空间为$\{0,1,\cdots,N\}$，则称$X$为带两个壁的随机游动，其壁的性质由$r_0$和$r_N$决定（$q_0,p_N$不存在）。
+## 正常返
++ 定义：对于常返状态$i\in S$，若$m_{i,i}< +\infty$，称$i$是正常返的；若$m_{i,i}= +\infty$，则称$i$是零常返的。
++ 正常返、零常返、非常返之间的区别：
+    + $i$常返$\Longleftrightarrow X_0 = i$条件下$\tau_i$是正常随机变量，即$P_i(\tau_i < +\infty) = 1$。在此基础上：
+        + $i$正常返$\Longleftrightarrow \tau_i$的数学期望有限。
+        + $i$零常返$\Longleftrightarrow \tau_i$的数学期望无穷。
+    + $i$非常返$\Longleftrightarrow X_0 = i$条件下$\tau_i$是广义随机变量，即$P_i(\tau_i = +\infty) > 0$。
++ 用转移概率$p_{i,i}^{(n)}$判别（定理）：
+    + 若对任意状态$i\in S$，$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{k=1}^np_{i,i}^{(k)}=\frac{1}{m_{i,i}}$，则$i$正常返；
+    + 若对状态$i\in S$，$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{k=1}^np_{i,i}^{(k)}=0$，则$i$非常返；
+    <Note type="primary" title="补充">
+    1. 从级数增长的速度看，非常返表示$\displaystyle\sum_{k=1}^\infty p_{i,i}^{(k)}\rightarrow 0$，零常返表示$\displaystyle\sum_{k=1}^\infty p_{i,i}^{(k)}$的增长速率慢于线性增长，而正常返则表示$\displaystyle\sum_{k=1}^\infty p_{i,i}^{(k)}$增长与线性增长同阶。
+        + 例：直线上简单对称随机游动的所有状态都是零常返的，其级数增长速率为$\sqrt{n}$。
+    2. 证明这个定理时使用了以下引理：设$\{a_n; n \geq 0\}$为一个不全为$0$的非负数列且满足条件
+        $$
+        \lim_{n \to \infty} \frac{a_n}{\displaystyle\sum_{k=0}^n a_k} = 0
+        $$
+        若$\{b_n; n \geq 0\}$为收敛数列，那么
+        $$
+        \lim_{n \to \infty} \frac{\displaystyle\sum_{k=0}^n a_k b_{n-k}}{\displaystyle\sum_{k=0}^n a_k} = \lim_{n \to \infty} b_n.
+        $$
+    3. 推论（考虑$i$周期的情形）：$i$正常返$\Longleftrightarrow\displaystyle\varlimsup_{n\to\infty}\frac{1}{n}\sum_{k=1}^{n}p_{i,i}^{(k)}>0$。
+    </Note>
++ 若$i$正常返，$i\rightarrow j$，则$j$正常返且$j\in C(i)$。
+    + 由此可将$C(i)$分为正常返类、零常返类和非常返类。其中，零常返类一定有无限个状态。
++ 用转移概率$p_{i,j}^{(n)}$的极限判别：
+    + 引理：对任意$i, j \in S$以及$u \in [0, 1]$,
+        $$
+        \lim_{n \to \infty} \frac{\sum_{k=1}^n p_{i,j}^{(k)} u^k}{\sum_{k=0}^n p_{j,j}^{(k)} u^k} = F_{i,j}(u),
+        $$  
+    + 对任意$i, j \in S$，$\displaystyle\frac{1}{n} \sum_{k=1}^n p_{i,j}^{(k)}$极限存在，而且
+        $$
+        \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n p_{i,j}^{(k)} = 
+        \begin{cases} 
+        \dfrac{f_{i,j}}{m_{j,j}}, & j \text{ 正常返}, \\
+        0, & j \text{ 为其他状态}.
+        \end{cases}
+        $$
+    + 对任意$i \in S$，
+        + 若$j$是非周期正常返的，那么$\displaystyle\lim_{n \to \infty} p_{i,j}^{(n)} =\frac{f_{i,j}}{m_{j,j}}$；（若$X$不可约，则$\displaystyle\lim_{n \to \infty} p_{i,j}^{(n)} =\frac{1}{m_{j,j}}$）
+        + 若$j$是零常返或非常返的，那么$\displaystyle\lim_{n \to \infty} p_{i,j}^{(n)} = 0$。
+    + 推论：
+        $$
+        \sum_{n=1}^\infty p_{i,j}^{(n)} = 
+        \begin{cases} 
+        \dfrac{f_{i,j}}{(1 - f_{j,j})}, & f_{j,j} < 1; \\
+        0, & f_{i,j} = 0 \text{ 且 } f_{j,j} = 1; \\
+        \infty, & f_{i,j} > 0 \text{ 且 } f_{j,j} = 1.
+        \end{cases}
+        $$
+## 平稳分布
++ 不变测度与平稳分布：称不恒为零的非负有限数列$\pi = (\pi_i, i \in S)$为马氏链的不变测度，若对任意$i \in S$
+    $$
+    \pi_i = \sum_{k \in S} \pi_k p_{k,i}.
+    $$
+    当$\displaystyle\sum_{i \in S} \pi_i = 1$，即$(\pi_i, i \in S)$是概率分布时，称$\pi$是$X$的平稳分布。
+    + 用矩阵表示：$\pi = \pi\mathbf{P}=\cdots=\pi\mathbf{P}^{(n)}$，这表明以平稳分布为初始分布的马氏链在任意一个时刻的分布都是一样的。
+    + 以平稳分布为初始分布的马氏链也是严平稳过程，即$P(X_{n_1}=i_1,X_{n_2}=i_2,\cdots,X_{n_k}=i_k)=P(X_{n_1+h}=i_1,X_{n_2+h}=i_2,\cdots,X_{n_k+h}=i_k)$
++ 求解平稳分布（有限状态）：使用线性方程组
+    $$
+    \begin{cases}
+    \mathbf{P}^\top\pi=\pi\\
+    \displaystyle\sum_{i \in S} \pi_i = 1
+    \end{cases}
+    $$
+    （上面共$n+1$个方程，故在第一个方程组中取$n-1$个）
++ 存在条件：马氏链$X$至少存在一个正常返的本质类。
+    + 设$X$为不可约马氏链，则$X$存在平稳分布（$ \pi_i, i \in S$）当且仅当$X$是正常返的。此时$X$的平稳分布唯一而且
+        $$
+        \pi_i = \frac{1}{m_{i,i}} > 0, \quad i \in S.
+        $$
+        即$\pi_j>0\Longleftrightarrow j$正常返。
+    + 推论：若$X$为不可约正常返马氏链，则对任意$i,j\in S$，有$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^np_{i,j}^{(k)}=\pi_j$。进一步，若$X$还是非周期的，任意给定$X$的一个初始分布$\mu = (\mu_i, i \in S)$，有
+        $$
+        \lim_{n\to\infty}P(X_n = j) = \pi_j,\quad \forall j \in S
+        $$
++ 记$\displaystyle N_n(j) = \sum_{k=1}^n 1_{\{X_k=j\}}$为过程$X$在时刻$n$之前（含$n$）到达状态$j$的次数，
+    $$
+    E(N_n(j)) =E\left(\sum_{k=1}^n 1_{\{X_k=j\}}\right) = \sum_{k=1}^n \mathbb{P}(X_k = j)
+    $$
+    表示$X$在时刻$n$之前（含$n$）到达状态$j$平均次数，$\dfrac{E(N_n(j))}{n}$则表示到达状态$j$的平均比率，则有
+    $$
+    \frac{E(N_n(j))}{n}\to\pi_j\quad n\to\infty.
+    $$
+    这表明平稳分布还刻画了马氏链在长时间内访问各状态的比率。
