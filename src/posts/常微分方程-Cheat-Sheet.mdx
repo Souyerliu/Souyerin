@@ -1,0 +1,289 @@
+---
+title: 常微分方程 Cheat Sheet
+date: 2026-05-05 14:06:09
+categories: [数学,微分方程]
+tags: 
+ - 数学分析
+ - 常微分方程
+cover: ./常微分方程-Cheat-Sheet/cover.jpg
+sticky: true
+---
+> 使用教材为王高雄等《常微分方程》（第四版）。  
+
+常微分方程的基本概念：
+1. $n$阶常微分方程：$\displaystyle F\left(x,y,\frac{\mathrm{d}y}{\mathrm{d}x},\cdots,\frac{\mathrm{d}^ny}{\mathrm{d}x^n}\right)=0$
+2. 线性$n$阶常微分方程：$y^{(n)}+a_1(x)y^{(n-1)}+\cdots+a_n(x)y=f(x)$【本课程研究重点】
+3. 常微分方程的解分为显式解（$y=\varphi(x,c)$，$c$为常数）和隐式解（$\Phi(x,y,c)=0$，没有微分）
+4. 通解（使用不定积分）与特解（给定初值，使用定积分求解，需确定所有常数项，也称柯西问题）
+# 一阶微分方程的初等解法
+## 变量分离方程
++ 形式：$\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x)\varphi(y)$，其中$f,\varphi$分别是关于$x$和$y$的连续函数。
++ 解法：
+    + 若$\varphi(y)=0$有解$y=a$，则$y\equiv a$是方程的解；
+    + $\varphi(y)\neq 0$，则通解：
+        $$
+        \begin{aligned}
+        \frac{\mathrm{d}y}{\varphi(y)}&=f(x)\mathrm{d}x\\
+        \int\frac{\mathrm{d}y}{\varphi(y)}&=\int f(x)\mathrm{d}x+C
+        \end{aligned}
+        $$
+        注意$C$可能有取值限制（取决于定义域）
+    + 若存在初值$y(x_0)=y_0$，则通解为
+        $$
+        \int_{y_0}^{y(x)}\frac{\mathrm{d}y}{\varphi(y)}=\int_{x_0}^xf(x)\mathrm{d}x
+        $$
+### 可化为变量分离方程的类型
+1. $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=g\left(\frac{y}{x}\right)$【也称为齐次方程】
+    + 解法：令$u=\dfrac{y}{x}$，则
+        $$
+        \begin{aligned}
+        \frac{\mathrm{d}y}{\mathrm{d}x}=&x\cdot\frac{\mathrm{d}u}{\mathrm{d}x}+u=g(u)\\
+        \Longrightarrow&x\cdot\frac{\mathrm{d}u}{\mathrm{d}x}=g(u)-u
+        \end{aligned}
+        $$
+        即转化为变量分离方程。
+2. $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{a_1x+b_1y+c_1}{a_2x+b_2y+c_2}$
+    1. 若$\dfrac{a_1}{a_2}=\dfrac{b_1}{b_2}=\dfrac{c_1}{c_2}=k\quad \left(\left|\begin{array}{cc}a_1&b_1\\a_2&b_2\end{array}\right|=0,\dfrac{a_1}{a_2}=\dfrac{c_1}{c_2}=k\right)$，则$y=kx+c$（$c$为常数）；
+    2. 若$\dfrac{a_1}{a_2}=\dfrac{b_1}{b_2}=k\neq\dfrac{c_1}{c_2}$，则设$u=a_2x+b_2y$，有
+        $$
+        \dfrac{\mathrm{d}u}{\mathrm{d}x}=a_2+b_2\dfrac{\mathrm{d}y}{\mathrm{d}x}=a_2+b_2\dfrac{ku+c_1}{u+c_2}
+        $$
+        转为变量分离方程。  
+        （$\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=f\left(\frac{a_1x+b_1y+c_1}{a_2x+b_2y+c_2}\right)$同理：$\dfrac{\mathrm{d}u}{\mathrm{d}x}=a_2+b_2f\left(\dfrac{ku+c_1}{u+c_2}\right)$）
+    3. $\dfrac{a_1}{a_2}\neq\dfrac{b_1}{b_2}\quad \left(\left|\begin{array}{cc}a_1&b_1\\a_2&b_2\end{array}\right|\neq 0\right)$
+        + $c_1=c_2=0$，则$\dfrac{\mathrm{d}y}{\mathrm{d}x}=\dfrac{a_1x+b_1y}{a_2x+b_2y}=g\left(\dfrac{x}{y}\right)$，情况同1；
+        + $c_1,c_2$不全为$0$，那么作平移变换$\begin{cases}X=x-\alpha\\Y=y-\beta\end{cases}$，其中$(\alpha,\beta)$为方程$\begin{cases}a_1x+b_1y+c_1=0\\a_2x+b_2y+c_2=0\end{cases}$的唯一解，则
+            $$
+            \frac{\mathrm{d}Y}{\mathrm{d}X}=\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{a_1X+b_1Y}{a_2X+b_2Y}=g\left(\frac{X}{Y}\right)
+            $$
+            情况同1。
++ 两道例题：
+1. $\displaystyle f(x)\int_{0}^x f(t)\mathrm{d}t=1$，求$f(x)$。
+    + 解：令$\displaystyle F(x)=\int_{0}^x f(t)$，则有
+        $$
+        \begin{cases}
+        F'(x)F(x)=1\\
+        F(0)=0
+        \end{cases}
+        $$
+        解得$F(x)=\pm\sqrt{2x}\hspace{0.5em}(x>0)$，即$f(x)=\pm\dfrac{1}{\sqrt{2x}}$。
+2. 已知$x(t+s)=\dfrac{x(t)+x(s)}{1-x(t)x(s)}$，且$x'(0)$存在，求$x(t)$。
+    + 解：因为
+        $$
+        x(s+t)-x(t)=\frac{1+x^2(t)}{1-x(t)x(s)}x(s)
+        $$
+        而$s=t=0$时可得$x(0)=0$，故
+        $$
+        x'(t)=\lim_{s\to 0^+}\frac{x(s+t)-x(t)}{s}=\lim_{s\to 0^+}\frac{1+x^2(t)}{1-x(t)x(s)}\cdot\frac{x(s)}{s}=(1+x^2(t))x'(0)
+        $$
+        所以
+        $$
+        \arctan(x(t))=x'(0)t+c\stackrel{x(0)=c=0}{\Longrightarrow} x(t)=\tan(x'(0)t).
+        $$
+## 一阶线性微分方程
+### 一阶齐次线性微分方程
++ 形式：$\displaystyle\frac{\mathrm{d}x}{\mathrm{d}y}=P(x)y$【属于变量分离方程】
+    + 通解：$y=ce^{\int P(x)\mathrm{d}x}$，其中$c$为常数。
+### 一阶非齐次线性微分方程
++ 形式：$\displaystyle\frac{\mathrm{d}x}{\mathrm{d}y}=P(x)y+Q(x)$
+    + 使用常数变易法求解：设解为$y=c(x)e^{\int P(x)\mathrm{d}x}$，则
+        $$
+        \begin{aligned}
+        \frac{\mathrm{d}y}{\mathrm{d}x}&=\underbrace{\frac{\mathrm{d}c(x)}{\mathrm{d}x}\cdot e^{\int P(x)\mathrm{d}x}}_{Q(x)}+\underbrace{c(x)\cdot P(x)e^{\int P(x)\mathrm{d}x}}_{P(x)y}\\
+        \Longrightarrow c(x)&=\int Q(x)e^{-\int P(x)\mathrm{d}x}\mathrm{d}x+\tilde{c}
+        \end{aligned}
+        $$
+        故通解为$\displaystyle y=e^{\int P(x)\mathrm{d}x}\left(\int Q(x)e^{-\int P(x)\mathrm{d}x}\mathrm{d}x+\tilde{c}\right)$。
++ 若给定初值$y(x_0)=y_0$，则
+    + 齐次方程：$\displaystyle y=ce^{\int_{x_0}^x P(u)\mathrm{d}u}\Longrightarrow c=y_0$；
+    + 非齐次方程：通解为
+        $$
+        \begin{aligned}
+        y(x)&=e^{\int_{x_0}^x P(u)\mathrm{d}u}\left[y_0+\int_{x_0}^xQ(w)e^{-\int_{x_0}^w P(u)\mathrm{d}u}\mathrm{d}w\right]\\
+        &=y_0e^{\int_{x_0}^x P(u)\mathrm{d}u}+\int_{x_0}^xQ(w)e^{\int_w^x P(u)\mathrm{d}u}\mathrm{d}w.
+        \end{aligned}
+        $$
+> 常数变易法的核心：非齐次通解=齐次通解+非齐次特解。
++ 应用（伯努利方程）：$\dfrac{\mathrm{d}y}{\mathrm{d}x}=P(x)y+Q(x)y^n\hspace{0.5em}(n\geq 2)$
+    1. $y\equiv 0$；
+    2. $y\not\equiv 0$时，
+        $$
+        y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x}=y^{1-n}P(x)+Q(x)
+        $$
+        令$z=y^{1-n}$，则
+        $$
+        \frac{\mathrm{d}z}{\mathrm{d}x}=(1-n)y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x}=(1-n)(zP(x)+Q(x))
+        $$
+        转化为一阶非齐次线性微分方程。
+## 恰当微分方程
+> 回顾：二元函数全微分：$\displaystyle\mathrm{d}u(x,y)=\frac{\partial u}{\partial x}dx+\frac{\partial u}{\partial y}dy$。当$\frac{\partial u}{\partial x}=\frac{\partial u}{\partial y}=0$时，$u(x,y)\equiv c$。
++ 形式：$M(x,y)\mathrm{d}x+N(x,y)\mathrm{d}y=0$，其中$M(x,y),N(x,y)$在一个矩形区域内是关于$x,y$的连续函数且有一阶连续偏导数，且存在二元函数$u(x,y)$使$\mathrm{d}u=M\mathrm{d}x+N\mathrm{d}y$。
+    + $M(x,y)\mathrm{d}x+N(x,y)\mathrm{d}y=0$是恰当微分方程的充要条件：$\dfrac{\partial M}{\partial y}=\dfrac{\partial M}{\partial x}$。
+    + 求解：
+        $$
+        u(x, y) = \int M(x, y) \mathrm{d}x + \int \left[ N(x, y) - \frac{\partial}{\partial y} \int M(x, y) \mathrm{d}x \right] \mathrm{d}y.
+        $$
++ 其他求解方法：
+    1. 曲线积分法：若$M(x,y),N(x,y)$在一个单连通区域$D$内是关于$x,y$的连续函数且有一阶连续偏导数，则如果$\dfrac{\partial M}{\partial y}=\dfrac{\partial M}{\partial x}$，那么$D$中取任一按段光滑曲线$L$，$\displaystyle\int_L M(x,y)\mathrm{d}x+N(x,y)\mathrm{d}y$积分与路径无关。
+        $$
+        \begin{aligned}
+        &u(x, y) = \int_{(x_0,y_0)}^{(x,y)} M(x, y)\mathrm{d}x + N(x, y)\mathrm{d}y\\
+        \Longrightarrow&\begin{cases}
+        \displaystyle u(x, y) = \int_{x_0}^x M(x, y_0) \mathrm{d}x + \int_{y_0}^y N(x, y) \mathrm{d}y\\[10pt]
+        \displaystyle u(x, y) = \int_{y_0}^y N(x_0, y) \mathrm{d}y + \int_{x_0}^x M(x, y) \mathrm{d}x.
+        \end{cases}
+        \end{aligned}
+        $$
+    2. 分项组合法（“凑微分”）  
+        常见二元函数全微分：
+        |$y\mathrm{d}x + x\mathrm{d}y = \mathrm{d}(xy)$|$\displaystyle\frac{y\mathrm{d}x - x\mathrm{d}y}{y^2} = \mathrm{d}\left(\frac{x}{y}\right)$|
+        |:-----:|:---:|
+        |$\displaystyle\frac{-y\mathrm{d}x + x\mathrm{d}y}{x^2} = \mathrm{d}\left(\frac{y}{x}\right)$ | $\displaystyle\frac{y\mathrm{d}x - x\mathrm{d}y}{xy} = \mathrm{d}\left(\ln\left\vert\frac{x}{y}\right\vert\right)$|
+        |$\displaystyle\frac{y\mathrm{d}x - x\mathrm{d}y}{x^2 + y^2} = \mathrm{d}\left(\arctan\frac{y}{x}\right)$|$\displaystyle\frac{y\mathrm{d}x - x\mathrm{d}y}{x^2 - y^2} = \frac{1}{2}\mathrm{d}\left(\ln\left\vert\frac{x - y}{x + y}\right\vert\right)$|
+### 积分因子
++ 定义：如果存在连续可微函数$\mu(x, y) \neq 0$，使得  
+    $$
+    \mathrm{d}\nu(x,y)=\mu(x, y) M(x, y)\mathrm{d}x + \mu(x, y) N(x, y)\mathrm{d}y = 0 
+    $$
+    为一恰当微分方程，则称$\mu(x, y)$为方程$M(x,y)\mathrm{d}x+N(x,y)\mathrm{d}y=0$的积分因子。
++ 寻找方法：
+    $$
+    \frac{\partial(\mu M)}{\partial y}=\frac{\partial(\mu N)}{\partial x}\Longleftrightarrow N \frac{\partial \mu}{\partial x} - M \frac{\partial \mu}{\partial y} = \left( \frac{\partial M}{\partial y} - \frac{\partial N}{\partial x} \right) \mu
+    $$
+    1. 要求$\mu$只与$x$有关$\Longrightarrow\displaystyle\frac{\frac{\partial M}{\partial y}-\frac{\partial N}{\partial x}}{N}\mathrm{d}x$只与$x$有关（设为$\varphi(x)$），此时$\mu=e^{\int\varphi(x)\mathrm{d}x}$；
+    2. 要求$\mu$只与$y$有关$\Longrightarrow\displaystyle\frac{\frac{\partial M}{\partial y}-\frac{\partial N}{\partial x}}{-M}\mathrm{d}x$只与$x$有关（设为$\varphi(y)$），此时$\mu=e^{\int\varphi(y)\mathrm{d}y}$。
++ 积分因子不唯一：若$\mu(x,y)$为$M\mathrm{d}x+N\mathrm{d}y=\mathrm{d}\nu(x,y)$的积分因子，则任意可微函数$f(\nu)$，$f'(\nu)\mu(x,y)$也是积分因子。
++ 应用例：$ax\mathrm{d}y+by\mathrm{d}x=0$（$a,b$为常数）
+    + $\mathrm{d}(x^by^a)=ax^by^{a-1}\mathrm{d}y+bx^{b-1}y^a\mathrm{d}x$，故积分因子可取$x^{b-1}y^{a-1}$。
+> 注：使用积分因子构造恰当微分方程时，要考虑积分因子可能为$0$的情况。
+## 一阶隐式微分方程
++ 形式：$F(x,y,y')=0$，且无法直接转化为$y'=f(x,y)$求解。分为以下四种情形：
+1. $y=f(x,y')$  
+    令$y'=p,y=f(x,p)$，方程两边对$x$求导：
+    $$
+    p=\frac{\partial f}{\partial x}+\frac{\partial f}{\partial p}\cdot\frac{\partial p}{\partial x}
+    $$
+    转化为一阶微分方程$p'=g(x,p)$，求解情形：
+    1. $p=\varphi(x,c)\Longrightarrow y=f(x,\varphi(x,c))$；
+    2. $x=\psi(p,c)\Longrightarrow\begin{cases}y=f(\psi(p,c),p)\\x=\psi(p,c)\end{cases}$；（$p$为参数，下同）
+    3. $\Phi(x,p,c)=0\Longrightarrow\begin{cases}y=f(x,p)\\\Phi(x,p,c)=0\end{cases}$
+2. $x=f(y,y')$  
+    令$y'=p$，则$\dfrac{\mathrm{d}x}{\mathrm{d}y}=\dfrac{1}{p}$。方程两边对$y$求导：
+    $$
+    \frac{\mathrm{d}x}{\mathrm{d}y}=\frac{\mathrm{d}f(y,p)}{\mathrm{d}y}\Longrightarrow \frac{1}{p}=\frac{\partial f}{\partial y}+\frac{\partial f}{\partial p}\cdot\frac{\partial p}{\partial y}
+    $$
+    转化为一阶微分方程$\dfrac{\partial p}{\partial y}=g(y,p)$：
+    + 通解为$\Phi(y,p,c)=0\Longrightarrow\begin{cases}x=f(y,p)\\\Phi(x,p,c)=0\end{cases}$
+3. $F(x,y')=0$（不显含$y$）  
+    令$p=y'$，则$F(x,p)=0$。将其看作平面上一条曲线，寻找合适的参数表示：
+    $$
+    \begin{cases}
+    x=\varphi(t)\\
+    p=\psi(t)
+    \end{cases}\Longrightarrow
+    \begin{cases}
+    x=\varphi(t)\\
+    \displaystyle y=\int\psi(t)\varphi'(t)\mathrm{d}t+C
+    \end{cases}
+    $$
+4. $F(y,y')=0$（不显含$x$）    
+    类似地，寻找$F(y,y')=0$合适的参数表示：
+    $$
+    \begin{cases}
+    y=\varphi(t)\\
+    p=y'=\psi(t)
+    \end{cases}\Longrightarrow
+    \begin{cases}
+    \displaystyle x=\int\frac{\varphi'(t)}{\psi(t)}+C\\
+    y=\varphi(t)
+    \end{cases}
+    $$
+> 前两个情况通过换元+求导得到一阶微分方程，后两个情况则通过参数方程进行求解。
+# 一阶微分方程解的存在定理
+## 解的存在唯一性定理
++ 考虑方程$\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)$，设$f(x,y)$为一矩形区域
+    $$
+    R=\{(x,y):|x-x_0|\leq a,|y-y_0|\leq b\}
+    $$
+    上的连续函数。
+    + 利普希茨条件：若存在常数$L>0$，使
+        $$
+        |f(x,y_1)-f(x,y_2)|\leq L|y_1-y_2|
+        $$
+        对任意$(x,y_1),(x,y_2)\in R$均成立，则称$f(x,y)$在$R$上关于$y$满足利普希茨（Lipschitz）条件，$L$为利普希茨常数。
++ 定理：若$f(x,y)$在矩形域$R$上连续且关于$y$满足利普希茨条件，则方程$\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)$有唯一解$y=\varphi(x)$：
+    + 定义在$|x-x_0|\leq h$上（$\displaystyle h=\min\left(a,\frac{b}{M}\right),M=\max_{(x,y)\in R}|f(x,y)|$）；
+    + 连续且满足初值条件$y_0=\varphi(x_0)$。
++ 存在唯一解的证明与构造使用Picard逐步逼近法：
+## 逐步逼近法
+推理步骤（具体证明见书）：
+1. 证明求解微分方程初值问题$\begin{cases}\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)\\y(x_0)=y_0\end{cases}$等价于求积分方程
+    $$
+    y=y_0+\int_{x_0}^xf(t,y)\mathrm{d}t
+    $$
+    的（连续）解；
+2. 构造函数列$\{\varphi_n(x)\}$，满足
+    $$
+    \begin{aligned}
+    \varphi(x)&=y_0\\
+    \varphi_{n+1}(x)&=y_0+\int_{x_0}^xf(t,\varphi_{n}(t))\mathrm{d}t
+    \end{aligned}
+    $$
+    证明对任意$n$，$\varphi_n(x)$在$x_0\leq x\leq x_0+h$上有定义，连续且有$|\varphi_n(x)-y_0|\leq b$；
+3. 证明$\{\varphi_n(x)\}$在$x_0\leq x_0+h$上一致收敛于$\varphi(x)$，且$f(t,\varphi_n(t))\rightrightarrows f(t,\varphi(t))$；
+4. 证明$\varphi(x)$为积分方程的（连续）解；
+5. 证明$\varphi(x)$为方程的唯一解。
+    + 注：关于这个命题的证明，除了书上的方法之外，还可以使用**格朗沃尔（Gronwall）不等式**：
+        + 设$K$为非负常数，$f(t)$和$g(t)$为在区间$[\alpha, \beta ]$上的连续非负函数，且满足不等式
+            $$
+            f(t) \leq K + \int_{\alpha}^{t} f(s)g(s) \, \mathrm{d}s, \quad \alpha \leq t \leq \beta,
+            $$
+            则有
+            $$
+            f(t) \leq K \exp\left(\int_{\alpha}^{t} g(s) \, \mathrm{d}s\right), \quad \alpha \leq t \leq \beta.
+            $$
+            特别地，取$K=0$时，$f(t)\equiv 0,\alpha\leq t\leq\beta$。
++ 注：
+    1. 存在唯一性定理中利普希茨条件有时难以检验，此时可以用充分条件（偏导数有界）替代。即若$f(x,y)$在$R$上有对$y$的连续偏导数，那么条件可替换为
+        $$
+        \max_{(x,y)\in R}\left|\frac{\partial f}{\partial y}(x,y)\right|\leq L
+        $$
+    2. 存在唯一性定理中，矩形域$R$的$y$范围可以推广到$\R$（即$f(x,y)$在$[x_0-a,x_0+a]\times\R$上连续且满足利普希茨条件）
+    3. 对于一阶线性微分方程$\displaystyle\frac{\mathrm{d}x}{\mathrm{d}y}=P(x)y+Q(x)$，如果$P(x),Q(x)$在$[x_0-a,x_0+a]$上连续，则存在唯一性定理成立（非齐次通解就是方程的所有解）
+    4. 对于一阶隐式微分方程$F(y,y',x)=0$，如果在点$(x_0, y_0, y_0')$的某一邻域中，
+        + $F(x, y, y')$对所有变元$(x, y, y')$连续，且存在连续偏导数；
+        + $F(x_0, y_0, y_0') = 0$；
+        + $\displaystyle\frac{\partial F(x_0, y_0, y_0')}{\partial y'} \neq 0$；
+        则方程存在唯一解
+        $$
+        y = y(x), \quad |x - x_0| \leq h \quad (h \text{为足够小的正数})
+        $$
+        满足初值条件
+        $$
+        y(x_0) = y_0, \quad y'(x_0) = y_0'.
+        $$
+### 近似计算与误差估计
++ 用$\varphi_n(x)$近似$\varphi(x)$
++ 误差：
+    $$
+    |\varphi_n(x)-\varphi(x)|\leq\frac{ML^n}{(n+1)!}h^{n+1}
+    $$
+## 解的延拓
++ 前置定义：
+    + 连通开区域：称开集$G$为连通开区域，若任意两点$(x_1,y_1),(x_2,y_2)\in G$，存在一条连续曲线$\gamma=\{\gamma(t);0\leq t\leq 1\}$，使$\gamma(0)=(x_1,y_1),\gamma(1)=(x_2,y_2)$，且$\gamma(t)\in G\,(0\leq t\leq 1)$
+    + 局部利普希茨条件：对任意$(x_0,y_0)\in G$，存在闭矩形$R=R(x_0,y_0)$使$(x_0,y_0)\in R\subset G$，且$f$在$R$上关于$y$满足利普希茨条件。
++ 定理：对于有界区域$G$，若$f(x,y)$在$G$上连续且关于$y$局部利普希茨连续，则方程$\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)$过$G$内任一点$(x_0,y_0)$的解$y=\varphi(x)$可延拓至任意接近区域$G$边界的点$(x,\varphi(x))$。
+    + 推论：若$G$是无界区域，则解可向$x$增大方向延拓至以下两种情形之一：
+        1. 延拓至$[x_0,+\infty)$；
+        2. 延拓至$[x_0,d)$（$\displaystyle\lim_{x\to d}\varphi(x)=\pm\infty$或$(x,\varphi(x))$趋于$G$的边界）。
+### 解对初值的连续性和可微性
+在变动初值时，其对应的解也会变化。此时解可看作三元函数$y=\varphi(x,x_0,y_0)$（满足$y_0=\varphi(x,x_0,y_0)$），那么有（证明见书附录）：
++ 解对初值的连续性定理：若函数$f(x,y)$在区域$G$内连续，且关于$y$满足局部利普希茨条件，则方程$\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)$的解$y = \varphi(x, x_0, y_0)$作为$x, x_0, y_0$的函数在它的存在范围内是连续的。
++ 解对初值的可微性定理：若函数$f(x,y)$以及$\frac{\partial f}{\partial y}$都在区域$G$内连续，则方程$\dfrac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)$的解$y = \varphi(x, x_0, y_0)$作为$x, x_0, y_0$的函数在它的存在范围内是连续可微的。其解对$x,x_0, y_0$的微分公式为
+    $$
+    \begin{aligned}
+    \frac{\partial \varphi}{\partial x}&= f(x,\varphi(x,x_0,y_0)),\\
+    \frac{\partial \varphi}{\partial x_0} &= -f(x_0, y_0) \exp\left(\int_{x_0}^{x} \frac{\partial f(x, \varphi)}{\partial y} dx\right),\\
+    \frac{\partial \varphi}{\partial y_0} &= \exp\left(\int_{x_0}^{x} \frac{\partial f(x, \varphi)}{\partial y} dx\right).\\
+    \end{aligned}
+    $$

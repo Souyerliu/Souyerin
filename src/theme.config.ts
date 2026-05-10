@@ -238,14 +238,14 @@ export default defineConfig({
         avatar: "https://avatars.githubusercontent.com/u/23617963?s=200&v=4",
         color: "var(--color-red)",
       },
-      {
-        url: "https://vite.dev/",
-        title: "Vite",
-        desc: "快速的前端开发构建工具，HMR 体验很棒。",
-        author: "Vite Team",
-        avatar: "https://avatars.githubusercontent.com/u/65625612?s=200&v=4",
-        color: "var(--color-blue)",
-      },
+      // {
+      //   url: "https://vite.dev/",
+      //   title: "Vite",
+      //   desc: "快速的前端开发构建工具，HMR 体验很棒。",
+      //   author: "Vite Team",
+      //   avatar: "https://avatars.githubusercontent.com/u/65625612?s=200&v=4",
+      //   color: "var(--color-blue)",
+      // },
       {
         url: "https://bun.sh/",
         title: "Bun",
@@ -287,6 +287,15 @@ export default defineConfig({
         avatar: "https://avatars.githubusercontent.com/u/229353891?s=400&u=402f153bc2eeeeb04db6bb419dd231173dd0b045&v=4",
         color: "#cc002c",
       },
+      {
+        url: "https://sqzr2319.github.io/about/",
+        title: "sqzr2319's Blog",
+        author: "sqzr2319",
+        desc: "愿群星于道路中寻见你。",
+        avatar: "https://sqzr2319.github.io/img/sqzr2319.png",
+        color: "#aadbfa",
+      },
+      
     ],
   },
   copyright: {

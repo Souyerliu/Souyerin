@@ -432,7 +432,7 @@ sticky: true
             \end{aligned}
             $$
         + $i=0$时，
-            $$ 
+            $$
             \begin{aligned}
             &P(\tau_0 = 2k + 1|W_0 = 0) = 0\\
             &P(\tau_0 = 2k \mid W_0 = 0) = 2 \frac{(2k - 2)!}{k! (k - 1)!} q^k p^k = 
@@ -618,7 +618,7 @@ $$
     2. 末离时分解：定义从$i$出发，中间不经过$i$而在第$n$步到达$j$的概率$e_{i,j}^{(n)}=p_i(X_n=j,\tau_i\geq n)$（也被称为禁忌概率），则
         $$
         p_{i,j}^{(n)}=\sum_{k=1}^np_{i,i}^{(n-k)}e_{i,j}^{(k)},\quad \forall i,j\in S,n\geq 1
-        $$   
+        $$
 + 常返定义：如果$f_{i,i}=1$（即从$i$出发后经过有限时间一定能回到$i$），则称状态$i$是常返的，否则称其是非常返的（或暂留的）。
 + 性质：
     + 如果$i$常返且$i\rightarrow j$，则$f_{j,i}=1$；
@@ -695,7 +695,7 @@ $$
     + 引理：对任意$i, j \in S$以及$u \in [0, 1]$,
         $$
         \lim_{n \to \infty} \frac{\sum_{k=1}^n p_{i,j}^{(k)} u^k}{\sum_{k=0}^n p_{j,j}^{(k)} u^k} = F_{i,j}(u),
-        $$  
+        $$
     + 对任意$i, j \in S$，$\displaystyle\frac{1}{n} \sum_{k=1}^n p_{i,j}^{(k)}$极限存在，而且
         $$
         \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n p_{i,j}^{(k)} = 
@@ -733,7 +733,7 @@ $$
     $$
     （上面共$n+1$个方程，故在第一个方程组中取$n-1$个）
 + 存在条件：马氏链$X$至少存在一个正常返的本质类。
-    + 设$X$为不可约马氏链，则$X$存在平稳分布（$ \pi_i, i \in S$）当且仅当$X$是正常返的。此时$X$的平稳分布唯一而且
+    + 设$X$为不可约马氏链，则$X$存在平稳分布（$\pi_i, i \in S$）当且仅当$X$是正常返的。此时$X$的平稳分布唯一而且
         $$
         \pi_i = \frac{1}{m_{i,i}} > 0, \quad i \in S.
         $$
@@ -751,3 +751,22 @@ $$
     \frac{E(N_n(j))}{n}\to\pi_j\quad n\to\infty.
     $$
     这表明平稳分布还刻画了马氏链在长时间内访问各状态的比率。
+## 遍历性定理
+> 核心：马氏链总体性质$\Longrightarrow$马氏链个体（一条轨道）性质。
++ 强马氏性：设马氏链$X$首次回到$i$的时间$\tau_i < \infty$。令$Y_n = X_{\tau_i + n} $，即对任意$\omega $，$Y_n(\omega) = X_{\tau_i}(\omega) + n(\omega) $。那么$Y = \{Y_n; n \geq 0\}$是与$X$有相同转移概率矩阵的马氏链且与$(\tau_i, X_0, \cdots, X_{\tau_i})$相互独立。即$Y$的任意有限维分布都与$(\tau_i, X_0, \cdots, X_{\tau_i})$的分布独立。
++ 遍历性定理：记不可约马氏链$X = \{X_n; n \geq 0\}$的平稳分布为$\pi = \{\pi_i; i \in S\}$。若$S$上函数$g$满足$\displaystyle\sum_{j \in S} |g(j)| \pi_j < \infty$，那么  
+    $$
+    \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n g(X_k) = \sum_{j \in S} g(j) \pi_j \coloneqq \mathbb{E}_\pi(g), \quad a.s.
+    $$
+    + 推论1：对任意$j \in S$,  
+        $$
+        \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n 1_{\{X_k=j\}} = \pi_j, \quad a.s.
+        $$
+    + 推论2：若$g$为非负函数，那么  
+        $$
+        \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n g(X_k) = \sum_{i \in S} g(i) \pi_i, \quad a.s.
+        $$
++ 注：
+    1. 注意到不可约正常返马氏链平稳分布$\pi$中每个分量都是正数，推论1表明，任意观察不可约正常返马氏链的一条轨道都能以概率$1$保证能遍历状态空间$S$中的所有状态，而且每个状态出现的频率稳定到对应的平稳分布。
+    2. 对不可约有限状态马氏链，遍历性定理总成立。
++ 应用：过程统计、马氏奖励过程与决策优化（见书或自行查阅）

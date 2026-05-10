@@ -7,7 +7,7 @@ tags:
  - 数学分析
  - 实分析
 cover: ./实变函数-Cheat-Sheet/folder.png
-sticky: true
+# sticky: true
 ---
 > 以许忠好《实变函数概要》为蓝本，同时参考周民强《实变函数论》、程其襄《实变函数与泛函分析基础》等教材撰写。
 # 集合论
@@ -132,7 +132,7 @@ sticky: true
         > 有理数集$\mathbb{Q}$是$\R^1$的稠密子集；有理数集$\mathbb{Q}$在无理数集$\R^1\setminus Q$中稠密；整数集$\Z$是疏朗集。
 ### 开集的构造与Borel集
 > 将集合$A$的所有开子集组成的集类记为$\mathcal{O}(A)$.
-+ 构成区间：设集合$G \in \mathcal{O}(\mathbb{R}^1), \alpha, \beta \notin G$，但$(\alpha, \beta) \subset G$，称这样的区间$(\alpha, \beta)$为开集$G$的**构成区间**。
++ 构成区间：设集合$G \in \mathcal{O}(\mathbb{R}^1), \alpha, \beta \not\in G$，但$(\alpha, \beta) \subset G$，称这样的区间$(\alpha, \beta)$为开集$G$的**构成区间**。
 + 定理：$\mathbb{R}^1$中的非空开集必是可数个互不相交的开区间的并；$\mathbb{R}^1$中的闭集必是从$\mathbb{R}^1$中挖去可数个互不相交的非空开区间所得的集合。
 + $\sigma$-代数：定义略（见概率论）。
 + Borel $\sigma$-代数：称$\sigma(\mathcal{O}(\R^n))$为**Borel $\sigma$-代数**，记为$\mathcal{B}(\R^n)$或$\mathcal{B}$。$\mathcal{B}$中的元素称为**Borel集**。
@@ -268,3 +268,105 @@ sticky: true
         m^*(A\cup B) < m^*(A) + m^*(B).
         $$
 # 可测函数
++ 定义：设$f:E\subset\R^n\rightarrow\overline{R}^1$为定义在可测集$E$上的广义实值函数。若任意$t\in\R^1$，
+    $$
+    E[f>t]\triangleq\{x\in E:f(x)>t\}\in\mathcal{M}
+    $$
+    则称$f$为$E$上的（Lebesgue）可测函数，记为$f\in\mathcal{M}(E)$。
++ $\mathcal{M}(E)$表示定义在$E$上的可测函数全体，另定义$\mathcal{M}^+(E)=\{f\in\mathcal{M}(E):f\geq 0\}$（表示非负可测函数全体）
++ 若$E\subset\R^n$，则$E\in\mathcal{M}\Longleftrightarrow\chi_E(x)\in\mathcal{M}(\R^n)$。
++ 可测函数等价命题：
+    $$
+    f\in\mathcal{M}(E)\Longleftrightarrow\forall t\in\R^1,
+    \begin{cases}
+    E[f\geq t]\in\mathcal{M}\\
+    E[f< t]\in\mathcal{M}\\
+    E[f\leq t]\in\mathcal{M}
+    \end{cases}
+    $$
++ 性质：
+    + 若$f,g\in\mathcal{M}(E)$，则
+        $$
+        \begin{aligned}
+        &cf(c\text{为常数}),\quad f+g,\quad f\cdot g,\quad \frac{f}{g}(g\neq 0),\\
+        &|f|,\quad\max\{f,g\},\quad\min\{f,g\}
+        \end{aligned}
+        $$
+        均为$E$上可测函数。
+    + 若$f_n\in\mathcal{M}(E),n\geq 1$，则
+        $$
+        \sup_{n\geq 1}f_n,\quad\inf_{n\geq 1}f_n,\quad\varlimsup_{n\to\infty}f_n,\quad\varliminf_{n\to\infty}f_n,\quad\lim_{n\to\infty}f_n
+        $$
+        均为$E$上可测函数。
+## 简单函数
++ 定义：有限个示性函数的线性组合。
++ 形式：
+    $$
+    \displaystyle f(x)=\sum_{k=1}^ma_k\chi_{E_k}(x)=\begin{cases}
+    a_1,x\in E_1\\\vdots\\a_m,x\in E_m
+    \end{cases}
+    $$
+    其中$\displaystyle m\geq 1,E_k\subset E=\sum_{k=1}^mE_k$（$E_k$两两不交），称$f$为定义在$E$上的简单函数。
++ 当$E_k$为矩体时，称$f$为阶梯函数。
++ 若$E_k\in\mathcal{M}$（$k=1,2,\cdots,m$），则$f\in\mathcal{M}(E)$。
++ 记$\mathcal{MS}(E)=\{f\in\mathcal{M}(E):f$为简单函数$\}$，$\mathcal{MS}^+(E)=\{f\in\mathcal{MS}(E):f\geq 0\}$（非负简单可测函数）
+    + 若$f,g\in\mathcal{MS}(E)$，则$f+g\in\mathcal{MS}(E)$。
+## 可测函数逼近定理
++ 设$f \in \mathcal{M}^+(E)$，则存在$E$ 上的非负简单可测函数列$\{ \phi_k, k \geq 1 \}$，使得对任意的$x \in E$,
+    $$
+    \phi_k(x) \leq \phi_{k+1}(x), \quad \lim_{k \to \infty} \phi_k(x) = f(x).
+    $$
++ 设$f \in \mathcal{M}(E)$，则存在$E$ 上的简单可测函数列$\{ \psi_k, k \geq 1 \}$，满足
+    $$
+    |\psi_k(x)| \leq |f(x)|, \quad \lim_{k \to \infty} \psi_k(x) = f(x), \quad x \in E.
+    $$
+若$f$ 有界，上述收敛还是一致的。 
++ 由此可知，任何收敛的可测简单函数列的极限函数一定是可测函数。
+## 可测函数的收敛性
++ “几乎处处”的刻画
+    + 设$P(x)$是一个与$x \in E$有关的命题，若$m(\{x \in E; P(x)$不成立$\}) = 0$，称$P(x)$**几乎处处成立**，记为$P(x)\mathrm{a.e.}\,x \in E$成立。
+    + 定义在$E$上的可测函数$f$与$g$**几乎处处相等**$\Longleftrightarrow m(\{x \in E: f(x) \neq g(x)\}) = 0$；
+    + 定义在$E$上的可测函数$f$**几乎处处有限**$\Longleftrightarrow m(\{x \in E: |f(x)| = \infty\}) = 0$。
+1. 几乎处处收敛  
+    设$f, f_n, n \geq 1$为定义在$E$上的广义实值函数，若存在$N \subset E$，有$m(N) = 0$，且
+    $$
+    \lim_{n \to \infty} f_n(x) = f(x), \quad x \in E \setminus N,
+    $$
+    则称$\{f_n, n \geq 1\}$在$E$上几乎处处收敛到$f$，记为
+    $$
+    f_n(x) \to f(x), \quad \text{a.e.} \, x \in E.
+    $$
+    或简记为$f_n \xrightarrow{\text{a.e.}} f$。
+2. 几乎一致收敛
+    设$f, f_n, n \geq 1$为定义在$E$上的广义实值函数，若对任意的$\delta > 0$，存在$E_\delta \subset E$，满足$m(E_\delta) \leq \delta$，且$\{f_n, n \geq 1\}$在$E \setminus E_\delta$上一致收敛于$f$，则称$\{f_n, n \geq 1\}$在$E$上几乎一致收敛到$f$，记为  
+    $$
+    f_n(x) \to f(x), \quad \text{a.un.} \, x \in E.
+    $$
+    或简记为$f_n \stackrel{\text{a.un.}}{\longrightarrow} f$.
+3. 依测度收敛
+    设$f, f_n, n \geq 1$为定义在$E$上的几乎处处有限的可测函数，对任意给定的$\varepsilon > 0$，记
+    $$
+    E_k(\varepsilon) = \{x \in E : |f_k(x) - f(x)| \geq \varepsilon\}, \quad k = 1, 2, \cdots.
+    $$
+    若当$n \to \infty$时，$m(E_n(\varepsilon)) \to 0$，则称$\{f_n, n \geq 1\}$在$E$上依测度收敛到$f$，记为
+    $$
+    f_n(x) \xrightarrow{m} f(x), \quad x \in E.
+    $$
+    或简记为$f_n \xrightarrow{m} f$（或$f_n \Rightarrow f$）。
+### 收敛性之间的关系
+![收敛性关系](./实变函数-Cheat-Sheet/收敛性关系.png)
+### 依测度收敛性质
++ 设$E \subset \mathbb{R}^n$为可测集，$f, g, f_n, g_n, n = 1, 2, \dots$，皆为定义在$E$上几乎处处有限的可测函数。
+    1. 设$f_n \xrightarrow{m} f, g_n \xrightarrow{m} g$，则对任意的实数$\alpha$和$\beta$，有$\alpha f_n + \beta g_n \xrightarrow{m} \alpha f + \beta g$成立；
+    2. 设$f_n \xrightarrow{m} 0, g_n \xrightarrow{m} 0$，则$f_n g_n \xrightarrow{m} 0$；
+    3. 设$m(E) < \infty$且$f_n \xrightarrow{m} f$，则$f_n g_n \xrightarrow{m} f g$；
+    4. 设$m(E) < \infty$且$f_n \xrightarrow{m} f, g_n \xrightarrow{m} g$，则$f_n g_n \xrightarrow{m} f g$。
+## 可测函数与连续函数
++ 若$E\subset\mathcal{M},f\in\mathcal{C}(E)$，则$f$是$E$上的可测函数（$f\in\mathcal{M}(E)$）
++ 引理：设$F_1,\cdots,F_m$为闭集，$\displaystyle F=\sum_{k=1}^mF_k$，则$\displaystyle f(x)=\sum_{k=1}^ma_k\chi_{F_k}(x)$为$F$上的连续函数。
++ Lusin定理：设$f$为$E$上几乎处处有限的可测函数，则任意$\delta>0$，存在闭集$E_\delta\subset E$，使$f\in\mathcal{C}(E_\delta)$且$m(E\setminus E_\delta)< \delta$。
+    + 推论（结合连续函数延拓）：设$E\subset\R^n,f\in\mathcal{M}(E)$，则对任意$\epsilon>0$，存在$g\in\mathcal{C}(\R^n)$使$m(\{x\in E:f(x)\neq g(x)\})< \epsilon$，且如果$f$有界，则$g$有界。
++ 支集：设$f$为定义在$E\subset\R^n$上的函数，则称集合$\{x\in E:f(x)\neq 0\}$的闭包为$f$的支集（也称支撑集），记为$\text{supp}(f)$。
+    + 若$\text{supp}(f)$有界（即为紧集），则称$f$为有紧支集的函数。
++ 推论的推论：设$E\subset\R^n$有界，$f\in\mathcal{M}(E)$，则对任意$\epsilon>0$，存在$g\in\mathcal{C}(\R^n)$且有紧支集，满足$m(\{x\in E:f(x)\neq g(x)\})< \epsilon$。
+    + 由此可得可测函数“差不多”是连续函数。

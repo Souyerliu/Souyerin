@@ -24,7 +24,7 @@ CS70官网：[CS70](https://www.eecs70.org/)
 （概念略，因为高中数学与高等数学完全覆盖，在此只列出一些符号表示）~~权当latex练习~~
 1. 集合表示1：$A=\{2,3,5,7,11\}$
 2. 元素(elements)属于集合：$x \in A$
-3. 元素不属于集合：$x\notin A$
+3. 元素不属于集合：$x\not\in A$
 4. 集合表示2：$B=\{\frac{a}{b}\mid a,b \in \mathbb{Z},b\neq 0\}$
 5. 集合的基数(cardinality)： $|A|$
 6. 子集(subsets)：$A\subseteq B,B\supseteq A,A\subsetneq B,B\supsetneq A$

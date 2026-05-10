@@ -25,7 +25,7 @@ cover: ./penguin_and_pigeon.png
 ![directed-graph](./CS70-Chapter-5/graph-dir.png)
 则在这张图中，$V=\{1,2,3,4\}$，$E=\{(1,2),(3,1),(3,4),(4,2)\}$
 + 这里$E$是$V\times V$的子集（回顾：$U\times V=\{(u,v)\mid u\in U,v\in V\}$）
-+ 注意到，在有向图中，如果$(a,b)\in E$，那么$(b,a)\notin E$。相应的，如果$(a,b)\in E$且$(b,a)\in E$，则对应的图为无向图。这是我们用$\{a,b\}$作为$E$的元素。
++ 注意到，在有向图中，如果$(a,b)\in E$，那么$(b,a)\not\in E$。相应的，如果$(a,b)\in E$且$(b,a)\in E$，则对应的图为无向图。这是我们用$\{a,b\}$作为$E$的元素。
 + 将$V$和$E$归结，我们将图（包括无向图与有向图）定义为$G=(V,E)$。
 ## 相邻点(neighbours)，度(degree)与自环(self-loop)
 + 当两个顶点之间有边直接相连，则称两个顶点为相邻点，这样的边则被称为邻边。

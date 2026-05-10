@@ -7,7 +7,7 @@ tags:
  - 数学分析
  - 实分析
 cover: ./实变函数-练习题集/folder.png
-sticky: true
+# sticky: true
 ---
 > 收集一些课上的思考题以及部分书上练习题，持续更新。
 # 集合论
@@ -20,7 +20,7 @@ sticky: true
     $$
       <div class="quiz-answer">
       直观理解：当$\displaystyle x\in\varlimsup_{n\to\infty}A_n$，说明$x$属于无穷多个$A_n$，
-      那么$x$要么属于无穷多个$B_n$，要么属于无穷多个$C_n$（否则存在一个充分大的$N$，使得$x\notin A_N$，矛盾）
+      那么$x$要么属于无穷多个$B_n$，要么属于无穷多个$C_n$（否则存在一个充分大的$N$，使得$x\not\in A_N$，矛盾）
       ___
       注：如果改为下极限则结论不一定成立。实际上，
       $$
@@ -127,7 +127,7 @@ sticky: true
     那么可以令$\epsilon=\epsilon_0$（任意值），并取$x_0\in(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$；  
     再令$\epsilon=\min\left(\dfrac{\epsilon_0}{2},d(x_0,x)\right)$，再取$x_1\in(U(x,\epsilon)\setminus\{x\})\cap A$；  
     以此类推，可取出一个无穷点列$\{x_n,n\geq 0\}\subset A$且均位于$(U(x,\epsilon)\setminus\{x\})\cap A$内，故$x\in A'$.  
-    法2（反证法）：若$\forall\epsilon>0$，$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$，且$x\notin A'$，那么$U(x,\epsilon)\setminus\{x\}$只包含$A$的有限个点，记为$x_1,x_2,\cdots,x_k$。
+    法2（反证法）：若$\forall\epsilon>0$，$(U(x,\epsilon)\setminus\{x\})\cap A\neq\emptyset$，且$x\not\in A'$，那么$U(x,\epsilon)\setminus\{x\}$只包含$A$的有限个点，记为$x_1,x_2,\cdots,x_k$。
     那么取$\epsilon' =\dfrac{1}{2}\min\{d(x_1,x),d(x_2,x),\cdots,d(x_k,x)\}$，则$(U(x,\epsilon')\setminus\{x\})\cap A=\emptyset$，矛盾，故$x\in A'$。
     </div>
     </details>
@@ -157,13 +157,37 @@ sticky: true
     <div class="mdx-collapse__content">
     （1）证明：设$G$为$G_\delta$型集，则$G=\bigcap G_i$（$G_i$均为开集），那么$G_i\in\mathcal{B}$。而Borel集对可列交封闭，所以$G\in\mathcal{B}$；   
     设$F$为$F_\sigma$型集，则$F=\bigcup F_i$（$F_i$均为闭集），那么$F_i^c\in\mathcal{B}$（因为$F_i^c$为开集），所以$F_i\in\mathcal{B}$（$\sigma-$代数性质），进而$F\in\mathcal{B}$。   
-    （2）先给出原命题反例：  
-    $G_\delta$型集：$\displaystyle G=\bigcap_{n=1}^\infty  G_n$，其中$G_n=\left(-\dfrac{1}{n},\dfrac{1}{n}\right)$，那么$G=\{0\}$不是开集；
+    （2）反例：  
+    $G_\delta$型集：$\displaystyle G=\bigcap_{n=1}^\infty  G_n$，其中$G_n=\left(-\dfrac{1}{n},\dfrac{1}{n}\right)$，那么$G=\{0\}$不是开集；  
     $F_\sigma$型集：对上面的每个$G_n$取补集即可。（$G^c=\R\setminus\{0\}$不是闭集）  
-    （3）设$F$为闭集，令$G_k=\{x\in\R^n:d(x,F)< \frac{1}{k}\}$，则任意$y\in G_k$，取$\epsilon_y=\min\{d(y,F),\frac{1}{k}-d(y,F)\}$，则$U(y,\epsilon_y)\subset G_k$，$y$属于$G_k$内部，即$G_k$为开集；  
+    （3）设$F$为闭集，令
+    $$
+    G_k=\{x\in\R^n:d(x,F)< \frac{1}{k}\}
+    $$
+    则任意$y\in G_k$，取
+    $$
+    \epsilon_y=\min\{d(y,F),\frac{1}{k}-d(y,F)\}
+    $$
+    则$U(y,\epsilon_y)\subset G_k$，$y$属于$G_k$内部，即$G_k$为开集；  
     下面证$F=\bigcap G_k$：  
-    因为任意$z\in F$，$z\in\bigcap G_k$，而任意$w\notin F$，总存在$k_0\in N$使$d(w,F)\geq\frac{1}{k_0}$，即$w\notin G_{k_0}\Rightarrow w\notin\bigcap G_k$。所以$F=\bigcap G_k$。   
+    因为任意$z\in F$，$z\in\bigcap G_k$，而任意$w\not\in F$，总存在$k_0\in N$使$d(w,F)\geq\frac{1}{k_0}$，即$w\not\in G_{k_0}\Rightarrow w\not\in\bigcap G_k$。所以$F=\bigcap G_k$。   
     综上，$F$属于$G_\delta$型集。（同理可证开集属于$F_\sigma$型集，只需要$F$和$\bigcap G_k$取补集即可）
+    </div>
+    </details>
+  </div>
+
+  <div class="quiz-item">
+    <div class="quiz-question">
+    设$f(x)$是定义在$\mathbb{R}^n$上的实值函数，证明$f \in\mathcal{C}(\mathbb{R}^n)$（即$f$是连续函数）当且仅当对任意的常数$a$，集合$\{x : f(x) \leq a\}$和$\{x : f(x) \geq a\}$都是闭集。
+    </div>
+    <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+    <summary class="mdx-collapse__summary">点击查看答案</summary>
+    <div class="mdx-collapse__content">
+    1. 充分性   
+    若$f$是连续函数，则存在一个点列$\{x_n;n\geq 1\}\subset\{x:f(x)\leq a\}$，且$\displaystyle\lim_{n\to\infty}x_n=x$，则有$\displaystyle f(x)=\lim_{n\to\infty}f(x_n)\leq a$，即$x\in\{x:f(x)\leq a\}$，故$\{x:f(x)\leq a\}$是闭集；同理$\{f(x)\geq a\}=\{x:-f(x)\leq -a\}$也是闭集。   
+    2. 必要性   
+    若$f$不是连续函数，则存在$x_0\in\R^1$，$\epsilon_0>0$，使任意$\delta>0$，$|x-x_0|< \delta$时，$|f(x)-f(x_0)|\geq\epsilon_0$。  
+    于是存在一点列$\{x_n;n\geq 1\},\displaystyle\lim_{n\to\infty}x_n=x_0$，且$f(x_n)\geq f(x_0)+\epsilon_0$或$f(x_n)\leq f(x_0)-\epsilon_0$。又由任意$a$，集合$\{x : f(x) \leq a\}$和$\{x : f(x) \geq a\}$都是闭集，所以$x_0\in\{x:f(x)\geq f(x_0)+\epsilon_0\}$或$x_0\in\{x:f(x)\leq f(x_0)-\epsilon_0\}$，均矛盾。所以$f(x)$在$x_0$处连续，进而$f$为连续函数。
     </div>
     </details>
   </div>
@@ -175,12 +199,27 @@ sticky: true
     <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
     <summary class="mdx-collapse__summary">点击查看答案</summary>
     <div class="mdx-collapse__content">
-    必要性：即证当$f$为$\R^n$上连续函数时，对任意$\R^1$上开集$G$，$f^{-1}(G)$为开集。  
+    1. 充分性  
+    即证当$f$为$\R^n$上连续函数时，对任意$\R^1$上开集$G$，$f^{-1}(G)$为开集。  
     对任意$x\in f^{-1}(G)$，$f(x)\in G$，所以存在$\epsilon>0$，使$(f(x)-\epsilon,f(x)+\epsilon)\subset G$。又由$f$的连续性，存在$\delta>0$，使$|y-x|< \delta$时，$f(y)\in(f(x)-\epsilon,f(x)+\epsilon)$，所以$f(y)\in G$，$y\in f^{-1}(G)$。  
     因此$U(x,\delta)\subset f^{-1}(G)$，$f^{-1}(G)$为开集。   
-    充分性：即证当任意$\R^1$上开集$G$，$f^{-1}(G)$为开集，则$f$为$\R^n$上连续函数。   
+    2. 必要性  
+    即证当任意$\R^1$上开集$G$，$f^{-1}(G)$为开集，则$f$为$\R^n$上连续函数。   
     对任意$x\in\R^n$，任意$\epsilon>0$，令$G=(f(x)-\epsilon,f(x)+\epsilon)$，则$f(x)\in G$，$x\in f^{-1}(G)$。又因为$f^{-1}(G)$为开集，所以存在$\delta>0$，使任意$y\in U(x,\delta)$，有$y\in f^{-1}(G)$，即$f(y)\in G$。  
     所以$|f(y)-f(x)|< \epsilon$，$f$在$\R^n$上连续。
+    ___
+    另一种证明（利用上一题的结论）：  
+    1. 必要性  
+      取$G=(a,+\infty)$（$a$为任意常数），则有$f^{-1}(G)=\{x:f(x)>a\}$是开集，即$\{x:f(x)\leq a\}$是闭集；同理取$G=(-\infty,a)$，可得$\{x:f(x)\geq a\}$是闭集。由上题的必要性，可得$f$是连续函数。
+    2. 充分性  
+      由上题的充分性可得，$\{x:f(x)>a\}$和$\{x:f(x)< a\}$都是开集，所以取任意开区间$(a,b)$，有
+      $$
+      \{x:f(x)\in(a,b)\}=\{x:f(x)>a\}\cap\{x:f(x)< b\}\in\mathcal{O}(\R^n)
+      $$
+      即$f^{-1}((a,b))\in\mathcal{O}(\R^n)$。又由开集构造定理，任意开集$G$，有$\displaystyle G=\bigcup_k(a_k,b_k)$，故
+      $$
+      f^{-1}(G)=f^{-1}\left(\bigcup_k(a_k,b_k)\right)=\bigcup_k f^{-1}((a_k,b_k))\in\mathcal{O}(\R^n).
+      $$
     </div>
     </details>
   </div>
@@ -327,20 +366,35 @@ sticky: true
       <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      证明：因为$m(E) < \infty$，$f_n \xrightarrow{a.e.} f$，所以由Egorov定理，$f_n \xrightarrow{a.un.} f$，即对任意$k\geq 1$，存在可测集$F_k\subset E$，使$m(F_k)\leq\dfrac{1}{k}$，且$\{f_n, n \geq 1\}$在$E\setminus F_k$上一致收敛到$f$。  
+      那么令$E_k=E\setminus F_k$，则$E_k$为可测集且
+      $$
+      E \setminus \bigcup_{k=1}^{\infty} E_k =E \setminus \bigcup_{k=1}^{\infty} (E\setminus F_k)=\bigcap_{k=1}^{\infty}F_k.
+      $$
+      又$\displaystyle m\left(\bigcap_{k=1}^{\infty}F_k\right)< m(F_k)\leq\frac{1}{k}$，故令$k\to\infty$得$\displaystyle m\left(\bigcap_{k=1}^{\infty}F_k\right)=0$，故命题得证。
       </div>
       </details>
   </div>
 
   <div class="quiz-item">
       <div class="quiz-question">
-      利用Riesz定理证明：设函数$f, g, f_n, g_n (n \geq 1)$ 都是$E$ 上的可测函数，$m(E) < \infty$ 且$f_n \xrightarrow{m} f$，$g_n \xrightarrow{m} g$，则$f_n g_n \xrightarrow{m} f g$。
+      利用Riesz定理证明：设函数$f, g, f_n, g_n (n \geq 1)$ 都是$E$ 上的可测函数，$m(E) < \infty$ 且$f_n \xrightarrow{m} f,g_n \xrightarrow{m} g$，则$f_n g_n \xrightarrow{m} f g$。
       > Riesz 定理：设在$E$上$f_n \xrightarrow{m} f$，则存在子列$\{f_{n_k}, k \geq 1\}$使得$f_{n_k} \xrightarrow{a.e.} f$成立。
       </div>
       <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      证明：若结论不成立，则存在一个子列$\{f_{n_k}g_{n_k}\}$，存在$\epsilon_0>0,\delta_0>0$，使对任意$k$，
+      $$
+      m(\{|f_{n_k}g_{n_k}-fg|>\epsilon_0\})\geq\delta_0.
+      $$
+      而又因为$f_n \xrightarrow{m} f,g_n \xrightarrow{m} g$，由Riesz定理，存在子列$\{f_{n_{k_j}}\}$使$f_{n_{k_j}}\xrightarrow{a.e.}f$；  
+      同理，因为$g_{n_{k_j}}\xrightarrow{m}g$，所以存在子列$\{g_{n_{k_{j_l}}}\}$，使$g_{n_{k_{j_l}}}\xrightarrow{a.e.}g$。  
+      于是$f,g$取相同指标子列$\{f_{n_{k_{j_l}}}g_{n_{k_{j_l}}}\}$，有$f_{n_{k_{j_l}}}g_{n_{k_{j_l}}}\xrightarrow{a.e.}fg$，于是由Lebesgue定理，$f_{n_{k_{j_l}}}g_{n_{k_{j_l}}}\xrightarrow{m}fg$，故
+      $$
+      m(|f_{n_{k_{j_l}}}g_{n_{k_{j_l}}}-fg|\geq\epsilon_0)\to 0
+      $$
+      矛盾。故原命题成立。
       </div>
       </details>
   </div>
@@ -352,7 +406,11 @@ sticky: true
       <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
+      > 此题即为Lusin定理的逆命题。  
       
+      证明：由条件可知，对任意$n\geq 1$，存在闭子集$F_n\subset E$，使$m(E\setminus F_n)< \dfrac{1}{n}$，且$f$在$F_n$上连续。由上面的集合论第10题（对应书上练习1.20）可知，对任意$t\in\R$，$\{x\in F_n:f(x)>t\}$为开集，所以为可测集。  
+      记$\displaystyle F=\bigcup_{n=1}^\infty F_n$，那么$\displaystyle\{x\in F:f(x)>t\}=\bigcup_{n=1}^\infty\{x\in F_n:f(x)>t\}$为开集（可测集）。  
+      另外$\displaystyle m(E\setminus F)=m\left(E\setminus\bigcup_{n=1}^\infty F_n\right)=0$，所以$\{x\in E\setminus F:f(x)>t\}$必为可测集。于是$\{x\in E:f(x)>t\}=\{x\in F:f(x)>t\}\cup\{x\in E\setminus F:f(x)>t\}$为可测集，故$f\in\mathcal{M}(E)$。
       </div>
       </details>
   </div>
@@ -364,7 +422,9 @@ sticky: true
       <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      对任意实数$t$，记集合$A_t\coloneqq\{x\in\R^1:f(x)>t\}$，则$A_t$可能为空集（如$t=\pi,f(x)=\arctan x$），属于可测集。  
+      当$A_t\neq\emptyset$，则任意$x\in A_t$，有$t< f(x)$，那么任意$y>x$，有$f(y)\geq f(x)>t$，故$[x,\infty)\subset A_t$，即$A_t$为区间，属于可测集。  
+      综上，$A_t$一定是可测集，故$f\in\mathcal{M}(\R^1)$。
       </div>
       </details>
   </div>
