@@ -183,13 +183,13 @@ export default defineConfig({
         name: "CS61A",
         cover: "/images/61A-header.png",
       }, 
-      { 
-        name: "人工智能导论" ,
-        cover: "/images/cover.jpg",
-      },
+      // { 
+      //   name: "人工智能导论" ,
+      //   cover: "/images/cover.jpg",
+      // },
       {
-        name: "CS70",
-        cover: "/images/penguin_and_pigeon.png",
+        name: "数学",
+        cover: "/images/mathchalkboard.jpg",
       },
       {
         name: "CS127",
