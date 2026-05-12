@@ -49,6 +49,7 @@ export default defineConfig({
   trailingSlash: "always",
   build: {
     format: "directory",
+    concurrency: 1,
   },
 
   prefetch: {
