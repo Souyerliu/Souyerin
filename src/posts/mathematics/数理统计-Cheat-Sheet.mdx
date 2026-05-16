@@ -517,19 +517,41 @@ cover: ./数理统计-Cheat-Sheet/stat_cover.png
         \sigma^2(\theta) \geq \frac{\{g'(\theta)\}^2}{I(\theta)}.
         $$
         而当$T_n$是$g(\theta)$的最大似然估计，则取到等号。即在渐近意义下，最大似然估计是估计类中的最优估计。
-��优估计。
-ty$；
-        + $Ee_n^2 < \infty$；
-        + $e_n = o_p(n^{-1/2})$，
+## 贝叶斯估计
++ 核心思想：将参数视作随机变量，同时受样本信息和人的经验影响。
++ 贝叶斯推断基础（三种信息）：
+    + 总体信息：总体分布的信息；
+    + 样本信息：观测值的信息（样本及其特征数）；
+    + 先验信息：参数规律的总结，得到**先验分布**。
 
-        那么
-        $$
-        \sqrt{n}(T_n - g(\theta)) \xrightarrow{d} N(0, \sigma^2(\theta)).
-        $$
-    + 对于参数$\theta$，用$I(\theta)$表示概率函数$f(x, \theta)$下的Fisher信息量，那么
-        $$
-        \sigma^2(\theta) \geq \frac{\{g'(\theta)\}^2}{I(\theta)}.
-        $$
-        而当$T_n$是$g(\theta)$的最大似然估计，则取到等号。即在渐近意义下，最大似然估计是估计类中的最优估计。
-�计。
+    三者利用贝叶斯公式结合得到参数的**后验分布**。
++ 后验分布的计算：
+    1. 设样本为$x_1,\cdots,x_n$，则样本联合概率密度函数为$\displaystyle p(\mathbf{x}|\theta_0)=\prod_{i=1}^n p(x_i|\theta_0)$【总体信息+样本信息】；
+    2. 获取$\theta_0$的先验分布$\pi(\theta)$；
+    3. 计算样本与参数的联合概率密度函数$h(\mathbf{x},\theta)=p(\mathbf{x}|\theta)\pi(\theta)$；
+    4. 对$\theta$求积分，得到边际概率密度函数$\displaystyle m(\mathbf{x})=\int_{\Theta}h(X,\theta)\mathrm{d}\theta$；
+    5. 二者相除，得到后验概率密度函数$\displaystyle \pi(\theta|\mathbf{x})=\frac{h(\mathbf{x},\theta)}{m(\mathbf{x})}$。 
+    > 总结：$\displaystyle\pi(\theta|\mathbf{x})=\frac{p(\mathbf{x}|\theta)\pi(\theta)}{\displaystyle\int_{\Theta}p(\mathbf{x}|\theta)\pi(\theta)\mathrm{d}\theta}$。  
+    > 小技巧：不必直接计算$m(\mathbf{x})$，可以先将$h(\mathbf{x},\theta)$中与$\theta$无关的乘子去掉，再进行积分。
++ 估计方法：
+    + 最大后验估计（密度函数取最大值时对应的$\theta$）；
+    + 后验中位数估计（后验分布的中位数）；
+    + **后验期望估计**（公式：$\displaystyle\hat{\theta}_{B}=\int_{\Theta}\theta\pi(\theta|\mathbf{x})\mathrm{d}\theta$）【最常用】
+### 共轭先验分布
++ 设$\theta$是总体分布$p(x; \theta)$中的参数，$\pi(\theta)$是其先验分布，如果对于任意来自$p(x; \theta)$的样本观测值得到的后验分布族$\pi(\theta|\mathbf{x})$与$\pi(\theta)$属于同一个分布族，则称该分布（族）是$\theta$的共轭先验分布（族）。
++ 常见指数分布族的共轭先验分布（源自[知乎](https://zhuanlan.zhihu.com/p/337615279)）：
 
+| 总体分布 | 参数 | 先验分布 | 后验分布 |
+|---------|------|----------|----------|
+| 指数分布$Exp(\lambda)$ | $\lambda$ | $Ga(\alpha, \beta)$ | $Ga(n+\alpha, \beta+n\overline{x})$ |
+| 正态分布$N(\mu, \sigma^2)$ | $\mu$  |$N(\theta, \tau^2)$ | $\displaystyle N\left(\frac{n\tau^2\overline{x}+\sigma^2\theta}{n\tau^2+\sigma^2}, \frac{\sigma^2\tau^2}{n\tau^2+\sigma^2}\right)$ |
+| 正态分布$N(\mu, \sigma^2)$ | $\sigma^2$ | $IGa(\alpha, \beta)$ | $\displaystyle IGa\left(\frac{n}{2}+\alpha, \beta+\frac{nVar(x)}{2}\right)$ |
+| 二项分布$B(N, p)$ | $p$ | $Beta(\alpha, \beta)$ | $Beta(n\overline{x}+\alpha, nN-n\overline{x}+\beta)$ |
+| 负二项分布$Nb(r, p)$ | $p$| $Beta(\alpha, \beta)$ | $Beta(nr+\alpha, n\overline{x}-nr+\beta)$ |
+| 泊松分布$P(\lambda)$ | $\lambda$ | $Ga(\alpha, \beta)$ | $Ga(\alpha+n\overline{x}, n+\beta)$ |
+| 均匀分布$U(0,\theta)$ | $\theta$| $Pareto(m, k)$ | $Pareto(\max\{x_{(n)}, m\}, n+k)$ |
+| 伽马分布$Ga(\alpha, \beta)$ | $\beta$ | $Ga(a, b)$ | $Ga(a+n\alpha, n\overline{x}+b)$ |
+| 倒伽马分布$IGa(\alpha, \beta)$ | $\beta$ | $Ga(a, b)$ | $Ga\left(a+n\alpha, nE\left(\dfrac{1}{x}\right)+b\right)$ |
+| 帕累托分布$Pareto(m, k)$ | $k$ | $Ga(\alpha, \beta)$ | $Ga(n+\alpha, \beta+nE(\ln x)-n\cdot\ln m)$ |
+
+## 区间估计

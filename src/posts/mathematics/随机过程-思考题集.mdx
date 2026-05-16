@@ -130,7 +130,7 @@ sticky: true
          &\leq\frac{2}{\epsilon}E|X_k|< +\infty
       \end{aligned}
       ```
-      最后一个小于是因为$E|X_k|=E|X_1|$且$EX_1$存在（积分绝对收敛）。于是由Borel–Cantelli引理，$A_n$可以无限次发生，$\lim_{n\to\infty}\frac{X_n}{n}\stackrel{a.s.}{\rightarrow}0$  
+      最后一个小于是因为$E|X_k|=E|X_1|$且$EX_1$存在（积分绝对收敛）。于是由Borel–Cantelli引理，$A_n$可以无限次发生，$\lim_{n\to\infty}\frac{X_n}{n}\stackrel{a.s.}{\rightarrow}0$
       实际上，这里用了一个思想：
       ```math
          \begin{aligned}
@@ -240,7 +240,7 @@ sticky: true
       0,&otherwise
       \end{cases}
       $$
-      其中$N(u,t)$表示$u\sim t$时间内仪器的更换数量，且$E(N(u,t)|T=u)=E(N(t-u))$   
+      其中$N(u,t)$表示$u\sim t$时间内仪器的更换数量，且$E(N(u,t)|T=u)=E(N(t-u))$
       所以
       $$
       E(N(t))=\int_0^t (1+E(N(t-u)))f(u)du
@@ -419,7 +419,7 @@ sticky: true
       > 独立增量过程的定义：$\{X(t+1)-X(t),t\geq 1\},X(1)$相互独立  
       
       证明：
-      因为$P(X_2-X_1=0|X_1=1)=P(X_2=1)=p$，而$P(X_2-X_1=0)=P(X_2=1,X_1=1)+P(X_2=0,X_1=0)=p^2+(1-p)^2$  
+      因为$P(X_2-X_1=0|X_1=1)=P(X_2=1)=p$，而$P(X_2-X_1=0)=P(X_2=1,X_1=1)+P(X_2=0,X_1=0)=p^2+(1-p)^2$
       所以当$p\neq\frac{1}{2}$时，$p\neq p^2+(1-p)^2$，$P(X_2-X_1=0|X_1=1)\neq P(X_2-X_1=0)$，$P(X_2-X_1=0)$与$P(X_1)$不独立，得证。
       </div>
       </details>
@@ -679,7 +679,7 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      设 $N_1(t)$ 和 $N_2(t)$ 是两个独立的泊松过程，强度分别为 $\lambda_1$ 和 $\lambda_2$。  
+      设 $N_1(t)$和 $N_2(t)$是两个独立的泊松过程，强度分别为 $\lambda_1$和 $\lambda_2$。  
       根据泊松过程的定义，任意$t > 0$，
       $$
       N_1(t)\sim \text{Poisson}(\lambda_1 t),N_2(t) \sim \text{Poisson}(\lambda_2 t)
@@ -978,7 +978,7 @@ sticky: true
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
       （2）证明分三步：
-      1. 证明$Y$是马氏链，且转移概率矩阵为$P^{(d)}$  
+      1. 证明$Y$是马氏链，且转移概率矩阵为$P^{(d)}$
       由$X$的马氏性，
       $$
       \begin{aligned}
@@ -992,13 +992,13 @@ sticky: true
       对任意状态$j\in S$，记$Y$中$j$的周期为$d_Y(j)=\gcd\{m\geq1:p_{jj}^{(md)}>0\}$，而在$X$中如果$j$存在周期，则一定存在$s\in\N$，使$p_{jj}^{(sd)}>0$，所以$d_Y(j)=1$，$Y$是非周期马氏链。  
       3. 证明若$X_0 \in S_k$，那么$Y$是状态空间为$S_k$的非周期马氏链  
       若 $u \in S_a$，且 $p_{uv}^{(t)} > 0$，$t = sd + b$，则 $v \in S_{(a+b) \bmod d}$。  
-      现 $Y_n$ 的一步转移对应原链走 $d$ 步：$t = d = 1 \cdot d + 0$，余数 $b = 0$。
+      现 $Y_n$的一步转移对应原链走 $d$步：$t = d = 1 \cdot d + 0$，余数 $b = 0$。
       若初态 $X_0 = i \in S_k$，则
       $$
       u \in S_k,\quad p_{uv}^{(d)} > 0 \implies v \in S_{(k+0) \bmod d} = S_k.
       $$
-      即转移矩阵 $P^{(d)}$ 仅在 $S_k$ 内部转移，不会跑到其余 $S_l (l \ne k)$。
-      又原链不可约，故对任意 $u, v \in S_k$，存在 $m$ 使得 $p_{uv}^{(md)} > 0$，因此 $P^{(d)}$ 在 $S_k$ 上不可约。
+      即转移矩阵 $P^{(d)}$仅在 $S_k$内部转移，不会跑到其余 $S_l (l \ne k)$。
+      又原链不可约，故对任意 $u, v \in S_k$，存在 $m$使得 $p_{uv}^{(md)} > 0$，因此 $P^{(d)}$在 $S_k$上不可约。
       所以$Y$是状态空间为$S_k$的非周期马氏链。
       </div>
       </details>
@@ -1165,4 +1165,46 @@ sticky: true
       </details>
    </div>
 
+   <div class="quiz-item">
+      <div class="quiz-question">
+      证明：不可约马尔可夫链$X$正常返的充要条件是存在非负数列$\{z_i; i \in S\}$及一个状态$j$使得对任意$i \neq j$，$\displaystyle\sum_{k \in S} p_{i,k} z_k \leq z_i - 1$而且$\displaystyle\sum_{k \in S} p_{j,k} z_k < \infty$。
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+   </div>
+
+   <div class="quiz-item">
+      <div class="quiz-question">
+      （1）设不可约非常返或零常返马氏链$X$的状态空间$S = \{0,1,2,\cdots\}$，证明：若数列$\{y_k\}$满足  
+      $$
+      \lim_{k \to +\infty} y_k = +\infty
+      $$
+      那么对任意$i \in S$，  
+      $$
+      \lim_{n \to \infty} \sum_{k \in S} p_{i,k}^{(n)} y_k = +\infty.
+      $$
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+
+      （2）设不可约链$X$的状态空间$S = \{0,1,2,\cdots\}$，若存在正数$\{y_i; i \in S\}$及某个状态$j$使得对任意$i \neq j$,
+      $$
+      \sum_{k \in S} p_{i,k} y_k \leq y_i
+      $$
+      而且$\displaystyle\lim_{i \to +\infty} y_i = +\infty$，证明$X$常返。
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      
+      </div>
+      </details>
+   </div>
 </div>

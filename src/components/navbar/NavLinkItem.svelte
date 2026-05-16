@@ -18,11 +18,24 @@
   const iconClasses = $derived(
     icon ? `${icon} icon-nav text-xl vertical-text-bottom inline-block` : "",
   );
-  const mergedClass = $derived([className].filter(Boolean).join(" "));
+
+  const mergedClass = $derived(
+    [className].filter(Boolean).join(" ")
+  );
+
+  // 判断是否为外链
+  const isExternal = $derived(
+    href.startsWith("http://") ||
+    href.startsWith("https://")
+  );
 </script>
 
 <NavItem class={mergedClass}>
-  <a {href}>
+  <a
+    {href}
+    target={isExternal ? "_blank" : undefined}
+    rel={isExternal ? "noopener noreferrer" : undefined}
+  >
     {#if icon}
       <div class={iconClasses}></div>
     {/if}

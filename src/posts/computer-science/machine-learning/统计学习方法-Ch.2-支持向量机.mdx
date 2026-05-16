@@ -1,12 +1,167 @@
 ---
 title: 统计学习方法 Ch.2 支持向量机
-date: 2026-04-24 14:48:15
+date: 2026-05-13 14:48:15
 categories: [统计学习方法,监督学习]
 tags: 
     - 监督学习
     - 支持向量机
 cover: ./ml.png
-draft: true
 ---
+# 支持向量机（SVM）
++ 由Vapnik在上世纪60年代首次提出，并于1995年发表的论文[Support-Vector Networks](https://link.springer.com/article/10.1007/BF00994018#author-information)中正式提出。
++ 其优势在于具有完善的数学理论基础，且预测效果出类拔萃。在上世纪90年代到2010年左右（深度神经网络出现）处于机器学习的主流地位。
++ 其主要用于二分类问题：
+    + 样本数据的标签取值为$\{0,1\}$或$\{-1,1\}$（通常称标签为$1$的为正样本，$-1$的为负样本）；
+    + 若两类样本可以用一个线性超平面（也称为决策边界）分开，则称数据**线性可分**，否则称为线性不可分。
+        + $p$维超平面（hyperplane）的形式：$\beta_0+\beta_1x_1+\cdots+\beta_px_p=0$
+## 硬边界支持向量机（Hard Margin SVM）
+> 也称为最大边界分类器（Maximum Margin Classifier）。
++ 首先，超平面需要满足以下性质：
+    $$
+    \begin{aligned}
+    \beta_0+\beta_1x_{i1}+\cdots+\beta_px_{ip}>0&\Longleftrightarrow y_i=1\\
+    \beta_0+\beta_1x_{i1}+\cdots+\beta_px_{ip}< 0&\Longleftrightarrow y_i=-1
+    \end{aligned}
+    $$
+    其中正负是人为定义的，$\beta_0,\cdots,\beta_p$由此决定。
+    + 对于新样本$x^*$，分类器通过计算$\beta_0+\beta_1x^*_1+\cdots+\beta_px^*_p$的符号进行分类（正or负样本）。
++ 评估分离超平面的分类效果：
+    1. 稳健性：分类边界离训练样本越远越好；
+    2. 泛化能力：训练样本离超平面越远，测试样本也会离超平面越远。
+### 间隔与支持向量
++ 如何量化距离？计算每个训练样本到分离超平面的（垂直）距离，取最小。支持向量机的目标就是寻找间隔最大的超平面！
++ 支持向量（support vector）：在间隔边界上的样本点，即距离分离超平面最近的样本点。（“支撑”着最大间隔超平面）
+    + 移动任何其他观测值都不会影响分隔超平面（在间隔外）
+### 优化问题
++ 令$\beta=(\beta_1,\cdots,\beta_p)^\top$，则：
+    + 正超平面：$\beta^\top x+\beta_0=c$；
+    + 决策超平面：$\beta^\top x+\beta_0=0$；
+    + 负超平面：$\beta^\top x+\beta_0=-c$；
 
-# 支持向量机
+    这里$c$是非零常数，故可以方程两边同除以$c$（即取$c=1$）。
++ 样本点$x_0$到超平面的距离：$d=\dfrac{|\beta^\top x_0+\beta_0|}{\|\beta\|}$
+    + 支持向量到超平面的距离：$d=\dfrac{1}{\|\beta\|}$（非支持向量$|\beta^\top x_0+\beta_0|>1$）。
++ **优化目标**：最大化支持向量到超平面距离，即$\max\dfrac{1}{\|\beta\|}=\min\|\beta\|$。为后续求偏导方便，我们转换为$\min\dfrac{1}{2}\|\beta\|^2$。
++ **约束条件**：$y_i(\beta^\top x_i+\beta_0)\geq 1,i=1,2,\cdots,N$（标签$y_i$与分类结果同号）
+
++ 这种优化问题属于凸优化，下面简单介绍凸优化的概念（详细解释可见CS127系列笔记）：
+    + 凸优化：目标函数是凸的，约束条件是凸集；
+    + 凸函数：任何两点之间的连线都在函数图形上方；
+    + 凸集：凸集中的任意两点连成一条直线，这条直线上的所有点也都在这个集合里面；
+    + 凸优化的最优解是**唯一**的，非凸优化可能有多个局部最优解。
+    + 二次规划：目标函数为二次方程，约束条件为（线性）超平面。本优化问题就属于二次规划。
+<Note type="primary" title="补充">
+  这个优化问题还有另一种形式（来自ISL）：
+  + 优化目标：$\displaystyle\max_{\beta_0,\cdots,\beta_p,M} M$
+  + 约束条件：
+    $$
+    \begin{aligned}
+    \sum_{j=1}^p\beta_j^2=1,\quad y_i\left(\beta_0+\sum_{j=1}^p\beta_jx_{ij}\right)\geq M,\forall i=1,2,\cdots,n
+    \end{aligned}
+    $$
+    > 本质是固定法向量范数为$1$，最大化平面间隔。下面的软边界SVM同样有类似的等价形式，在此作略。
+</Note>
+## 软边界支持向量机（Soft Margin SVM）
++ 上述使用的硬边界SVM存在以下问题：
+    + 约束过于严格，往往导致过拟合（对异常值过于敏感）；
+    + 对于线性不可分的分类问题，硬边界SVM不可解。
++ 于是我们做出适当妥协——允许部分样本违反约束甚至被错误分类。【用泛化能力换准确性】
++ 具体而言，我们再硬边界SVM的基础上加入松弛变量$\delta_i\geq 0$，表示违反约束的程度：
+    + $\delta_i=0$：被正确分类，且在间隔边界上或者间隔之外；
+    + $0< \delta_i< 1$：被正确分类，但在边界内；
+    + $\delta_i \geq 1$：被错误分类。
++ 约束条件改为$\begin{cases}y_i(\beta^\top x_i+\beta_0)\geq 1-\delta_i,\\ \delta_i\geq 0\end{cases}$；
++ 目标函数改为$\displaystyle\min_{\beta,\beta_0,\delta_i}\frac{1}{2}\|\beta\|^2+C\sum_{i=1}^N\delta_i$，其中$\displaystyle c\sum_{i=1}^N\delta_i$为正则项（或惩罚项），作用为控制分类的错误程度，阻止松弛变量无限扩大。
+    + $C$为超参数，控制了模型的复杂度：$C$越大，模型越接近硬边界（$c=\infty$即为硬边界），反之则允许更多错误。
+    + 因此，可以说$C$控制了Bias-Variance Tradeoff（$C$越大，越容易过拟合，Var越大，Bias越小）。
+### 损失函数
++ 将支持向量机看作机器学习方法，那么它用什么损失函数？一个简单的想法是0-1损失：
+    $$
+    L(y,f(x))=\begin{cases}
+    0,y=\text{sgn}(\beta^\top x+\beta_0)\\
+    1,y\neq\text{sgn}(\beta^\top x+\beta_0)
+    \end{cases}
+    $$
+    但这个损失函数只考虑分类是否正确，而没有考虑分类错误的严重程度。
++ 作为改进（考虑数据点离分类边界的距离），我们引入Hinge Loss：$L(y,f(x))=\max(0,1-yf(x))$
+    + $1-yf(x)< 0$表示点在间隔之外（被正确分类），损失为$0$；
+    + $1-yf(x)> 0$表示点在间隔内或错误分类，损失呈线性关系。
+    > 实际上，上面优化问题中的松弛变量$\delta_i$就是Hinge Loss的一种体现。
++ 于是，SVM模型也可以用以下形式表述：
+    $$
+    \min_{\beta,\beta_0}C\sum_{i=1}^N\max(0,1-y_i(\beta^\top x_i+b))+\frac{1}{2}\|\beta\|^2
+    $$
+## 非线性SVM与核方法
++ 实际上，SVM不止可以解决线性分类问题。对于非线性分类问题，SVM的策略是：丰富并扩大特征空间，从而构造非线性分离边界。【低维到高维映射】
++ 具体而言，若原来的变量维度为$x_1,x_2,\cdots,x_p$，则可以将其扩充为$x_1,x_1^2,x_1^3,x_2,x_2x_3,\cdots$，这样甚至可以扩充到无穷维。
+    + 事实上，我们有以下定理：假设在一个$M$维空间中，随机取$N$个训练样本，随机对每一个训练样本赋予标签$+1$或者$-1$，当$M\to\infty$，这些训练样本线性可分的概率$P(M)=1$。
+### 核技巧（Kernal Trick）
++ 设样本$x$经过升维后变为$\psi(x)$，则约束条件（之一）需要改为$y_i(\beta^\top\psi(x_i)+\beta_0)\geq 1-\delta_i$。
++ 实际上，我们不需要知道$\psi(x_i)$的具体形式，而只需要确定$\psi(x_i)^\top\psi(x_j)$，我们将其记作核函数$K(x_i,x_j)$。
+<Note type="primary" title="为什么只需要核函数？">
+  证明这个结论需要使用一些最优化理论的知识（可见CS127系列笔记），这里只作简单说明：
+  + 原问题可表示为
+    $$
+    \begin{aligned}
+    \min_{\beta,b,\delta} \quad & \frac{1}{2}\|\beta\|^2 + C\sum_{i=1}^N \delta_i \\
+    \text{s.t.} \quad & 1 - \delta_i - y_i(\beta^\top\psi(x_i)+\beta_0) \leq 0, \quad i=1,\ldots,N \\
+    & -\delta_i \leq 0, \quad i=1,\ldots,N
+    \end{aligned}
+    $$
+  + 对偶函数为：
+    $$
+    \begin{aligned}
+    \theta(\lambda, \eta) &= \min_{\beta, \beta_0, \delta} \left\{ \frac{1}{2} \|\beta\|^2 - C \sum_{i=1}^N \delta_i + \sum_{i=1}^N \eta_i \delta_i + \sum_{i=1}^N \lambda_i (1 + \delta_i - y_i \beta^\top \psi(x_i) - y_i \beta_0) \right\}\\
+    &= \sum_{i=1}^N \lambda_i - \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \lambda_i \lambda_j y_i y_j \psi(x_i)^\top \psi(x_j)
+    \end{aligned}
+    $$
+  + 将其转化为对偶问题：
+    $$
+    \begin{aligned}
+    \max_{\lambda} \quad &\theta(\lambda)\\
+    \text{s.t. } \quad &0 \leq \lambda_i \leq C, \quad \sum_{i=1}^N \lambda_i y_i = 0
+    \end{aligned}
+    $$
+    可见对偶问题只需要知道核函数即可。
+</Note>
+### 训练流程
+1. 输入$\{ (x_i, y_i) \}_{i=1}^N$，并求解优化问题（利用SMO算法）
+    + 目标函数：  
+        $$
+        \max\theta(\lambda) = \sum_{i=1}^N \lambda_i - \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \lambda_i \lambda_j y_i y_j \psi(x_i)^\top \psi(x_j)
+        $$
+    + 约束条件：  
+        $$
+        0 \leq \lambda_i \leq C, \quad \sum_{i=1}^N \lambda_i y_i = 0
+        $$
+
+2. 计算$\beta_0$：找一个$0 < \lambda_i < C$，计算
+    $$
+    \beta_0 = \frac{\displaystyle 1 - y_i \sum_{j=1}^N \lambda_j y_j \psi(x_i)^\top \psi(x_j)}{y_i}
+    $$  
+    或者通过所有满足条件（即恰好落在边界上）的样本点求$b$，并取平均。
+### 测试流程
++ 输入测试样本$x$：
+    + 若$\displaystyle\sum_{i=1}^N \lambda_i y_i \psi(x_i)^\top \psi(x) + b > 0$，则$y = 1$；
+    + 若$\displaystyle\sum_{i=1}^N \lambda_i y_i \psi(x_i)^\top \psi(x) + b < 0$，则$y = -1$。
+### 核函数的选择
++ **线性（linear）核函数**：$K(x_i, x_j) = x_i^\top x_j$
+    + 适用Soft Margin SVM
++ **多项式（polynomial）核函数**：$K(x_i, x_j) = (1 + x_i^\top x_j)^d$
+    + 适用有限维映射，与$d$有关
++ **径向（radial）核函数**：$K(x_i, x_j) = \exp(-\gamma \|x_i - x_j\|^2)$  
+    + 适用无穷维映射
++ Mercer定理：核函数$K(x_i, x_j)$能写成$\psi(x_i)^T \psi(x_j)$ 的充要条件：
+    + 交换性：$K(x_i, x_j) = K(x_j, x_i)$；
+    + 半正定性：$\displaystyle\sum_{i=1}^N \sum_{j=1}^N C_i C_j K(x_i, x_j) \geq 0, \, \forall \, C_i, i = 1, 2, ..., N$。
+## 应用：兵王问题
++ 略，可见[知乎](https://zhuanlan.zhihu.com/p/537715035)。
+> 这个例子源于浙江大学胡浩基老师的《机器学习》课程。
+## 多分类问题
+解决方案包括：
+1. 改造优化的目标函数和限制条件，使之能处理多类（Multi-class SVM）；
+2. 一类 VS 其他类，例如1类 VS 23类，2类 VS 13类，3类 VS 12类；
+    + 缺点：样本类别数量不平衡
+3. 一类 VS 另一类，例如1类 VS 2类，1类 VS 3类，2类 VS 3类（采用投票的方式决定样本的最终类别）；
+    + 缺点：可能出现平票；需要$K^2$个分类器
+4. 树结构，例如123类 VS 456类，然后12类 VS 3类，然后1类 VS 2类。【类似决策树】

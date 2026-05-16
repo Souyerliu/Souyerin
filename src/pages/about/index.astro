@@ -16,12 +16,12 @@ function countByCategory(category) {
 
 // ✅ 你的学习计划（只需要维护 total）
 const plans = [
-  { name: "人工智能导论", category: "人工智能导论", total: 11 },
+  //{ name: "人工智能导论", category: "人工智能导论", total: 11 },
 
   {
     name: "UCB课程",
     children: [
-      { name: "CS 70", category: "CS70", total: 9 },
+      //{ name: "CS 70", category: "CS70", total: 9 },
       { name: "CS 61A", category: "CS61A", total: 20 },
       { name: "CS 61B", category: "CS61B", total: 20 },
       { name: "DATA 8", category: "DATA8", total: 20 },
@@ -88,6 +88,18 @@ const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
         </ul>
       </section>
 
+      <section class="about-card">
+        <h3>已完结系列文章（已转移至
+        <a href="https://souyerin.netlify.app/" target="_blank" rel="noopener noreferrer">
+              副站
+        </a>
+        ）
+        </h3>
+        <ul>
+          <li>✅ 《人工智能导论》课程笔记</li>
+          <li>✅ UCB CS 70</li>
+        </ul>
+      </section>
 
       <section class="about-card">
         <h3>目前更新计划与进度 </h3>

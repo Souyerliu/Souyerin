@@ -55,6 +55,11 @@ export default defineConfig({
       href: "/about/",
       icon: "i-ri-user-line",
     },
+    {
+      text: "副站",
+      href: "https://souyerin.netlify.app",
+      icon: "ri-external-link-line",
+    },
   ],
   brand: {
     title: "Souyer's Blog",
@@ -183,10 +188,10 @@ export default defineConfig({
         name: "CS61A",
         cover: "/images/61A-header.png",
       }, 
-      // { 
-      //   name: "人工智能导论" ,
-      //   cover: "/images/cover.jpg",
-      // },
+      { 
+        name: "DATA8" ,
+        cover: "/images/valentine_logo.png",
+      },
       {
         name: "数学",
         cover: "/images/mathchalkboard.jpg",

@@ -1,107 +1,268 @@
 ---
 title: CS61A Chapter 14
-date: 2026-04-24 14:47:58
+date: 2026-04-24 22:28:26
 categories: [计算机科学,CS61A] 
 tags: 
  - python
+ - scheme
 cover: ./61A-header.png
 ---
-# 异常（Exceptions）
-+ 抛出异常（raising an exception）是python特有的报错方式，其会自动中断程序并输出错误信息（可见[官方文档](https://docs.python.org/zh-cn/3.14/reference/simple_stmts.html#the-raise-statement)）。当然，我们也可以在程序中加入`raise`或`assert`语句主动设置异常抛出。比如：
-    ```python
-    >>> raise Exception('An error occurred')
-    Traceback (most recent call last):
-    File "<stdin>", line 1, in <module>
-    Exception: An error occurred
+本节我们将介绍Scheme表达式的基本表示和用法。
+## 表达式
++ 在Scheme中，表达式的结构为：`(操作符 操作数1 操作数2 ...)`【前缀表示法】。
+    + 操作符本身可理解为一个函数（在Scheme中称为**过程（procedure）**），而操作数则可以理解为函数的参数，所以其本身也可以再嵌套表达式（类似函数的调用）。
++ 示例：
+```scheme
+(quotient 10 2)
+(+ (* 3 5) (- 10 6))
+```
++ 另外，表达式也可以写成多行（这样结构更清晰）：
+```scheme
+(+ (* 3
+      (+ (* 2 4)
+         (+ 3 5)))
+   (+ (- 10 7)
+      6))
+```
++ 在对表达式求值时，和python类似，程序会先计算操作数的值，然后将其作为参数使用操作符进行求值。（若有嵌套则递归求值）
+### 条件语句
++ Scheme中`if`语句的结构为：`(if <测试条件> <then分支> <else分支>)`。
+    + 根据测试条件（数或表达式的值）决定执行：如果测试条件为真，则执行`<then分支>`，否则执行`<else分支>`。
++ 测试条件示例：`(>= 2 1)`，等价于`if 2 >= 1`。
+    + scheme中也内置了一些测试条件，比如`number?`（判断是否为数字），`zero?`（判断是否为0），`integer?`（判断是否为整数）等。
++ Scheme中用`#t`代表`True`，`#f`代表`False`，我们可以用逻辑表达式对条件进行组合，比如：
+    ```scheme
+    > (and (>= 2 1) (< 2 3))
+    #t
+    > (or #f (< 2 3))
+    #t
+    > (not (= (+ 1 1) 3))
+    #t
     ```
-    在IDLE中，抛出异常后解释器将返回到初始交互状态；而在运行代码时抛出异常则会直接中止程序。
-## 处理异常（try...except）
-+ 为了让代码在遇到异常后不会直接中止程序，我们可以设置`try`和`except`语句（类似条件分支语句），格式如下：
-    ```python
-    try:
-        <try suite>
-    except <exception class> as <name>:
-        <except suite>
++ 对于多个`if`判断语句（`if-elif-else`结构），可以使用`cond`：
+    <div className="code-compare">
+    ```scheme
+    (cond ((> x 10) (print 'big))
+          ((> x 5) (print 'medium))
+          (else (print 'small)))
     ```
-+ 具体而言，程序会先执行`try`块内的`<try suite>`，如果遇到异常，`except`语句就会根据`<exception class>`处理对应的异常类。
-+ 异常类的内容会绑定到`<name>`上（属于局部变量，一般不会用到），然后通过执行`<except suite>`处理异常。下面是一个具体的示例：
-    ```python
-    >>> try:
-		    x = 1 / 0
-        except ZeroDivisionError as e:
-            print('handling a', type(e))
-            x = 0
-    handling a <class 'ZeroDivisionError'>
-    >>> x
-    0
-    ```
-    另外，当`<try suite>`中存在函数调用，且抛出异常，那么它就会立刻逐层向外找被包含的`try`和对应的`except`语句。也就是说，无论`try`里面套了多少层函数，只要异常没有在更里面被捕获，它最终都会回到当前`try`的`except`。比如：
-    ```python
-    def f1():
-        f2()
 
-    def f2():
-        f3()
-
-    def f3():
-        raise ValueError("Error f3")
-
-    try:
-        f1()
-        print("blablabla")
-    except ValueError:
-        print("Error outer try")
-    ```
-    只会输出`Error outer try`。
-## 异常对象（Exception Object）
-+ 由于异常本身也是一种对象，所以我们也可以使用面向对象的方法构造异常对象，以实现除了输出报错位置与信息之外的功能。
-+ 我们以之前的[牛顿法](https://souyerin.pages.dev/posts/computer-science/cs61a/cs61a-chapter-4/#%E7%A4%BA%E4%BE%8B%E7%89%9B%E9%A1%BF%E6%B3%95)为例，尝试在出现异常时返回当前的最优估计值。我们建立一个新的异常类`IterImproveError`，继承自`Exception`（python内置异常类）：
     ```python
-    >>> class IterImproveError(Exception):
-            def __init__(self, last_guess):
-                self.last_guess = last_guess
+    if x > 10:
+        print('big')
+    elif x > 5:
+        print('medium')
+    else:
+        print('small')
     ```
-+ 然后将这个异常类加到通用函数`improve`中（与之前的定义略有区别，迭代结束的条件不是误差小到一定程度，而是精确求得零点/达到最大迭代次数/抛出异常）：
-    ```python
-    >>> def improve(update, done, guess=1, max_updates=1000):
-        k = 0
-        try:
-            while not done(guess) and k < max_updates:
-                guess = update(guess)
-                k = k + 1
-            return guess
-        except ValueError:
-            raise IterImproveError(guess)
-    ```
-+ 接着，重新编写`find_zero`函数，引入处理异常语句：
-    ```python
-    >>> def find_zero(f, df, guess=1):
-            def done(x):
-                return f(x) == 0
-            try:
-                return improve(newton_update(f, df), done, guess)
-            except IterImproveError as e:
-                return e.last_guess
-    ```
-    其中`newton_update`定义和之前的完全一样。
-+ 下面以一个会触发异常的例子进行测试（求函数$2x^2+\sqrt{x}$的零点）：
-    ```python
-    >>> from math import sqrt
-    >>> find_zero(lambda x: 2*x*x + sqrt(x),lambda x: 4*x + 1 / (2 * sqrt(x))
-    -0.030214676328644885
-    ```
-    虽然没能达到精确解$0$，但是比之前输入后直接报错（负数开根号）好一些。
-+ 另外，python将`try`与`except`分为两个模块，也有利于我们分别对二者进行调整，并将其融入对象系统。
-# 编程语言
-+ 在继续Scheme之前，先简单说明高级语言与机器语言/汇编语言的区别：
-    + 机器语言/汇编语言直接通过硬件本身进行解释。具体而言，其通过执行CPU预设的特定指令组合实现，与硬件的内存地址有关，无法进行进一步抽象；
-    + 而高级语言程序的语句和表达式可以通过另一个程序进行解释或通过编译转为另一种语言，因此提供了抽象的方法（如名称指代、定义函数与对象等）。这使得高级语言程序可以在不同机器、甚至不同系统上运行。
-        + 当然，高级语言之间也有层次区分：比如C语言就比python语言更接近机器语言（C语言通过编译可直接转为机器语言，而python的解释器主要通过C语言构造）
-        + 可以通过python的[dis](https://docs.python.org/zh-cn/3/library/dis.html)语句对python程序进行反汇编，查看其解释器实现的字节码。
-## 编程语言的基本要素
-+ 语法（syntax）：合法的语句与表达式（作为语言的组成形式）
-+ 语义（semantics）：语句和表达式的评估方法/执行规则。
+    </div>
+    > 当然，上面条件分支里面的`print`也可以统一提到外面。
+### 其他特殊语句
++ `begin`：begin用于顺序执行多个表达式，并返回最后一个表达式的值：
+<div className="code-compare">
+```scheme
+(cond ((> x 10) (begin (print 'big) (print 'guy)))
+      (else (begin (print 'small) (print 'fry))))
 
-这两个要素要么通过规范（文档），要么通过构建解释器/编译器进行实现。
+```
 
-> 更多细节可以参考国内的计算机组成原理、编译原理或相关课程。
+```python
+if x > 10:
+    print('big')
+    print('guy')
+else:
+    print('small')
+    print('fry')
+```
+</div>
++ `let`：与`define`类似，但只用于临时定义变量（定义所在语句执行后变量释放），可用于定义局部变量：
+```scheme
+(define c (let ((A 3)
+                (b (+ 2 2)))
+               (sqrt (+ (* a a) (* b b)))))
+```
+上面语句执行输出`5`后，`a`和`b`就释放了。
+## 定义
++ 我们可以使用`define`作为操作符定义变量：
+    ```scheme
+    > (define pi 3.14)
+    > (* pi 2)
+    6.28
+    ```
++ 还可以用`define`来定义函数（过程）：
+    ```scheme
+    > (define (square x) (* x x))
+    > (square 16)
+    256
+    ```
+    其定义格式为：`(define (<name> <formal parameters>) <body>)`，其中`<body>`为一个表达式，`<name>`为函数名称，`<formal parameters>`为函数参数（可以多个）。
+    + 我们还可以像python一样定义嵌套函数，使用递归：
+    ```scheme
+    (define (sqrt x)
+      (define (good-enough? guess)
+        (< (abs (- (square guess) x)) 0.001))
+      (define (improve guess)
+        (average guess (/ x guess)))
+      (define (sqrt-iter guess)
+        (if (good-enough? guess)
+            guess
+            (sqrt-iter (improve guess))))
+      (sqrt-iter 1.0))
+    (sqrt 9) 
+    ```
+    作为对照，我们给出相应的python版本：
+    ```python
+    def sqrt(x):
+        def good_enough(guess):
+            return abs(guess**2 - x) < 0.001
+        def improve(guess):
+            return (guess + x / guess) / 2
+        def sqrt_iter(guess):
+            if good_enough(guess):
+                return guess
+            else:
+                return sqrt_iter(improve(guess))
+        return sqrt_iter(1.0)
+    print(sqrt(9))
+    ```
++ 使用`lambda`可以定义匿名函数：
+    + 格式为：`(lambda (<formal-parameters>) <body>)`，除了不需要函数名称之外与`define`基本相同；
+    + 下面两种定义等价：
+    ```scheme
+    (define (plus4 x) (+ x 4))
+    (define plus4 (lambda (x) (+ x 4)))
+    ```
+    + `lambda`函数在定义时也可直接作为运算符被使用：
+    ```scheme
+    > ((lambda (x y z) (+ x y (square z))) 1 2 3)
+    12
+    ```
+## 复合类型
++ 在Scheme中还有一种内置的数据结构`pair`（可理解为两个元素构成的数组），其通过操作符`cons`构建，元素通过`car`和`cdr`进行访问：
+    ```scheme
+    > (define x (cons 1 2))
+    > x
+    (1 . 2)
+    > (car x)
+    1
+    > (cdr x)
+    2
+    ```
+    <Note type="primary" title="有趣的知识">
+    关于`cons`，`car`，`cdr`名称的来源：
+    + `cons`源自**cons**truction；
+    + `car`源自**C**ontents of the **A**ddress part of **R**egister number；（寄存器编号地址部分的内容）
+    + `cdr`源自**C**ontents of the **D**ecrement part of **R**egister number；（寄存器减量部分的内容）
+    
+    这些名字最初来源于Lisp首次被实现所使用的硬件环境中内存空间的名字。
+    </Note>
++ 基于`pair`，Scheme还提供了`list`这一数据结构（可理解为链表+列表）。使用示例如下：
+    ```scheme
+    > (cons 1
+        (cons 2
+            (cons 3
+                  (cons 4 '()))))
+    (1 2 3 4)
+    > (list 1 2 3 4)
+    (1 2 3 4)
+    > (define one-through-four (list 1 2 3 4))
+    > (car one-through-four)
+    1
+    > (cdr one-through-four)
+    (2 3 4)
+    > (car (cdr one-through-four))
+    2
+    > (cons 10 one-through-four)
+    (10 1 2 3 4)
+    > (cons one-through-four 5)
+    ((1 2 3 4) . 5)
+    ```
+    > 注：在scheme中，空表用`'()`表示，而在Common Lisp中，空表则可用`nil`表示。
+    + 可使用`null?`判断`list`是否为空。由此我们可以定义取`list`长度和根据索引取元素的函数：
+    ```scheme
+    > (define (length items)
+        (if (null? items)
+            0
+            (+ 1 (length (cdr items)))))
+    > (define (getitem items n)
+        (if (= n 0)
+            (car items)
+            (getitem (cdr items) (- n 1))))
+
+    > (define squares (list 1 4 9 16 25))
+    > (length squares)
+    5
+    > (getitem squares 3)
+    16
+    ```
++ 对于`list`，再补充一些常用操作符（可对照python）：
+    + `(append s t ...)`：将多个列表拼接；
+    + `(map f s)`：对`s`中的每个元素分别调用`f`，并将结果组成一个列表；
+    + `(filter f s)`：对`s`的每个元素调用`f`，并将返回结果为真的`s`元素组成一个列表；
+    + `(apply f s)`：将列表`s`的所有元素作为参数，并调用`f`。
+## 符号数据
++ 前面我们的所有操作数基本都是数字（或变量）组成的，但Scheme也能将符号本身作为操作数据（类似字符串），只需要在符号之前加一个单引号：
+    ```scheme
+    > (define a 1)
+    > (define b 2)
+    > (list a b)
+    (1 2)
+    > (list 'a 'b)
+    (a b)
+    > (list 'a b)
+    (a 2)
+    ```
++ 当然，关键字符号本身也可以作为操作数：
+    ```scheme
+    > (list 'define 'list)
+    (define list)
+    ```
++ 而如果在括号外面加单引号，就可以将括号内的所有内容作为符号组成列表：
+    ```scheme
+    > (car '(a b c))
+    a
+    > (cdr '(a b c))
+    (b c)
+    ```
+___
+除了以上的功能，Scheme还提供了许多其他的功能（可见[manual](https://man.scheme.org/)），不过目前的功能已经能让我们实现许多我们之前涉及的概念了。
+## 绘制图形
++ 虽然Scheme本身不支持绘图，但Lisp的另一种方言——Logo具有绘图功能（被称为Turtle Graphics）。
+    + 具体而言，程序可以控制一个“海龟”从一个画布的中心出发，根据特定的程序命令来移动和转向，并在它移动的过程中留下轨迹。
+    + 比如：`fd 20`（向前20个单位），`rt 144`（向右旋转144度），`penup`和`pendown`（控制是否留下轨迹）等。
++ 当然python也继承了这一功能，可见[官方文档](https://docs.python.org/zh-cn/3/library/turtle.html)。
+    + 下面使用python的turtle库绘制谢尔宾斯基三角形：
+    ```python
+    import turtle
+
+    t = turtle.Turtle()
+    t.speed("fastest")
+    t.penup()
+    t.goto(-200, -150) 
+    t.pendown()
+
+    def repeat(k, fn):
+        """重复执行函数 fn k 次"""
+        for _ in range(k):
+            fn()
+
+    def tri(fn):
+        """执行 fn 三次，每次之后左转 120 度"""
+        repeat(3, lambda: (fn(), t.left(120)))
+
+    def leg(d, k):
+        """递归绘制一条边"""
+        sier(d / 2, k - 1)
+        t.penup()
+        t.forward(d)
+        t.pendown()
+
+    def sier(d, k):
+        """绘制谢尔宾斯基三角形，边长 d，递归深度 k"""
+        tri(lambda: t.forward(d) if k == 1 else leg(d, k))
+
+    sier(400, 6)
+
+    turtle.done()
+    ```
+    得到结果如下：![triangle](./CS61A-Chapter-14/output.png)
