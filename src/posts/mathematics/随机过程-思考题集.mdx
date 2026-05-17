@@ -1172,7 +1172,33 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      证明：
+      1. 必要性：若 $X$ 不可约正常返，对任意 $i \neq j$，令 $z_i = m_{i,j}, z_j = 0$，那么任意 $i \neq j$，  
+         $$
+         z_i = m_{i,j} = \sum_{k \neq j} p_{i,k} m_{k,j} + 1 = \sum_{k \in S} p_{i,k} z_k + 1
+         $$
+         且  
+         $$
+         \sum_{k \in S} p_{j,k} z_k = \sum_{k \neq j} p_{j,k} m_{k,j} \leq m_{j,j} < \infty.
+         $$
+      2. 充分性：记$\displaystyle\delta = \sum_{k \in S} p_{j,k} z_k$，则$0 < \delta < \infty$。任取$i \neq j$，对任意$n \geq 2$，迭代得，  
+         $$
+         \begin{aligned}
+         0 \leq \sum_k p_{i,k}^{(n)} z_k &= \sum_{k \in S} \sum_{l \in S} p_{i,l}^{(n-1)} p_{l,k} z_k = \sum_{l \in S} p_{i,l}^{(n-1)} \sum_{k \in S} p_{l,k} z_k\\
+         &\leq \sum_{l \neq j} p_{i,l}^{(n-1)} (z_l - 1) + p_{i,j}^{(n-1)} \delta\\
+         &\leq \sum_{l \in S} p_{i,l}^{(n-1)} z_l + p_{i,j}^{(n-1)} (1 + \delta) - 1\\
+         &\leq z_i+\sum_{k=1}^{n-1}p_{i,j}^{(k)}(1+\delta)-n.
+         \end{aligned}
+         $$
+         这表明
+         $$
+         \sum_{k=1}^{n-1} p_{i,j}^{(k)} (1 + \delta) \geq n - z_i.
+         $$
+         两边除以$n$并令$n \to \infty$得  
+         $$
+         \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n p_{i,j}^{(k)} \geq \frac{1}{1 + \delta} > 0.
+         $$
+         因此$j$为正常返状态，从而$X$是正常返的。
       </div>
       </details>
    </div>
@@ -1191,7 +1217,11 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      证明：任意$k \in S$，由 X 非常返或零常返可知，$p_{i,k}^{(n)} \to 0$。注意到
+      $$
+      \sum_{k \in S} p_{i,k}^{(n)} y_k = \sum_{k \in N} p_{i,k}^{(n)} y_k + \sum_{k \geq N} p_{i,k}^{(n)} y_k \geq \left(1 - \sum_{k \in N} p_{i,k}^{(n)}\right) \min_{s \geq N} y_s.
+      $$
+      先令$n \to \infty$，可得$\displaystyle\lim_{n \to \infty} \sum_{k < N} p_{i,k}^{(n)} = 0$，再令$N \to \infty$，可知此时结论成立。
       </div>
       </details>
 
@@ -1203,7 +1233,25 @@ sticky: true
       <details class="mdx-collapse primary">
       <summary class="mdx-collapse__summary">点击查看答案</summary>
       <div class="mdx-collapse__content">
-      
+      证明：构造一个新马氏链$Y$使其转移概率为$\tilde{p}_{i,k} = p_{i,k}, i \neq j, k \in S$,
+      $$
+      \tilde{p}_{j,j} = \delta + (1 - \delta)p_{j,j},\quad \tilde{p}_{j,k} = (1 - \delta)p_{j,k},\ k \neq j.
+      $$
+      由于$X$是不可约的，因此$Y$也是不可约的。对任意$i \neq j$，$\displaystyle\sum_{k \in S} \tilde{p}_{i,k} y_k \leq y_i$，而且$\displaystyle\Delta = \sum_{k \in S} \tilde{p}_{j,k} y_k > 0$。注意到
+      $$
+      \begin{aligned}
+      \sum_{k \in S} \tilde{p}_{i,k}^{(n)} y_k &= \sum_{k \in S} \sum_{l \in S} \tilde{p}_{i,l}^{(n-1)} \tilde{p}_{l,k} y_k \\
+      &= \sum_{l \in S} \tilde{p}_{i,l}^{(n-1)} y_l + \Delta \tilde{p}_{i,j}^{(n-1)}\\
+      &\leq \sum_{l \neq j} \tilde{p}_{i,l}^{(n-1)} y_l + \Delta \tilde{p}_{i,j}^{(n-1)} 
+      &\leq \cdots \leq y_i + \Delta \sum_{k=1}^{n-1} \tilde{p}_{i,j}^{(k)}.
+      \end{aligned}
+      $$
+      若$Y$是非常返的，那么令$n \to \infty$，由上一问结论知$\displaystyle\sum_{k=1}^{n-1} \tilde{p}_{i,j}^{(k)} \to \infty$，因此$\displaystyle\sum_{k=0}^{\infty} \tilde{p}_{i,j}^{(k)} = +\infty$，这表明$Y$的状态$j$是常返的，从而$Y$是常返的，矛盾。  
+      因此$Y$一定是常返的，故方程组
+      $$
+      z_i = \sum_{l \neq j} \tilde{p}_{i,l} z_l + \tilde{p}_{i,j} = \sum_{l \neq j} p_{i,l} z_l + p_{i,j},\quad i \neq j
+      $$
+      的最小非负解恒为$1$，由此可知$X$是常返的。
       </div>
       </details>
    </div>

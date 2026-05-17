@@ -58,7 +58,7 @@ export default defineConfig({
     {
       text: "副站",
       href: "https://souyerin.netlify.app",
-      icon: "ri-external-link-line",
+      icon: "i-ri-external-link-line",
     },
   ],
   brand: {

@@ -461,5 +461,73 @@ ZeroDivisionError: division by zero
 + 当然，一些递归函数虽然无法直接使用尾递归，但可以通过一定的转换变为可以尾递归的函数。
 ### 数据作为程序（Data as Programs）
 + 事实上，我们还可以从另一个角度审视Scheme解释器。如果我们将程序看作机器，那么解释器就会接受机器的描述作为输入，再通过配置模拟描述的机器，实现其功能。
-+ Scheme/python作为动态编程语言（与C、Java等静态语言相对）中，对在执行过程中构建的表达式进行求值是一个常见而强大的功能。
++ 具体而言，Scheme列表中的元素除了数字，变量之外，还可以是表达式，甚至程序：
+```scheme
+> (list 'quotient 10 2) ; 构建一个列表('quotient 10 2)
+(quotient 10 2)
+> (eval (list 'quotient 10 2)) ; 评估列表的值
+5
+```
+在以上代码中，使用`'`将内置函数变为符号（防止作为变量传入列表），从而得到一个表达式元素，最终通过`eval`得到表达式的值。
++ 另外，Scheme还有一个“准引用”符号`` ` ``，其功能与引用基本相同，但可以结合“取消引用”符号`,`对引用表达式内的子表达式取消引用。比如：
+```scheme
+> (define b 4)
+> `(a ,(+ b 1))
+(a 5)
+```
+利用这一特性，我们就能构造返回表达式的函数而避开计算表达式的值：
+```scheme
+> (define (make-add-procedure n) `(lambda (d) (+ d ,n)))
+> (make-add-procedure 2) 
+(lambda (d) (+ d 2))
+```
+进而我们就能编写生成整段代码的代码。
++ Scheme/python作为动态编程语言（与C、Java等静态语言相对）中，对执行过程中构建的表达式进行求值是一个常见而强大的功能。
 + 本质上，解释器是连接程序语言和数据对象的桥梁。这便是Lisp/Scheme的哲学：**程序即数据，数据即程序。**
+### 宏（Macros）
++ 最后，我们再介绍Scheme的一大功能——宏定义。与先前的变量/过程定义不同，宏定义的对象是操作符本身（与`if`,`and`,`add`同级）。我们可以利用这个功能对语言进行扩展。
++ 具体示例如下：
+    ```scheme
+    > (define-macro (twice expr) (list 'begin expr expr))
+    > (twice (print 2))
+    2
+    2
+    ```
+    `define-macro`表达式将`twice`定义为一个待求值的表达式（并将操作符命名为`twice`），从而在调用`twice`表达式时会按照其定义的规则代入表达式参数并求值。也就是说，宏定义表达式过程的输入和返回都是表达式。
+    + 注：上面的定义等价于
+        ```scheme
+        > (define (twice expr) (list 'begin expr expr))
+        > (twice '(print 2))
+        2
+        2
+        ```
+    由此可见宏定义与普通定义的主要区别在于宏定义对应的参数不会被预先评估（因而不需要加引用）。
++ 我们以另一个宏定义的实现（python中的`trace`）结束我们的Scheme之旅：
+```scheme
+(define-macro (trace expr)
+  (define ((operator (car expr)))          
+    `(begin
+       (define original ,operator)       
+       (define ,operator                  
+         (lambda (n)
+           (print (list ',operator n))    
+           (original n)))                
+       (define result ,expr)              
+       (define ,operator original)     
+       result)))    
+
+(define (fact n)
+  (if (<= n 1)
+      1
+      (* n (fact (- n 1)))))
+
+(trace (fact 5))
+;; 输出: 
+;; (fact 5) 
+;; (fact 4) 
+;; (fact 3) 
+;; (fact 2) 
+;; (fact 1)
+;; (fact 0)
+;; 120
+```
