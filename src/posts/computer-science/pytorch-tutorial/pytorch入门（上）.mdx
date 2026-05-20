@@ -1,0 +1,57 @@
+---
+title: pytorch入门（上）
+date: 2026-05-17 20:02:35
+categories: [计算机科学,pytorch]
+tags:
+    - pytorch
+    - 深度学习
+# cover:
+draft: true
+---
+> 主要参考[小土堆教程](https://www.bilibili.com/video/BV1hE411t7RN)和[pytorch官方文档](https://docs.pytorch.ac.cn/docs/stable/index.html)。
++ pytorch的安装：可参考[教程](https://www.cnblogs.com/HorizonTree/p/18431048)或小土堆的视频，这里作略。
++ 查看pytorch的属性和方法可使用`dir()`函数，获取方法解释可使用`help()`函数。
+# pytorch加载数据
++ 数据的原始形式：
+    1. 不同标签的数据在不同文件夹
+    2. 数据与标签分别在不同文件夹【最常见】
+    3. 数据文件名称即为其标签
++ pytorch加载数据的一大方法为`Dataset`类，通过`from torch.utils.data import Dataset`导入。导入这个类后需要在这个类上进行继承，并定义`__getitem__`和`__len__`方法才能在自己的数据集上使用。
++ 示例（读取图片数据+标签，假设数据原始形式为第二种）：
+```python
+import torch
+from torch.utils.data import Dataset
+from PIL import Image
+import os
+class MyData(Dataset):
+
+    def __init__(self, root_dir, image_dir, label_dir):
+        self.root_dir = root_dir
+        self.image_dir = image_dir
+        self.label_dir = label_dir
+        self.label_path = os.path.join(self.root_dir, self.label_dir) # 标签路径
+        self.image_path = os.path.join(self.root_dir, self.image_dir) # 图片路径
+        self.image_list = os.listdir(self.image_path) # 所有图片列表
+        self.label_list = os.listdir(self.label_path) # 所有标签列表
+    
+    def __getitem__(self, idx): # idx为索引
+        img_name = self.image_list[idx] # 获取图片名称
+        label_name = self.label_list[idx] # 获取标签
+        img_item_path = os.path.join(self.root_dir, self.image_dir, img_name) # 获取图片路径
+        label_item_path = os.path.join(self.root_dir, self.label_dir, label_name) # 获取标签路径
+
+    def __len__(self):
+        assert len(self.image_list) == len(self.label_list)
+        return len(self.image_list) # 列表长度
+
+root_dir = "dataset/train"
+image_ants = "ants_image"
+label_ants = "ants_label"
+ants_dataset = MyData(root_dir, image_ants, label_ants) # 获取ants数据集+标签
+image_bees = "bees_image"
+label_bees = "bees_label"
+bees_dataset = MyData(root_dir, image_bees, label_bees) # 获取bees数据集+标签
+train_dataset = ants_dataset + bees_dataset
+len(train_dataset) # 
+```
+# TensorBoard
