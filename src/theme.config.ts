@@ -185,10 +185,6 @@ export default defineConfig({
   home: {
     selectedCategories: [
       { 
-        name: "CS61A",
-        cover: "/images/61A-header.png",
-      }, 
-      { 
         name: "DATA8" ,
         cover: "/images/valentine_logo.png",
       },
@@ -199,7 +195,11 @@ export default defineConfig({
       {
         name: "CS127",
         cover: "/images/EECS127.png",
-      }
+      },
+      {
+        name: "机器学习方法",
+        cover: "/images/ml.png",
+      },
     ],
     pageSize: 10,
     title: {
