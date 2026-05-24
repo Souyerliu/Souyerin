@@ -577,7 +577,7 @@ $$
 ### 互通性
 + 如果存在$n \geq 0$使得$p_{i,j}^{(n)} > 0$，则称状态$i$**可达**状态$j$，记作$i \to j$。反之，则对任意$n \geq 0$，$p_{i,j}^{(n)} = 0$，称状态$i$**不可达**状态$j$，记作$i\nrightarrow j$。
 + 若$i \to j$且$j \to i$，则称$i, j$**互通**，记作$i \leftrightarrow j$。
-+ 互通是一种等价关系，即满足自反性（$i\leftrightarrow j$）、对称性（$i\leftrightarrow j\Longleftrightarrow j\leftrightarrow i$）；
++ 互通是一种等价关系，即满足自反性（$i\leftrightarrow i$）、对称性（$i\leftrightarrow j\Longleftrightarrow j\leftrightarrow i$）和传递性（$i\leftrightarrow j,j\leftrightarrow k\Longrightarrow i\leftrightarrow k$）；
 + 互通类：对任意状态$i$，定义$C(i)=\{k\in S;k\leftrightarrow i\}$为包含状态$i$的互通类。
     + 性质：$C(i)\cap C(j)\neq\emptyset\Longleftrightarrow C(i)=C(j)$。
 + 状态一步转移图表示：状态用点表示；如果$p_{i,j}>0$，则用有向边$i\longrightarrow j$表示。
@@ -625,7 +625,7 @@ $$
     + 在一个互通类中，要么所有状态均常返（常返类），要么所有状态均为非常返（非常返类）；
     + 常返类一定是本质类，有限状态的本质类一定是常返类；
     + 状态$i$常返$\Longleftrightarrow \displaystyle\sum_{n=0}^\infty p_{i,j}^{(n)}=\infty$，状态$i$非常返$\Longleftrightarrow\displaystyle\sum_{n=0}^\infty p_{i,i}^{(n)}=\frac{1}{1-f_{i,i}}< \infty$。
-+ 平面上简单对称随机游动是常返的（在高位空间中则非常返）。
++ 平面上简单对称随机游动是常返的（在高维空间中则非常返）。
 + 对$m \geq 1$，记  
     $$
     g_{i,i}(m) = P_i (\text{至少有} m \text{ 个 } n \geq 1 \text{ 使得 } X_n = i),  
@@ -675,7 +675,7 @@ $$
     + $i$非常返$\Longleftrightarrow X_0 = i$条件下$\tau_i$是广义随机变量，即$P_i(\tau_i = +\infty) > 0$。
 + 用转移概率$p_{i,i}^{(n)}$判别（定理）：
     + 若对任意状态$i\in S$，$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{k=1}^np_{i,i}^{(k)}=\frac{1}{m_{i,i}}$，则$i$正常返；
-    + 若对状态$i\in S$，$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{k=1}^np_{i,i}^{(k)}=0$，则$i$非常返；
+    + 若对状态$i\in S$，$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{k=1}^np_{i,i}^{(k)}=0$，则$i$为零常返或非常返。
     <Note type="primary" title="补充">
     1. 从级数增长的速度看，非常返表示$\displaystyle\sum_{k=1}^\infty p_{i,i}^{(k)}\rightarrow 0$，零常返表示$\displaystyle\sum_{k=1}^\infty p_{i,i}^{(k)}$的增长速率慢于线性增长，而正常返则表示$\displaystyle\sum_{k=1}^\infty p_{i,i}^{(k)}$增长与线性增长同阶。
         + 例：直线上简单对称随机游动的所有状态都是零常返的，其级数增长速率为$\sqrt{n}$。
@@ -700,8 +700,8 @@ $$
         $$
         \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n p_{i,j}^{(k)} = 
         \begin{cases} 
-        \dfrac{f_{i,j}}{m_{j,j}}, & j \text{ 正常返}, \\
-        0, & j \text{ 为其他状态}.
+        \dfrac{f_{i,j}}{m_{j,j}}, & j \text{正常返}, \\
+        0, & j \text{为其他状态}.
         \end{cases}
         $$
     + 对任意$i \in S$，
