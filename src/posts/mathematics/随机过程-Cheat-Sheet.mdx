@@ -756,7 +756,7 @@ $$
 + 强马氏性：设马氏链$X$首次回到$i$的时间$\tau_i < \infty$。令$Y_n = X_{\tau_i + n} $，即对任意$\omega $，$Y_n(\omega) = X_{\tau_i}(\omega) + n(\omega) $。那么$Y = \{Y_n; n \geq 0\}$是与$X$有相同转移概率矩阵的马氏链且与$(\tau_i, X_0, \cdots, X_{\tau_i})$相互独立。即$Y$的任意有限维分布都与$(\tau_i, X_0, \cdots, X_{\tau_i})$的分布独立。
 + 遍历性定理：记不可约马氏链$X = \{X_n; n \geq 0\}$的平稳分布为$\pi = \{\pi_i; i \in S\}$。若$S$上函数$g$满足$\displaystyle\sum_{j \in S} |g(j)| \pi_j < \infty$，那么  
     $$
-    \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n g(X_k) = \sum_{j \in S} g(j) \pi_j \coloneqq \mathbb{E}_\pi(g), \quad a.s.
+    \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n g(X_k) = \sum_{j \in S} g(j) \pi_j \coloneqq E_\pi(g), \quad a.s.
     $$
     + 推论1：对任意$j \in S$,  
         $$
@@ -770,4 +770,101 @@ $$
     1. 注意到不可约正常返马氏链平稳分布$\pi$中每个分量都是正数，推论1表明，任意观察不可约正常返马氏链的一条轨道都能以概率$1$保证能遍历状态空间$S$中的所有状态，而且每个状态出现的频率稳定到对应的平稳分布。
     2. 对不可约有限状态马氏链，遍历性定理总成立。
 + 应用：过程统计、马氏奖励过程与决策优化（见书或自行查阅）
-# 马尔科夫链简单应用
+# 马尔科夫链应用模型
+## 可逆马氏链
+### 可逆分布
++ 定义：设马氏链$X$的转移概率矩阵为$\mathbf{P}=(p_{i,j})_{i,j\in S}$，那么如果存在概率分布$\mu=\{\mu_i,i\in S\}$满足
+    $$
+    \mu_ip_{i,j}=\mu_jp_{j,i}
+    $$
+    则称$X$可逆，$\mu$为$X$的可逆分布。【上述条件也称为细致平衡条件】
++ 可逆分布一定是平稳分布：$\displaystyle\sum_{i\in S}\mu_ip_{i,j}=\sum_{i\in S}\mu_jp_{j,i}=\mu_j$
++ 记$Y_n=X_{N-n}$，则$Y=\{Y_n,0\leq n\leq N\}$为$X$的“逆”时间过程，可证明其为初始分布$\mu$，转移概率矩阵与$X$相同的马氏链【互为版本】
++ 对于不可约马氏链$X$，可逆$\Longleftrightarrow$正常返
++ 可逆分布具有唯一性，其求解可由细致平衡条件得到。【故如果细致平衡条件有解则马氏链一定可逆】
++ 若$X$为不可约可逆马氏链，则对任意$i,j\in S$，$p_{i,j}=0\Longleftrightarrow p_{j,i}=0$
+### 分布近似
++ 任取一个离散分布$\pi$，记其所有取值概率为正的点构成的集合为$S$，即$\pi = (\pi_i, i \in S)$，其中$\pi_i > 0$且$\displaystyle\sum_{i \in S} \pi_i = 1$。一定存在$S$上的可逆不可约马氏链$X$，使得$\pi$是$X$的平稳分布。
++ 构造方法（也称为Hastings-Metropolis算法）：
+    1. 取转移概率矩阵$\mathbf{Q}=(q_{i,j})_{i,j\in S}$，要求$q_{i,j}=0\Longleftrightarrow q_{j,i}=0$【比如取三斜线矩阵】
+    2. 对任意$i,j\neq S$，令
+        $$
+        \alpha_{i,j}=\min\left\{\frac{\pi_jq_{j,i}}{\pi_iq_{i,j}},1\right\}
+        $$
+        若$q_{i,j}=0$则$\alpha_{i,j}=1$。并令
+        $$
+        p_{i,j} = q_{i,j}\alpha_{i,j}, \quad p_{i,i} = q_{i,i} + \sum_{j \neq i} q_{i,j}(1 - \alpha_{i,j}).
+        $$
+    3. 若由此得到的$\mathbf{P}$为马氏链$X$的转移概率矩阵，则$X$为不可约可逆马氏链，且$\pi$为$X$的平稳分布。上述$\mathbf{Q}$也称为预选矩阵。
+## 隐马氏链
+略，考完小测后再补。
+## 分支过程
++ 定义：设$\{Y_{n,k}; n \geq 1, k \geq 1\}$为一族独立同分布的非负整数值的随机变量，$X_0$是给定的非负整数值随机变量且与$\{Y_{n,k}; n \geq 1, k \geq 1\}$独立。对任意$n \geq 0$，递归地定义随机变量$X_{n+1}$如下：
+    $$
+    X_{n+1} = \sum_{k=1}^{X_n} Y_{n+1,k}
+    $$
+    其中约定$\displaystyle\sum_{k=1}^0 \cdot = 0$。称随机过程$X = \{X_n; n \geq 0\}$为Galton-Watson分支过程，简记为G-W过程。
++ 条件期望与方差：对任意$n \geq 0$，
+    $$
+    \begin{aligned}
+    E(X_{n+1} \mid X_n) &= X_n E(Y_{1,1}),\\
+    \mathrm{Var}(X_{n+1} \mid X_n) &= E \left[ \left.\left( \sum_{i=1}^{X_n} (Y_{n,k} - E(Y_{n,k})) \right)^2 \right| X_n \right]= X_n \text{Var}(Y_{1,1}),\\
+    E(X_{n+1}^2 \mid X_n) &= (X_n E(Y_{1,1}))^2 + X_n \text{Var}(Y_{1,1}).
+    \end{aligned}
+    $$
++ 设$Y_{n,k} \sim \eta$，即对任意$n\geq 0,\eta_i =P(Y_{n,k} = i)$，则称$\eta$为**后代分布**。
+    + 记$\displaystyle\eta(s) = \sum_{i=0}^{\infty} s^i \eta_i = E(s^{Y_{n,k}})$为$\eta$的概率母函数；
+    + 分别以$m$和$\sigma^2$表示每个粒子分支出后代的均值和方差，则
+        $$
+        \begin{aligned}
+        m &= E(Y_{n,k}) = \sum_{i=1}^{\infty} i \eta_i = \eta'(1),\\
+        \sigma^2 &= \text{Var}(Y_{n,k}) = \eta''(1) + \eta'(1)(1 - \eta'(1)).
+        \end{aligned}
+        $$
++ 均值函数：$E(X_n)=m^nE(X_0)$
++ 方差函数：$\mathrm{Var}(X_n)=m^{2n}\mathrm{Var}(X_0)+\sigma^2(m^{n-1}+\cdots+m^{2n-2})E(X_0)$
++ 协方差函数：$\mathrm{Cov}(X_i,X_j)=m^{|i-j|}\mathrm{Var}(X_{\min\{i,j\}})$
++ G-W过程是一个时齐马氏链，且转移概率$\displaystyle p_{i,j}=P\left(\sum_{k=1}^i Y_{1,k}=j\right)$。
+### 状态分类
+设$\eta_i=P(Y_{n,k}=i)$：
++ $0$为吸收态，即若某代粒子数为$0$，那么此后每一代的粒子数都为零；
++ 若$\eta_1=1$，则每个状态$i>0$都是吸收状态【即$X_n$恒定不变】；为避免平凡，总设$\eta_1< 1$。
++ 任意状态$i>0$都是非本质非常返的：
+    + 若$\eta_0=0$，则对每个状态$i>0$，都存在$j>i$使得$i\rightarrow j$但$j\nrightarrow i$，因此$i$是非本质的，从而是非常返的；
+    + 若$\eta_0>0$，则对每个状态$i>0$，$i\rightarrow 0$但$0\nrightarrow i$，此时$i$也是非本质且非常返的。
++ 由马氏链性质可知随着$n\to\infty$，$X_n$要么稳定为$0$要么逐渐变成无穷大。
+### 灭绝概率
++ 记$\displaystyle A=\bigcup_{n=1}^\infty\{X_n=0\}$为灭绝事件，$q=p_1(A)$为初值为$1$的灭绝概率：
+    + 参照之前首访时与首访概率的概念，称$\tau_0=\inf\{n\geq 1,X_n=0\}$为灭绝时间，则
+        $$
+        A=\{\tau_0< \infty\},q=P_1(\tau_0< \infty)=f_{1,0}=\lim_{n\to\infty}p_{1,0}^{(n)}
+        $$
+    + 若初始时刻有$k$个个体，则因为每个个体的繁殖与消亡相互独立，故
+        $$
+        P_k(\tau_0< \infty)=q^k,\quad p_{k,0}^{(n)}=P_k(X_n=0)=(p_{1,0}^{(n)})^k.
+        $$
++ 由之前的首访概率的线性方程组解法可知，$q$是$s=\eta(s)$的最小非负解。
++ 若$X_0=1$，则：
+    + $m=\eta'(1)\leq 1$时，$X_n$必然消亡，即$q=1$；
+    + $m>1$时，$X_n$的消亡概率$q< 1$，其中$q$是$s=\eta(s)$的最小非负解。
+### 灭绝时间
++ 若分支过程的初值$X_0=1$，后代分布均值$m< 1$，则平均灭绝时间有限，即$E_1(\tau_0)\leq\dfrac{1}{1-m}< \infty$。
++ 分别称后代分布均值$m< 1$，$m=1$和$m>1$的分支过程为下临界，临界和上临界分支过程。
+### 存活粒子平均数
++ 即求$\displaystyle E_1\left(\left.\sum_{k=0}^\infty X_k\right|A\right)$，推导如下：
+    $$
+    \begin{aligned}
+    E_1\left(\left.\sum_{k=0}^\infty X_k\right|A\right)&=\frac{\displaystyle E_1\left(\sum_{k=0}^\infty X_k\cdot\mathbf{1}_{A}\right)}{P(A)}\\
+    &=\frac{1}{P(A)}\sum_{k=0}^\infty E_1(X_k\cdot\mathbf{1}_{\{k\leq\tau_0< \infty\}})\\
+    &=\frac{1}{P(A)}\sum_{k=0}^\infty E_1\left(X_k\cdot[P_1(\tau_0<\infty)]^{X_k}\right)\\
+    &=\begin{cases}
+    \displaystyle\sum_{k=0}^\infty E_1(X_k)=\sum_{k=0}^\infty m^k=\frac{1}{1-m},&m<1\\[10pt]
+    \infty,&m=1\\[5pt]
+    \displaystyle\frac{1}{q}\sum_{k=0}^\infty E_1(X_kq^{X_k})=\frac{1}{1-\eta'(q)},&m>1
+    \end{cases}
+    \end{aligned}
+    $$
++ 结论：设分支过程初值$X_0 = 1$：
+    + 若后代分布均值$m < 1$，那么存活过的粒子平均数为$\dfrac{1}{1 - m}$；
+    + 若$m = 1$，那么存活过的粒子总数为无穷；
+    + 如果$m > 1$，那么在灭绝条件下存活过的粒子平均数为$\dfrac{1}{1 - \eta'(q)}$，其中$q$为灭绝概率。

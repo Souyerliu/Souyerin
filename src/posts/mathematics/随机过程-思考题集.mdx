@@ -1256,3 +1256,33 @@ sticky: true
       </details>
    </div>
 </div>
+# 马氏链简单应用
+<div class="quiz-group">
+   <div class="quiz-item">
+      <div class="quiz-question">
+      设 G-W 分支过程$X=\{X_n; n \geq 0\}$的后代均值为$m < 1$，后代方差为$\sigma^2$，假定$X_0 = 1$，求存活过粒子数的方差。
+      </div>
+      <details class="mdx-collapse primary">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      设存活过粒子数为$\displaystyle S=\sum_{n=0}^\infty X_n$，则因为$m< 1$，所以$ES=\dfrac{1}{1-m}$。而根据条件方差公式：
+      $$
+      \mathrm{Var}(S)=\mathrm{Var}[E(S|Y_{1,1})]+E[\mathrm{Var}(S|Y_{1,1})]
+      $$
+      又因为$\displaystyle S=X_0+\sum_{i=1}^{Y_{1,1}} S_i=1+\sum_{i=1}^{Y_{1,1}} S_i$，故
+      $$
+      \begin{aligned}
+      \mathrm{Var}[E(S|Y_{1,1})]&=\mathrm{Var}\left[E\left.\left(1+\sum_{i=1}^{Y_{1,1}} S_i\right|Y_{1,1}\right)\right]\\
+      &=\mathrm{Var}(1+Y_{1,1}ES)\\
+      &=\frac{\mathrm{Var}(Y_{1,1})}{(1-m)^2}=\frac{\sigma^2}{(1-m)^2},\\[10pt]
+      E[\mathrm{Var}(S|Y_{1,1})]&=E\left[\mathrm{Var}\left.\left(1+\sum_{i=1}^{Y_{1,1}} S_i\right|Y_{1,1}\right)\right]\\
+      &=E\left[\sum_{i=1}^{Y_{1,1}}\mathrm{Var}(S_i)\right]\\
+      &=E(Y_{1,1})\mathrm{Var}(S)=m\mathrm{Var}(S).
+      \end{aligned}
+      $$
+      综上可得$\displaystyle\mathrm{Var}(S)=\frac{\sigma^2}{(1-m)^2}+m\mathrm{Var}(S)$，解得$\mathrm{Var}(S)=\dfrac{\sigma^2}{(1-m)^3}$。
+      > 进一步可得到二阶矩$E(S^2)=\dfrac{\sigma^2+1-m}{(1-m)^3}$。
+      </div>
+      </details>
+   </div>
+</div>

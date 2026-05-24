@@ -555,3 +555,69 @@ cover: ./数理统计-Cheat-Sheet/stat_cover.png
 | 帕累托分布$Pareto(m, k)$ | $k$ | $Ga(\alpha, \beta)$ | $Ga(n+\alpha, \beta+nE(\ln x)-n\cdot\ln m)$ |
 
 ## 区间估计
++ 定义：设$\theta$是总体参数，参数空间为$\Theta$。$X_1, \ldots, X_n$是来自该总体的样本。对于给定$\alpha(0 < \alpha < 1)$，假设有两个统计量
+    $$
+    \hat{\theta}_L = \hat{\theta}_L(X_1, \ldots, X_n) ,\quad \quad \hat{\theta}_U = \hat{\theta}_U(X_1, \ldots, X_n)
+    $$
+    对于任意$\theta \in \Theta$满足
+    $$
+    P_\theta(\hat{\theta}_L \leq \theta \leq \hat{\theta}_U) \geq 1 - \alpha.
+    $$
+    则称随机区间$[\hat{\theta}_L, \hat{\theta}_U]$为$\theta$的置信水平为$1 - \alpha$的置信区间，简称为$\theta$的$1 - \alpha$置信区间。$\hat{\theta}_L$和$\hat{\theta}_U$分别称为$\theta$的（双侧）置信下限和置信上限。
+    > 产生顺序：$\Theta\rightarrow\theta\rightarrow x_i\rightarrow(\hat{\theta}_L,\hat{\theta}_U)$【参考点估计】
+    + 若$P_\theta(\hat{\theta}_L \leq \theta \leq \hat{\theta}_U) = 1 - \alpha$，则称$[\hat{\theta}_L, \hat{\theta}_U]$为$\theta$的$1-\alpha$同等置信区间。
+    + 若$P_\theta(\hat{\theta}_L \leq \theta)\geq 1-\alpha$，则称$\hat{\theta}_L$为$\theta$的（单侧）置信下限。【（单侧）置信上限、同等置信上（下）限定义同理，做略】
+    > 注：上面的概率都是区间覆盖$\theta$的概率，由样本决定【不是$\theta$落入区间的概率】
++ 寻找（同等）置信区间的方法——枢轴量法
+    + 枢轴量定义：$G(\mathbf{x},\theta)$，即依赖样本数据及未知参数，且其分布已知（不依赖未知参数）。
+        + 若$G$为枢轴量，对任意不依赖$\theta$的函数$h$，$h(G)$也是枢轴量；
+        + 一般基于$\theta$的MLE及其分布进行构造。
+    + 具体方法：
+        1. 选取适当常数$c,d$使得对给定$\alpha\in(0,1)$，满足$P_\theta(c\leq G\leq d)=1-\alpha$；
+            + 或者也可以找$P(G\geq c)=P(G\leq d)=\dfrac{\alpha}{2}$，此时得到的就是等尾置信区间。
+        2. 将$c\leq G\leq d$转化为$\hat{\theta}_L \leq \theta \leq \hat{\theta}_U$，从而得到一个置信上（下）限和（同等）置信区间。
+            + 最好能找到区间平均长度$E[\hat{\theta}_U-\hat{\theta}_L]$最小的区间。
+### 单正态总体区间估计
+即对服从$N(\mu,\sigma^2)$的总体参数$\mu,\sigma^2$构造置信区间。具体包含以下三种情形：
+1. $\sigma$已知时$\mu$的置信区间
+    + 枢轴量：$\displaystyle G=\frac{\sqrt{n}(\overline{X}-\mu)}{\sigma}\sim N(0,1)$；
+    + $\mu$的一个$1-\alpha$同等置信区间为$\displaystyle\left[\overline{X}-\frac{u_{1-\frac{\alpha}{2}}\sigma}{\sqrt{n}},\overline{X}+\frac{u_{1-\frac{\alpha}{2}}\sigma}{\sqrt{n}}\right]$，也记作$\displaystyle\overline{X}\pm\frac{u_{1-\frac{\alpha}{2}}\sigma}{\sqrt{n}}$。
+2. $\sigma$未知时$\mu$的置信区间
+    + 枢轴量：$\displaystyle G=\frac{\sqrt{n}(\overline{X}-\mu)}{s}\sim t(n-1)$（$s$为样本标准差）；
+    + $\mu$的一个$1-\alpha$同等置信区间为$\displaystyle\overline{X}\pm\frac{t_{1-\frac{\alpha}{2}}(n-1)s}{\sqrt{n}}$。
+3. $\mu$未知时$\sigma$的置信区间
+    + 枢轴量：$G=\dfrac{(n-1)s^2}{\sigma^2}\sim\chi^2(n-1)$
+    + 使用等尾置信区间$c=\chi^2_{\frac{\alpha}{2}}(n-1),d=\chi^2_{1-\frac{\alpha}{2}}(n-1)$，得到$\sigma$的一个$1-\alpha$置信区间为$\displaystyle\left[\sqrt{\frac{(n-1)s^2}{\chi^2_{1-\frac{\alpha}{2}}(n-1)}},\sqrt{\frac{(n-1)s^2}{\chi^2_{\frac{\alpha}{2}}(n-1)}}\right]$。
+### 大样本置信区间
++ 例：已知总体分布为$b(1,p)$的样本$x_1,\cdots,x_n$，则有$\overline{X}\dot{\sim}N\left(p,\dfrac{p(1-p)}{n}\right)$，故$G=\dfrac{\overline{X}-p}{\sqrt{\frac{p(1-p)}{n}}}$可作为近似枢轴量。
+    + 由此可得$p$的近似区间估计为$\overline{X}\pm u_{1-\frac{\alpha}{2}}\sqrt{\dfrac{\overline{X}(1-\overline{X})}{n}}$.
++ 一般情形（适用于任何满足渐近正态性的无偏估计）：假定$X_1, X_2, \dots, X_n$是样本，设总体方差$\sigma^2$有限，求总体均值为$\mu$的$1 - \alpha$置信区间。
+    + 由中心极限定理：
+        $$
+        \frac{\bar{X} - \mu}{\sigma / \sqrt{n}} \dot{\sim} N(0, 1).
+        $$
+    + 若$\sigma$已知，$\mu$的$1 - \alpha$近似区间估计是$\bar{X} \pm u_{1-\frac{\alpha}{2}}\dfrac{\sigma}{\sqrt{n}}$；
+    + $\sigma$未知时，把它替换为一个相合估计$S$，从而得到真正的$\mu$的$1 - \alpha$近似区间估计$\bar{X} \pm u_{1-\frac{\alpha}{2}}\dfrac{S}{\sqrt{n}}$。
++ 样本量的确定：把某比率$p$作为关心的参数，在某种刻画$p$的估计精度的要求下，确定至少需要的样本量。【通常限制为给定$\alpha$和区间长度上限$d_0$】
+### 两个正态总体下的区间估计
++ 设两组样本$x_1,\cdots,x_m\stackrel{i.i.d}{\sim}N(\mu_1,\sigma_1^2),y_1,\cdots,y_n\stackrel{i.i.d}{\sim}N(\mu_2,\sigma_2^2)$，且相互独立。样本均值为$\overline{X},\overline{Y}$，样本方差为$s_x^2,s_y^2$。
+1. $\sigma_1^2,\sigma_2^2$已知时$\mu_1-\mu_2$的置信区间
+    + 枢轴量：$G=\dfrac{\overline{X}-\overline{Y}-(\mu_1-\mu_2)}{\sqrt{\frac{\sigma_1^2}{m}+\frac{\sigma_2^2}{n}}}\sim N(0,1)$
+    + 则$\mu_1-\mu_2$的一个$1-\alpha$置信区间为$(\overline{X}-\overline{Y})\pm u_{1-\frac{\alpha}{2}}\sqrt{\dfrac{\sigma_1^2}{m}+\dfrac{\sigma_2^2}{n}}$
+2. $\sigma_1^2=\sigma_2^2=\sigma^2$未知时$\mu_1-\mu_2$的置信区间
+    + 枢轴量：$G=\dfrac{\overline{X}-\overline{Y}-(\mu_1-\mu_2)}{\sqrt{\frac{1}{m}+\frac{1}{n}}\cdot s_w}\sim t(m+n-2)$，其中$s_w^2=\dfrac{(m-1)s_x^2+(n-1)s_y^2}{m+n-2}$
+    + $\mu_1-\mu_2$的一个$1-\alpha$置信区间：$(\overline{X}-\overline{Y})\pm\sqrt{\dfrac{1}{m}+\dfrac{1}{n}}\cdot s_w\cdot t_{1-\frac{\alpha}{2}}(m+n-2)$
+3. $\dfrac{\sigma_1^2}{\sigma_2^2}=c$已知时$\mu_1-\mu_2$的置信区间
+    + 枢轴量：$G=\dfrac{\overline{X}-\overline{Y}-(\mu_1-\mu_2)}{\sqrt{\frac{1}{m}+\frac{c}{n}}\cdot s_w}\sim t(m+n-2)$，其中$s_w^2=\dfrac{(m-1)s_x^2+\frac{1}{c}(n-1)s_y^2}{m+n-2}$
+    + $\mu_1-\mu_2$的一个$1-\alpha$置信区间：$(\overline{X}-\overline{Y})\pm\sqrt{\dfrac{1}{m}+\dfrac{c}{n}}\cdot s_w\cdot t_{1-\frac{\alpha}{2}}(m+n-2)$
+4. $\sigma_1^2,\sigma_2^2$均未知时$\mu_1-\mu_2$的置信区间
+    + 当$m,n$较大时使用大样本置信区间：$G=\dfrac{\overline{X}-\overline{Y}-(\mu_1-\mu_2)}{\sqrt{\frac{s_x^2}{m}+\frac{s_y^2}{n}}}\dot{\sim} N(0,1)$
+    + 故$\mu_1-\mu_2$的一个近似$1-\alpha$置信区间为$(\overline{X}-\overline{Y})\pm u_{1-\frac{\alpha}{2}}\sqrt{\dfrac{s_x^2}{m}+\dfrac{s_y^2}{n}}$
+5. 一般情况下$\mu_1-\mu_2$的置信区间（方差未知且$m,n$不太大）【也称为Behrens-Fisher问题】
+    + 记$s_0^2=\dfrac{s_x^2}{m}+\dfrac{s_y^2}{n}$，则$T=\dfrac{\overline{X}-\overline{Y}-(\mu_1-\mu_2)}{s_0}$近似服从$t(l)$，其中$l=\dfrac{s_0^4}{\frac{s_x^4}{m^2(m-1)}+\frac{s_y^4}{n^2(n-1)}}$取最近整数。
+    + 由此可得$\mu_1-\mu_2$的近似$1-\alpha$置信区间为$\overline{X}-\overline{Y}\pm s_0\cdot t_{1-\frac{\alpha}{2}}(l)$
+6. $\dfrac{\sigma_1^2}{\sigma_2^2}$的置信区间
+    + 枢轴量：$F=\dfrac{\frac{s_x^2}{\sigma_1^2}}{\frac{s_y^2}{\sigma_2^2}}\sim F(m-1,n-1)$
+    + $\dfrac{\sigma_1^2}{\sigma_2^2}$的一个$1-\alpha$置信区间为$\displaystyle\left(\frac{s_x^2}{s_y^2}\cdot\frac{1}{F_{1-\frac{\alpha}{2}}(m-1,n-1)},\frac{s_x^2}{s_y^2}\cdot\frac{1}{F_{\frac{\alpha}{2}}(m-1,n-1)}\right)$
+
+# 假设检验
