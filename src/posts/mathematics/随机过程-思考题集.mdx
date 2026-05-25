@@ -1021,7 +1021,7 @@ sticky: true
       &=P_i(\tau_i=n)P(\tau_i=m)
       \end{aligned}
       $$
-      其中$P_i(\tau_i=n)$表示从$i$出发首次返回$i$的时间为$n$的概率，恰等于$P(\tau_i=n)$，所以$\tau_i$与$\tau_i^{(2)}-\tau_i$独立同分布。
+      其中$P_i(\tau_i=n)$表示从$i$出发首次返回$i$的时间为$n$的概率，恰等于$P(\tau_i^{(2)}-\tau_i=n)$，所以$\tau_i$与$\tau_i^{(2)}-\tau_i$独立同分布。
       </div>
       </details>
    </div>
@@ -1187,7 +1187,7 @@ sticky: true
          0 \leq \sum_k p_{i,k}^{(n)} z_k &= \sum_{k \in S} \sum_{l \in S} p_{i,l}^{(n-1)} p_{l,k} z_k = \sum_{l \in S} p_{i,l}^{(n-1)} \sum_{k \in S} p_{l,k} z_k\\
          &\leq \sum_{l \neq j} p_{i,l}^{(n-1)} (z_l - 1) + p_{i,j}^{(n-1)} \delta\\
          &\leq \sum_{l \in S} p_{i,l}^{(n-1)} z_l + p_{i,j}^{(n-1)} (1 + \delta) - 1\\
-         &\leq z_i+\sum_{k=1}^{n-1}p_{i,j}^{(k)}(1+\delta)-n.
+         &\leq\cdots\leq z_i+\sum_{k=1}^{n-1}p_{i,j}^{(k)}(1+\delta)-n.
          \end{aligned}
          $$
          这表明
@@ -1219,7 +1219,7 @@ sticky: true
       <div class="mdx-collapse__content">
       证明：任意$k \in S$，由 X 非常返或零常返可知，$p_{i,k}^{(n)} \to 0$。注意到
       $$
-      \sum_{k \in S} p_{i,k}^{(n)} y_k = \sum_{k \in N} p_{i,k}^{(n)} y_k + \sum_{k \geq N} p_{i,k}^{(n)} y_k \geq \left(1 - \sum_{k \in N} p_{i,k}^{(n)}\right) \min_{s \geq N} y_s.
+      \sum_{k \in S} p_{i,k}^{(n)} y_k = \sum_{k < N} p_{i,k}^{(n)} y_k + \sum_{k \geq N} p_{i,k}^{(n)} y_k \geq \left(1 - \sum_{k < N} p_{i,k}^{(n)}\right) \min_{s \geq N} y_s.
       $$
       先令$n \to \infty$，可得$\displaystyle\lim_{n \to \infty} \sum_{k < N} p_{i,k}^{(n)} = 0$，再令$N \to \infty$，可知此时结论成立。
       </div>
@@ -1241,12 +1241,13 @@ sticky: true
       $$
       \begin{aligned}
       \sum_{k \in S} \tilde{p}_{i,k}^{(n)} y_k &= \sum_{k \in S} \sum_{l \in S} \tilde{p}_{i,l}^{(n-1)} \tilde{p}_{l,k} y_k \\
-      &= \sum_{l \in S} \tilde{p}_{i,l}^{(n-1)} y_l + \Delta \tilde{p}_{i,j}^{(n-1)}\\
-      &\leq \sum_{l \neq j} \tilde{p}_{i,l}^{(n-1)} y_l + \Delta \tilde{p}_{i,j}^{(n-1)} 
+      &= \sum_{l \in S} \tilde{p}_{i,l}^{(n-1)} \sum_{k \in S} \tilde{p}_{l,k} y_k\\
+      &=\sum_{l \neq j} \tilde{p}_{i,l}^{(n-1)} \sum_{k \in S} p_{l,k} y_k + \Delta \tilde{p}_{i,j}^{(n-1)}\\
+      &\leq \sum_{l \neq j} \tilde{p}_{i,l}^{(n-1)} y_l + \Delta \tilde{p}_{i,j}^{(n-1)} \\
       &\leq \cdots \leq y_i + \Delta \sum_{k=1}^{n-1} \tilde{p}_{i,j}^{(k)}.
       \end{aligned}
       $$
-      若$Y$是非常返的，那么令$n \to \infty$，由上一问结论知$\displaystyle\sum_{k=1}^{n-1} \tilde{p}_{i,j}^{(k)} \to \infty$，因此$\displaystyle\sum_{k=0}^{\infty} \tilde{p}_{i,j}^{(k)} = +\infty$，这表明$Y$的状态$j$是常返的，从而$Y$是常返的，矛盾。  
+      若$Y$是非常返的，那么令$n \to \infty$，由上一问结论知$\displaystyle\sum_{k=1}^{n-1} \tilde{p}_{i,j}^{(k)} \to +\infty$，因此$\displaystyle\sum_{k=0}^{\infty} \tilde{p}_{i,j}^{(k)} = +\infty$，这表明$Y$的状态$j$是常返的，从而$Y$是常返的，矛盾。  
       因此$Y$一定是常返的，故方程组
       $$
       z_i = \sum_{l \neq j} \tilde{p}_{i,l} z_l + \tilde{p}_{i,j} = \sum_{l \neq j} p_{i,l} z_l + p_{i,j},\quad i \neq j
