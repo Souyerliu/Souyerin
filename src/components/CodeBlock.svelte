@@ -192,7 +192,7 @@
     <div
       bind:this={container}
       class="content-wrapper"
-      style="font-family: var(--font-code);"
+      style="font-family: 'Maple Mono', 'Courier New', monospace;"
     >
       <slot />
     </div>
@@ -214,12 +214,18 @@
 
 <style>
   /* 基础布局 */
+  @font-face {
+    font-family: "Maple Mono";
+    src: url("../assets/fonts/MapleMono-CN-Regular.ttf") format("truetype");
+    font-display: swap;
+  }
+
   .codeblock {
     margin: 1.5rem 0;
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: var(--codeblock-shadow);
-    font-family: var(--font-code);
+    font-family: "Maple Mono", "Courier New", monospace;
   }
 
   .dark.codeblock {
@@ -367,7 +373,7 @@
 
   /* 核心：处理插槽内的样式 */
   :global(code-block pre *) {
-    font-family: var(--font-code);
+    font-family: "Maple Mono", "Courier New", Courier, monospace;
     font-size: 0.925rem;
     line-height: 1.25rem;
     line-break: anywhere;
