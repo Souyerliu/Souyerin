@@ -33,8 +33,6 @@ import spoiler from "./src/remark-plugins/spoiler.mjs";
 import noteDirective from "./src/remark-plugins/note-directive.mjs";
 import spanDirective from "./src/remark-plugins/span-directive.mjs";
 
-import Font from "vite-plugin-font";
-
 import PlayformInline from "@playform/inline";
 import { installProcessWarningFilter } from "./src/toolkit/suppressWatcherWarning";
 import themeConfig from "./src/theme.config.ts";
@@ -106,15 +104,7 @@ export default defineConfig({
         "@": new URL("./src", import.meta.url).toString(),
       },
     },
-    plugins: [
-      Font.vite({
-        scanFiles: ["src/**/*.{svelte,ts,tsx,js,jsx,md,mdx,json,astro}"],
-        css: {
-          fontDisplay: "optional",
-        },
-      }),
-      esToolkitPlugin(),
-    ],
+    plugins: [esToolkitPlugin()],
   },
   markdown: {
     shikiConfig: {
