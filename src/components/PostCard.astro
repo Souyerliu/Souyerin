@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { getT } from "@/i18n";
 
@@ -19,9 +18,8 @@ const lastCategory = post.data.categories?.[post.data.categories.length - 1];
   <div class="cover">
     {
       post.data.cover && (
-        <Image
-          layout="constrained"
-          src={post.data.cover}
+        <img
+          src={post.data.cover.src}
           alt={post.data.title}
           loading="lazy"
           decoding="async"

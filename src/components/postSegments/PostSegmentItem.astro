@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import PostMeta from "./PostMeta.astro";
 import type { ImageMetadata } from "astro";
 
@@ -37,14 +36,12 @@ const {
     {
       cover ? (
         <a href={url} title={title}>
-          <Image
-            src={cover}
-            widths={[320, 400, 480, 640, 800, 960]}
-            sizes="(min-width: 768px) 480px, 90vw"
-            quality={55}
+          <img
+            src={cover.src}
             alt={title}
-            priority={!lazy}
-            format="avif"
+            loading={lazy ? "lazy" : "eager"}
+            decoding="async"
+            fetchpriority={lazy ? "auto" : "high"}
           />
         </a>
       ) : (

@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import Sidebar from "./Sidebar.svelte";
 import { getT } from "@/i18n";
 import themeConfig from "@/theme.config";
@@ -60,17 +59,14 @@ const authorLabel = config.author || t("post.author");
 >
   {
     (
-      <Image
-        src={avatar}
+      <img
+        src={avatar.src}
         alt={authorLabel}
-        priority
-        quality={65}
-        layout="constrained"
         class="avatar-image"
-        format="avif"
-        widths={[160, 320]}
         height={160}
         width={160}
+        loading="eager"
+        decoding="async"
       />
     )
   }

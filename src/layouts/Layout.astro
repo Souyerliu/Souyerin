@@ -20,7 +20,12 @@ import "@/styles/header-cover.css";
 import "@/styles/mdx-components.css";
 
 import Loading from "@/components/Loading.astro";
-import { covers, resolveFixedCover, getPostCover} from "@/components/Images.astro";
+import {
+  carouselCovers,
+  covers,
+  resolveFixedCover,
+  getPostCover,
+} from "@/components/Images.astro";
 import FloatingToolbar from "@/components/FloatingToolbar.svelte";
 import TwoColumnLayout from "@/layouts/TwoColumnLayout.astro";
 import ThreeColumnLayout from "@/layouts/ThreeColumnLayout.astro";
@@ -102,7 +107,7 @@ const headerCovers = isPostPage
   ? postCover
     ? [postCover]
     : covers
-  : covers;
+  : carouselCovers;
 
 const moments = shouldComputeRightSidebarRecentMoments
   ? (await getCollection("moments")).sort(
