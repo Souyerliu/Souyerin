@@ -119,7 +119,7 @@ cover: ./实变函数-Cheat-Sheet/folder.png
         + $x \in A'\Longleftrightarrow$存在点列$\{x_n, n \geq 1\} \subset A \setminus \{x\}$，使得当$n \to \infty$时，$x_n \to x$； 
         + $x \in \overline{A}\Longleftrightarrow$存在$A$中的点列$\{x_n, n \geq 1\} \subset A$，使得当$n \to \infty$时，$x_n \to x$.
     + 若$A, B \subset \mathbb{R}^n$，则$(A \cup B)' = A' \cup B'$；
-    + 设$A \subset \mathbb{R}^n$，则$A', \bar{A}$皆为闭集；
+    + 设$A \subset \mathbb{R}^n$，则$A', \overline{A}$皆为闭集；
     + 若$\{A_n, n \geq 1\} \subset \mathbb{R}^n$，则$\displaystyle\left( \bigcup_{n=1}^\infty A_n \right)' \subset \bigcup_{n=1}^\infty A'_n$未必成立。（反例：$\{A_n\}$为所有有理数集合）
 + 闭集性质：
     + $\emptyset$和$\R^n$都是闭集；任意多个闭集的交还是闭集；有限多个闭集的并是闭集。
@@ -372,3 +372,143 @@ cover: ./实变函数-Cheat-Sheet/folder.png
     + 由此可得可测函数“差不多”是连续函数。
 
 # 可积函数
+## Lebesgue积分的定义和性质
+1. 非负简单可测函数（$f\in\mathcal{MS}^+(E)$）
+    + 设$\displaystyle f=\sum_{k=1}^m a_k\chi_{E_k}(x)$，定义$f$在$E$上的Lebesgue积分
+        $$
+        \int_{E}f(x)\mathrm{d}x=\sum_{k=1}^m a_k\cdot m(E_k)
+        $$
+    + 注：积分的计算不依赖$f$的表达式（即$E_k$的取法）
+    + 单调性：若$\mathcal{MS}^+(E),f\leq g\, \text{a.e.}$，则$\displaystyle \int_Ef\leq\int_Eg$。
+2. 非负可测函数（$f\in\mathcal{M}^+(E)$）
+    + 使用非负简单可测函数列逼近：
+        $$
+        \{f_n(x),n\geq 1\}\subset\mathcal{MS}^+(E),\quad f_1(x)\leq\cdots\leq f_n(x)\leq\cdots,\lim_{n\to\infty}f_n(x)=f(x)
+        $$
+        上述条件也记为$f_n\uparrow f\  \text{a.e.} \ x\in E$。
+    + 定义$\displaystyle\lim_{n\to\infty}\int_E f_n(x)\mathrm{d}x$为$f$在$E$上的Lebesgue积分，同样记为$\displaystyle\int_{E}f(x)\mathrm{d}x$。
+    + 非负可测函数的Lebesgue积分一定存在，且不依赖$\{f_n(x)\}$的选取。事实上，对任意单调非负简单可测函数列$\{f_n,n\geq 1\}$满足$f_n\uparrow f\ \text{a.e.} \ x\in E$，有
+        $$
+        \lim_{n\to\infty}\int_Ef_n(x)\mathrm{d}x=\sup\left\{\int_Eg(x)\mathrm{d}x:g\in\mathcal{MS}^+(E),g(x)\leq f(x),x\in E\right\}
+        $$
+    + 同样有单调性（略）
+3. 所有可测函数（$f\in\mathcal{M}(E)$）【记$f^+(x)=\max\{f(x),0\},f^-(x)=\max\{-f(x),0\}$】
+    + 如果$\displaystyle\int_E f^+(x)\mathrm{d}x< \infty$或$\displaystyle\int_E f^-(x)\mathrm{d}x< \infty$，则称$f$的Lebesgue积分存在，记$f\in\overline{\mathcal{L}}(E)$；若二者同时成立，则称$f$Lebesgue可积，记为$f\in\mathcal{L}(E)$。
+    + 在上述条件下，定义
+        $$
+        \int_{E}f(x)\mathrm{d}x=\int_{E}f^+(x)\mathrm{d}x-\int_{E}f(x)^-\mathrm{d}x
+        $$
+    + 结论：
+        1. $\mathcal{L}(E)\subset\overline{\mathcal{L}}(E),\mathcal{M}^+(E)\subset\overline{\mathcal{L}}(E)$；
+        2. 当$m(E)< \infty$时，若$\displaystyle E = \sum_{k=1}^m E_k, \, E_k \in \mathcal{M},f(x) = \sum_{k=1}^m a_k \chi_{E_k}(x) \in \mathcal{M}S(E)$为定义在$E$上的简单可测函数，则  
+            $$
+            \int_E f(x)\mathrm{d}x = \sum_{k=1}^m a_km(E_k)
+            $$
+        3. 当$m(E) < \infty$时，$\mathcal{M}S(E) \subset \mathcal{L}(E)$。
+## Lebesgue积分的性质
+1. 线性性：若$f \in \overline{\mathcal{L}}(E)\ (\mathcal{L}(E))$，$c \in \mathbb{R}$，则$cf \in \overline{\mathcal{L}}(E)\ (\mathcal{L}(E))$，且$\displaystyle\int_E cf = c \int_E f$；
+2. 可加性：若$f, g \in \overline{\mathcal{L}}(E)\ (\mathcal{L}(E))$，$\displaystyle\int_E f + \int_E g$有意义，则$f + g \in \overline{\mathcal{L}}(E)\ (\mathcal{L}(E))$且$\displaystyle \int_E (f + g) = \int_E f + \int_E g$；
+3. 单调性：设$f, g \in \overline{\mathcal{L}}(E)$，若$f(x) \leq g(x) \ \text{a.e.} \ x \in E$，则$\displaystyle\int_E f \leq \int_E g$；
+4. 定义域收缩：设$F \subset E,F \in \mathcal{M}$，则$\overline{\mathcal{L}}(E) \subset \overline{\mathcal{L}}(F)$，$\mathcal{L}(E) \subset \mathcal{L}(F)$且$\displaystyle\int_F f(x) \mathrm{d}x = \int_E (f(x) \chi_F(x)) \mathrm{d}x$；
+5. 积分域可加性：设$A,B \in \mathcal{M},E = A + B$，若$f \in \overline{\mathcal{L}}(E)$，则$\displaystyle\int_E f = \int_A f + \int_B f$；
+6. 比较判别：设$f \in \mathcal{M}(E),g \in \mathcal{L}(E)$，且$f(x) \leq g(x) \ \text{a.e.} \ x \in E$或者$f(x) \geq g(x) \ \text{a.e.} \ x \in E$，则$f \in \overline{\mathcal{L}}(E)$；
+7. 可积比较判别：设$f \in \mathcal{M}(E),g \in \mathcal{L}(E)$，且$|f(x)| \leq g(x) \ \text{a.e.} \ x \in E$，则$f \in \mathcal{L}(E)$；
+8. 有界可积：设$f \in \mathcal{M}(E),m(E) < \infty$，且$|f(x)| \leq M < \infty \ \text{a.e.} \ x \in E$，则$f \in \mathcal{L}(E)$；
+9. 设$f(x) = 0 \ \text{a.e.} \ x \in E$，则对任意的$A \in \mathcal{M},A \subset E$，有$\displaystyle\int_A f = 0$；
+10. 设$\displaystyle m(E) = 0\Longrightarrow\forall f \in \mathcal{M}(E),\int_E f = 0$；
+11. 绝对值积分：设$\displaystyle f \in \overline{\mathcal{L}}(E)\Longrightarrow\left| \int_E f \right| \leq \int_E |f|$；
+12. 绝对可积等价：$\displaystyle f \in \mathcal{L}(E)\Longleftrightarrow|f| \in \mathcal{L}(E)$。
+    + 注：此性质为与黎曼积分的最大差别：黎曼积分绝对值可积推不出原函数可积。
++ 切比雪夫不等式：设$f\in\mathcal{M}(E)$，对任意$\epsilon>0$，记$E_\epsilon=\{x\in E:|f(x)|\geq\epsilon\}$，则
+    $$
+    \epsilon\cdot m(E_\epsilon)\leq\int_E|f|.
+    $$
+    + 推论1：若$f\in\mathcal{M}^+(E)$，则$\displaystyle\int_Ef=0\Longrightarrow f(x)=0 \ \text{a.e.} \ x \in E$（即上述性质9逆命题成立）
+    + 推论2：若$f\in\mathcal{L}(E)$，则$|f(x)|< \infty\ \text{a.e.} \ x \in E$（$f$几乎处处有限）
++ 积分的绝对连续性：若$f\in\mathcal{L}(E)$，则$\forall\epsilon>0,\exists\delta>0$使得当$A\subset E,m(A)< \delta$时，$\displaystyle\int_A|f|< \epsilon$。
+## 积分收敛定理
+1. Levi单调收敛定理：设$\{f, f_n, n \geq 1\} \subset \mathcal{M}^+(E)$，且$f_n \uparrow f\ \text{a.e.} \ x \in E$，则
+    $$
+    \lim_{n \to \infty} \int_E f_n(x)\mathrm{d}x = \int_E f(x)\mathrm{d}x.
+    $$
+    + 推论：
+        1. 设$\{f, f_n, n \geq 1\} \subset \mathcal{M}(E),\,f_n \downarrow f\ \text{a.e.} \ x \in E$，且$f_1\in\mathcal{L}(E)$，则上述结论同样成立；
+        2. 设$\{f, f_n, n \geq 1\} \subset \mathcal{M}(E),\,f_n \uparrow f\ \text{a.e.} \ x \in E$。函数$g \in \mathcal{L}(E)$且对任意的$n \geq 1,f_n(x) \geq g(x)\ \text{a.e.} \ x \in E$，则上述结论同样成立；
+        3. （逐项积分）设$\{f, f_n, n \geq 1\} \subset \mathcal{M}^+(E)$，则
+            $$
+            \int_E\sum_{n=1}^\infty f_n(x)\mathrm{d}x=\sum_{n=1}^\infty\int_E f_n(x)\mathrm{d}x.
+            $$
+        4. 设$\displaystyle f\in\overline{\mathcal{L}}(E),A=\sum_{n=1}^\infty A_n\subset E$，则
+            $$
+            \int_A f(x)\mathrm{d}x=\sum_{n=1}^\infty\int_{A_n} f(x)\mathrm{d}x.
+            $$
+2. Fatou引理：设$\{f, f_n, n \geq 1\} \subset \mathcal{M}^+(E)$，则
+    $$
+    \int_E\varliminf_{n\to\infty}f_n(x)\mathrm{d}x\leq \varliminf_{n\to\infty}\int_Ef_n(x)\mathrm{d}x.
+    $$
+    + 推论：设$\{f_n, n \geq 1\} \subset \mathcal{M}(E)$，则
+        + 若存在函数$g \in \mathcal{L}(E)$使得$f_n \geq g\ \text{a.e.}$，则  
+            $$
+            \int_E \varliminf_{n \to \infty} f_n(x) \mathrm{d}x \leq \varliminf_{n \to \infty} \int_E f_n(x)\mathrm{d}x.
+            $$
+        + 若存在函数$h \in \mathcal{L}(E)$使得$f_n \leq h\ \text{a.e.}$，则  
+            $$
+            \int_E \varlimsup_{n \to \infty} f_n(x) \mathrm{d}x \geq \varlimsup_{n \to \infty} \int_E f_n(x)\mathrm{d}x.
+            $$
+        > 由此推论可得下述控制收敛定理。
+3. 控制收敛定理：设$\{f_n, n \geq 1\} \subset \mathcal{M}(E)$，且存在函数$g \in \mathcal{L}(E)$使得$|f_n| \leq g\ \text{a.e.}$。若$f_n\stackrel{\text{a.e.}}{\longrightarrow}f$或$f_n\stackrel{m}{\longrightarrow}f$，则$f\in\mathcal{L}(E)$且
+    $$
+    \lim_{n \to \infty} \int_E f_n(x)\mathrm{d}x = \int_E f(x)\mathrm{d}x.
+    $$
+    + 推论1（有界收敛定理）：设$\{f_n, n \geq 1\} \subset \mathcal{M}(E)$，且存在常数$M>0$使得$|f_n| \leq M\ \text{a.e.}$。若$f_n\stackrel{\text{a.e.}}{\longrightarrow}f$或$f_n\stackrel{m}{\longrightarrow}f$，则$f\in\mathcal{L}(E)$且
+        $$
+        \lim_{n \to \infty} \int_E f_n(x)\mathrm{d}x = \int_E f(x)\mathrm{d}x.
+        $$
+    + 推论2（积分号下求导）：设$f(x, y)$是$E \times (a, b)$上的广义实函数。固定$y$时$f(x, y) \in \mathcal{L}(E)$；固定$x$时导数$\displaystyle f'_y(x, y) = \frac{\mathrm{d}}{\mathrm{d}y} f(x, y)$存在。若存在$F(x) \in \mathcal{L}(E)$使得$|f'_y(x, y)| \leq F(x)$对任意的$(x, y) \in E \times (a, b)$都成立，则函数$\displaystyle I(y) = \int_E f(x, y)\mathrm{d}x$可导，且
+        $$
+        \frac{d}{dy} I(y) = \int_E f'_y(x, y)\mathrm{d}x,
+        $$
+        即
+        $$
+        \frac{\mathrm{d}}{\mathrm{d}y} \left( \int_E f(x, y)\mathrm{d}x \right) = \int_E \left( \frac{\mathrm{d}}{\mathrm{d}y} f(x, y) \right) \mathrm{d}x.
+        $$
+### 可积函数与连续函数
++ 定理：设$f \in \mathcal{L}(E)$，则对任意的$\varepsilon > 0$，存在函数$g \in \mathcal{MS}(E) \cap \mathcal{L}(E)$且
+    $$
+    \int_E |f(x) - g(x)|\mathrm{d}x < \epsilon
+    $$
+    成立。
+    + 上述定理中将$g$的限制改为$\R^n$上的连续函数，则结论仍然成立。
++ 由此可得可积函数“差不多”是可测函数。
+## Lebesgue积分与Riemann积分
++ 黎曼可积函数特征
+    1. 设$f$为$[a,b]$上有界实值函数，则$f\in\mathcal{R}[a,b]$（黎曼可积）当且仅当$\{x\in[a,b]:x$为$f$上的不连续点$\}$为零测集。
+    2. 若$f\in\mathcal{R}[a,b]$，则$f\in\mathcal{L}[a,b]$且
+        $$
+        (\mathcal{L})\int_{[a,b]}f(x)\mathrm{d}x=(\mathcal{R})\int_{[a,b]}f(x)\mathrm{d}x
+        $$
++ Lebesgue积分与Riemann积分的关系：设$f$为定义在区间$[a, \infty)$上的实值函数，且对任意的$b > a$，$f$在$[a, b]$上有界且几乎处处连续，则
+    $$
+    (\mathcal{L}) \int_{[a, \infty)} |f(x)| \mathrm{d}x = (\mathcal{R}) \int_a^\infty |f(x)| \mathrm{d}x
+    $$
+    即$f$在$[a, \infty)$上 Lebesgue 可积当且仅当广义 Riemann 积分$\displaystyle(\mathcal{R}) \int_a^\infty f(x) \mathrm{d}x$绝对收敛。
+    当$\displaystyle(\mathcal{R}) \int_a^\infty f(x) \mathrm{d}x$绝对收敛时，
+    $$
+    (\mathcal{L}) \int_{[a, \infty)} f(x) \mathrm{d}x = (\mathcal{R}) \int_a^\infty f(x) \mathrm{d}x.
+    $$ 
+    > 即如果函数$f$在一个区间上勒贝格&黎曼可积，则两个积分值相同。
+## Fubini定理
++ 设$f \in \mathcal{L}(\mathbb{R}^2)$，则  
+    1. 对几乎所有的$x \in \mathbb{R}$，$f(x, y)$作为$y$的函数 Lebesgue 可积；  
+    2. $\displaystyle I(x) \triangleq \int_{\mathbb{R}} f(x, y) \mathrm{d}y \in \mathcal{L}(\mathbb{R}^1)$；
+    3. $\displaystyle \int_{\mathbb{R}} I(x) \mathrm{d}x = \int_{\mathbb{R}^2} f(x, y) \mathrm{d}x \mathrm{d}y$。
+    + 此定理可推广至$x\in\R^p,y\in\R^q\Longrightarrow f(x,y)\in\mathcal{L}(\R^{p+q})$；
+    + 定义域可限制为$E\subset\R^2$（$f\in\mathcal{L}(E)$）；
++ 推论（重积分变量交换）：若$f \in \mathcal{L}(\mathbb{R}^2)$，则  
+    $$
+    \int_{\mathbb{R}} dx \int_{\mathbb{R}} f(x, y) \mathrm{d}y = \int_{\mathbb{R}} \mathrm{d}y \int_{\mathbb{R}} f(x, y) \mathrm{d}x
+    $$
++ 其有一个“母定理”——Tonelli定理如下：设$f \in \mathcal{M}^+(\mathbb{R}^2)$，则  
+    1. 对几乎所有的$x \in \mathbb{R}$，$f(x, y)$ 作为$y$的函数 Lebesgue 可测；  
+    2. $\displaystyle I(x) \triangleq \int_{\mathbb{R}} f(x, y) \mathrm{d}y$几乎处处存在，且$I(x) \in \mathcal{M}^+(\mathbb{R}^1)$;  
+    3. $\displaystyle\int_{\mathbb{R}} I(x) \mathrm{d}x = \int_{\mathbb{R}^2} f(x, y) \mathrm{d}x \mathrm{d}y$。

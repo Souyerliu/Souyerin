@@ -744,7 +744,7 @@ $$
         $$
 + 记$\displaystyle N_n(j) = \sum_{k=1}^n 1_{\{X_k=j\}}$为过程$X$在时刻$n$之前（含$n$）到达状态$j$的次数，
     $$
-    E(N_n(j)) =E\left(\sum_{k=1}^n 1_{\{X_k=j\}}\right) = \sum_{k=1}^n \mathbb{P}(X_k = j)
+    E(N_n(j)) =E\left(\sum_{k=1}^n 1_{\{X_k=j\}}\right) = \sum_{k=1}^n P(X_k = j)
     $$
     表示$X$在时刻$n$之前（含$n$）到达状态$j$平均次数，$\dfrac{E(N_n(j))}{n}$则表示到达状态$j$的平均比率，则有
     $$
@@ -797,7 +797,69 @@ $$
         $$
     3. 若由此得到的$\mathbf{P}$为马氏链$X$的转移概率矩阵，则$X$为不可约可逆马氏链，且$\pi$为$X$的平稳分布。上述$\mathbf{Q}$也称为预选矩阵。
 ## 隐马氏链
-略，考完小测后再补。
+隐马氏链的结构：
+    $$
+    \begin{array}{c c c c}
+    X_0 & \longrightarrow & X_1 & \longrightarrow \cdots \\
+    \downarrow & & \downarrow & \\
+    Y_0 & & Y_1 &
+    \end{array}
+    $$
++ 定义：设$X_n, Y_n, n \geq 0$是分别取值于集合$S$和$W$上的离散随机变量。对所有$n \geq 0$，令$Z_n = (X_n, Y_n)$。若存在随机矩阵$\mathbf{P} = (p_{i,j})_{i,j \in S}$和$\mathbf{Q} = (q_{k,l})_{k \in S, l \in W}$使得对任意$n \geq 0$，
+    $$
+    P(Z_{n+1} = (i_{n+1}, l_{n+1}) \mid Z_k = (i_k, l_k), 0 \leq k \leq n) = p_{i_n, i_{n+1}}q_{i_{n+1}, l_{n+1}}
+    $$
+    对任意$i_0, i_1, \dots, i_{n+1} \in S$，$l_0, l_1, \dots, l_{n+1} \in W$都成立，并且对任意$i \in S, l \in W$，
+    $$
+    P(Y_0 = l \mid X_0 = i) = q_{i,l}
+    $$
+    那么我们称二维随机过程$Z = \{Z_n, n \geq 0\}$为隐马尔科夫链，简称为隐马氏链。通常我们称$X$为状态序列，称$Y$为观测序列。由此可知：
+    + $Z$为向量值时齐马氏链，转移概率为$p_{(i_n,l_n),(i_{n+1},l_{n+1})}=p_{i_n, i_{n+1}}q_{i_{n+1}, l_{n+1}}$。
+    + $\{X_n,n\geq 0\}$也是马氏链，其转移概率矩阵为$\mathbf{P}$。
+    + 在已知$\{X_n,n\geq 0\}$的条件下，$\{Y_n,n\geq 0\}$相互独立。【但$\{Y_n\}$不是马氏链】
++ 有限维分布：若已知$X_0$的初始分布$\pi = (\pi_i, i \in S)$，那么对任意$n \geq 0$ 以及$i_0, i_1, \cdots, i_n \in S$，$l_0, l_1, \cdots, l_n \in W$，
+    $$
+    P(Z_k = (i_k, l_k), 0 \leq k \leq n) = \pi_{i_0} q_{i_0, l_0} \prod_{k=1}^n p_{i_{k-1}, i_k} q_{i_k, l_k}.
+    $$
+    这表明初始分布$\pi$以及随机矩阵$\mathbf{P},\mathbf{Q}$完全确定了$Z$的统计特征。通常称$(\pi,\mathbf{P},\mathbf{Q})$为隐马尔科夫链$Z$的参数组或三要素，称$\pi$为初始分布，$\mathbf{P}$为转移概率矩阵，$\mathbf{Q}$为观测概率矩阵。
+### 应用一：评估问题
+1. 计算$P(Y_k=l_k,0\leq k\leq n)$
+    + 求解：给定$l_0,l_1,\cdots,l_n\in W$，对任意$m\in[0,n]$，定义
+        $$
+        \begin{aligned}
+        F_m(i)&=P(X_m=i,Y_k=l_k,0\leq k\leq m)\\
+        B_m(i)&=P(Y_k=l_k,m+1\leq k\leq n|X_m=i)
+        \end{aligned}
+        $$
+        那么有
+        $$
+        \begin{aligned}
+        F_0(i)&=\pi_iq_{i,l_0}\\
+        F_m(i)&=q_{i,l_m}\sum_{i_{m-1}\in S}p_{i_{m-1},i}F_{m-1}(i_{m-1}),m\geq 1\\
+        B_n(i)&\equiv 1\\
+        B_m(i)&=\sum_{i_{m+1}\in S}p_{i,i_{m+1}}q_{i_{m+1},l_{m+1}}B_{m+1}(i_{m+1}),m<n
+        \end{aligned}
+        $$
+        于是
+        $$
+        \begin{aligned}
+        P(Y_k=l_k,0\leq k\leq n)&=\sum_{i\in S}F_n(i)=\sum_{i\in S}\pi_iq_{i,l_0}B_0(i)\\
+        &=\sum_{i\in S}F_m(i)B_m(i),\forall 0\leq m\leq n
+        \end{aligned}
+        $$
+2. 给定观察序列值的条件下，反推状态&预测新序列值
+    + 反推状态：
+        $$
+        P(X_m=i|Y_k=l_k,0\leq k\leq n)=\frac{F_m(i)B_m(i)}{\sum_{i\in S}F_m(i)B_m(i)}
+        $$
+    + 预测新序列值：
+        $$
+        P(Y_{n+1}=l|Y_k=l_k,0\leq k\leq n)= \sum_{i \in S} \frac{q_{i, l}^{(2)} F_n(i)}{\sum_{i \in S} F_n(i)}
+        $$
+        其中$q_{i, l}^{(2)} = p_{i, i_{n+1}} q_{i_{n+1}, l} = P(Y_1 = l | X_0 = i)$。
+### 应用二：学习问题
++ 目标：基于观测序列$\{Y_n\}$估计参数$(\pi,\mathbf{P},\mathbf{Q})$的合适取值。
++ 解法：鲍姆-韦尔奇（Baum-Welch）算法，属于EM算法【具体略，见书，maybe之后的机器学习方法笔记里会讨论】
 ## 分支过程
 + 定义：设$\{Y_{n,k}; n \geq 1, k \geq 1\}$为一族独立同分布的非负整数值的随机变量，$X_0$是给定的非负整数值随机变量且与$\{Y_{n,k}; n \geq 1, k \geq 1\}$独立。对任意$n \geq 0$，递归地定义随机变量$X_{n+1}$如下：
     $$
