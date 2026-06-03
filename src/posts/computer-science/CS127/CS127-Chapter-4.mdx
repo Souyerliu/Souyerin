@@ -1,0 +1,25 @@
+---
+title: CS127 Chapter 4
+date: 2026-05-29 22:28:43
+categories: [计算机科学,CS127]
+tags:
+    - 线性代数
+    - 优化模型
+    - 最优化理论
+cover: ./EECS127.png
+draft: true
+---
+# 主成分分析（Principal Component Analysis,PCA）
++ 主成分分析是一种重要的数据信息提取方法。具体而言，对于$\R^d$上的数据，我们希望能从中提取出$p$维的信息（其中$p\ll d$）
+    + 在机器学习中，主成分分析可以让成千上万维的数据降到一个合适的范围（甚至可以可视化），以研究其数据结构。
++ 下面进行符号约定：
+    1. 记数据为$X\triangleq\begin{bmatrix}\vec{x_1}^\top\\\vec{x_2}^\top\\\vdots\\\vec{x_n}^\top\end{bmatrix}\in\R^{n\times d}$，即$X^\top=\begin{bmatrix}\vec{x_1}&\vec{x_2}&\cdots&\vec{x_n}\end{bmatrix}\in\R^{d\times n}.$
+    2. 定义协方差矩阵
+        $$
+        C\triangleq\frac{1}{n}X^\top X=\frac{1}{n}\sum_{i=1}^n\vec{x_i}\vec{x_i}^\top\in\R^{d\times d} 
+        $$
+        则$C$为对称矩阵，即$C\in\mathbb{S}^d$。
++ 实际上，我们需要在$\R^d$空间中找到$p$个标准正交向量$\vec{w}_1,\cdots,\vec{w}_p$，使得数据点在这些向量上的投影能够充分反应其原有的信息。
+    + 如果直接取原始坐标系中的$p$个坐标轴向量，那么往往会导致很多数据点投影后接近于$\vec{0}$，因而损失大量信息。所以我们需要寻找更合适的标准正交向量组。
+## 寻找标准正交向量组
++ 首先我们来寻找第一个向量$\vec{w}_1$。根据主成分分析的原则，我们希望每个向量$\vec{x}_i$在$\vec{w}_1$上的投影都尽量接近$\vec{x}_i$本身，同时$\|\vec{w}_1\|=1$。于是，我们

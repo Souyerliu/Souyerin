@@ -1,0 +1,58 @@
+---
+title: DATA8 CHAPTER 8
+date: 2026-05-29 23:15:19
+categories: [数据科学,DATA8] 
+tags: 
+ - data science
+ - jupyter notebook
+# cover: ./valentine_logo.png
+draft: true
+---
+# Sampling（抽样方法）
+1. 确定抽样与随机抽样
+    + 对于一个用DataFrame表示的总体，如果选取指定索引的行（或者满足指定条件的行），那么这就属于确定抽样（Deterministic Samples）。
+    + 与之相对的是随机抽样（Random Samples），其特点是在抽样之前可以知道每个样本被抽到的概率（不一定相同）。随机抽样又分为有放回抽样和无放回抽样两大类，其中随机无放回抽样又称为简单随机抽样。
+    + 有时我们需要指定不同类别抽样样本的比例，在python中可以用`np.random.choice`的`p`参数实现。示例：
+        ```python
+        import numpy as np
+        def sample_proportions(sample_size, proportions):
+            """有放回抽取样本，返回各类别在样本中的比例。"""
+            categories = np.arange(len(proportions))      # [0, 1, 2, ...] 代表各个类别
+            samples = np.random.choice(categories, size=sample_size, p=proportions, replace=True)
+            # 计算各类别出现的比例
+            counts = np.bincount(samples, minlength=len(proportions))
+            return counts / sample_size
+        ```
+2. 系统抽样（Systematic Samples）
+    + 假设总体的所有元素按顺序排成一列，那么系统抽样法就是指在序列的头部位置随机选一个起始索引，之后每隔指定间隔选取一个样本。
+    + 系统抽样属于随机抽样，但是某些样本的组合被同时抽到的概率为$0$。
+3. 方便抽样（Convenience Samples）
+    + 在现实情况中，比如在街头随机选取若干个路人采访，这种抽样方式看似随机，但因为无法得知每个路人被抽到的概率，因此这不属于随机抽样。
+    + 我们称其为方便抽样，其在社会调查与市场调研中非常常见。
+## 经验分布与统计量的分布
++ 略，可见[数理统计Cheat Sheet](/posts/mathematics/数理统计-cheat-sheet/)。
++ DATA8主要强调的是计算机模拟可以让我们基于样本推断总体分布或生成满足特定分布的样本。
+# 假设检验
+## 评估一个模型
++ 在数据科学中，一个模型的本质是一组假设的集合。特别地，当假设涉及到随机性时（比如概率与分布），那么这个模型就属于随机模型。
++ 在建立了一个模型之后，我们就需要使用数据对模型进行检验。具体而言，就是将真实数据与模型模拟得到的预测数据进行比较。
++ 如果真实数据与模型模拟得到的数据之间存在系统偏差，则称其具有统计偏差（Statistical Bias）。
++ 一般而言，评估一个模型的步骤包括：
+    1. 选择一个统计量衡量模型与观测数据的差异
+    2. 在模型假设下进行模拟得到这个统计量
+    3. 将模型的预测值与观测数据比较（比如使用统计量多次模拟得到的直方图，或者从数据得到统计量）：如果观测数据在直方图中出现概率很低（或远离预测值），则说明数据与模型相违背。
+    > 实际上，这个过程也类似于数理统计中假设检验的流程，详细可见[数理统计Cheat Sheet](/posts/mathematics/数理统计-cheat-sheet/)。
++ 下面再补充一个衡量多分类比例差异的指标：总变差距离（total variation distance，TVD），计算方式为两种比例差异绝对值和的一半。比如：
+    |预测比例|实际比例|绝对差异|
+    |:--:|:--:|:--:|
+    |0.15|0.26|0.11|
+    |0.18|0.08|0.10|
+    |0.54|0.54|0|
+    |0.12|0.08|0.04|
+    |0.01|0.04|0.03|
+    + 那么其TVD为$\dfrac{0.11+0.1+0.04+0.3}{2}=0.14$。
+    + TVD衡量了它们之间的接近程度。TVD越大，两个分布看起来就越不同。
+## 决策与不确定性
+
+# 比较两个样本
+## A/B测试

@@ -8,7 +8,6 @@ tags:
  - 实分析
 cover: ./实变函数-练习题集/folder.png
 # sticky: true
-draft: true
 ---
 > 收集一些课上的思考题以及部分书上练习题，持续更新。
 # 集合论
@@ -426,6 +425,77 @@ draft: true
       对任意实数$t$，记集合$A_t\coloneqq\{x\in\R^1:f(x)>t\}$，则$A_t$可能为空集（如$t=\pi,f(x)=\arctan x$），属于可测集。  
       当$A_t\neq\emptyset$，则任意$x\in A_t$，有$t< f(x)$，那么任意$y>x$，有$f(y)\geq f(x)>t$，故$[x,\infty)\subset A_t$，即$A_t$为区间，属于可测集。  
       综上，$A_t$一定是可测集，故$f\in\mathcal{M}(\R^1)$。
+      </div>
+      </details>
+  </div>
+</div>
+# 可积函数
+<div class="quiz-group">
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$f$是定义在$[0,1]$上的单调不降的函数，证明对任意$E \subset [0,1],m(E) = t$，有
+      $$
+      \int_{[0,t]} f(x)\mathrm{d}x \leq \int_E f(x)\mathrm{d}x.
+      $$
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：因为
+      $$
+      [0, t] = [0, t] \cap E + [0, t] \cap ([0, 1] \setminus E), \quad E = [0, t] \cap E + (t, 1] \cap E.
+      $$
+      所以$m([0, t] \cap ([0, 1] \setminus E)) = m((t, 1] \cap E) $，且
+      $$
+      \begin{aligned}
+      \int_E f &= \int_{[0, t] \cap E} f + \int_{(t, 1] \cap E} f \geq \int_{[0, t] \cap E} f + f(t)m((t, 1] \cap E)\\   
+      &= \int_{[0, t] \cap E} f + f(t)m([0, t] \cap ([0, 1] \setminus E))\\
+      &\geq \int_{[0, t] \cap E} f + \int_{[0, t] \cap ([0, 1] \setminus E)} f = \int_{[0, t]} f.
+      \end{aligned}
+      $$
+
+      > 说实话这道题我感觉没怎么考查可积函数的知识，主要是集合与测度的等式构造。
+      </div>
+      </details>
+  </div>
+
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$\{f_n,n\geq 1\}\subset\mathcal{M}^+(E),f_n\stackrel{m}{\longrightarrow}f$，证明$\displaystyle\int_E f\leq \varliminf_{n\to\infty}\int_E f_n$。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      证明：由下极限的定义，存在子列$\{f_{n_k}\}$使得  
+      $$
+      \lim_{k\to\infty} \int_E f_{n_k} = \varliminf_{n\to\infty} \int_E f_n .
+      $$
+      又因为$f_{n_k}\stackrel{m}{\longrightarrow}f$，所以由Risez定理，存在子列$\{f_{n_{k_j}}\}$使得$f_{n_{k_j}}\stackrel{a.e.}{\longrightarrow}f$。又因为$\{f_{n_{k_j}}\}\subset\mathcal{M}^+(E)$，所以由Fatou引理，
+      $$
+      \int_E f\leq \varliminf_{j\to\infty}\int_E f_{n_{k_j}}=\lim_{k\to\infty} \int_E f_{n_k}=\varliminf_{n\to\infty} \int_E f_n.
+      $$
+      </div>
+      </details>
+  </div>
+
+  <div class="quiz-item">
+      <div class="quiz-question">
+      设$f(x, y) \in \mathcal{L}([0, 1] \times [0, 1])$，证明
+      $$
+      \int_0^1 \left( \int_0^y f(x, y)\mathrm{d}x \right)\mathrm{d}y = \int_0^1 \left( \int_x^1 f(x, y)\mathrm{d}y \right)\mathrm{d}x.
+      $$
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-yellow);--note-bg: oklch(0.97 0.04 91.8);--note-text: oklch(0.6 0.15 90);--note-hover: oklch(0.8 0.18 95);">
+      <summary class="mdx-collapse__summary">点击查看答案</summary>
+      <div class="mdx-collapse__content">
+      令$D = \{(x, y) : x \leq y\}$，由$f(x, y) \in \mathcal{L}([0, 1] \times [0, 1])$及$|f \cdot \chi_D| \leq |f|$ 知，$f(x, y)\chi_D(x, y) \in \mathcal{L}([0, 1] \times [0, 1])$。由 Fubini 定理知  
+      $$
+      \int_0^1 \left( \int_0^1 f(x, y)\chi_D(x, y) \mathrm{d}x \right)\mathrm{d}y = \int_0^1 \left( \int_0^1 f(x, y)\chi_D(x, y) \mathrm{d}y \right)\mathrm{d}x,
+      $$
+      即  
+      $$
+      \int_0^1 \left( \int_0^y f(x, y)\mathrm{d}x \right)\mathrm{d}y = \int_0^1 \left( \int_x^1 f(x, y) \mathrm{d}y \right)\mathrm{d}x.
+      $$ 
       </div>
       </details>
   </div>

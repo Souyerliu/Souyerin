@@ -930,3 +930,88 @@ $$
     + 若后代分布均值$m < 1$，那么存活过的粒子平均数为$\dfrac{1}{1 - m}$；
     + 若$m = 1$，那么存活过的粒子总数为无穷；
     + 如果$m > 1$，那么在灭绝条件下存活过的粒子平均数为$\dfrac{1}{1 - \eta'(q)}$，其中$q$为灭绝概率。
+# 布朗运动
+## 高斯过程
++ 回顾：多元正态分布（见上）
+    + 多元正态分布的特征函数：$\phi(t_1,\cdots,t_n)=\exp\left\{it^\top\mu-\dfrac{t^\top \mathbf{D}t}{2}\right\}$
++ 多元正态分布的边际分布仍然为正态分布
+<details class="mdx-collapse primary">
+<summary class="mdx-collapse__summary">证明</summary>
+<div class="mdx-collapse__content">
++ 设$(X_1,\dots,X_n)\sim N(\mu,\mathbf{D})$，将前$m$个分量记为$X_{(1)}$，后$n-m$个分量记为$X_{(2)}$。对应分块：
+    $$
+    \mu = \begin{pmatrix}\mu_1 \\ \mu_2\end{pmatrix},\qquad 
+    \mathbf{D} = \begin{pmatrix} A & B \\ B^{\top} & C \end{pmatrix},
+    $$
+    其中$A = \operatorname{Cov}(X_{(1)})$ 为$m\times m$正定矩阵，$C = \operatorname{Cov}(X_{(2)})$ 为$(n-m)\times (n-m)$正定矩阵，$B = \operatorname{Cov}(X_{(1)},X_{(2)})$为$m\times (n-m)$矩阵。
++ $\mathbf{D}^{-1}$ 写为相同分块：
+    $$
+    \mathbf{D}^{-1} = \begin{pmatrix} G & H \\ H^{\top} & K \end{pmatrix}.
+    $$
+    利用分块矩阵求逆公式（$C$可逆）：
+    $$
+    \begin{aligned}
+    G &= (A - B C^{-1} B^{\top})^{-1}, \\
+    H &= -G B C^{-1}, \\
+    K &= C^{-1} + C^{-1} B^{\top} G B C^{-1}.
+    \end{aligned}
+    $$
++ 联合密度为
+    $$
+    f(x_1,x_2) = (2\pi)^{-n/2} |\mathbf{D}|^{-1/2} \exp\left(-\frac{1}{2} (x-\mu)^{\top} \mathbf{D}^{-1} (x-\mu)\right).
+    $$
+    记$y_1=x_1-\mu_1,y_2=x_2-\mu_2,Q\coloneqq -\dfrac{1}{2} (x-\mu)^{\top} \mathbf{D}^{-1} (x-\mu)$，则
+    $$
+    Q = y_2^\top C^{-1} y_2 + (y_1 - BC^{-1} y_2)^\top G (y_1 - BC^{-1} y_2).
+    $$
++ 那么
+    $$
+    f(x_1,x_2) = \underbrace{(2\pi)^{-(n-m)/2} |C|^{-1/2} \exp\left(-\frac12 y_2^\top C^{-1} y_2\right)}_{= f_{X_2}(x_2)} \cdot \underbrace{(2\pi)^{-m/2} |G|^{1/2} \exp\left(-\frac12 (y_1 - B C^{-1} y_2)^\top G (y_1 - B C^{-1} y_2)\right)}_{= f_{X_1|X_2}(x_1|x_2)}.
+    $$
+    显然，$f_{X_2}(x_2)$是$N(\mu_2, C)$的密度，$f_{X_1|X_2}(x_1|x_2)$是$N(\mu_1 + B C^{-1}(x_2 - \mu_2),\, G^{-1})$的密度。
++ 边际密度函数为
+    $$
+    f_{X_1}(x_1) = \int_{\mathbb{R}^{n-m}} f_{X_2}(x_2) \, f_{X_1|X_2}(x_1|x_2) \, dx_2.
+    $$
+    已知$X_2 \sim N(\mu_2, C)$，且$X_1|X_2$的条件分布为正态，其均值是$X_2$的线性函数，协方差与$X_2$无关。根据多元正态分布的性质，无条件分布$X_1$仍为正态，且
+    $$
+    \begin{aligned}
+    E[X_1] &= E\bigl[E[X_1|X_2]\bigr] = E\bigl[\mu_1 + B C^{-1}(X_2 - \mu_2)\bigr] = \mu_1,\\
+    \operatorname{Cov}(X_1) &= \operatorname{Var}\bigl(E[X_1|X_2]\bigr) + E\bigl[\operatorname{Var}(X_1|X_2)\bigr] \\
+    &= B C^{-1} \operatorname{Var}(X_2) (B C^{-1})^\top + G^{-1} \\
+    &= B C^{-1} C C^{-1} B^\top + G^{-1} \\
+    &= B C^{-1} B^\top + (A - B C^{-1} B^\top) = A.
+    \end{aligned}
+    $$
+    因此$X_1 \sim N(\mu_1, A)$，即前$m$个分量服从$m$元正态分布。
+</div>
+</details>
++ 多元正态分布的条件分布：设$X = (X_1, \cdots, X_m, X_{m+1}, \cdots, X_n)$服从$n$元正态分布$N(\nu, \mathbf{D})$，其中$\nu \in \mathbb{R}^n$，$\mathbf{D}$为$n$阶正定矩阵。那么在给定
+    $$
+    (X_{m+1}, \cdots, X_n) = \hat{y}^\top = (\hat{y}_{m+1}, \cdots, \hat{y}_n)
+    $$
+    条件下，$(X_1, \cdots, X_m)$服从$m$维正态分布。事实上，记
+    $$
+    \nu = \begin{pmatrix} \mu \\ \nu \end{pmatrix}, \quad \mathbf{D} = \begin{pmatrix} A & B \\ B^\top & C \end{pmatrix},
+    $$
+    其中$\mu \in \mathbb{R}^m,\nu \in \mathbb{R}^{n-m}$，$A, C$分别为$m$和$n-m$阶正定矩阵，那么
+    $$
+    (X_1, \cdots, X_m) \sim N(\mu + BC^{-1}(\hat{y} - \nu),A - BC^{-1}B^\top).
+    $$
++ 高斯过程定义：设$X = \{X(t); t \in T\}$是概率空间$(\Omega, \mathcal{F}, \mathbb{P})$上的随机过程。若对任意的$t_1, \cdots, t_n \in T$,
+    $$
+    (X(t_1), X(t_2), \cdots, X(t_n))
+    $$
+    服从正态分布（包括退化情形），即存在$\mu = \{\mu_1, \cdots, \mu_n\}^\top$以及$n$阶半正定或正定矩阵$\mathbf{D}$使得对任意$\lambda = (\lambda_1, \cdots, \lambda_n)^\top \in \mathbb{R}^n$,
+    $$
+    E(e^{i \sum_{k=1}^n \lambda_k X(t_k)}) = \exp \left\{ i \lambda^\top \mu - \frac{1}{2} \lambda^\top \mathbf{D} \lambda \right\},
+    $$
+    则称$X$为高斯过程（或高斯系）。
+    + 退化情形包括常数过程（方差为零）或具有线性依赖关系的过程。
+    + 在“同版本”意义下，高斯过程由均值函数和协方差函数唯一确定。
++ 设$\{X(t)\}$是高斯过程，则对任意$s_k < t_k, k = 1, 2, \cdots, n$，$(X(t_k) - X(s_k), k = 1, 2, \cdots, n)$服从$n$维正态或退化分布。
++ 设$\{X(t); t \in T\}$是高斯过程，对任意$k, l = 1, 2, \cdots, t_l^k \in T$，若对任何固定的$k$，当$l \to \infty$时$X(t_l^k)\stackrel{p}{\longrightarrow}Y_k$，那么
+    $$
+    \{X(t); t \in T\} \cup \{Y_k; k = 1, 2, \cdots, m\}
+    $$
+    仍是高斯系，而且$\displaystyle\text{Cov}(Y_k, Y_n) = \lim_{l \to \infty} \text{Cov}(X(t_l^k), X(t_l^n))$。

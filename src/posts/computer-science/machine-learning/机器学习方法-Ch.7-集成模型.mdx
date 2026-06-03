@@ -1,0 +1,134 @@
+---
+title: 机器学习方法 Ch.7 集成模型
+date: 2026-05-26 11:29:47
+categories: [机器学习方法]
+tags: 
+    - 监督学习
+    - 决策树
+cover: ./ml.png
+---
+集成学习的核心：训练多棵树，并综合多棵树（可带权重）得到结果。主要分为以下两类：
++ Bagging（代表：随机森林Random Forest）：训练多棵树（多个学习器）进行集成预测；【并行】
++ Boosting（代表：AdaBoost，XGBoost，GBDT）：在前一棵树的基础上改进，按顺序生成新树。【串行】
+# Bagging（袋装法）
++ 决策树容易受到训练数据的影响（单棵树的预测结果不稳定）
++ Breiman于1996年提出Bagging，其核心思想为：训练很多棵树，再投票（分类）或者取平均（回归）。其优势在于可以降低预测方差，因为每棵树的错误方向不完全一样，通过汇总可以将随机波动部分抵消。
++ 那么从训练样本中如何得到多颗树呢？Breiman借用了统计学的方法：**Bootstrap法（“自助法”）**。这一方法由美国统计学家Bradley Efron在1979年首次提出，最初用于非参数统计中。
+    + 具体而言，Bootstrap方法先在总体中抽取一次样本，然后在这个样本中多次进行有放回抽样，从而得到多个小样本。
+## 随机森林（Random Forest）
++ 在上面的Bagging方法中，由于Bootstrap的特性，很多树会反复使用同样的重要特征，导致大部分树都长得很像，集成的优势被削弱。为解决这一问题，随机森林方法于2001年由Breiman和Adele Cutler正式提出。
++ 随机森林的特点是每棵树每次分裂时，只会随机看一部分特征，这会使树之间的差异更大，不同意见的投票往往更有效。
+    + 具体而言，每次节点分裂时，会从当前$p$个特征中随机选择$m\approx\sqrt{p}$个特征。
+### 袋外样本（OOB）
++ 在Bootstrap中，每棵树都可能会有样本没有被抽到。这些袋外样本刚好可以作为临时测试集，这样就不需要交叉验证。
++ 可以证明，对于每个样本观测值，大约会有$\dfrac{1}{3}$的决策树不会使用到。设共有$B$棵决策树，则每个样本（作为测试样本）可以产生$\dfrac{B}{3}$个预测值，再对其取平均。当$B$很大时，其误差约等于N-fold交叉验证的误差。
+    + 所以随机森林不用额外进行交叉验证（耗时），而使用OOB误差估计测试误差。
+### 变量重要性
++ 随机森林的另一个功能就是得到每个特征的重要性。其衡量依据是：如果一个特征被打乱后，模型性能下降很多，说明它很重要。
++ 具体而言：
+    1. 先将袋外样本传入一棵树中记录其预测准确性；
+    2. 然后对袋外样本的某个特征进行重排（perturbation），再传入树中，比较其准确性的变化；
+    3. 通过所有树对这种排列造成的准确性降低值进行平均，并将其用作随机森林中该特征的重要性度量。
+# Boosting（提升法）
++ 与前面Bagging的思路不同，Boosting的核心思想是：每棵树专门学习前面模型犯错的地方，树是按顺序生成的。
++ 1997年，Freund和Schapire基于集成学习的思想提出AdaBoost，由此产生了一类Boosting算法，包括GradBoost，XGBoost，LightGBM等。
+## AdaBoost
++ AdaBoost的理论基础：弱学习器可以通过某种组合提升为强学习器。
++ AdaBoost的核心在于：每一轮训练一个简单分类器（决策树），并更关注之前分错的样本，最后把多个分类器（决策树）组合。
++ 具体方法（以二分类问题为例）：
+    1. 使用弱学习器（一般为决策树桩Decision Stump，即只有两层的决策树），得到基本分类器$G_1(x)$
+    2. 根据$G_1(x)$的分类效果，增加错误样本权重
+        + 记$\epsilon_1$为分类错误样本的加权占比，$\alpha_1=\dfrac{1}{2}\ln\dfrac{1-\epsilon_1}{\epsilon_1}$，那么对分类错误样本权重乘以$\exp\{\alpha_1\}$，分类正确样本权重乘以$\exp\{-\alpha_1\}$。
+        + $\epsilon_m< \dfrac{1}{2},\alpha_m>0$，且$\epsilon_m$越小，$\alpha_m$越大。
+    3. 以此类推，最终得到分类器（强学习器）$\hat{y}=\displaystyle\text{sgn}\left(\sum_{i=1}^N\alpha_i\cdot G_i(x)\right)$，其中$G_i(x)$为每棵树的预测结果。
+        + 表现好的树权重更大，表现差的树权重更小 
+### 模型理论与优化
++ AdaBoost的本质是一个加法模型：
+    $$
+    \begin{aligned}
+    G_m(x)&=\text{sgn}(f_m(x))\\
+    \Longrightarrow f(x)&=\sum_{m=1}^M\alpha_mG_m(x)\\
+    \Longrightarrow G(x)&=\text{sgn}(f(x))
+    \end{aligned}
+    $$
++ 初始化：$f_0(x)=0$
++ 优化问题：
+    $$
+    \min\sum_{i=1}^N\mathcal{L}(y_i,f(x_i))
+    $$
+    其中损失函数取指数损失$\mathcal{L}(y,f(x))=e^{-yf(x)}$。
++ 优化时主要使用前向分步算法：
+    $$
+    (\alpha_m, G_m) = \arg \min \sum_{i=1}^N L\left(y_i, \sum_{j=1}^{m-1} \alpha_j G_j(x_i) + \alpha_m G_m(x_i)\right)
+    $$
+    其中$N$为样本数。这也是所有Boosting优化的基础。由此可见，Boosting通过逐步学习优化：$(\alpha_1,G_1)\Rightarrow(\alpha_2,G_2)\Rightarrow\cdots\Rightarrow(\alpha_M,G_M)$
+    + 代入指数损失可得
+    $$
+    \begin{aligned}
+    (\alpha_m, G_m) &= \arg \min \sum_{i=1}^N \exp \left[ -y_i \left\{ \sum_{j=1}^{m-1} \alpha_j G_j(x_i) + \alpha_m G_m(x_i) \right\} \right]\\
+    &= \arg \min \sum_{i=1}^N w_{mi} \exp \left\{ -y_i \alpha_m G_m(x_i) \right\}
+    \end{aligned}
+    $$
+    其中$\displaystyle w_{mi}\propto\frac{1}{N}\exp\left\{ -y_i \sum_{j=1}^{m-1} \alpha_j G_j(x_i) \right\}$（在其基础上进行归一化）。代回上式可得
+    $$
+    (\alpha_m, G_m) = \arg \min\frac{1}{N}\sum_{i=1}^N\left(\prod_{j=1}^{m-1}\exp\{-y_i\alpha_jG_j(x_i)\}\right)\cdot\exp\{-y_i\alpha_mG_m(x)\}
+    $$
+    + 固定$\alpha_m$，则
+        $$
+        \begin{aligned}
+        \sum_i w_{mi} \exp(-y_i \alpha G(x_i))&= e^{-\alpha} \sum_{y_i = G(x_i)} w_{mi} + e^{\alpha} \sum_{y_i \neq G(x_i)} w_{mi}\\
+        &\triangleq e^{-\alpha}(1-\epsilon_m)+e^\alpha\epsilon_m.
+        \end{aligned}
+        $$
+        对$\alpha_m$求偏导取零点得
+        $$
+        \alpha_m=\dfrac{1}{2}\ln\dfrac{1-\epsilon_m}{\epsilon_m}.
+        $$
+    + 于是$G_m(x)$可表示为
+        $$
+        G_m(x)=\argmin_G\sum_{i=1}^Nw_{mi}I(y_i\neq G_m(x_i))
+        $$
+        即最小化加权分类误差。
+
+    这就是前面的加权系数和弱学习器如此设置的原因。
+## GBM（梯度提升算法）
++ 在上面的Adaboost中，我们使用了指数损失函数，但其并不完美：它和MSE一样，对异常值敏感。
+    + 另一方面，Adaboost通过每一轮加入一个新的弱学习器以修正当前模型的不足，其本质就是降低损失函数。
++ 1999年，Friedman提出Gradient Boosting理论，将Adaboost模型推广至任意损失函数。
+    + 将指数损失函数推广到任意损失函数后，最优解难以直接求出。而GBM采用了另一种策略：如果希望损失函数下降，应该沿着损失函数下降最快的方向更新，即负梯度方向。
+    + 模型：
+        $$
+        g_m(x)\leftarrow g_{m-1}(x)+\alpha G_m(x)\approx  g_{m-1}(x)-\alpha\left.\frac{\partial\mathcal{L}(y,g(x))}{\partial g(x)}\right|_{g=g_{m-1}}
+        $$
+    + 其本质可也以理解为一阶泰勒展开：
+        $$
+        \mathcal{L}(y,g_{m-1} + \alpha G_m) \approx \mathcal{L}(y,g_{m-1}) + \alpha \sum_{i=1}^N \frac{\partial \mathcal{L}(y_i, g_{m-1}(x_i))}{\partial g_{m-1}(x_i)} G_m(x_i)
+        $$
++ GBM的核心：借用神经网络梯度下降的思想，使用负梯度指导模型更新。其特点包括：
+    1. 可用于：回归、分类、排序
+    2. 基学习器通常为回归树
+    3. 分类时树用于拟合梯度/残差
++ 具体而言，在GBM训练第$m$轮，会利用$\displaystyle\left\{ \left( x_i ,- \frac{\partial\mathcal{L}(y_i,g(x_i))}{\partial g(x_i)} \bigg|_{g=g_{m-1}} \right) \right\}_{i=1}^N$训练一个回归树$G_m(x)$。在得到回归树后再去学习参数$\alpha$（Loss修正幅度），即
+    $$
+    \alpha_m=\argmin_\alpha\mathcal{L}(y,g_{m-1}(x)+\alpha G_m(x)).
+    $$
+### GBRT（梯度提升回归树）
++ 对于回归问题：$T=\{(x_1,y_1),(x_2,y_2),\cdots,(x_N,y_N)\}$，回归树使用最小二乘损失：
+    $$
+    \mathcal{L}(y,f(x))=\frac{1}{2}(y-f(x))^2
+    $$
+    其负梯度恰为残差，故新的回归树就用于拟合残差。（仍然是加法模型：$f_m(x)=f_{m-1}(x)+\gamma_m(x)$）
++ 初始化：$\displaystyle f_0(x)\equiv\dfrac{1}{N}\sum_{i=1}^N y_i$（取均值）。
+### GBCT（梯度提升分类树）
++ 对于二分类问题：$T=\{(x_1,y_1),(x_2,y_2),\cdots,(x_N,y_N)\},y_i=\{0,1\}$，可以先套用GBRT模型，再将预测值转化为预测概率。
+    + 即将$f(x)$转化为$P(y=1|X=x)$，使用Logistic函数：
+        $$
+        P(y=1|X=x)\triangleq p(x)=\frac{1}{1+e^{-f(x)}}.
+        $$
+        也就是说，在分类问题中，GBM学习的是“概率预测”。
++ 对于此问题，损失函数使用交叉熵损失：
+    $$
+    \mathcal{L}(y,p)=-y\log p-(1-y)\log(1-p)
+    $$
+    其衡量的是概率估计与真实标签的偏离程度。其负梯度为：$-\dfrac{\partial\mathcal{L}}{\partial f}=-\dfrac{\partial\mathcal{L}}{\partial p}\cdot\dfrac{\partial p}{\partial f}=y-p$，同样恰好为残差。
+    

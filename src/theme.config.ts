@@ -293,7 +293,7 @@ export default defineConfig({
         color: "#cc002c",
       },
       {
-        url: "https://sqzr2319.github.io/about/",
+        url: "https://sqzr2319.github.io/",
         title: "sqzr2319's Blog",
         author: "sqzr2319",
         desc: "愿群星于道路中寻见你。",
