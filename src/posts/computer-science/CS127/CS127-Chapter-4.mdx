@@ -13,7 +13,19 @@ draft: true
 + 主成分分析是一种重要的数据信息提取方法。具体而言，对于$\R^d$上的数据，我们希望能从中提取出$p$维的信息（其中$p\ll d$）
     + 在机器学习中，主成分分析可以让成千上万维的数据降到一个合适的范围（甚至可以可视化），以研究其数据结构。
 + 下面进行符号约定：
-    1. 记数据为$X\triangleq\begin{bmatrix}\vec{x_1}^\top\\\vec{x_2}^\top\\\vdots\\\vec{x_n}^\top\end{bmatrix}\in\R^{n\times d}$，即$X^\top=\begin{bmatrix}\vec{x_1}&\vec{x_2}&\cdots&\vec{x_n}\end{bmatrix}\in\R^{d\times n}.$
+    1. 记数据为
+        $$
+        X\triangleq\begin{bmatrix}
+        \vec{x_1}^\top\\
+        \vec{x_2}^\top\\
+        \vdots\\
+        \vec{x_n}^\top
+        \end{bmatrix}\in\R^{n\times d}
+        $$
+        即
+        $$
+        X^\top=\begin{bmatrix}\vec{x_1}&\vec{x_2}&\cdots&\vec{x_n}\end{bmatrix}\in\R^{d\times n}.
+        $$
     2. 定义协方差矩阵
         $$
         C\triangleq\frac{1}{n}X^\top X=\frac{1}{n}\sum_{i=1}^n\vec{x_i}\vec{x_i}^\top\in\R^{d\times d} 
@@ -22,4 +34,106 @@ draft: true
 + 实际上，我们需要在$\R^d$空间中找到$p$个标准正交向量$\vec{w}_1,\cdots,\vec{w}_p$，使得数据点在这些向量上的投影能够充分反应其原有的信息。
     + 如果直接取原始坐标系中的$p$个坐标轴向量，那么往往会导致很多数据点投影后接近于$\vec{0}$，因而损失大量信息。所以我们需要寻找更合适的标准正交向量组。
 ## 寻找标准正交向量组
-+ 首先我们来寻找第一个向量$\vec{w}_1$。根据主成分分析的原则，我们希望每个向量$\vec{x}_i$在$\vec{w}_1$上的投影都尽量接近$\vec{x}_i$本身，同时$\|\vec{w}_1\|=1$。于是，我们
++ 首先我们来寻找第一个向量$\vec{w}_1$。根据主成分分析的原则，我们希望每个向量$\vec{x}_i$在$\vec{w}_1$上的投影都尽量接近$\vec{x}_i$本身，同时$\|\vec{w}_1\|=1$。于是，我们考虑以下误差函数
+    $$
+    \text{err}(\vec{x}_1)=\frac{1}{n}\sum_{i=1}^n\|\vec{x}_i-\vec{w}_1(\vec{w}_1^\top x_i)\|_2^2.
+    $$
+    即所有数据点到$\vec{w}_1$的垂直距离取平均。将其展开得
+    $$
+    \begin{aligned}
+    \text{err}(\vec{x}_1)&=\frac{1}{n}\sum_{i=1}^n(\vec{x}_i-\vec{w}_1(\vec{w}_1^\top x_i))^\top(\vec{x}_i-\vec{w}_1(\vec{w}_1^\top x_i))\\
+    &= \frac{1}{n} \sum_{i=1}^{n} \left( \vec{x}_i^\top \vec{x}_i - \vec{x}_i^\top \vec{w}_1 (\vec{w}_1^\top \vec{x}_i) - (\vec{w}_1 (\vec{w}_1^\top \vec{x}_i))^\top \vec{x}_i + (\vec{w}_1 (\vec{w}_1^\top \vec{x}_i))^\top (\vec{w}_1 (\vec{w}_1^\top \vec{x}_i)) \right) \\
+    &= \frac{1}{n} \sum_{i=1}^{n} \left( \|\vec{x}_i\|_2^2 - 2(\vec{x}_i^\top \vec{w}_1)^2 + (\vec{w}_1^\top \vec{x}_i)^2 \right) \\
+    &= \frac{1}{n} \sum_{i=1}^{n} \left( \|\vec{x}_i\|_2^2 - (\vec{x}_i^\top \vec{w}_1)^2 \right).
+    \end{aligned}
+    $$
+    接着我们对这个函数进行最小优化：
+    $$
+    \begin{aligned}
+    \min_{\substack{\vec w_1\in\mathbb R^d\\ \|\vec w_1\|_2=1}} \mathrm{err}(\vec w_1)
+    &= \min_{\substack{\vec w_1\in\mathbb R^d\\ \|\vec w_1\|_2=1}} \frac1n\sum_{i=1}^n\big(\|\vec x_i\|_2^2 - (\vec x_i^\top \vec w_1)^2\big) \\
+    &= \frac1n\sum_{i=1}^n \|\vec x_i\|_2^2
+    - \max_{\substack{\vec w_1\in\mathbb R^d\\ \|\vec w_1\|_2=1}} \frac1n\sum_{i=1}^n (\vec x_i^\top \vec w_1)^2 \\
+    &= \frac1n\sum_{i=1}^n \|\vec x_i\|_2^2
+    - \max_{\substack{\vec w_1\in\mathbb R^d\\ \|\vec w_1\|_2=1}} \vec w_1^\top \left( \frac1n\sum_{i=1}^n \vec x_i \vec x_i^\top \right)\vec w_1 \\
+    &= \frac1n\sum_{i=1}^n \|\vec x_i\|_2^2
+    - \max_{\substack{\vec w_1\in\mathbb R^d\\ \|\vec w_1\|_2=1}} \vec w_1^\top \left( \frac1n X^\top X \right)\vec w_1 \\
+    &= \frac1n\sum_{i=1}^n \|\vec x_i\|_2^2
+    - \max_{\substack{\vec w_1\in\mathbb R^d\\ \|\vec w_1\|_2=1}} \vec w_1^\top C \vec w_1 \\
+    &= \frac1n\sum_{i=1}^n \|\vec x_i\|_2^2 - \lambda_{\max}\{C\}
+    \end{aligned}
+    $$
+    其中$\lambda_{\max}\{C\}$表示协方差矩阵$C$的最大特征值。由此可知当函数取最小值时，$\vec{w}_1$为$C$最大特征值对应的特征向量。
++ 类似地，我们也可以得到第二个，第三个，以及所有的特征向量。根据谱定理（见[Chapter 3](/posts/computer-science/cs127/cs127-chapter-3/#性质4谱定理的证明)），协方差矩阵$C$的各特征值对应的特征向量相互正交，因而只需要根据特征值从大到小排序，再进行归一化即可。
+    > 注：在实际使用中，协方差矩阵一般使用$\dfrac{1}{n-1}X^\top X$，以保证无偏性。
+# 奇异值分解（Singular Value Decomposition，SVD）
++ 上面的主成分分析实际上是奇异值分解的特殊情形。一般的奇异值分解形式如下：设$A\in\R^{m\times n}$的秩为$r$，则$A$的SVD分解为
+    $$
+    \begin{aligned}
+    A&=U\Sigma V\\
+    &=\begin{bmatrix}
+    U_r & U_{m-r}
+    \end{bmatrix}
+    \begin{bmatrix}
+    \Sigma_r & 0_{r \times (n-r)} \\
+    0_{(m-r) \times r} & 0_{(m-r) \times (n-r)}
+    \end{bmatrix}
+    \begin{bmatrix}
+    V_r^\top \\
+    V_{n-r}^\top
+    \end{bmatrix}\\
+    &= U_r \Sigma_r V_r^\top\\
+    &= \sum_{i=1}^r \sigma_i \vec{u}_i \vec{v}_i^\top
+    \end{aligned}
+    $$
+    其中：
+    + $U,U_r,U_{m-r},V,V_r,V_{n-r}$均为标准正交矩阵，称$U$的列向量和$V$的行向量为奇异向量；
+    + $\Sigma_r$为对角矩阵，对角线元素（称为奇异值）非负，且从左上到右下依次递减。
+    + 上面的最后一个等式是SVD的二元形式（$\vec{u}_i \vec{v}_i^\top$被称为二元组），即矩阵$A$可表示为若干个二元组的和。
++ 接下来我们讨论如何构造矩阵$A$的SVD分解。考虑对称矩阵$A^\top A\in\R^{n\times n}$，其秩为$r$，因而有$r$个正特征值（因为$A^\top A$是半正定矩阵）。
+    + 记$A^\top A$的所有特征值为$\lambda_1\geq\cdots\geq\lambda_r>\lambda_{r+1}=\cdots=\lambda_n=0$，对应的特征向量为$\vec{v}_1,\cdots,\vec{v}_n$；
+    + 然后定义$\sigma_i=\sqrt{\lambda_i},\vec{u}_i=\dfrac{1}{\sigma_i}A\vec{v}_i$（$i=1,\cdots,r$），最后使用施密特正交化构造$\vec{u}_1,\cdots,\vec{u}_m$。
+    + 那么上述$\{\vec{u}_i\},\{\vec{v}_i\}$和$\{\sigma_i\}$即对应SVD分解中的$U,V$和$\Sigma$。
++ 下面进行简单解释：显然$\vec{v}_1,\cdots,\vec{v}_n$为标准正交基，组成的矩阵为标准正交矩阵；而奇异值矩阵$\Sigma$的构造也满足题设。所以下面主要证明$\vec{u}_1,\cdots,\vec{u}_m$为标准正交基，且$A=U\Sigma V^\top$：
+    + 因为$\{\vec{u}_1,\cdots,\vec{u}_m\}$是在$\{\vec{u}_1,\cdots,\vec{u}_r\}$的基础上正交扩展的，如只需要证明$\{\vec{u}_1,\cdots,\vec{u}_r\}$两两标准正交即可。推导如下：
+        $$
+        \begin{aligned}
+        \vec{u}_i^\top \vec{u}_j &= \left( \frac{A \vec{v}_i}{\sigma_i} \right)^\top \left( \frac{A \vec{v}_j}{\sigma_j} \right) \\
+        &= \frac{\vec{v}_i^\top A^\top A \vec{v}_j}{\sigma_i \sigma_j} \\
+        &= \frac{\lambda_j \vec{v}_i^\top \vec{v}_j}{\sigma_i \sigma_j} \\
+        &= \frac{\lambda_j}{\sigma_i \sigma_j}\underbrace{ \vec{v}_i^\top \vec{v}_j}_{=0} \\
+        &= 0,
+        \end{aligned}
+        $$
+        $$
+        \begin{aligned}
+        \|\vec{u}_i\|_2^2 &= \left\| \frac{A \vec{v}_i}{\sigma_i} \right\|_2^2 \\
+        &= \left( \frac{A \vec{v}_i}{\sigma_i} \right)^\top \left( \frac{A \vec{v}_i}{\sigma_i} \right) \\
+        &= \frac{\vec{v}_i^\top A^\top A \vec{v}_i}{\sigma_i^2} \\
+        &= \frac{\lambda_i \vec{v}_i^\top \vec{v}_i}{\sigma_i^2} \\
+        &= \underbrace{\frac{\lambda_i}{\sigma_i^2}}_{=1}\cdot\underbrace{\vec{v}_i^\top \vec{v}_i}_{=1} \\
+        &= 1.
+        \end{aligned}
+        $$
+    + 然后证明：$A=U\Sigma V^\top$：由构造可知
+        $$
+        A\vec{v}_i=\begin{cases}
+        \sigma_i\vec{u}_i,&1\leq i\leq r\\
+        \vec{0},&r+1\leq i\leq m
+        \end{cases}
+        $$
+        因此有
+        $$
+        \begin{aligned}
+        AV &= A \begin{bmatrix} \vec{v}_1 & \cdots & \vec{v}_r & \vec{v}_{r+1} & \cdots & \vec{v}_n \end{bmatrix} \\
+        &= \begin{bmatrix} A\vec{v}_1 & \cdots & A\vec{v}_r & A\vec{v}_{r+1} & \cdots & A\vec{v}_n \end{bmatrix} \\
+        &= \begin{bmatrix} \sigma_1 \vec{u}_1 & \cdots & \sigma_r \vec{u}_r & \vec{0} & \cdots & \vec{0} \end{bmatrix} \\
+        &= \begin{bmatrix} U_r \Sigma_r & 0 \end{bmatrix}, \\[10pt]
+        U\Sigma &= \begin{bmatrix} U_r & U_{m-r}\end{bmatrix}\begin{bmatrix} \Sigma_r & 0 \\ 0 & 0 \end{bmatrix} \\
+        &= \begin{bmatrix} U_r \Sigma_r + U_{m-r} \cdot 0 & U_r \cdot 0 + U_{m-r} \cdot 0 \end{bmatrix} \\
+        &= \begin{bmatrix} U_r \Sigma_r & 0 \end{bmatrix}.
+        \end{aligned}
+        $$
+        因此$AV=U\Sigma$，即得$A=U\Sigma V^{-1}=U\Sigma V^\top$。
++ 奇异值分解不唯一：施密特正交化可以选取任意的正交基；$A^\top A$可能有相同特征值，对应不同特征向量；特征向量也可以任意取负。
+## SVD的几何意义

@@ -158,7 +158,7 @@ export default defineConfig({
     },
     aiRecommend: {
       // AI 相近文章推荐开关（受 hyc.enable 总开关控制）
-      enable: true,
+      enable: false,
       // 默认展示前 3 篇
       limit: 3,
       // 最低相似度阈值（0.4 = 40%）
