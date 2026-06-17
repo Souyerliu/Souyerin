@@ -131,4 +131,75 @@ cover: ./ml.png
     \mathcal{L}(y,p)=-y\log p-(1-y)\log(1-p)
     $$
     其衡量的是概率估计与真实标签的偏离程度。其负梯度为：$-\dfrac{\partial\mathcal{L}}{\partial f}=-\dfrac{\partial\mathcal{L}}{\partial p}\cdot\dfrac{\partial p}{\partial f}=y-p$，同样恰好为残差。
-    
+
+## XGBoost
+XGBoost由陈天奇等于2015年正式提出（论文：[XGBoost](https://arxiv.org/pdf/1603.02754)），并在各类机器学习竞赛中崭露头角（在LLM出现之前）。
++ 核心思想：在GBM的基础上进一步优化，让每棵小树$f_m(t)$在优化损失函数的同时优化正则化项（即模型复杂度）。
++ 算法核心则依然为贪心算法，即每次分枝的时候选择目标函数下降最大的分枝方式。其推导如下：
+    $$
+    \text{Obj}_{\text{root}}=\sum_{i=1}^N\mathcal{L}\left(y_i,\hat{y}_i^{(m-1)}+f_m(x_i)\right)+\sum_{k=1}^m\Omega(f_k)
+    $$
+    其中$\Omega(f_k)$为正则化项，表达式为
+    $$
+    \Omega(f_k)=\gamma T_k+\frac{1}{2}\lambda\sum_{t=1}^{T_k}c_{tk}^2
+    $$
+    其中$T_k$为第$k$棵树的叶子节点个数，$c_{tk}$则表示每个叶子结点的输出值，这两个指标都可以控制模型的复杂度，防止过拟合。
+    + 下面对目标函数进行二阶泰勒展开（记$f_m(x_i)$为$c$）：
+        $$
+        \begin{aligned}
+        \text{Obj}_{\text{root}}&=\sum_{i=1}^N \mathcal{L}\left(y_i, \hat{y}_i^{(m-1)} + c\right)+\sum_{k=1}^m\Omega(f_k)\\
+        &\approx\sum_{i=1}^N \left\{ \mathcal{L}(y_i, \hat{y}_i^{(m-1)}) + \mathcal{L}'(y_i, \hat{y}_i^{(m-1)})c + \frac{1}{2}\mathcal{L}''(y_i, \hat{y}_i^{(m-1)})c^2 \right\}+ \sum_{k=1}^{m-1} \Omega(\hat{f}_k) + \Omega(f_m)\\
+        &\triangleq\left\{\sum_{i=1}^N g_i\right\}c+\frac{1}{2}\left\{\sum_{i=1}^Nh_i+\lambda\right\}c^2+\gamma
+        \end{aligned}
+        $$
+        其中$\displaystyle g_i=\frac{\partial\mathcal{L}(y_i, \hat{y}_i^{(m-1)})}{\partial \hat{y}_i^{(m-1)}},h_i=\frac{\partial^2\mathcal{L}(y_i, \hat{y}_i^{(m-1)})}{\partial\left(\hat{y}_i^{(m-1)}\right)^2}$。
+    + 将其看作关于变量$c$的函数，则因为$\displaystyle\sum_{i=1}^Nh_i+\lambda>0$，所以函数为开口向上的抛物线，最小取值
+        $$
+        \begin{aligned}
+        \hat{c}=\argmin_c\text{Obj}_{\text{root}}&=\frac{-\sum_{i=1}^Ng_i}{\sum_{i=1}^Nh_i+\lambda},\\
+        \min\text{Obj}_{\text{root}}&=\frac{(\sum_{i=1}^Ng_i)^2}{2(\sum_{i=1}^Nh_i+\lambda)}+\gamma.
+        \end{aligned}
+        $$
+    + 由此得到分枝前后的信息增益为
+        $$
+        \frac{1}{2}\left\{\frac{G^2_{\text{left}}}{H_{\text{left}}+\lambda}+\frac{G^2_{\text{right}}}{H_{\text{right}}+\lambda}-\frac{G^2_{\text{root}}}{H_{\text{root}}+\lambda}\right\}-\gamma
+        $$
+        基于此指标寻找信息增益最大的分枝方式即可。
+### 精确贪心算法
++ 在之前的回归树中，我们提到在最大化信息增益时，可以对特征值进行排序，然后逐个扫描得到。然而，这个算法至少需要两层循环：
+    1. 遍历每个特征$x_k$；
+    2. 每个特征的值进行排序，然后遍历每一个分割点。
+
+    这会导致训练耗时较长。
++ 解决方案主要有两种：
+    1. 列采样  
+        类似随机森林的优化策略，分为按树随机（在根节点就筛选特征，后续只使用筛选出的特征）和按层随机（每次对新节点划分时重新筛选特征）
+    2. 加权分位数（这也是XGBoost实际采用的方法）  
+        其核心是将样本分为若干个“桶”，每个桶内样本的权重值（使用二阶偏导$h_i$的归一化值作为权重）之和小于$\displaystyle \epsilon$（$\epsilon$为超参数）。具体方法为计算加权分位数
+        $$
+        r_k(z)=\frac{1}{\sum_{(x,h)\in D_k}h}\sum_{\substack{(x,h)\in D_k\\x< z}}h
+        $$
+        其中$D_k=\{(x_{1k},h_1),\cdots,(x_{nk},h_n)\}$，即按照特征$x_k$排序的样本及其权重。然后找到候选分割点$\{s_{k1}, s_{k2}, \cdots s_{kl}\}$满足
+        $$
+        \begin{aligned}
+        &|r_k(s_{k,j}) - r_k(s_{k,j+1})| < \epsilon,\\
+        &s_{k1} = \min_i x_{ik}, \quad s_{kl} = \max_i x_{ik}.
+        \end{aligned}
+        $$
+        最后遍历每个候选分割点（数量约$\dfrac{1}{\epsilon}$个），选择最佳分割点。   
+        另外，按照候选分割点生成的时间和作用范围，分为以下两种方法（与列采样两种方法类似）：
+        + 全局近似：在构建每一棵树之前，对每个特征，基于整个训练集（或当前树使用的全部样本）计算一次加权分位数候选点集。
+        + 局部近似：在每个节点分裂时，仅使用落入该节点的样本子集，重新计算当前节点内每个特征的加权分位数候选点集。
+### 其他细节
++ XGBoost在处理缺失值时，不需要进行剔除或插补，因为对于每一个特征，只对非缺失值排序，缺失值要么统一在左枝，要么统一在右枝，取决于损失函数的大小。
++ 其他优化方法：
+    1. 并行：将特征排序后以块的形式存储在内存中，在迭代中可用重复使用。虽然提升法必须串行，但是在处理每个特征时可用并行计算。
+    2. 考虑数据量比较大，内存不够时，使用多线程，数据压缩，分片等方法有效地使用磁盘和读写数据。
+    3. Shrinkage：每次估计的新模型都乘以一个学习率，避免过拟合。
+
+___
+以上，课内《统计机器学习》课程的内容就完结了。总体上感觉就是“小而精”，和之前的《人工智能导论》的关系好比DFS和BFS的关系（maybe可看作互补）。  
+另外老师讲解的这些算法都是偏科研方向，比较注重建模和优化（导致有一大堆数学推导）。不过即便如此，机器学习算法本身也有些out of date了（LLM杀死比赛……或者说ML已经脱离主流）与其说取精通算法本身，不如说本课最大作用是探究模型的进化过程。
+___
+关于之后的计划，笔者决定先按照《机器学习方法》第一册内容补充一些课上没涉及到的算法（如朴素贝叶斯、最大熵模型、隐马尔可夫模型、条件随机场等），然后补充一些第二册（无监督学习）算法（如聚类、MCMC、LSA、LDA等）。【以上下学期之前完成】   
+然后无缝衔接下学期《深度学习》课程内容（完美！）

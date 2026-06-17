@@ -529,3 +529,177 @@ cover: ./常微分方程-Cheat-Sheet/cover.jpg
     \end{cases}
     $$
     且$c_0=a,c_1=b$。代回原方程得到$\displaystyle \sum_{n=0}^\infty A_n(x-x_0)^n=0$，因而$A_n=0,\forall n\in\N$，由此解得所有系数$c_2,\cdots,c_n$【在某些情况下可以幂级数求和】
+# 线性微分方程组
+## 一般理论
++ 线性微分方程组一般形式：
+    $$
+    \begin{cases}
+    x_1'=a_{11}(t)x_1+a_{12}(t)x_2+\cdots+a_{1n}(t)x_n+f_1(t)\\
+    x_2'=a_{21}(t)x_1+a_{22}(t)x_2+\cdots+a_{2n}(t)x_n+f_2(t)\\
+    \cdots\\
+    x_n'=a_{n1}(t)x_1+a_{n2}(t)x_2+\cdots+a_{nn}(t)x_n+f_n(t)
+    \end{cases}
+    $$
+其中$a_{ij}(t),f_i(t)\,i,j=1,2,\cdots,n$在$[a,b]$上连续。下面记
+    $$
+    \begin{aligned}
+    \mathbf{A}(t)&=\begin{pmatrix}
+    a_{11}(t)&a_{12}(t)&\cdots&a_{1n}(t)\\
+    a_{21}(t)&a_{22}(t)&\cdots&a_{2n}(t)\\
+    \vdots&\vdots&\vdots&\vdots\\
+    a_{n1}(t)&a_{n2}(t)&\cdots&a_{nn}(t)
+    \end{pmatrix},\\
+    \vec{f}(t)&=\begin{pmatrix}
+    f_1(t)\\
+    f_2(t)\\
+    \vdots\\
+    f_n(t)
+    \end{pmatrix},
+    \vec{x}=\begin{pmatrix}
+    x_1(t)\\
+    x_2(t)\\
+    \vdots\\
+    x_n(t)
+    \end{pmatrix},
+    \vec{x}'=\begin{pmatrix}
+    x'_1(t)\\
+    x'_2(t)\\
+    \vdots\\
+    x'_n(t)
+    \end{pmatrix}.
+    \end{aligned}
+    $$
+那么方程也可写作$\vec{x}'=\mathbf{A}(t)\vec{x}+\vec{f}(t)$。（矩阵、向量求导与积分略，都是各项求导或积分）
++ 存在唯一性定理：若$\mathbf{A}(t)$为$n\times n$矩阵，$f(t)$为$n$维列向量（均在$[a,b]$上连续），则对$[a,b]$上任意常数$t_0$和任意$n$维常数列向量$\vec{\eta}$，方程组存在唯一解$\varphi(t)$（定义于整个区间$[a,b]$），满足初值条件$\varphi(t_0)=\eta$。
+    + 推论：$n$阶线性微分方程（带初值）存在唯一解。（可由高阶微分方程转化为等价微分方程组得到）
++ $\vec{f}(t)\neq 0$时，称为非齐次线性微分方程组；$\vec{f}(t)=0$时，称为齐次线性微分方程组。
+### 齐次线性微分方程组
+> 解的结构研究思路与高阶微分方程基本相同。
++ 叠加原理，解的线性相关/无关性略
++ 对于$n$个定义在$a\leq t\leq b$上的$n$维向量函数$\vec{x}_1(t),\cdots,\vec{x}_n(t)$，其朗斯基行列式为
+    $$
+    W(t)=W[\vec{x}_1(t),\cdots,\vec{x}_n(t)]=\left|\begin{array}{cccc}
+    x_{11}(t)&x_{12}(t)&\cdots&x_{1n}(t)\\
+    x_{21}(t)&x_{22}(t)&\cdots&x_{2n}(t)\\
+    \vdots&\vdots&\vdots&\vdots\\
+    x_{n1}(t)&x_{n2}(t)&\cdots&x_{nn}(t)
+    \end{array}\right|
+    $$
+    其性质用法与高阶微分方程基本相同，故作略。
++ 方程组一定有$n$个线性无关的解，其通解为：$\vec{x}(t)=c_1\vec{x}_1(t)+\cdots+c_n\vec{x}_n(t)$
++ 若方程组已知$k$个线性无关解，则可以降为$n-k$个未知数的线性微分方程组（$k=n-1$时可求通解）
++ 基解矩阵：若一个$n\times n$矩阵的每一列均为方程组的解，则称其为解矩阵：
+    + 若解矩阵的各列线性无关，则称为基解矩阵（记作$\Phi(t)$）；
+    + 若存在$t_0\in[a,b]$满足$\Phi(t_0)=E$，则称其为标准基解矩阵。
++ 基解矩阵的性质：
+    + 齐次线性微分方程组的基解矩阵一定存在，且如果$n$维列向量$\Psi(t)$是方程的任一解，则$\Psi(t)=\Phi(t)\vec{c}$，其中$\vec{c}$为$n$维常数列向量；
+    + 解矩阵是基解矩阵的充要条件是$|\Phi(t)|\neq 0$（$a\leq t\leq b$），且这个条件和$\exists t_0\in[a,b],\,\text{s.t.}\,|\Phi(t_0)|\neq 0$等价。（此时$|\Phi(t)|$就是朗斯基行列式）
+    + 若$\Phi(t)$是$a\leq t\leq b$上的基解矩阵，$C$为非奇异$n\times n$常数矩阵，那么$\Phi(t)C$也是$a\leq t\leq b$上的基解矩阵；
+    + 若$\Phi(t),\Psi(t)$是$a\leq t\leq b$上两个基解矩阵，那么存在一个非奇异$n\times n$常数矩阵$C$使$\Psi(t)=\Phi(t)C,\, a\leq t\leq b$。
+### 非齐次线性微分方程组
+> 解的结构同样可参照高阶非齐次线性微分方程，同样使用常数变易法。
++ 设$\vec{\varphi}(t)=\Phi(t)\cdot\vec{c}(t)$为非齐次方程组特解，则有
+    $$
+    \begin{aligned}
+    &\vec{c}(t)=\int_{t_0}^t\Phi(s)^{-1}\vec{f}(s)\mathrm{d}s+\vec{c}\\
+    \Longrightarrow&\vec{\varphi}(t)=\Phi(t)\cdot\vec{c}+\Phi(t)\int_{t_0}^t\Phi(s)^{-1}\vec{f}(s)\mathrm{d}s
+    \end{aligned}
+    $$
+    如果考虑初值条件$\vec{\varphi}(t_0)=\vec{\eta}$，则$\displaystyle\vec{\varphi}(t)=\Phi(t)\Phi^{-1}(t_0)\vec{\eta}+\Phi(t)\int_{t_0}^t\Phi(s)^{-1}\vec{f}(s)\mathrm{d}s$。
++ 推论（$n$阶线性微分方程）：若$a_1(t), \dots, a_n(t), f(t)$为$[a, b]$上连续函数，$x_1, \dots, x_n$为$x^{(n)} + a_1(t)x^{(n-1)} + \dots + a_n(t)x = 0$的基本解组，则非齐次初值问题
+    $$
+    \begin{cases} 
+    x^{(n)} + a_1(t)x^{(n-1)} + \dots + a_n(t)x = f(t) \\ 
+    x(t_0) = 0, x'(t_0) = 0, \dots, x^{(n-1)}(t_0) = 0 
+    \end{cases} 
+    $$
+    的（特）解由下式给出：
+    $$
+    \tilde{\varphi}(t) = \sum_{k=1}^n x_k(t) \cdot \int_{t_0}^t \frac{W_k(s)}{W(s)} \cdot f(s) \mathrm{d}s 
+    $$
+    其中$W_k(s) := W_k[x_1(s), \dots, x_n(s)]$为$W$中第$k$列代以$(0, \cdots, 0, 1)^\top$后的行列式：
+    $$
+    W_k(s) = \begin{vmatrix} 
+    x_1(s) & \dots & 0 & \dots & x_n(s) \\ 
+    x_1'(s) & \dots & 0 & \dots & x_n'(s) \\ 
+    \vdots & & \vdots & & \vdots \\ 
+    x_1^{(n-1)}(s) & \dots & 1 & \dots & x_n^{(n-1)}(s) 
+    \end{vmatrix} 
+    $$
+    方程通解即为$\displaystyle\varphi(t)=\sum_{i=1}^nC_ix_i(t)+\tilde{\varphi}(t)$。
+    + 特别地，当$n=2$时，线性微分方程$x'' + a_1(t)x' + a_2(t)x = 0$有基本解组$x_1, x_2$，
+        $$
+        W_1 = \begin{vmatrix} 0 & x_2 \\ 1 & x_2' \end{vmatrix} = -x_2, \quad W_2 = \begin{vmatrix} x_1 & 0 \\ x_1' & 1 \end{vmatrix} = x_1, \quad W = \begin{vmatrix} x_1 & x_2 \\ x_1' & x_2' \end{vmatrix} = x_1x_2' - x_1'x_2 
+        $$
+        于是$x'' + a_1(t)x' + a_2(t)x = f(t)$有通解
+        $$
+        \varphi(t) = C_1 x_1(t) + C_2 x_2(t) + \int_{t_0}^t \frac{-x_1(t)x_2(s) + x_1(s)x_2(t)}{x_1(s)x_2'(s) - x_1'(s)x_2(s)} \cdot f(s) \mathrm{d}s.
+        $$
+## 常系数线性微分方程组
++ 形式：$\vec{x}'=A\vec{x}$，其中$A$为常数矩阵。
++ 前置定义：
+    1. 矩阵的幂
+        $$
+        e^A=\exp(A)=\sum_{k=0}^\infty\frac{1}{k!}A^k=E+A+\frac{1}{2!}A^2+\cdots+\frac{1}{n!}A^n+\cdots
+        $$
+        约定$e^\mathbf{0}=E$。
+        + 矩阵幂的性质：
+            $$
+            \begin{aligned}
+            AB=BA&\Longrightarrow e^{A+B}=e^A\cdot e^B=e^B\cdot e^A\\
+            \forall A,(\exp A)^{-1}&=\exp(-A)\\
+            |T|\neq 0&\Longrightarrow\exp(T^{-1}AT)=T^{-1}\exp(A)T
+            \end{aligned}
+            $$
+    2. 矩阵的范数：$\|A\|=\sum_{i,j}|a_{ij}|$，由此可得$\displaystyle\|e^A\|\leq\sum_{k=0}^\infty\frac{1}{k!}\|A\|^k\leq e^{\|A\|}$。
+    3. 矩阵幂函数：$\displaystyle \exp(At)=e^{At}\coloneqq\sum_{k=0}^\infty\frac{(At)^k}{k!}=\sum_{k=0}^\infty\frac{A^kt^k}{k!}$
++ 方程组的标准基解矩阵$\Phi(t)=\exp(At)$（满足$\Phi(0)=E$）
+    + 当考虑初值条件$\vec{\varphi}(t_0)=\vec{\eta}$时，基本解组$\vec{\varphi}(t)=\exp(A(t-t_0))\cdot\vec{\eta}$。
+### 基解矩阵的计算
+关键：利用特征值和特征向量
+1. $A$有$n$个线性无关的特征向量  
+    设特征向量为$\vec{v}_1,\cdots,\vec{v}_n$，记$T=(\vec{v}_1,\cdots,\vec{v}_n)$，则
+    $$
+    e^{At}=T\begin{pmatrix}
+    e^{\lambda_1 t}&&\\
+    &\ddots&\\
+    &&e^{\lambda_nt}
+    \end{pmatrix}T^{-1}
+    $$
+    于是基解矩阵为$\Phi(t)=[e^{\lambda_1t}\vec{v}_1,\cdots,e^{\lambda_n t}\vec{v}_n]$。
+    > 上述得到的$\Phi(t)$可能是复基解矩阵，想要实标准基解矩阵则可以用$\Phi(t)\Phi(0)^{-1}=\exp(At)$。
+2. $A$没有$n$个线性无关的特征向量（几何重数小于代数重数）  
+    设$A$的特征值$\lambda_1,\cdots,\lambda_k$的重数分别为$n_1,\cdots,n_k$，则考虑空间的直和分解：
+    $$
+    \R^n=U_1\oplus\cdots\oplus U_k
+    $$
+    其中$U_i=\{\vec{u}:(A-\lambda_i)^{n_i}\vec{u}=\vec{0}\}$。设方程组初值为$\vec{\varphi}(0)=\vec{\eta}$，则存在唯一分解$\vec{\eta}=\vec{v}_1+\cdots+\vec{v}_k$，其中$\vec{v}_i\in U_i$。于是
+    $$
+    \begin{aligned}
+    (\exp At) v_j &= (\exp At) e^{\lambda_j t} [\exp(-\lambda_j E t)] v_j = e^{\lambda_j t} [\exp(A - \lambda_j E) t] v_j\\
+    &= e^{\lambda_j t} \left[ E + t(A - \lambda_j E) + \frac{t^2}{2!}(A - \lambda_j E)^2 + \cdots + \frac{t^{n_j - 1}}{(n_j - 1)!}(A - \lambda_j E)^{n_j - 1} \right] v_j.
+    \end{aligned}
+    $$
+    因此可得基解矩阵
+    $$
+    \begin{aligned}
+    \varphi(t) &= (\exp At) \eta = (\exp At) \sum_{j=1}^k v_j = \sum_{j=1}^k (\exp At) v_j\\
+    &= \sum_{j=1}^k e^{\lambda_j t} \left[ E + t(A - \lambda_j E) + \frac{t^2}{2!}(A - \lambda_j E)^2 + \cdots + \frac{t^{n_j - 1}}{(n_j - 1)!}(A - \lambda_j E)^{n_j - 1} \right] v_j\\
+    &=\sum_{j=1}^k e^{\lambda_j t} \left[ \sum_{i=0}^{n_j-1} \frac{t^i}{i!} (A - \lambda_j E)^i \right] v_j.
+    \end{aligned}
+    $$
+    如果初值为$\vec{\varphi}(t_0)=\vec{\eta}$，则将结果中$t$换为$t-t_0$即可。
+## Laplace变换
+主要概念前文已叙述，这里只补充解线性微分方程组会用到的变换：
++ 已知初值
+    $$
+    \vec{\varphi}(0)=\vec{\eta}=\begin{pmatrix}\eta_1\\\eta_2\\\vdots\\\eta_n\end{pmatrix},\vec{\varphi}(0)'=\vec{\eta}'=\begin{pmatrix}\eta_1'\\\eta_2'\\\vdots\\\eta_n'\end{pmatrix}
+    $$
+    则
+    $$
+    \begin{aligned}
+    \mathcal{L}[\vec{f}(t)]&=\int_0^\infty e^{-st}\vec{f}(t)\mathrm{d}t,\\
+    \mathcal{L}[x'_k(t)]&=s\cdot\mathcal{L}[x_k(t)]-\eta_k,\\
+    \mathcal{L}[x''_k(t)]&=s^2\cdot\mathcal{L}[x_k(t)]-s\eta_k-\eta_k'.
+    \end{aligned}
+    $$

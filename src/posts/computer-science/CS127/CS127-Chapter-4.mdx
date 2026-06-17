@@ -7,7 +7,6 @@ tags:
     - 优化模型
     - 最优化理论
 cover: ./EECS127.png
-draft: true
 ---
 # 主成分分析（Principal Component Analysis,PCA）
 + 主成分分析是一种重要的数据信息提取方法。具体而言，对于$\R^d$上的数据，我们希望能从中提取出$p$维的信息（其中$p\ll d$）
@@ -70,7 +69,7 @@ draft: true
 + 上面的主成分分析实际上是奇异值分解的特殊情形。一般的奇异值分解形式如下：设$A\in\R^{m\times n}$的秩为$r$，则$A$的SVD分解为
     $$
     \begin{aligned}
-    A&=U\Sigma V\\
+    A&=U_{m\times m}\Sigma_{m\times n} V_{n\times n}\\
     &=\begin{bmatrix}
     U_r & U_{m-r}
     \end{bmatrix}
@@ -115,7 +114,7 @@ draft: true
         &= 1.
         \end{aligned}
         $$
-    + 然后证明：$A=U\Sigma V^\top$：由构造可知
+    + 然后证明$A=U\Sigma V^\top$：由构造可知
         $$
         A\vec{v}_i=\begin{cases}
         \sigma_i\vec{u}_i,&1\leq i\leq r\\
@@ -137,3 +136,11 @@ draft: true
         因此$AV=U\Sigma$，即得$A=U\Sigma V^{-1}=U\Sigma V^\top$。
 + 奇异值分解不唯一：施密特正交化可以选取任意的正交基；$A^\top A$可能有相同特征值，对应不同特征向量；特征向量也可以任意取负。
 ## SVD的几何意义
+> 可参考B站上的[无痛现代](https://www.bilibili.com/video/BV1XcfiBeEwQ)。
++ 下面我们会说明：若A的SVD分解为$A=U\Sigma V^\top$，那么$U$和$V^\top$就表示对向量的旋转或反射，而$\Sigma$则表示对向量的缩放。
++ 对任意向量$\vec{x}\in\R^n$，$A\vec{x}$表示对$\vec{x}$进行线性变换。设原$\R^n$空间里的基向量为$\vec{e}_1,\cdots,\vec{e}_n,\displaystyle \vec{x}=\sum_{i=1}^n x_i\vec{e}_i$，则：
+    1. $V^\top$为标准正交矩阵，因而将$\vec{e}_1,\cdots,\vec{e}_n$映射到另一组标准正交基$\vec{v}_1,\cdots,\vec{v}_n$；
+    2. $\Sigma$矩阵则将$\vec{v}_1,\cdots,\vec{v}_n$进行缩放，得到$\sigma_1\vec{v}_1,\cdots,\sigma_n\vec{v}_n$（当$r< n$时部分基向量缩放为$\vec{0}$）；
+    3. $U$矩阵同样为标准正交矩阵，因而将$\sigma_1\vec{v}_1,\cdots,\sigma_n\vec{v}_n$映射到$\R^m$空间里的标准正交基$\vec{u}_1,\cdots,\vec{u}_m$，最终$\vec{x}$被映射到$\displaystyle\sum_{i=1}^r\sigma_i\vec{u}_i$。
+    > 若$n=m=2$，$\vec{x}$为单位向量，则上述变换可以理解为：先将$\vec{x}$绕原点旋转到$\vec{v}_1$所在的方向上（如果$\vec{x}$与$\vec{v}_1$同向，则不旋转），然后将其缩放$\sigma_1$倍，最后再绕原点旋转到$\vec{u}_1$所在的方向上。（这可以模拟任意线性变换）
+# 低秩近似（Low-Rank Approximation）

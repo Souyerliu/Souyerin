@@ -9,7 +9,7 @@ tags:
 cover: ./实变函数-Cheat-Sheet/folder.png
 # sticky: true
 ---
-> 以许忠好《实变函数概要》为蓝本，同时参考周民强《实变函数论》、程其襄《实变函数与泛函分析基础》等教材撰写。
+> 基于许忠好《实变函数概要》编写。
 # 集合论
 ## 集合及其运算
 + 基本概念（略，只列举一些新的符号定义）
@@ -512,3 +512,54 @@ cover: ./实变函数-Cheat-Sheet/folder.png
     1. 对几乎所有的$x \in \mathbb{R}$，$f(x, y)$ 作为$y$的函数 Lebesgue 可测；  
     2. $\displaystyle I(x) \triangleq \int_{\mathbb{R}} f(x, y) \mathrm{d}y$几乎处处存在，且$I(x) \in \mathcal{M}^+(\mathbb{R}^1)$;  
     3. $\displaystyle\int_{\mathbb{R}} I(x) \mathrm{d}x = \int_{\mathbb{R}^2} f(x, y) \mathrm{d}x \mathrm{d}y$。
+# 微分与积分
+> 本章主要目标是将黎曼积分的牛顿莱布尼茨公式推广到Lebesgue积分上。
+## 单调函数与有界变差函数
++ 设$f$为$[a,b]$上的单调函数，则$f$的不连续点全体为可数集。
+    + 推论：若$f$为$[a,b]$上的单调函数，则$f\in\mathcal{R}[a,b]$，进而$f\in\mathcal{R}[a,b]$。
++ 单调函数可微性定理：设$f$为$[a,b]$上单调不减的实值函数，则$f$在$[a,b]$上几乎处处可微，导函数$f'\in\mathcal{L}[a,b]$且$\displaystyle\int_a^bf'(x)\mathrm{d}x\leq f(b)-f(a)$。
++ 有界变差函数定义：设$f$为定义在$[a, b]$上的实值函数，$P = \{x_i, i = 0, 1, \cdots, n\}$为$[a, b]$的任一分割，且$a = x_0 < x_1 < \cdots < x_n = b$。我们称
+    $$  
+    V_f(P) = \sum_{i=1}^n |f(x_i) - f(x_{i-1})|
+    $$
+    为$f$关于分割$P$的变差。称
+    $$    
+    \bigvee_a^b (f) = \sup\{V_f(P) : P \text{ 为 } [a, b]\text{ 的分割}\}
+    $$
+    为$f$在$[a, b]$上的**全变差**。
+    若$V(f) < \infty$，称$f$为$[a, b]$上的**有界变差函数**，记为$f \in\mathcal{BV}[a, b]$(即$\mathcal{BV}[a, b]$表示$[a, b]$上的有界变差函数的全体组成的集合)。
++ 有界变差函数性质：
+    + 若$f \in\mathcal{BV}[a, b]$，则$f$有界，且对任意实数$\alpha$，$\alpha f\in\mathcal{BV}[a,b]$且$\displaystyle\bigvee_a^b(\alpha f)=|\alpha|\bigvee_a^b(f)$；
+    + 若$f,g \in\mathcal{BV}[a, b]$，则
+        + $f+g\in\mathcal{BV}[a, b]$且$\bigvee_a^b(\alpha f+g)\leq \bigvee_a^b(\alpha f)+\bigvee_a^b(\alpha g)$；
+        + $f\cdot g\in\mathcal{BV}[a, b]$。
+    + 设$f$为$[a,b]$上的实值函数，则对任意$c\in(a,b)$，$\bigvee_a^b(f)＝\bigvee_a^c(f)+\bigvee_c^b(f)$。
+    + 单调函数一定是有界变差函数；连续函数不一定是有界变差函数。
++ 全变差函数定义：设$f\in\mathcal{BV}[a, b]$，则$f$上的全变差函数为$\displaystyle T_f(x)\bigvee_a^x(f),x\in[a,b]$。由此可知全变差函数一定非负且关于$x$单调不减。
+    + 性质：$f$在$x\in [a,b]$上左（右）连续$T_f$在$x\in[a,b]$处左（右）连续。
++ Jordan分解定理：函数$f\in\mathcal{BV}[a,b]\Longleftrightarrow f$可表示为$[a,b]$上两个单调不减函数之差。
+    + 推论：设$f\in\mathcal{BV}[a,b]$，则
+        + $f$在$[a,b]$上几乎处处连续；
+        + $f\in\mathcal{R}[a,b]$；
+        + $f$在$[a,b]$上几乎处处可微且$f'\in\mathcal{L}[a,b]$。
+## 微积分基本定理
++ 绝对连续函数定义：设$f$为定义在$[a, b]$上的实值函数，若任意的$\epsilon > 0$，存在$\delta > 0$，使得对$[a, b]$中的任意有限个互不相交的开子区间$\{(a_i, b_i) : i = 1, 2, \dots, n\}$，当$\displaystyle\sum_{i=1}^n (b_i - a_i) < \delta$时，都有$\displaystyle\sum_{i=1}^n |f(b_i) - f(a_i)| < \epsilon$成立，我们称$f$为$[a, b]$上的绝对连续函数，记为$f \in\mathcal{AC}[a, b]$。
+    + 绝对连续函数一定一致连续，故也是连续函数（$\mathcal{AC}[a,b]\subset\mathcal{C}[a,b]$）；
+    + $\mathcal{AC}[a,b]$为线性空间，即对数乘运算和加法运算封闭；
+    + 定义在$[a,b]$上利普希茨连续函数是绝对连续函数。
++ 其他性质：
+    + 设$f\in\mathcal{L}[a,b]$，则函数$\displaystyle F(x)=\int_a^xf(t)\mathrm{d}t\in\mathcal{AC}[a,b]$。
+    + 定义在$[a,b]$上绝对连续函数一定是有界变差函数（$\mathcal{AC}[a,b]\subset\mathcal{BV}[a,b]$）；
+        + 推论：若$f\in\mathcal{AC}[a,b]$，则$f$在$[a,b]$上几乎处处可微且$f'\in\mathcal{L}[a,b]$。
+    + 设$f\in\mathcal{AC}[a,b]$，则$T_f\in\mathcal{AC}[a,b]$。反之，若$f\in\mathcal{BV}[a,b]$且$T_f\in\mathcal{AC}[a,b]$，则$f\in\mathcal{AC}[a,b]$。
++ 积分与微分转换：设$f\in\mathcal{L}[a,b]$，则$\displaystyle F(x)=\int_a^xf(t)\mathrm{d}t$在$[a,b]$上几乎处处可微，且$F'(x)=f(x)\,\text{a.e.}\,x\in[a,b]$。
++ 设$f\in\mathcal{AC}[a,b]$，$f'(x)=0\,\text{a.e.}\,x\in[a,b]$，则$f$恒为常数。
++ **微积分基本定理**：设$f$为定义在$[a,b]$上的实值函数，则 Newton-Leibniz 公式
+    $$
+    \int_a^xf'(t)\mathrm{d}t=f(x)-f(a)
+    $$
+    成立的充要条件是$f\in\mathcal{AC}[a,b]$。
++ 分部积分公式：设$f,g\in\mathcal{AC}[a,b]$，则
+    $$
+    \int_a^bf(x)g'(x)\mathrm{d}x=f(b)g(b)-f(a)g(a)-\int_a^bf'(x)g(x)\mathrm{d}x.
+    $$

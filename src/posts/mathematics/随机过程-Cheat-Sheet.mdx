@@ -84,7 +84,7 @@ cover: ./随机过程-Cheat-Sheet/folder.jpg
     $$
     若$(X,Y)$为连续型随机变量，则概率密度函数
     $$
-    f(x|A)=\frac{\int_Af(x,y)dy}{\int_{-\infty}^\infty dx\int_Af(x,y)dy}
+    f(x|A)=\frac{\int_Af(x,y)dy}{\int_{-\infty}^\infty\mathrm{d}x\int_Af(x,y)dy}
     $$
 + 在$Y\in A$条件下定义$X$的函数$g(X)$的数学期望
     $$
@@ -971,7 +971,7 @@ $$
     显然，$f_{X_2}(x_2)$是$N(\mu_2, C)$的密度，$f_{X_1|X_2}(x_1|x_2)$是$N(\mu_1 + B C^{-1}(x_2 - \mu_2),\, G^{-1})$的密度。
 + 边际密度函数为
     $$
-    f_{X_1}(x_1) = \int_{\mathbb{R}^{n-m}} f_{X_2}(x_2) \, f_{X_1|X_2}(x_1|x_2) \, dx_2.
+    f_{X_1}(x_1) = \int_{\mathbb{R}^{n-m}} f_{X_2}(x_2) \, f_{X_1|X_2}(x_1|x_2) \,\mathrm{d}x_2.
     $$
     已知$X_2 \sim N(\mu_2, C)$，且$X_1|X_2$的条件分布为正态，其均值是$X_2$的线性函数，协方差与$X_2$无关。根据多元正态分布的性质，无条件分布$X_1$仍为正态，且
     $$
@@ -998,7 +998,7 @@ $$
     $$
     (X_1, \cdots, X_m) \sim N(\mu + BC^{-1}(\hat{y} - \nu),A - BC^{-1}B^\top).
     $$
-+ 高斯过程定义：设$X = \{X(t); t \in T\}$是概率空间$(\Omega, \mathcal{F}, \mathbb{P})$上的随机过程。若对任意的$t_1, \cdots, t_n \in T$,
++ 高斯过程定义：设$X = \{X(t); t \in T\}$是概率空间$(\Omega, \mathcal{F}, P)$上的随机过程。若对任意的$t_1, \cdots, t_n \in T$,
     $$
     (X(t_1), X(t_2), \cdots, X(t_n))
     $$
@@ -1015,3 +1015,208 @@ $$
     \{X(t); t \in T\} \cup \{Y_k; k = 1, 2, \cdots, m\}
     $$
     仍是高斯系，而且$\displaystyle\text{Cov}(Y_k, Y_n) = \lim_{l \to \infty} \text{Cov}(X(t_l^k), X(t_l^n))$。
+## 标准布朗运动
++ 定义：记$I=[0,+\infty)$或$[0,M],M\in\R^+$，称$B = \{B(t); t \in I\}$为标准布朗运动（或Wiener过程），如果$B$满足：
+    1. 独立增量性：$B(0)=0$，且对任意$0 \leq t_1 < t_2 < \cdots < t_n\in I,n\geq 2$，增量$B(t_2) - B(t_1), B(t_3) - B(t_2), \cdots, B(t_n) - B(t_{n-1})$相互独立；
+    2. 正态性：即对任意$0\leq s< t\in I$，增量$B(t) - B(s)\sim N(0,(t-s)\sigma^2)$；（$\sigma^2$也称为方差参数）
+    3. 轨道连续性：$B$具有连续轨道，即对任意$\omega$，$B(t,\omega)$作为$t$的函数是连续的。
+    > 由定义可知$B$为平稳独立增量过程。
++ 若$\sigma^2=1$，则称$B$为标准布朗运动。
+    + 若$B$为方差参数$\sigma^2$的布朗运动，则$\dfrac{B}{\sigma}$为标准布朗运动。
++ 若$B_x(t)= x+ B(t)$，称$B_x = \{B_x(t);t\geq 0\}$为从$x$出发的布朗运动。
++ 性质：
+    1. 方差参数为$\sigma^2$的布朗运动$B$的均值函数$m(t)\equiv 0$，方差函数$\text{Var}(B(t))=\sigma^2 t$，协方差函数$R(s,t)=E(B(s)B(t))=\min\{s,t\}\sigma^2$。
+    2. 对任意$0 \leq t_1 < t_2 < \cdots < t_n$，$(B(t_1), B(t_2), \cdots, B(t_n))$服从均值向量为$\mathbf{0}$，协方差矩阵为$\mathbf{D} = (t_i \wedge t_j)_{i,j=1,\cdots,n}$的$n$维正态分布，其联合密度函数为  
+        $$
+        \rho(x_1, \cdots, x_n; t_1, \cdots, t_n) = \phi(x_1, t_1) \prod_{i=2}^n \phi(x_i - x_{i-1}, t_i - t_{i-1}),
+        $$
+        其中$\phi(x, t) =\dfrac{1}{\sqrt{2\pi t}}e^{-\frac{x^2}{2t}}$为$N(0, t)$的密度函数。
+    3. $X=\{X(t);t\geq 0\}$是标准布朗运动$\Longleftrightarrow X$是轨道连续的高斯过程而且对任意$0\leq s\leq t$都有$E(X(s)) = 0$且$E(X(s)X(t))= s$。 
++ 设$B = \{B(t); t \geq 0\}$为标准布朗运动，那么下述过程也是标准布朗运动：
+    1. $\{ -B(t); t \geq 0\}$；
+    2. $\{ B(t + s) - B(s); t \geq 0\}$，其中$s$ 为任意给定非负数；
+    3. $\{ cB(t/c^2); t \geq 0\}$，其中$c$ 为任意给定正数；
+    4. $\{ B(u) - B(u - t); 0 \leq t \leq u\}$，其中$u$为给定正数；
+    5. $\{ tB(1/t); t \geq 0\}$。
++ 马氏性：任取$0 \leq t_1 < \cdots < t_n < t,\,x_1, \cdots, x_n, x, y \in \mathbb{R}$,
+    $$
+    P(B(t + u) \leq y \mid B(t) = x, B(t_n) = x_n, \cdots, B(t_1) = x_1)
+    = P(B(t + u) \leq y \mid B(t) = x),
+    $$
+    其中$u > 0$。进而对任意随机变量$f(B(t + u))$，
+    $$
+    E(f(B(t + u)) \mid B(t), B(t_n), \cdots, B(t_1)) = E(f(B(t + u)) \mid B(t)).
+    $$
+    > 布朗运动也是“时齐”马氏过程。
+## 条件分布
++ 对任意$s \leq t_1 < t_2 < \cdots < t_n \leq t$，设$B(s) = x,B(t) = y$，那么$(B(t_1), \cdots, B(t_n))$服从均值向量为  
+    $$
+    \left( x + \frac{y - x}{t - s} (t_i - s) \right)_{1 \leq i \leq n},
+    $$
+    协方差矩阵为  
+    $$
+    \mathbb{D} = \left( \frac{(t - t_{i \lor j})(t_{i \land j} - s)}{t - s} \right)_{i,j=1,\cdots,n}
+    $$
+    的$n$维正态分布。
+## 轨道性质
++ 标准布朗运动$B=\{B(t);t\geq 0\}$一定存在，可通过简单对称随机运动逼近构造。
++ 布朗运动$B$的几乎所有轨道连续但处处不可微。
+## 极值分布
++ 首达时：对任意$a \in \mathbb{R}$，定义
+    $$
+    \begin{aligned}
+    \tau_a &\coloneqq 
+    \begin{cases} 
+    \inf\{t \geq 0; B(t) \geq a\}, & a \geq 0; \\
+    \inf\{t \geq 0; B(t) \leq a\}, & a < 0;
+    \end{cases}\\
+    &= \inf\{t \geq 0; B(t) = a\}.
+    \end{aligned}
+    $$
+    为$B$首次到达状态$a$的时刻，简称为$a$的首达（中）时。
+    + 由定义和布朗运动的轨道连续性可知，$\tau_a$是一个（广义）随机变量，且$\tau_a$是$B$的停时。
++ 反射原理：对任意$a\in\R,x\geq 0$，
+    $$
+    P(B(t)< a-x,\tau_a\leq t)=P(B(t)\geq a+x,\tau_a\leq t).
+    $$
+    推论：对任意$a\in\R$，$P(B(t)\geq a|\tau_a\leq t)=\dfrac{1}{2}$。
++ 记$\displaystyle B^*(t) = \max_{0 \leq u \leq t} B(u)$，则对任意$z\geq 0$，有$\{B^*(t)\geq z\}=\{\tau_z\leq t\}$。
++ 极（大）值分布：对任意$z \geq 0$,$x \leq z$，
+    $$
+    P(B^*(t) \geq z, B(t) < x) = P(B(t) > 2z - x) = \int_{2z-x}^\infty \phi(y, t)\mathrm{d}y.
+    $$
+    因此$(B^*(t), B(t))$的联合密度函数为
+    $$
+    h(z, x) = -2\phi'(2z - x, t) = \frac{2(2z - x)}{\sqrt{2\pi t^3}} e^{-\frac{(2z - x)^2}{2t}}, \quad x \leq z, \; z \geq 0.
+    $$ 
+    + 推论1：对任意$z\geq 0$，$P(B^*(t)\geq z)=2P(B(t)\geq z)=P(|B(t)|\geq z)$，即$B^*(t)$与$|B(t)|$同分布，密度函数均为
+        $$
+        g(z)=\frac{2}{\sqrt{2\pi t}}e^{-\frac{z^2}{2t}}.
+        $$
+    + 推论2：对任意$z\geq 0$，$\tau_z$的概率密度函数为
+        $$
+        p(t)=\frac{z}{\sqrt{2\pi t^3}}e^{-\frac{z^2}{2t}}.
+        $$
+        因此$P(\tau_z< \infty)=1,E(\tau_z)=\infty$。（“零常返性”）
+> 可利用$\displaystyle\min_{0\leq s\leq t}B(s)=-\max_{0\leq s\leq t}[-B(s)]$得到极小值分布。
+## 几何布朗运动
++ 若$B = \{B(t), t \geq 0\}$为标准布朗运动，$\mu$和$\sigma$是两任意给定的常数。对任意$t \geq 0$，令$Y(t) = \sigma B(t) + \mu t$，称随机过程$Y = \{Y(t), t \geq 0\}$为满足漂移系数为$\mu$和方差参数为$\sigma^2$的布朗运动，简称为带漂移的布朗运动。
++ 显然，对漂移系数为$\mu$和方差参数为$\sigma^2$的布朗运动而言：
+    1. $Y(0) = 0$;
+    2. $\{Y(t), t \geq 0\}$有平稳独立增量；
+    3. $Y(t)\sim N(\mu t, \sigma^2 t)$；
+    4. 马尔科夫性仍然成立。
++ 若$Y = \{Y(t), t \geq 0\}$为带漂移的布朗运动，那么称由$X(t) = e^{Y(t)}$定义的随机过程$X = \{X(t), t \geq 0\}$为几何布朗运动（也称为指数布朗运动）。  
+    + 几何布朗运动过程是非负的。其广泛用于风险资产价格建模。（如期权定价理论中的 Black-Scholes 公式）
+    + 性质：假定$Y$的漂移系数为$\mu$，方差参数为$\sigma^2$，则
+        $$
+        \begin{aligned}
+        E(X(t)) &= E(e^{Y(t)}) = e^{\mu t + \frac{\sigma^2}{2} t},\\
+        R(s,t) &= e^{(t+s)\mu+(t+3s)\frac{\sigma^2}{2}}.
+        \end{aligned}
+        $$
+## 积分布朗运动
++ 称随机过程$\displaystyle\left\{ \int_a^t B(u)\mathrm{d}u; t \geq a \right\}$为积分布朗运动。由积分定义可知  
+    $$
+    \int_a^t B(u)\mathrm{d}u = \lim_{\delta \to 0} \sum_{\substack{i=1\\\delta=\max\{t_i-t_{i-1}\}}}^{n} B(t_i)(t_i - t_{i-1}).
+    $$
+    可以证明积分布朗运动是高斯过程。
++ 当$B$是标准布朗运动时，积分布朗运动$\displaystyle\left\{\int_0^t B(u)\mathrm{d}u\right\}$是均值为$0$，协方差（函数）为
+    $$
+    R(s, t) = \int_0^s \int_0^t (u \land v) \mathrm{d}u \mathrm{d}v= \frac{s^3}{3} + \frac{(t-s)s^2}{2} = s^2 \left( \frac{t}{2} - \frac{s}{6} \right), \quad s \leq t,
+    $$
+    的高斯过程，而且$\displaystyle\int_0^t B(u) \mathrm{d}u \sim N\left(0, \frac{t^3}{3}\right)$。
++ 简单拓展：设$f(t)$是具有连续一阶导数的非随机函数，对任意$0 \leq a \leq b$，  
+    + 定义黎曼积分  
+        $$
+        \begin{aligned}
+        \int_a^b B(u)\mathrm{d}f(u) &= \lim_{\delta \to 0} \sum_{i=1, \delta = \max\{t_i - t_{i-1}\}}^n B(t_i)(f(t_i) - f(t_{i-1}))\\
+        &= \lim_{\delta \to 0} \sum_{i=1, \delta = \max\{t_i - t_{i-1}\}}^n B(t_i) f'(t_i)(t_i - t_{i-1}).
+        \end{aligned}
+        $$
+    + 定义随机积分  
+        $$
+        \int_a^b f(s)\mathrm{d}B(s) = \lim_{\delta \to 0} \sum_{i=1, \delta = \max\{t_i - t_{i-1}\}}^n f(t_{i-1})[B(t_i) - B(t_{i-1})].
+        $$ 
+    + 二者关系：$\displaystyle\int_a^b f(s)\mathrm{d}B(s) = f(b)B(b) - f(a)B(a) - \int_a^b B(s)\mathrm{d}f(s)$（随机积分的分部积分公式）
+    + $\displaystyle\left\{\int_a^t B(u)\mathrm{d}f(u); \ t \geq a\right\}$和$\displaystyle\left\{\int_a^t f(u)\mathrm{d}B(u); \ t \geq a\right\}$均为高斯过程。
+    + 性质：
+        $$
+        \begin{aligned}
+        E\left( \int_a^t B(u) \mathrm{d}f(u) \right) &= \int_a^t E(B(u)) \mathrm{d}f(u) = 0,\\
+        E\left( \int_a^t B(u) \mathrm{d}f(u) \int_a^s B(v) \mathrm{d}g(v) \right)&=\int_a^s \int_a^t (u \land v) \mathrm{d}f(u) \mathrm{d}g(v),\\
+        E\left( \int_a^t f(u) \mathrm{d}B(u) \int_a^s g(v) \mathrm{d}B(v) \right)&= \int_a^{t \land s} f(u)g(u) \mathrm{d}u.
+        \end{aligned}
+        $$
+# 离散时间鞅
++ 定义：设$X=\{X_n;n\geq 0\}$和$Y=\{Y_n;n\geq 0\}$为两个随机过程（也称$Y$为参考/信息过程）。若对任意$n\geq 0$，有
+    + $E(|X_n|)< \infty$（可积性）；
+    + $X_n$为$Y_0,\cdots,Y_n$的函数（适应性）；
+    + $E(X_{n+1}|Y_0,\cdots,Y_n)=X_n$。
+    
+    则称$X$关于$Y$是鞅。若上述第三个条件中等号改为$\leq$（$\geq$）,则称$X$关于$Y$是上（下）鞅。【上减下增】
+    + 若$Y=X$（或不强调$Y$），简称$\{X_n;n\geq 0\}$为（上/下）鞅。
+    + 若$X$关于$Y$是鞅，则上述第三个条件蕴含第二个条件。
+    + 若$X$关于$Y$是上（下）鞅，则$-X$关于$Y$是下（上）鞅；$X$关于$Y$是鞅$\Longleftrightarrow X$关于$Y$既是上鞅又是下鞅。
+    + 若$X$关于$Y$是上（下）鞅，则$E(X_n)$单调不增（不减）。
++ 若$X$关于$Y$是鞅，记$D_n=X_n-X_{n-1}$（$n\geq 1$），则称$D=\{D_n;n\geq 1\}$为关于$Y$的鞅差序列。
+    + $D_n$为$Y_0,\cdots,Y_n$的函数，且$E(D_n|Y_0,\cdots,Y_n)=0$。
+## 鞅的构造
+1. 从任意随机变量构造鞅  
+    对于任意随机变量$X$，构造$Y_n=E(X|X_1,\cdots,X_n)$，则$Y=\{Y_n;n\geq 0\}$为$\{X_n;n\geq 0\}$的鞅。
+2. 从任意随机变量序列构造鞅  
+    对任意随机变量序列$\{X_n;n\geq 0\}$，构造$\displaystyle S_n=\sum_{k=1}^n(X_{n}-E(X_{k}|X_0,\cdots,X_{k-1}))$，则$\{S_n;n\geq 1\}$是$\{X_n;n\geq 0\}$的鞅。
+3. 随机游动   
+    设$S=\{S_n;n\geq 0\}$表示$(q,p)$-简单随机游动，则
+    + $\{S_n-n(p-q);n\geq 0\}$关于$S$是鞅；
+    + $\displaystyle\left\{\left(\frac{q}{p}\right)^{S_n},n\geq 0\right\}$关于$S$是鞅；
+    + 当$p=q=\dfrac{1}{2}$，则$\{S_n^2-n;n\geq 0\}$和$\displaystyle\left\{\left(\frac{2u}{1-u}\right)^nu^{S_n},n\geq 0\right\}$关于$S$是鞅。
+4. 分支过程   
+    设$X=\{X_n;n\geq 0\}$为G-W分支过程，$m$为粒子平均后代数，那么$\{m^{-n}X_n;n\geq 0\}$关于$X$是鞅。
+5. 泊松过程   
+    设$N=\{N(t);t\geq 0\}$为强度$\lambda$的泊松过程，则$\{N(n)-\lambda n;n\geq 0\}$关于$N$是鞅。
+6. 马氏链  
+    设$X=\{X_n;n\geq 0\}$为时齐马氏链，$f$为一有界函数。记$g(x)=f(x)-E(f(X_1)|X_0=x)$，则$\displaystyle\left\{f(X_n)+\sum_{k=0}^{n-1}g(X_k)\right\}$关于$X$是鞅。
+7. 布朗运动  
+    设$B=\{B(t);t\geq 0\}$为方差参数$\sigma^2$的布朗运动，则$\{B(n);n\geq 0\},\{B(n)^2-n\sigma^2\},\left\{\exp\left\{\lambda B(n)-\dfrac{n\sigma^2\lambda^2}{2}\right\}\right\}$均关于$B$是鞅。
+## 鞅的简单性质
++ 鞅差序列构造：$D_n=Y_n-E(Y_n|Y_0,\cdots,Y_{n-1})$，则$\{D_n;n\geq 1\}$是关于$Y$的鞅差序列。
+    + 性质：对任意$n,m$（$n\neq m$），$E(D_n)=0,\text{Cov}(D_n,D_m)=0$（即鞅差序列是独立随机变量序列）
+    + 记$\displaystyle S_n=\sum_{k=1}^n D_k$，则$S=\{S_n;n\geq 1\}$为均值$0$的鞅，且若$D_k$平方可积，则$\displaystyle\mathrm{Var}(S_n)=\sum_{k=1}^nE(D_k^2)$。
++ 上（下）鞅性质：若$X=\{X_n;n\geq 0\}$和$Y=\{Y_n;n\geq 0\}$关于$Z=\{Z_n;n\geq 0\}$均为上（下）鞅，则：
+    + 对任意$\alpha,\beta\geq 0$，$\{\alpha X_n+\beta Y_n;n\geq 0\}$为上（下）鞅；
+    + $\{X_n\land Y_n;n\geq 0\}$为上鞅（$\{X_n\lor Y_n;n\geq 0\}$为下鞅）。
++ 若$X=\{X_n;n\geq 0\}$关于$Y=\{Y_n;n\geq 0\}$是下鞅，则存在关于$Y$的鞅$\{M_n;n\geq 0\}$使$X_n=M_n+N_n$，其中$N_n$为单调不降的随机序列（$N_0=0$）
++ （Jenson不等式拓展）若$X=\{X_n;n\geq 0\}$是下鞅，$\Psi(x)$为$\R$上单调不降的凸函数，且任意$n$，$E(|\Psi(X_n))|)$有限，则$\{\Psi(X_n);n\geq 0\}$为下鞅。
+## 停时定理
++ 若$\mathbf{1}_{\{T=n\}}$可表示为$Y_0,\cdots,Y_n$（信息过程）的函数，则称$T$为关于$Y$的停时，简称$T$为停时。
+    + 性质：若$S,T$为关于$Y=\{Y_n;n\geq 0\}$的停时，则$S+T,S\land T,S\lor T$均为停时。（$ST$一般不是停时，除非其中一个停时为常值）
+> 下面的所有结论中$X$均默认为鞅，当替换为下鞅时，将$=$改为$\geq$仍成立。
++ 引理：设$X=\{X_n;n\geq 0\}$是关于$Y=\{Y_n;n\geq 0\}$的鞅，$T$为一停时，则：
+    1. 对任意$0\leq k\leq n,E(X_n\mathbf{1}_{\{T=k\}})=E(X_k\mathbf{1}_{\{T=k\}})$；
+    2. 若$m\geq T\geq n$（$T$为有界停时），则$E(X_T|Y_0,\cdots,Y_n)=X_n$。
++ 有界停时定理：设$\{X_n;n\geq 0\}$是鞅，若$S,T$为两个有界停时且$S\leq T\,\text{a.s.}$，则$E(X_T)=E(X_S)$。
++ 一般停时定理：设$\{X_n; n \geq 0\}$为鞅，停时$T$有限，若以下条件之一满足：
+    1. $\displaystyle E\left(\sup_{n \geq 0} |X_{T \wedge n}|\right) < \infty$。
+    2. 若$E(T) < \infty$且存在$K < \infty$使得
+        $$
+        E(|X_{n+1} - X_n| \mid Y_0, \cdots, Y_n) \leq K.
+        $$
+    3. 若$E(|X_T|) < \infty$且$\displaystyle\lim_{n \to \infty} E(X_n \mathbf{1}_{\{T \geq n\}}) = 0$。 
+    
+    那么$E(X_T) = E(X_0)$。
+    + 推论：设$\{X_n; n \geq 0\}$为下鞅，$T$为有限停时，若存在随机变量$W$使得$E(|W|) < \infty$且对任意$n \geq 0$，$X_{T \wedge n} \leq W$成立，那么$E(X_0) \leq E(X_T)$。
+## 鞅的不等式与收敛定理
++ 设$\{X_n;n\geq 0\}$为鞅或非负下鞅，定义$\displaystyle X_n^*=\max_{0\leq k\leq n}|X_k|$，则有：
+    + 极大不等式：对任意$\lambda>0,r\geq 1$，
+        $$
+        P(X_n^*\geq\lambda)\leq\frac{1}{\lambda^r}E(|X_n|^r).
+        $$
+    + Doob 不等式：对任意$r>1$，
+        $$
+        E(|X_n^*|^r)\leq\left(\frac{r}{r-1}\right)^rE(|X_n|^r).
+        $$
++ Doob 收敛定理：设$\{X_n; n \geq 0\}$为（上，下）鞅，若存在$p \geq 1$，使得$\displaystyle M = \sup_n E(|X_n|^p) < \infty$，则存在随机变量$X_\infty$，使得$X_n \to X_\infty \quad \text{a.s.}$且$E|X_\infty| \leq M^{1/p}$。
+    + 推论1：若$\{X_n; n \geq 0\}$为非负上鞅（非正下鞅），那么$X_n$几乎处处收敛。
+    + 推论2：若上述定理中$\{X_n; n \geq 0\}$为鞅或非负下鞅且$p > 1$，那么$\displaystyle\lim_{n \to \infty} E(|X_n - X_\infty|^p) = 0$（$L_p$收敛），从而$E(|X_\infty|^p) = M$。
++ 因为鞅差序列为独立同分布随机变量之和，故满足大数定律和中心极限定理（略）
