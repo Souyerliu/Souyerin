@@ -34,3 +34,6 @@ generated/
 .hyacine
 
 hyacine.yml
+
+src/posts/.vscode
+.vscode
