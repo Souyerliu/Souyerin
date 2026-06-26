@@ -87,6 +87,7 @@ export default defineConfig({
         "@/components/mdx/QuizMistake.astro",
         "@/components/mdx/Tabs.astro",
         "@/components/mdx/Tab.astro",
+        "@/components/mdx/DistributionCalculator.astro",
       ],
     }),
     mdx(),
@@ -97,7 +98,7 @@ export default defineConfig({
 
   vite: {
     build: {
-    cssCodeSplit: true
+      cssCodeSplit: true,
     },
     resolve: {
       alias: {

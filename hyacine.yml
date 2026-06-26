@@ -28,7 +28,7 @@ images:
   - path: src/assets/images/cover-6.avif
 
 embedding:
-  enabled: true
+  enabled: false
   model: onnx-community/Qwen3-Embedding-0.6B-ONNX
   maxChunkChars: 512
 
@@ -37,6 +37,6 @@ summary:
   apiBaseUrl: https://chat.ecnu.edu.cn/open/api/v1
   apiKey: sk-06b06ae0a3d94b53bc636ee70763cb95
   model: ecnu-max
-  maxInputChars: 8000
+  maxInputChars: 50000
   maxOutputTokens: 256
   temperature: 0.2

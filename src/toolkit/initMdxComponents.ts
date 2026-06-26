@@ -66,9 +66,7 @@ const bindQuizItem = (quizItem: QuizItem) => {
     quizItem.classList.remove("show");
 
     // ❗ 清除所有选项状态
-    const options = quizItem.querySelectorAll<HTMLElement>(
-      ":scope .quiz-options > .quiz-option"
-    );
+    const options = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-options > .quiz-option");
 
     options.forEach((opt) => {
       opt.classList.remove("selected", "right", "wrong");
@@ -178,9 +176,7 @@ const bindQuizItem = (quizItem: QuizItem) => {
       return (
         correct.every((opt) => opt.classList.contains("selected")) &&
         Array.from(options).every(
-          (opt) =>
-            opt.dataset.correct === "true" ||
-            !opt.classList.contains("selected")
+          (opt) => opt.dataset.correct === "true" || !opt.classList.contains("selected"),
         )
       );
     };
@@ -193,9 +189,7 @@ const bindQuizItem = (quizItem: QuizItem) => {
     };
 
     // ✅ 按钮（默认不存在）
-    let actionButton = quizItem.querySelector<HTMLButtonElement>(
-      ":scope > .quiz-check-btn"
-    );
+    let actionButton = quizItem.querySelector<HTMLButtonElement>(":scope > .quiz-check-btn");
 
     // ❗ 初始隐藏
     if (actionButton) {

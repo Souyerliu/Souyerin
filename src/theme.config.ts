@@ -141,13 +141,13 @@ export default defineConfig({
         "https://unpkg.com/@waline/emojis@1.0.1/bilibili",
         "https://unpkg.com/@waline/emojis@1.0.1/qq",
         "https://unpkg.com/@waline/emojis@1.0.1/tieba",
-        "https://unpkg.com/@waline/emojis@1.0.1/tw-emoji"
+        "https://unpkg.com/@waline/emojis@1.0.1/tw-emoji",
       ],
     },
   },
   hyc: {
     // HYC 扩展总开关：关闭后其所有子功能不可用
-    enable: false,
+    enable: true,
     aiSummary: {
       // AI 摘要卡片开关（受 hyc.enable 总开关控制）
       enable: true,
@@ -184,8 +184,8 @@ export default defineConfig({
   },
   home: {
     selectedCategories: [
-      { 
-        name: "DATA8" ,
+      {
+        name: "DATA8",
         cover: "/images/valentine_logo.png",
       },
       {
@@ -289,7 +289,8 @@ export default defineConfig({
         title: "ECNU·驿站",
         author: "zeyi",
         desc: "软院同学制作的ECNU学习资源集合。",
-        avatar: "https://avatars.githubusercontent.com/u/229353891?s=400&u=402f153bc2eeeeb04db6bb419dd231173dd0b045&v=4",
+        avatar:
+          "https://avatars.githubusercontent.com/u/229353891?s=400&u=402f153bc2eeeeb04db6bb419dd231173dd0b045&v=4",
         color: "#cc002c",
       },
       {
@@ -300,7 +301,6 @@ export default defineConfig({
         avatar: "https://sqzr2319.github.io/img/sqzr2319.png",
         color: "#aadbfa",
       },
-      
     ],
   },
   copyright: {

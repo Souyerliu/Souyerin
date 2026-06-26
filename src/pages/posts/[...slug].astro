@@ -262,7 +262,9 @@ if (!isEncrypted && hycEnable && aiSummaryEnable) {
       );
     }
 
-    const summaryResult = (await getPostSummary(post.id)) as {
+    const hyacineSearchKey = post.data.title;
+
+    const summaryResult = (await getPostSummary(hyacineSearchKey)) as {
       summary?: {
         content?: string | null;
         model?: string | null;
@@ -275,7 +277,8 @@ if (!isEncrypted && hycEnable && aiSummaryEnable) {
         model: summaryResult.summary.model ?? null,
       };
     }
-  } catch {
+  } catch (e) {
+    console.warn("[AI Summary] Failed to fetch summary for", post.id, ":", e instanceof Error ? e.message : String(e));
     aiSummary = null;
   }
 }
@@ -283,8 +286,9 @@ if (!isEncrypted && hycEnable && aiSummaryEnable) {
 if (!isEncrypted && hycEnable && aiRecommendEnable) {
   try {
     const { findSimilarPosts } = await import("@hyacine/cli/api");
+    const hyacineSearchKey = post.data.title;
     const similarResult = await findSimilarPosts({
-      query: post.id,
+      query: hyacineSearchKey,
       limit: aiRecommendLimit,
     });
 
@@ -302,7 +306,8 @@ if (!isEncrypted && hycEnable && aiRecommendEnable) {
         title: item.title,
         score: item.score,
       }));
-  } catch {
+  } catch (e) {
+    console.warn("[AI Recommend] Failed to fetch similar posts for", post.id, ":", e instanceof Error ? e.message : String(e));
     aiRecommendPosts = [];
   }
 }

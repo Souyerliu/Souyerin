@@ -495,7 +495,6 @@ interface DiagnosticsConfig {
   suppressFsWatcherMaxListenersWarning?: boolean;
 }
 
-
 /**
  * 协议类型
  * CC 4.0 系列：BY, BY-SA, BY-ND, BY-NC, BY-NC-SA, BY-NC-ND
@@ -624,7 +623,7 @@ export interface ShokaXThemeConfig {
    */
   hyc?: HycConfig;
 
-   /**
+  /**
    * 诊断与命令行输出配置。
    */
   diagnostics?: DiagnosticsConfig;

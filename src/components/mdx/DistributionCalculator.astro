@@ -1,0 +1,243 @@
+---
+// 分位数计算器 — 纯 Astro 静态组件，内联 JS 驱动（仿 Tabs.astro 模式）
+---
+
+<div class="dist-calculator my-4 border border-gray-3 rounded p-4">
+  <!-- 标签导航 -->
+  <div class="mb-4 flex flex-wrap gap-1 border-b border-gray-3 pb-2" role="tablist">
+    <button type="button" class="dist-tab-btn cursor-pointer rounded-t px-3 py-1.5 text-sm font-medium transition-colors border-none bg-primary text-white" data-dist="normal">正态分布</button>
+    <button type="button" class="dist-tab-btn cursor-pointer rounded-t px-3 py-1.5 text-sm font-medium transition-colors border-none text-color hover:bg-gray-2" data-dist="chisquare">χ² 分布</button>
+    <button type="button" class="dist-tab-btn cursor-pointer rounded-t px-3 py-1.5 text-sm font-medium transition-colors border-none text-color hover:bg-gray-2" data-dist="F">F 分布</button>
+    <button type="button" class="dist-tab-btn cursor-pointer rounded-t px-3 py-1.5 text-sm font-medium transition-colors border-none text-color hover:bg-gray-2" data-dist="t">t 分布</button>
+  </div>
+
+  <!-- ========= 正态分布面板 ========= -->
+  <div class="dist-panel" data-dist="normal">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">显著性水平 α</span>
+        <input type="number" value="0.05" step="0.001" min="0.0001" max="0.9999"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="alpha" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">均值 μ</span>
+        <input type="number" value="0" step="any"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="mean" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">标准差 σ</span>
+        <input type="number" value="1" step="any" min="0.0001"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="std" />
+      </label>
+    </div>
+    <button type="button" class="dist-compute-btn mt-3 cursor-pointer rounded bg-primary px-4 py-1.5 text-sm text-white border-none hover:opacity-85 transition">计算</button>
+    <div class="dist-result mt-4 hidden rounded bg-gray-2 p-3 font-mono text-sm text-color"></div>
+  </div>
+
+  <!-- ========= 卡方分布面板 ========= -->
+  <div class="dist-panel hidden" data-dist="chisquare">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">显著性水平 α</span>
+        <input type="number" value="0.05" step="0.001" min="0.0001" max="0.9999"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="alpha" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">自由度 n</span>
+        <input type="number" value="1" step="1" min="1"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="df" />
+      </label>
+    </div>
+    <button type="button" class="dist-compute-btn mt-3 cursor-pointer rounded bg-primary px-4 py-1.5 text-sm text-white border-none hover:opacity-85 transition">计算</button>
+    <div class="dist-result mt-4 hidden rounded bg-gray-2 p-3 font-mono text-sm text-color"></div>
+  </div>
+
+  <!-- ========= F 分布面板 ========= -->
+  <div class="dist-panel hidden" data-dist="F">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">显著性水平 α</span>
+        <input type="number" value="0.05" step="0.001" min="0.0001" max="0.9999"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="alpha" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">自由度 m</span>
+        <input type="number" value="1" step="1" min="1"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="df1" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">自由度 n</span>
+        <input type="number" value="1" step="1" min="1"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="df2" />
+      </label>
+    </div>
+    <button type="button" class="dist-compute-btn mt-3 cursor-pointer rounded bg-primary px-4 py-1.5 text-sm text-white border-none hover:opacity-85 transition">计算</button>
+    <div class="dist-result mt-4 hidden rounded bg-gray-2 p-3 font-mono text-sm text-color"></div>
+  </div>
+
+  <!-- ========= t 分布面板 ========= -->
+  <div class="dist-panel hidden" data-dist="t">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">显著性水平 α</span>
+        <input type="number" value="0.05" step="0.001" min="0.0001" max="0.9999"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="alpha" />
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="text-xs text-text-muted">自由度 n</span>
+        <input type="number" value="1" step="1" min="1"
+          class="dist-input rounded border border-gray-3 bg-gray-1 px-2 py-1 text-sm text-color"
+          data-param="df" />
+      </label>
+    </div>
+    <button type="button" class="dist-compute-btn mt-3 cursor-pointer rounded bg-primary px-4 py-1.5 text-sm text-white border-none hover:opacity-85 transition">计算</button>
+    <div class="dist-result mt-4 hidden rounded bg-gray-2 p-3 font-mono text-sm text-color"></div>
+  </div>
+</div>
+
+<script is:inline>
+  // 分位数计算器初始化（依赖 jStat）
+  (function () {
+    // 避免重复绑定
+    if (window.__distCalcBound) return;
+    window.__distCalcBound = true;
+
+    function waitForJStat(cb) {
+      if (window.jStat) return cb();
+      var s = document.createElement("script");
+      s.src = "https://unpkg.com/jstat@1.9.6/dist/jstat.min.js";
+      s.onload = cb;
+      document.head.append(s);
+    }
+
+    function formatNum(v) {
+      if (!isFinite(v)) return "—";
+      return v.toFixed(6);
+    }
+
+    function getParam(panel, name) {
+      var input = panel.querySelector('[data-param="' + name + '"]');
+      return input ? Number(input.value) || NaN : NaN;
+    }
+
+    function bindCalculator(root) {
+      if (root.dataset.distBound === "1") return;
+      root.dataset.distBound = "1";
+
+      var tabBtns = root.querySelectorAll(".dist-tab-btn");
+      var panels = root.querySelectorAll(".dist-panel");
+
+      // Tab 切换
+      tabBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var dist = btn.dataset.dist;
+          tabBtns.forEach(function (b) {
+            var active = b.dataset.dist === dist;
+            b.classList.toggle("bg-primary", active);
+            b.classList.toggle("text-white", active);
+            b.classList.toggle("text-color", !active);
+            if (!active) b.classList.add("hover:bg-gray-2");
+            else b.classList.remove("hover:bg-gray-2");
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle("hidden", p.dataset.dist !== dist);
+          });
+        });
+      });
+
+      // 计算按钮
+      root.querySelectorAll(".dist-compute-btn").forEach(function (computeBtn) {
+        computeBtn.addEventListener("click", function () {
+          var panel = computeBtn.closest(".dist-panel");
+          if (!panel) return;
+          var dist = panel.dataset.dist;
+          var resultEl = panel.querySelector(".dist-result");
+          if (!resultEl) return;
+
+          var alpha = getParam(panel, "alpha");
+          if (isNaN(alpha) || alpha <= 0 || alpha >= 1) {
+            resultEl.classList.remove("hidden");
+            resultEl.innerHTML = '<span class="text-color-red">α 必须在 (0, 1) 之间</span>';
+            return;
+          }
+
+          var html = "";
+          if (dist === "normal") {
+            var mean = getParam(panel, "mean") || 0;
+            var stdVal = getParam(panel, "std") || 1;
+            if (stdVal <= 0) {
+              resultEl.classList.remove("hidden");
+              resultEl.innerHTML = '<span class="text-color-red">标准差必须 > 0</span>';
+              return;
+            }
+            var upper = jStat.normal.inv(1 - alpha, mean, stdVal);
+            var lower = jStat.normal.inv(alpha, mean, stdVal);
+            var twoSide = jStat.normal.inv(1 - alpha / 2, mean, stdVal);
+            html =
+              "<p>上侧 α 分位数 z<sub>α</sub> = <strong>" + formatNum(upper) + "</strong></p>" +
+              "<p>下侧 α 分位数 −z<sub>α</sub> = <strong>" + formatNum(lower) + "</strong></p>" +
+              "<p>双侧 α 分位数 z<sub>α/2</sub> = <strong>" + formatNum(twoSide) + "</strong></p>" +
+              '<p class="mt-1 text-xs text-text-muted">即 P(X &gt; z<sub>α</sub>) = α</p>';
+          } else if (dist === "chisquare") {
+            var df = Math.round(getParam(panel, "df")) || 1;
+            if (df <= 0) {
+              resultEl.classList.remove("hidden");
+              resultEl.innerHTML = '<span class="text-color-red">自由度必须为正整数</span>';
+              return;
+            }
+            var chiUpper = jStat.chisquare.inv(1 - alpha, df);
+            var chiLower = jStat.chisquare.inv(alpha, df);
+            html =
+              "<p>上侧 α 分位数 χ²<sub>1-α</sub>(n) = <strong>" + formatNum(chiUpper) + "</strong></p>" +
+              "<p>下侧 α 分位数 χ²<sub>α</sub>(n) = <strong>" + formatNum(chiLower) + "</strong></p>" +
+              '<p class="mt-1 text-xs text-text-muted">即 P(χ²(n) &gt; χ²<sub>α</sub>(n)) = α</p>';
+          } else if (dist === "F") {
+            var df1 = Math.round(getParam(panel, "df1")) || 1;
+            var df2 = Math.round(getParam(panel, "df2")) || 1;
+            if (df1 <= 0 || df2 <= 0) {
+              resultEl.classList.remove("hidden");
+              resultEl.innerHTML = '<span class="text-color-red">自由度必须为正整数</span>';
+              return;
+            }
+            var fUpper = jStat.centralF.inv(1 - alpha, df1, df2);
+            var fLower = jStat.centralF.inv(alpha, df1, df2);
+            html =
+              "<p>上侧 α 分位数 F<sub>1-α</sub>(m, n) = <strong>" + formatNum(fUpper) + "</strong></p>" +
+              "<p>下侧 α 分位数 F<sub>α</sub>(m, n) = <strong>" + formatNum(fLower) + "</strong></p>" +
+              '<p class="mt-1 text-xs text-text-muted">即 P(F(m,n) &gt; F<sub>α</sub>(m,n)) = α</p>';
+          } else if (dist === "t") {
+            var tDf = Math.round(getParam(panel, "df")) || 1;
+            if (tDf <= 0) {
+              resultEl.classList.remove("hidden");
+              resultEl.innerHTML = '<span class="text-color-red">自由度必须为正整数</span>';
+              return;
+            }
+            var tUpper = jStat.studentt.inv(1 - alpha, tDf);
+            var tLower = jStat.studentt.inv(alpha, tDf);
+            var tTwoSide = jStat.studentt.inv(1 - alpha / 2, tDf);
+            html =
+              "<p>上侧 α 分位数 t<sub>α</sub>(n) = <strong>" + formatNum(tUpper) + "</strong></p>" +
+              "<p>下侧 α 分位数 −t<sub>α</sub>(n) = <strong>" + formatNum(tLower) + "</strong></p>" +
+              "<p>双侧 α 分位数 t<sub>α/2</sub>(n) = <strong>" + formatNum(tTwoSide) + "</strong></p>" +
+              '<p class="mt-1 text-xs text-text-muted">即 P(t(n) &gt; t<sub>α</sub>(n)) = α</p>';
+          }
+          resultEl.classList.remove("hidden");
+          resultEl.innerHTML = html;
+        });
+      });
+    }
+
+    waitForJStat(function () {
+      document.querySelectorAll(".dist-calculator").forEach(bindCalculator);
+    });
+  })();
+</script>
