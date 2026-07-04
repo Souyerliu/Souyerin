@@ -32,7 +32,7 @@ cover: ./dl.png
         即隐藏状态随着处理每个输入不断更新，且包含所有历史信息。
 + 损失函数（基于时间反向传播BPTT）：
     $$
-    \sum_{i=1}^n (y_i - o_{iL})^2 = \sum_{i=1}^n \left\{ y_i - \left[\beta_0 + \sum_{k=1}^K \beta_k g\left( \underbrace{w_k}_{\text{bias}} + \underbrace{\sum_{j=1}^p w_{kj} x_{iL_j}}_{\text{input}} + \underbrace{\sum_{s=1}^K u_{ks} a_{i,L-1,s}}_{\text{hidden state}} \right) \right] \right\}^2
+    \sum_{i=1}^n (y_i - o_{iL})^2=\sum_{i=1}^n \left\{ y_i - \left[\beta_0 + \sum_{k=1}^K \beta_k g\left( \underbrace{w_k}_{\text{bias}} + \underbrace{\sum_{j=1}^p w_{kj} x_{iL_j}}_{\text{input}} + \underbrace{\sum_{s=1}^K u_{ks} a_{i,L-1,s}}_{\text{hidden state}} \right) \right] \right\}^2
     $$
     其中$n$为样本总量，$L$为时间步长，$K$为隐藏层神经元数量，$p$为输入向量维度。
 ## LSTM

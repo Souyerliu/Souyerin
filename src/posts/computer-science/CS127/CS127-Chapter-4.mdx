@@ -144,3 +144,80 @@ cover: ./EECS127.png
     3. $U$矩阵同样为标准正交矩阵，因而将$\sigma_1\vec{v}_1,\cdots,\sigma_n\vec{v}_n$映射到$\R^m$空间里的标准正交基$\vec{u}_1,\cdots,\vec{u}_m$，最终$\vec{x}$被映射到$\displaystyle\sum_{i=1}^r\sigma_i\vec{u}_i$。
     > 若$n=m=2$，$\vec{x}$为单位向量，则上述变换可以理解为：先将$\vec{x}$绕原点旋转到$\vec{v}_1$所在的方向上（如果$\vec{x}$与$\vec{v}_1$同向，则不旋转），然后将其缩放$\sigma_1$倍，最后再绕原点旋转到$\vec{u}_1$所在的方向上。（这可以模拟任意线性变换）
 # 低秩近似（Low-Rank Approximation）
++ 实际上，SVD可以用于数据压缩，这便是低秩近似。其目标是在控制误差的前提下尽量压缩矩阵数据。
++ 对此，我们首先需要对矩阵误差进行衡量。与向量的范数类似，我们也可以定义矩阵的范数。
+    + 一种最典型的矩阵范数就是Frobenius范数，其定义为（设$A\in\R^{m\times n}$）：
+        $$
+        \|A\|_F\coloneqq\sqrt{\sum_{i=1}^m\sum_{j=1}^n a_{ij}^2}.
+        $$
+        Frobenius范数的性质包括：
+        1. $\|A\|_F^2=\text{tr}(A^\top A)$；（$\text{tr}(A^\top A)$表示$A^\top A$对角线元素之和）
+        2. 对于任意标准正交矩阵$U\in\R^{m\times m},V\in\R^{n\times n}$，$\|UAV\|_F=\|UA\|_F=\|AV\|_F=\|A\|_F$；
+        3. 设$A\in\R^{m\times n}$的秩为$r$，对应奇异值为$\sigma_1\geq\cdots\geq\sigma_r> 0$，则$\displaystyle\|A\|_F^2=\sum_{i=1}^r\sigma_i^2$。
+
+        由此可知，当$A-B$的Frobenius范数较小时，可以说明矩阵$A$和$B$的每个对应位置元素都比较接近。
+    + 另一种矩阵范数是**谱范数（Spectral Norm）**【也称为矩阵$\ell^2$范数】，其定义为：
+        $$
+        \|A\|_2\coloneqq\max_{\substack{\vec{x}\in\R^n\\\|\vec{x}\|_2=1}}\|A\vec{x}\|_2.
+        $$
+        如果将$A$看作线性变换，那么其谱范数就表示这个变换对单位向量的最大缩放因子。
+        + 实际上，可以证明谱范数就是矩阵的最大奇异值$\sigma_1$：
+            $$
+            \begin{aligned}
+            \|A\|_2 &\coloneqq \max_{\substack{\vec{x} \in \mathbb{R}^n \\ \|\vec{x}\|_2 = 1}} \|A\vec{x}\|_2 \\
+            &= \sqrt{\max_{\substack{\vec{x} \in \mathbb{R}^n \\ \|\vec{x}\|_2 = 1}} \|A\vec{x}\|_2^2} \\
+            &= \sqrt{\max_{\substack{\vec{x} \in \mathbb{R}^n \\ \|\vec{x}\|_2 = 1}} \vec{x}^\top A^\top A \vec{x}} \\
+            &= \sqrt{\lambda_{\max}\{A^\top A\}} \\
+            &= \sigma_1.
+            \end{aligned}
+            $$
+            其中倒数第二个等号可参考[Rayleigh商](/posts/computer-science/cs127/cs127-chapter-3/#rayleigh商)的推导。
++ 在确定了矩阵误差的度量后，我们就可以进行低秩近似了：由上面的SVD分解可知，当$A$的秩为$r\leq p\coloneqq\min\{m,n\}$时，$\displaystyle A=\sum_{i=1}^r \sigma_i \vec{u}_i \vec{v}_i^\top$。记$\sigma_{r+1}=\cdots=0$，则有
+    $$
+    A=\sum_{i=1}^{p} \sigma_i \vec{u}_i \vec{v}_i^\top
+    $$
+    那么对任意$k\leq p$，记$A_k\coloneqq\displaystyle\sum_{i=1}^{k} \sigma_i \vec{u}_i \vec{v}_i^\top$，则称$A_k$为$A$的低秩近似。相比储存$A$需要$n\times m$空间，存储$A_k$就只需要$k(m+n+1)$（两个标准正交矩阵+所有奇异值）空间。
++ 下面我们说明低秩近似在Frobenius范数和谱范数范畴下都是矩阵的一个良好近似。（这一结论也称为**埃卡特-杨-米尔斯基定理**，Eckart-Young-Mirsky theorem）
+    + 首先给出谱定理下的一个结论：
+        $$
+        A_k\in\argmin_{\substack{B\in\R^{m\times n}\\\text{rank}(B)\leq k}}\|A-B\|_2
+        $$
+        即对于任意秩不超过$k$的矩阵$B$，均有$\|A-A_k\|_2\leq\|A-B\|_2$。其证明如下：
+        + 首先计算$\|A-A_k\|_2$的值：因为$\displaystyle A-A_k=\sum_{i=1}^{p} \sigma_i \vec{u}_i \vec{v}_i^\top-\sum_{i=1}^{k} \sigma_i \vec{u}_i \vec{v}_i^\top=\sum_{i=k+1}^{p} \sigma_i \vec{u}_i \vec{v}_i^\top$，所以$\|A-A_k\|_2$的值即为最大奇异值$\sigma_{k+1}$。
+        + 然后证明对于任意秩不超过$k$的矩阵$B$均有$\|A-B\|_2\geq\sigma_{k+1}$：定义$f(\vec{x})=\dfrac{\|(A-B)\vec{x}\|_2}{\|\vec{x}\|_2}$，则根据Rayleigh商的知识，$\displaystyle\|A-B\|_2=\max_{\vec{x}\neq\vec{0}}f(\vec{x})$，故只要找到一个$\vec{x}_0$使$f(\vec{x}_0)\geq\sigma_{k+1}$即可。
+        + 定义$\mathcal{N}(B)\coloneqq\{\vec{x}:B\vec{x}=\vec{0}\},V_{k+1}\coloneqq\begin{bmatrix}\vec{v}_1,\cdots,\vec{v}_{k+1}\end{bmatrix}$，则
+            $$
+            \text{dim}(\mathcal{N}(B))+\text{dim}(V_{k+1})\geq (n-k)+k+1>n
+            $$
+            这说明$\mathcal{N}(B)\cap V_{k+1}$空间一定存在一个单位基向量，将其记为$\vec{x}_0$。
+        + 接下来证明$f(\vec{x}_0)\geq\sigma_{k+1}$：
+            $$
+            \begin{aligned}
+            f(\vec{x}_0)&=\frac{\|(A-B)\vec{x}_0\|_2}{\|\vec{x}_0\|_2}=\|A\vec{x}_0-\underbrace{B\vec{x}_0}_{=0}\|_2\\
+            &=\left\|A\underbrace{\sum_{i=1}^{k+1}\alpha_i\vec{v}_i}_{\vec{x}_0}\right\|_2=\left\|\left(\sum_{i=1}^{p} \sigma_i \vec{u}_i \vec{v}_i^\top\right)\left(\sum_{i=1}^{k+1}\alpha_i\vec{v}_i\right)\right\|\\
+            &=\left\| \sum_{i=1}^p \sum_{j=1}^{k+1} \sigma_i \alpha_j \vec{u}_i \vec{v}_i^\top \vec{v}_j \right\|_2\\
+            &=\left\| \sum_{i=1}^{k+1} \alpha_i \sigma_i \vec{u}_i \right\|_2=\sqrt{\left\| \sum_{i=1}^{k+1} \alpha_i \sigma_i \vec{u}_i \right\|_2^2} \\
+            &=\sqrt{\sum_{i=1}^{k+1} \alpha_i^2 \sigma_i^2}\geq \sqrt{\sigma_{k+1}^2 \sum_{i=1}^{k+1} \alpha_i^2} \\
+            &=\sigma_{k+1} \left\| \vec{x}_0 \right\|_2= \sigma_{k+1}.
+            \end{aligned}
+            $$
+    + 类似地，Frobenius范数也有如下结论：
+        $$
+        A_k\in\argmin_{\substack{B\in\R^{m\times n}\\\text{rank}(B)\leq k}}\|A-B\|_F.
+        $$
+        其证明如下：
+        + 因为$\displaystyle A-A_k=\sum_{i=1}^{p} \sigma_i \vec{u}_i \vec{v}_i^\top-\sum_{i=1}^{k} \sigma_i \vec{u}_i \vec{v}_i^\top=\sum_{i=k+1}^{p} \sigma_i \vec{u}_i \vec{v}_i^\top$，这可看作一个SVD分解，因此$\displaystyle\|A-A_k\|_F=\sum_{i=k+1}^p\sigma_i^2$。
+        + 而对任意秩不超过$k$的矩阵$B$，记$C\coloneqq A-B$，并考虑$C$的SVD分解$\displaystyle C=\sum_{i=1}^p\gamma_i\vec{y}_i\vec{z}_i^\top$，那么根据上面的推导，$\gamma_i$可用$\|C-C_{i-1}\|_2$（$C_{i-1}$的秩为$i-1$）表示，即
+            $$
+            \gamma_i=\|C-C_{i-1}\|_2=\|A-B-C_{i-1}\|_2=\|A-(B+C_{i-1})\|_2
+            $$
+            又因为$B+C_{i-1}$的秩不超过$k+i-1$，所以由上面谱范数的结论，
+            $$
+            \gamma_i=\|A-(B+C_{i-1})\|_2\geq\|A-A_{i+k-1}\|_2=\sigma_{i+k}.
+            $$
+            对任意$i=1,2,\cdots,p$成立。因此
+            $$
+            \|A-B\|_F=\sum_{i=1}^p\gamma_i\geq\sum_{i=1}^p\sigma_{i+k}=\sum_{i=k+1}^p\sigma_i^2.
+            $$
+___
+至此关于线性代数的前置概念回顾结束，下面便正式开始最优化的内容！

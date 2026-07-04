@@ -305,6 +305,8 @@
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     width: auto;
     height: 100%;
   }
@@ -312,10 +314,27 @@
   @media (max-width: 1023px) {
     #sidebar > .inner {
       width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      margin-top: 0;
+    }
+
+    :global(.tab) {
+      position: relative !important;
+      padding-top: 0.75rem !important;
+    }
+
+    .panels {
+      flex: 1;
+      min-height: 0;
+      padding-top: 0.75rem;
     }
 
     .panels > .inner {
       margin-top: 0;
+      height: 100%;
     }
   }
 

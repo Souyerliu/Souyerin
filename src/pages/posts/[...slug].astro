@@ -7,6 +7,7 @@ import PostNav from "@/components/post/PostNav.astro";
 import AiSimilarPosts from "@/components/post/AiSimilarPosts.astro";
 import AiSummaryCard from "@/components/post/AiSummaryCard.astro";
 import WalineComments from "@/components/post/WalineComments.svelte";
+import DownloadPDF from "@/components/post/DownloadPDF.svelte";
 import { getCollection, render } from "astro:content";
 import themeConfig from "@/theme.config";
 import type {
@@ -453,6 +454,13 @@ const postMeta = {
           license={post.data.license}
         />
       </article>
+
+      {
+        /* PDF 下载按钮（加密文章不显示） */
+        !isEncrypted && (
+          <DownloadPDF client:load title={post.data.title} />
+        )
+      }
     </div>
 
     <PostNav

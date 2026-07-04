@@ -38,7 +38,7 @@ cover: ./ml.png
 + 具体方法（以二分类问题为例）：
     1. 使用弱学习器（一般为决策树桩Decision Stump，即只有两层的决策树），得到基本分类器$G_1(x)$
     2. 根据$G_1(x)$的分类效果，增加错误样本权重
-        + 记$\epsilon_1$为分类错误样本的加权占比，$\alpha_1=\dfrac{1}{2}\ln\dfrac{1-\epsilon_1}{\epsilon_1}$，那么对分类错误样本权重乘以$\exp\{\alpha_1\}$，分类正确样本权重乘以$\exp\{-\alpha_1\}$。
+        + 记$\epsilon_1$为分类错误样本的加权占比，$\alpha_1=\dfrac{1}{2}\ln\dfrac{1-\epsilon_1}{\epsilon_1}$，那么对分类错误样本权重乘以$\exp\{\alpha_1\}$，分类正确样本权重乘以$\exp\{-\alpha_1\}$，然后对权重进行归一化。
         + $\epsilon_m< \dfrac{1}{2},\alpha_m>0$，且$\epsilon_m$越小，$\alpha_m$越大。
     3. 以此类推，最终得到分类器（强学习器）$\hat{y}=\displaystyle\text{sgn}\left(\sum_{i=1}^N\alpha_i\cdot G_i(x)\right)$，其中$G_i(x)$为每棵树的预测结果。
         + 表现好的树权重更大，表现差的树权重更小 

@@ -72,11 +72,15 @@
       if (isActive && containerElement) {
         const activeElement = containerElement.querySelector('.toc-item.active') as HTMLElement
         if (activeElement) {
-          const offsetTop = activeElement.offsetTop - containerElement.clientHeight / 4
-          containerElement.scrollTo({
-            top: offsetTop,
-            behavior: 'smooth',
-          })
+          // Find the scrollable panel wrapper (not .contents itself)
+          const scrollParent = containerElement.closest('.panels > .inner') as HTMLElement
+          if (scrollParent) {
+            const offsetTop = activeElement.offsetTop - scrollParent.clientHeight / 4
+            scrollParent.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth',
+            })
+          }
         }
       }
     }
