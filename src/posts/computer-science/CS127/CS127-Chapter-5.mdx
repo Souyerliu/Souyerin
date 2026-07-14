@@ -1,0 +1,21 @@
+---
+title: CS127 Chapter 5
+date: 2026-07-12 11:18:28
+categories: [计算机科学,CS127]
+tags:
+    - 线性代数
+    - 优化模型
+    - 最优化理论
+cover: ./EECS127.png
+draft: true
+---
+前面我们回顾了一些线性代数的基本理论，包括最小二乘、范数、矩阵正交化、PCA、SVD等。在正式进入最优化理论的学习之前，我们还需要补充一些向量微积分的知识。~~也可以看作多元微积分回顾~~
+# 向量微积分（Vector Calculus）
+## 向量微分（导数）
++ 在一元微积分中，可微函数$f:\R\to\R$对$x$的导函数$\dfrac{\mathrm{d}f}{\mathrm{d}x}:\R\to\R$定义为
+    $$
+    \frac{\mathrm{d}f}{\mathrm{d}x}(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}.
+    $$
+    而本节我们主要会讨论以下两种函数的微分：
+    1. 多元函数$f:\R^n\to\R$，比如$f(\vec{x})=\|\vec{x}\|_p$；
+    2. 向量值函数$\vec{f}:\R^n\to\R^m$，比如$\vec{f}(\vec{x})=A\vec{x}$。

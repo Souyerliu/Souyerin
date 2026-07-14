@@ -140,6 +140,25 @@
   }
 }
 
+/* File Updated Meta - 文件更新时间（位于 Tag 之后、版权声明之前） */
+.post-meta.file-updated {
+  color: var(--grey-5);
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 0.0625rem dashed var(--grey-9-a1);
+}
+
+.post-meta.file-updated .item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.post-meta.file-updated .icon {
+  margin-right: 0.25rem;
+}
+
 /* Post Tags */
 .post .tags {
   text-align: left;
@@ -347,6 +366,8 @@
 .md h6 {
   position: relative;
   padding-top: 0.625rem;
+  /* 为固定导航栏预留空间，确保 TOC 跳转和 URL hash 跳转位置一致 */
+  scroll-margin-top: 3.5rem;
 }
 
 .md h1 {

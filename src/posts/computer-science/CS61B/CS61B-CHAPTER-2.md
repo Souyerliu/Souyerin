@@ -12,7 +12,7 @@ cover: ./61B-header.png
 
 ## 静态方法(static methods)
 
-- 如前面所述，java语言中所有代码都必须放在类(class)中，而大部分代码都放在方法(method)中（可以理解为可执行一系列操作的函数）。而为了运行这些方法，我们需要对其进行调用。
+- 如前面所述，java语言中所有代码都必须放在类（class）中，而大部分代码都放在方法（method）中（可以理解为可执行一系列操作的函数）。而为了运行这些方法，我们需要对其进行调用。
 - 以下面这个`Dog`程序为例：
 
 ```java
@@ -38,17 +38,17 @@ public class DogLauncher {
 }
 ```
 
-- 像这样在调用其他类方法的类也被称为类的“使用者”(client)。（不像python，在同一目录下java不需要import就能直接调用类，这其实比较像matlab）
+- 像这样在调用其他类方法的类也被称为类的**使用者（client）**。（与python不同，在同一目录下java不需要import就能直接调用类，这其实比较像matlab）
 
 ## 实例变量与对象实例化(Instance Variables and Object Instantiation)
 
-- 还是以上面这个`Dog`为例，当我们尝试拓展其功能（根据某些条件输出不同狗的叫声）时，一种最直接的方案是设置不同的类，但这样过于累赘。于是，我们会尝试使用变量与条件语句，代码如下：
+- 还是以上面这个`Dog`为例，当我们尝试拓展其功能（如根据某些条件输出不同狗的叫声）时，一种最直接的方案是设置不同的类，但这样过于累赘。于是，我们会尝试使用变量与条件语句，代码如下：
 
 ```java
 public class Dog {
     public int weightInPounds;//实例化变量
 
-    public void makeNoise() {//注意这里没有static，因为使用了非静态变量weightInPounds（所以被称为非静态方法，也称为实例化方法）
+    public void makeNoise() {//注意这里没有static，因为使用了非静态变量weightInPounds（所以被称为非静态方法或者实例化方法）
         if (weightInPounds < 10) {
             System.out.println("yipyipyip!");
         } else if (weightInPounds < 30) {
@@ -73,13 +73,13 @@ public class DogLauncher {
 }
 ```
 
-运行时就会输出`bark. bark.`。不过，一般我们不在类的使用者中设置变量值（因为多次调用赋值会产生大量冗余代码），而在类中建立一个“构造器”(Constructor)对类的变量进行赋值：
+运行时就会输出`bark. bark.`。不过，一般我们不在类的使用者中设置变量值（因为多次调用赋值会产生大量冗余代码），而在类中建立一个 **构造器（Constructor）** 对类的变量进行赋值：
 
 ```java
 public class Dog {
     public int weightInPounds;
 
-    public Dog(int w) {//构造器Constructor
+    public Dog(int w) { //构造器（名称必须和类名相同）
         weightInPounds = w;
     }
 
@@ -106,7 +106,7 @@ public class DogLauncher {
 }
 ```
 
-- 事实上，java里的Constructor和python类中的`__init__`非常类似。
+事实上，java里的Constructor和python类中的`__init__`非常类似。
 - 下面我们再梳理一下类与对象的关系：  
   在`Dog.java`中，我们创建了一个名为`Dog`的类，它规定了基于此创建的对象的蓝图（规则与功能）。而在`DogLauncher.java`中，我们创建了一个名为`d`的对象，根据类的蓝图，在创建时传入参数，并可以根据需要调用类的方法或设置已有的变量（但是不能在类的使用者中设置新的类变量）。
 - 当然，我们也可以创建一系列对象，利用数组进行保存：
@@ -125,7 +125,6 @@ public class DogArrayDemo {
 ```
 
 ## 类方法(Class methods) vs 实例方法(Instance methods)
-
 - 在java中，方法一般分为下面两种：
   1. 类方法，又称为静态方法(Static methods)；
   2. 实例方法，又称为非静态方法(non-static methods)。

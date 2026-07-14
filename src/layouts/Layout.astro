@@ -76,6 +76,75 @@ const layoutConfig = themeConfig.layout || {};
 const rightSidebarConfig = layoutConfig.rightSidebar || {};
 const layoutMode = layoutConfig.mode || "two-column";
 const enableThirdColumn = layoutMode === "three-column";
+const live2dConfig = themeConfig.live2d;
+const live2dEnabled = live2dConfig?.enable ?? false;
+
+// 预计算 Live2D 初始化脚本（不依赖 autoload.js，手动加载 waifu.css + waifu-tips.js 后自行初始化）
+const LIVE2D_CDN_BASE = "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist";
+const live2dInitScript = live2dEnabled
+  ? `{
+    const base = "${LIVE2D_CDN_BASE}";
+    const cfg = ${JSON.stringify({
+      waifuPath: live2dConfig?.waifuTipsPath ?? "/live2d-models/waifu-tips.json",
+      cdnPath: live2dConfig?.cdnPath ?? "/live2d-models/",
+      cubism2Path: LIVE2D_CDN_BASE + "/live2d.min.js",
+      cubism5Path:
+        "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js",
+      modelId: live2dConfig?.modelId ?? 0,
+      drag: live2dConfig?.drag ?? true,
+      showToggleAfterQuit: live2dConfig?.showToggleAfterQuit ?? true,
+      tools: live2dConfig?.tools ?? [
+        "hitokoto",
+        "asteroids",
+        "switch-model",
+        "switch-texture",
+        "photo",
+        "info",
+        "quit",
+      ],
+    })};
+
+    // 清理上次的残留 DOM，清除 localStorage 脏状态
+    localStorage.removeItem("waifu-disabled");
+    localStorage.removeItem("waifu-display");
+    for (const id of ["waifu", "waifu-toggle"]) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    const doInit = () => {
+      if (typeof initWidget !== "undefined") {
+        initWidget(cfg);
+        // 提升 z-index，防止被主题导航栏 (z-9) 覆盖
+        for (let i = 0; i < 20; i++) {
+          setTimeout(() => {
+            const w = document.getElementById("waifu");
+            if (w) w.style.zIndex = "9998";
+            const t = document.getElementById("waifu-toggle");
+            if (t) t.style.zIndex = "9999";
+          }, i * 200);
+        }
+      }
+    };
+
+    // waifu-tips.js 是 ES module，浏览器会缓存，只需加载一次
+    if (typeof initWidget !== "undefined") {
+      doInit();
+    } else {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = base + "/waifu.css";
+      document.head.appendChild(link);
+
+      const script = document.createElement("script");
+      script.type = "module";
+      script.src = base + "/waifu-tips.js";
+      script.onload = doInit;
+      document.head.appendChild(script);
+    }
+  }`
+  : "";
+
 const shouldComputeRightSidebarRandomPosts =
   enableThirdColumn && rightSidebarConfig.randomPosts === true;
 const shouldComputeRightSidebarRecentMoments =
@@ -179,6 +248,7 @@ import SearchPage from "@/components/search/SearchPage.svelte";
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
     <title>{pageTitle}</title>
+
   </head>
   <body
     data-visibility-title-config={JSON.stringify(visibilityTitleConfig)}
@@ -324,6 +394,9 @@ import SearchPage from "@/components/search/SearchPage.svelte";
       <ImageZoom client:idle />
     </div>
     <FloatingToolbar client:idle nyxPlayer={themeConfig.nyxPlayer} />
+
+    <!-- Live2D 看板娘：放在 body 尾部以适配 Astro View Transitions -->
+    {live2dEnabled && <script is:inline set:html={live2dInitScript}></script>}
   </body>
 </html>
 

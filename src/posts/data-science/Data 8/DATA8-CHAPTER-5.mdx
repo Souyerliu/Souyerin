@@ -205,11 +205,11 @@ predict_child(66) # 66.18
 + 为考查预测的准确性，我们将预测值与真实值进行比较：
 <div className="code-compare">
 ```python
-heights['Parent Average']=heights['Prediction'].apply(predict_child)                
+heights['Prediction']=heights['Parent Average'].apply(predict_child)                
 plt.scatter(heights['Parent Average'], heights['Child'], alpha=0.6, edgecolors='w', s=50)
 plt.scatter(heights['Parent Average'], heights['Prediction'], alpha=0.6, edgecolors='w', s=50)
-plt.xlabel('Child Height')
-plt.ylabel('Parent Average Height')
+plt.xlabel('Parent Average Height')
+plt.ylabel('Child Height')
 plt.show()
 ```
 
@@ -222,7 +222,7 @@ ggplot(heights, aes(x = Parent.Average, y = Prediction)) +
              size = 2,       
              shape = 21) +  
   geom_point(alpha = 0.6, color = "white", fill = "gray", size = 2, shape = 21) +  
-  labs(x = "Child Height", y = "Parent Average Height") +
+  labs(x = "Parent Average Height", y = "Child Height") +
   theme_minimal() 
 ```
 </div>

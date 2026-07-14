@@ -496,6 +496,65 @@ interface DiagnosticsConfig {
 }
 
 /**
+ * Live2D 看板娘配置。
+ * 使用 CDN 加载 live2d-widget 外壳，模型文件本地托管。
+ *
+ * @see {@link https://github.com/stevenjoezhang/live2d-widget}
+ */
+interface Live2dConfig {
+  /**
+   * 是否启用 Live2D 看板娘。
+   * - true：在页面中加载看板娘
+   * - false/未设置：不加载
+   */
+  enable?: boolean;
+
+  /**
+   * 模型资源路径（相对于站点根目录）。
+   * - 默认为 "/live2d-models/"
+   * - 路径末尾需带 /
+   */
+  cdnPath?: string;
+
+  /**
+   * 默认显示的模型索引（0-based）。
+   * - 对应 model_list.json 中 models 数组的索引
+   * - 默认为 0
+   */
+  modelId?: number;
+
+  /**
+   * 是否允许拖动看板娘。
+   * - 默认为 true
+   */
+  drag?: boolean;
+
+  /**
+   * 点击关闭后是否显示重新唤起按钮。
+   * - true：关闭后显示小按钮可重新打开
+   * - false：永久关闭（直到清除 localStorage）
+   * - 默认为 true
+   */
+  showToggleAfterQuit?: boolean;
+
+  /**
+   * 工具栏按钮列表。
+   * - 默认：["hitokoto", "asteroids", "switch-texture", "photo", "info", "quit"]
+   * - 可选值：hitokoto | asteroids | switch-model | switch-texture | photo | info | quit
+   * - 如果只有单一角色，建议移除 switch-model，只保留 switch-texture 用于换装
+   */
+  tools?: string[];
+
+  /**
+   * waifu-tips.json 路径（相对于站点根目录）。
+   * - 默认为 "/live2d-models/waifu-tips.json"
+   * - 用于自定义看板娘的鼠标悬停/点击提示文案
+   * - 也可填写远程 CDN 地址使用默认文案
+   */
+  waifuTipsPath?: string;
+}
+
+/**
  * 协议类型
  * CC 4.0 系列：BY, BY-SA, BY-ND, BY-NC, BY-NC-SA, BY-NC-ND
  * 禁止转载：NOREPRINT
@@ -627,6 +686,12 @@ export interface ShokaXThemeConfig {
    * 诊断与命令行输出配置。
    */
   diagnostics?: DiagnosticsConfig;
+
+  /**
+   * Live2D 看板娘配置。
+   * - enable 为总开关，关闭后不加载任何看板娘资源
+   */
+  live2d?: Live2dConfig;
 }
 
 const DEFAULT_THEME_COLORS = {

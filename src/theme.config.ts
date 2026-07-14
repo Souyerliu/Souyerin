@@ -307,4 +307,20 @@ export default defineConfig({
     license: "CC-BY-NC-SA-4.0",
     show: true,
   },
+  live2d: {
+    // 是否启用 Live2D 看板娘
+    enable: true,
+    // 模型资源路径（本地 live2d-models 目录）
+    cdnPath: "/live2d-models/",
+    // 默认显示第几个模型（1 = Soyo）
+    modelId: 1,
+    // 是否允许拖动
+    drag: true,
+    // 关闭后是否显示重新唤起按钮
+    showToggleAfterQuit: true,
+    // 工具栏按钮（switch-model 切换角色，switch-texture 切换服装）
+    tools: ["hitokoto", "asteroids", "switch-model", "switch-texture", "photo", "info", "quit"],
+    // waifu-tips.json 路径（鼠标悬停/点击提示文案）
+    waifuTipsPath: "/live2d-models/waifu-tips.json",
+  },
 });

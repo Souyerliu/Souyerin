@@ -50,6 +50,7 @@ const iconSafeList = [
   // 页面内固定使用的图标（避免后续模板改造期间被裁剪）
   "i-ri-flag-line",
   "i-ri-file-line",
+  "i-ri-calendar-check-line",
 ].map(normalizeIconName);
 
 export default defineConfig({

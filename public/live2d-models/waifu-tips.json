@@ -1,0 +1,214 @@
+{
+  "mouseover": [
+    {
+      "selector": "#waifu-tool-hitokoto",
+      "text": ["猜猜我要说些什么？", "我从青蛙王子那里听到了不少人生经验。"]
+    },
+    {
+      "selector": "#waifu-tool-asteroids",
+      "text": ["要不要来玩飞机大战？", "怎么，你想来和我玩个游戏？"]
+    },
+    {
+      "selector": "#waifu-tool-switch-model",
+      "text": ["要切换看板娘吗？", "想见见我的小伙伴吗？", "七深和素世，你更喜欢谁呢？"]
+    },
+    {
+      "selector": "#waifu-tool-switch-texture",
+      "text": ["喜欢换装 PLAY 吗？", "这次要扮演什么呢？", "变装！"]
+    },
+    {
+      "selector": "#waifu-tool-photo",
+      "text": ["你要给我拍照呀？一二三～茄子～", "保持微笑就好了～"]
+    },
+    {
+      "selector": "#waifu-tool-info",
+      "text": ["想要知道更多关于我的事么？", "你想深入了解我什么呢？"]
+    },
+    {
+      "selector": "#waifu-tool-quit",
+      "text": ["到了要说再见的时候了吗？", "呜呜 QAQ 后会有期……", "不要抛弃我呀……"]
+    },
+    {
+      "selector": "nav a[href='/']",
+      "text": ["点击前往首页，想回到上一页可以使用浏览器的后退功能哦。", "回首页看看吧！"]
+    },
+    {
+      "selector": "a[href='/about/']",
+      "text": ["你想知道我家主人是谁吗？", "发现主人出没地点！"]
+    },
+    {
+      "selector": "a[href='/tags/']",
+      "text": ["点击就可以看文章的标签啦！", "点击来查看所有标签哦。"]
+    },
+    {
+      "selector": "a[href='/categories/']",
+      "text": ["文章都分类好啦～", "点击来查看文章分类哦。"]
+    },
+    {
+      "selector": "a[href='/archives/']",
+      "text": ["翻页比较麻烦吗，那就来看看文章归档吧。", "文章目录都整理在这里啦！"]
+    },
+    {
+      "selector": "a[href='/friends/']",
+      "text": ["这是我的朋友们哦ヾ(◍°∇°◍)ﾉﾞ", "要去大佬们的家看看吗？"]
+    },
+    {
+      "selector": "a[href='/moments/']",
+      "text": ["主人最近又发了什么新动态呢？", "看看主人的说说去～"]
+    },
+    {
+      "selector": "a[href='/random/'], .nav-action",
+      "text": ["随机看一篇文章，考验运气的时候到了！", "让命运决定今天读什么～"]
+    },
+    {
+      "selector": "li a[href*='netlify']",
+      "text": ["这是主人的副站哦，也去看看吧！", "主人狡兔三窟，还有另一个家呢～"]
+    },
+    {
+      "selector": ".post-nav .item.right a",
+      "text": ["来看看下一篇文章吧。", "要继续往后看吗？"]
+    },
+    {
+      "selector": ".post-nav .item.left a",
+      "text": ["来看看上一篇文章吧。", "回到上一篇看看？"]
+    },
+    {
+      "selector": ".floating-toolbar .tool.top button",
+      "text": ["点它就可以回到顶部啦！", "咻——一下子就飞上去了！"]
+    },
+    {
+      "selector": ".floating-toolbar button[aria-label='前往评论区']",
+      "text": ["去看看评论吧！", "大家对这篇文章有什么看法呢？"]
+    },
+    {
+      "selector": ".floating-toolbar button[aria-label='显示或隐藏播放器']",
+      "text": ["想听歌了吗？主人收藏了好多好听的曲子呢～", "来点背景音乐吧！"]
+    },
+    {
+      "selector": ".floating-toolbar button[aria-label='播放或暂停']",
+      "text": ["♪ 啦啦啦～", "暂停一下还是继续播放？"]
+    },
+    {
+      "selector": ".floating-toolbar button[aria-label='切换侧栏']",
+      "text": ["侧栏里藏了好多好东西哦！", "要不要看看侧栏里有什么？"]
+    },
+    {
+      "selector": "button[title*='PDF']",
+      "text": ["下载 PDF 随时看，离线也能学习哦～", "保存下来慢慢读吧！"]
+    },
+    {
+      "selector": ".social a.item.github",
+      "text": ["主人的 GitHub 仓库在这里～", "去 Star 一下主人的项目吧！"]
+    },
+    {
+      "selector": ".social a.item.bilibili",
+      "text": ["主人的 B 站空间，关注一波！", "去看看主人投了什么视频～"]
+    },
+    {
+      "selector": ".social a.item.netease",
+      "text": ["主人的网易云主页～", "原来主人喜欢听这些歌呀！"]
+    },
+    {
+      "selector": ".social a.item.email, a[href^='mailto']",
+      "text": ["邮件我会及时回复的！", "点击就可以发送邮件啦～"]
+    },
+    {
+      "selector": "a[href^='/posts/']:not(.btn):not([class*='more'])",
+      "text": ["要看看这篇文章吗？"]
+    },
+    {
+      "selector": "a[href^='/tags/']",
+      "text": ["要去看看 <span>{text}</span> 标签么？"]
+    },
+    {
+      "selector": "a[href^='/categories/']:not(.btn)",
+      "text": ["要去看看 <span>{text}</span> 分类么？"]
+    },
+    {
+      "selector": ".page-number, .next, .prev",
+      "text": ["翻页看看更多文章吧！", "下一页有什么惊喜呢？"]
+    },
+    {
+      "selector": ".toc a, .toc-link, .toc-item a",
+      "text": ["点击可以快速跳转到对应章节哦～", "文章目录在这里！"]
+    },
+    {
+      "selector": ".breadcrumb a",
+      "text": ["看看这篇文章属于哪个分类？", "顺着面包屑找找看～"]
+    },
+    {
+      "selector": ".avatar-image, img.avatar-image",
+      "text": ["这是我家主人~", "我家主人好看吗？"]
+    },
+    {
+      "selector": "img",
+      "text": ["点击图片可以放大呢！"]
+    },
+    {
+      "selector": ".meta time, time[datetime]",
+      "text": ["这篇文章发布于 <span>{text}</span> 哦～"]
+    },
+    {
+      "selector": ".copyright, .license",
+      "text": ["要记得规范转载哦。", "所有文章均采用 CC BY-NC-SA 4.0 许可协议～"]
+    },
+    {
+      "selector": ".menu-title",
+      "text": ["这是 Souyer 的博客～"]
+    },
+    {
+      "selector": ".ai-summary-card",
+      "text": ["AI 帮你总结了这篇文章的要点哦～", "太长不看？AI 已经帮你提炼好啦！"]
+    },
+    {
+      "selector": ".extra-list__link, a[href^='/moments/']",
+      "text": ["看看主人最近又吐槽了什么～", "哎呀，主人在碎碎念呢！"]
+    },
+    {
+      "selector": ".i-ri-netease-cloud-music-line",
+      "text": ["网易云音乐，启动！", "主人的歌单超好听的！"]
+    },
+    {
+      "selector": "[class*='announce']",
+      "text": ["这里有好消息要宣布哦！", "看看公告说了什么吧～"]
+    },
+    {
+      "selector": ".post-meta, .meta",
+      "text": ["这里有文章的详细信息呢！", "看看这篇文章写了多少字？"]
+    }
+  ],
+  "click": [],
+  "seasons": [
+    { "date": "01/01", "text": "<span>元旦</span>了呢，新的一年又开始了，今年是{year}年～" },
+    { "date": "02/14", "text": "又是一年<span>情人节</span>，{year}年找到对象了嘛～" },
+    { "date": "05/01", "text": "今天是<span>五一劳动节</span>，计划好假期去哪里了吗～" },
+    { "date": "06/01", "text": "<span>儿童节</span>了呢，快活的时光总是短暂…" },
+    { "date": "10/01", "text": "<span>国庆节</span>到了，为祖国母亲庆生！" },
+    { "date": "12/20-12/31", "text": "这几天是<span>圣诞节</span>，主人肯定又去剁手买买买了～" }
+  ],
+  "time": [
+    { "hour": "6-8", "text": "早上好！一日之计在于晨，美好的一天就要开始了～" },
+    { "hour": "9-11", "text": "上午好！工作顺利嘛，不要久坐，多起来走动走动哦！" },
+    { "hour": "12-13", "text": "中午了，工作了一个上午，现在是午餐时间！" },
+    { "hour": "14-16", "text": "午后很容易犯困呢，今天的运动目标完成了吗？" },
+    { "hour": "17-18", "text": "傍晚了！窗外夕阳的景色很美丽呢～" },
+    { "hour": "19-21", "text": "晚上好，今天过得怎么样？" },
+    { "hour": "22-23", "text": ["已经这么晚了呀，早点休息吧，晚安～", "深夜时要爱护眼睛呀！"] },
+    { "hour": "0-5", "text": "你是夜猫子呀？这么晚还不睡觉，明天起的来嘛？" }
+  ],
+  "message": {
+    "default": ["嗨～快来逗我玩吧！", "记得把小家加入收藏夹哦！"],
+    "console": "哈哈，你打开了控制台，是想要看看我的小秘密吗？",
+    "copy": "你都复制了些什么呀，转载要记得加上出处哦！",
+    "visibilitychange": "哇，你终于回来了～",
+    "changeSuccess": "我的新衣服好看嘛？",
+    "changeFail": "我还没有其他衣服呢！",
+    "photo": "照好了嘛，是不是很可爱呢？",
+    "goodbye": "愿你有一天能与重要的人重逢。",
+    "hitokoto": "这句一言来自 <span>「$1」</span>，是 <span>$2</span> 在 hitokoto.cn 投稿的。",
+    "welcome": "欢迎阅读<span>「$1」</span>",
+    "referrer": "Hello！来自 <span>$1</span> 的朋友",
+    "hoverBody": ["干嘛呢你，快把手拿开～～", "鼠…鼠标放错地方了！", "你要干嘛呀？", "喵喵喵？"],
+    "tapBody": ["是…是不小心碰到了吧…", "别摸我，有什么好摸的！", "再摸的话我可要报警了！⌇●﹏●⌇"]
+  }
+}

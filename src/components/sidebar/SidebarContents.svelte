@@ -29,9 +29,8 @@
     event.preventDefault()
     const target = document.getElementById(id)
     if (target) {
-      const scrollTop = target.offsetTop - 100
-      window.scrollTo({
-        top: scrollTop,
+      // 使用 scrollIntoView 替代手动 offsetTop 计算，行为与浏览器原生 #hash 跳转一致
+      target.scrollIntoView({
         behavior: 'smooth',
       })
       activeIndex = index

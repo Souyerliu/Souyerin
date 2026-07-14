@@ -20,11 +20,10 @@ cover: ./61B-header.png
 
 ### The Golden Rule of Equals（等号规则）
 
-- 对于原始数据类型定义的变量，在进行等号操作时（如`y=x`），其本质是将等号右边的变量对应的值复制到等号左边的变量中。
+- 对于原始数据类型定义的变量，在进行等号操作时（如`y = x`），其本质是将等号右边的变量对应的值复制到等号左边的变量中。
 
 ## 引用数据类型（Reference Types）
-
-- 与原始数据类型相对，其他的数据类型都可以称为引用数据类型（包括列表以及实例化的对象变量）
+- 与原始数据类型相对，其他的数据类型都可以称为引用数据类型（包括列表和类）
 - 在对象被实例化后，其对应类的变量初始值被赋为`0`或`null`；
 - 接着在创建对象时使用`new 对象名(属性1值,属性2值,...)`，相当于在内存空间中取一个区域，存储其所有的属性值。但这个对象变量在内存中实际存储的并不是属性值本身，而是属性值存储的地址（比如使用64位二进制列存储）。
 - 所以在引用数据类型变量上使用等号时，其复制的是属性值的地址，两个变量（对象）指向的是同一个属性值。具体的例子：
@@ -67,10 +66,60 @@ Walrus{weight=5, tuskSize=8.3}
 - 有了前面的阐述，方法（函数）的参数传递也就容易理解了：参变量将传入变量的值复制给自身（和上面的等号规则一样），得以将变量值进行传递。
 
 # Arrays and Lists（数组与列表）
-
+## Java 内置数据结构
+列表作为最基础且最常见的数据结构，在大多数编程语言中都已经内置，且附带一些基本用法，比如插入、删除、修改元素，元素-索引转换等。
++ 在Java中，内置列表是通过类定义的，其构建方式如下（当然这是二十多年前早期版本的写法了，后面会介绍更加现代的写法，这只是为了与python对照）：
+    ```java
+    import java.util.List;
+    import java.util.ArrayList;
+    public class ListDemo {
+        public static void main(String[] args) {
+            List L = new ArrayList();
+            L.add("a");
+            L.add("b");
+            L.add("c");
+            System.out.println(L.get(0)); //输出 a
+        }
+    }
+    ```
+    注意上面定义语句左边`List`与右边`ArrayList`的差异：
+    + `ArrayList`是`List`的子类，其他子类还包括`LinkedList`，`CopyOnWriteArrayList`等，具体可参见[官方文档](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/List.html)。不同种类的列表各自具有独特的优势，这会在之后详细展开。
+    + 然而，上述方法却存在一个缺陷：无法直接将列表中的元素赋值到新变量。【需要强制类型转换】
++ 为解决这一问题，在更新的版本中，定义列表时使用尖括号明确列表元素的类型，比如：
+    ```java
+    import java.util.List;
+        import java.util.ArrayList;
+        public class ListDemo {
+            public static void main(String[] args) {
+                List<String> L = new ArrayList<>();
+                L.add("a");
+                L.add("b");
+                String x = L.get(0);
+            }
+        }
+    ```
+    > 冷知识：直到2011年前，上面定义数组列表时右边都必须写成`new ArrayList<String>()`形式。
+    + 由此可见，现代列表中元素的类型必须保持一致。
++ 在Java中，数组也属于一种特殊的列表，其在定义时就确定了大小（无法改变），且没有内置方法，使用上与python numpy数组比较类似。
+  + 相比列表，数组的读写效率更高，使用也更频繁。（Java语言追求性能至上）
++ 除此之外，Java还有另一种类似python字典的数据结构——映射（Map）。示例如下：
+    ```java
+    import java.util.Map;
+    import java.util.TreeMap;
+    public class MapDemo {
+        public static void main(String[] args) {
+            Map<String, String> L = new TreeMap<>();
+            L.put("dog", "woof");
+            L.put("cat", "meow");
+            String sound = L.get("cat");
+        }
+    }
+    ```
+    与列表类似，`Map`也有多个子类，如`TreeMap`，`HashMap`等。（这些应该也会在之后涉及）
+## 构建列表
 - 下面我们会从零开始构建一个类似python的列表。
 
-## 数组的声明与实例化
+### 数组的声明与实例化
 
 - 数组也属于对象，所以定义数组时也会使用`new`，比如：
 
@@ -83,7 +132,7 @@ int[] x = new int[]{1，1, 4, 5, 1, 4}; // 当然这也等价于int[] x = {1, 1,
 
 - 另外，在比较两个数组是否相等时，不能直接使用`==`，因为即使两个数组内容完全相同，它们的地址也不一样。所以比较两个数组需要使用`Arrays.equals(x,y)`。
 
-## 初始化列表（IntLists）
+### 初始化列表（IntLists）
 
 - 我们在[CS61A](https://souyerin.netlify.app/posts/computer-science/cs61a/cs61a-chapter-6/#链表linked-lists)里已经提到了链表这一结构。我们可以尝试在Java中也构建这样的列表。
 - 一个比较直接的想法如下：

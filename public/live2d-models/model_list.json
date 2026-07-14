@@ -1,0 +1,21 @@
+{
+  "models": [
+    [
+      "nanami/casual-2023",
+      "nanami/casual_summer-2023",
+      "nanami/casual_winter-2023",
+      "nanami/school_summer-2023",
+      "nanami/school_winter-2023",
+      "nanami/birthday_2022",
+      "nanami/live_default"
+    ],
+    [
+      "soyo/039_casual-2023",
+      "soyo/039_school_summer-2023",
+      "soyo/039_school_winter-2023",
+      "soyo/039_birthday_2024_ssr",
+      "soyo/039_live_default"
+    ]
+  ],
+  "messages": ["七深 (Nanami)", "素世 (Soyo)"]
+}

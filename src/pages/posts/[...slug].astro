@@ -10,6 +10,7 @@ import WalineComments from "@/components/post/WalineComments.svelte";
 import DownloadPDF from "@/components/post/DownloadPDF.svelte";
 import { getCollection, render } from "astro:content";
 import themeConfig from "@/theme.config";
+import { getLastModified } from "@/toolkit/posts/getLastModified";
 import type {
   TocItem,
   QuickNavigation,
@@ -40,6 +41,9 @@ export async function getStaticPaths() {
 
   return Promise.all(
     sortedPosts.map(async (post, index) => {
+      // 获取文件的最后修改时间：优先从 hyc sync 数据库读取，回退到 fs.statSync
+      const fileUpdatedAt = await getLastModified(post.id, post.data.date);
+
       const prevPost = index > 0 ? sortedPosts[index - 1] : undefined;
       const nextPost =
         index < sortedPosts.length - 1 ? sortedPosts[index + 1] : undefined;
@@ -112,6 +116,7 @@ export async function getStaticPaths() {
         params: { slug: post.id },
         props: {
           post,
+          fileUpdatedAt,
           prevPost: prevPost
             ? {
                 title: prevPost.data.title,
@@ -141,6 +146,7 @@ export async function getStaticPaths() {
 
 interface Props {
   post: import("astro:content").CollectionEntry<"posts">;
+  fileUpdatedAt: Date;
   prevPost?: {
     title: string;
     slug: string;
@@ -167,6 +173,7 @@ interface Props {
 
 const {
   post,
+  fileUpdatedAt,
   prevPost,
   nextPost,
   relatedPosts,
@@ -428,6 +435,24 @@ const postMeta = {
                     {tag}
                   </a>
                 ))}
+              </div>
+            )
+          }
+
+          {
+            !isEncrypted && (
+              <div class="post-meta file-updated">
+                <span class="item">
+                  <div class="icon i-ri-calendar-check-line" />
+                  <span class="text">更新于 </span>
+                  <time
+                    title={`修改时间：${fileUpdatedAt.toLocaleString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" })}`}
+                    itemprop="dateModified"
+                    datetime={fileUpdatedAt.toISOString()}
+                  >
+                    {fileUpdatedAt.toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })}
+                  </time>
+                </span>
               </div>
             )
           }
