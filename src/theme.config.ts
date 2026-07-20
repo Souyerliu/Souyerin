@@ -185,8 +185,8 @@ export default defineConfig({
   home: {
     selectedCategories: [
       {
-        name: "DATA8",
-        cover: "/images/valentine_logo.png",
+        name: "自然语言处理",
+        cover: "/images/NLP.png",
       },
       {
         name: "CS61B",
