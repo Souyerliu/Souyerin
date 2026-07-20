@@ -145,6 +145,10 @@
       "text": ["点击图片可以放大呢！"]
     },
     {
+      "selector": ".post-meta.file-updated time",
+      "text": ["这篇文章更新于 <span>{text}</span> 哦～"]
+    },
+    {
       "selector": ".meta time, time[datetime]",
       "text": ["这篇文章发布于 <span>{text}</span> 哦～"]
     },
@@ -173,7 +177,7 @@
       "text": ["这里有好消息要宣布哦！", "看看公告说了什么吧～"]
     },
     {
-      "selector": ".post-meta, .meta",
+      "selector": ".post-meta:not(.file-updated), .meta",
       "text": ["这里有文章的详细信息呢！", "看看这篇文章写了多少字？"]
     }
   ],

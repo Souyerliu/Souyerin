@@ -189,8 +189,8 @@ export default defineConfig({
         cover: "/images/valentine_logo.png",
       },
       {
-        name: "数学",
-        cover: "/images/mathchalkboard.jpg",
+        name: "CS61B",
+        cover: "/images/61B-header.png",
       },
       {
         name: "CS127",

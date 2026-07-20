@@ -1,0 +1,202 @@
+---
+title: CS61B CHAPTER 4
+date: 2026-07-15 23:24:10
+categories: [计算机科学, CS61B]
+tags:
+  - JAVA
+  - 数据结构
+cover: ./61B-header.png
+---
+> 时隔五个月，终于回来更新辣~【对前几讲部分内容也进行了更新】
++ 在上一讲中，我们实现了一个`IntList`列表类。虽然它确实实现了列表的基本功能，但是在实际使用中却会引发问题。核心问题在于这个类是建立在递归结构上的，这很容易导致错误的产生。
++ 为解决这一问题，我们会创建一个新的类`SLList`，在`IntList`的基础上进行改进。
+# SLList
+## 准备工作
++ 我们先考虑对已有的列表结构进行重命名，以作为后续改进的铺垫：
+  ```java
+  public class IntNode {
+      public int item;
+      public IntNode next;
+
+      public IntNode(int i, IntNode n) {
+          item = i;
+          next = n;
+      }
+      //方法待引入……
+  }
+  ```
+## 第一次改进
++ 然后我们定义`SLList`类作为后续使用列表的接口：
+  ```java
+  public class SLList {
+      public IntNode first;
+
+      public SLList(int x) {
+          first = new IntNode(x, null);
+      }
+  }
+  ```
+  这一步可以理解为将递归结构隐藏在了构造函数之下。这样，对于`SLList`的每一个对象，只需要考虑其自身（即`first`）即可。
++ 接着，借助之前反向构建列表的思想，我们构建`addFirst`和`getFirst`方法：
+  ```java
+  public void addFirst(int x) {
+    first = new IntNode(x, first);
+  }
+
+  public int getFirst() {
+      return first.item;
+  }
+  ```
++ 这样我们就能很便捷地访问和修改元素：
+  ```java
+  SLList L = new SLList(15); //不需要null，因为在构造器中已经写入
+  L.addFirst(10); //不需要将L再传入参数
+  L.addFirst(5); 
+  int x = L.getFirst();
+  ```
+  这对于不熟悉递归的人而言更容易理解。
+## 第二次改进
++ 然而，现在仍然可以绕过构建的方法修改列表，比如：
+  ```java
+  SLList L = new SLList(15);
+  L.addFirst(10);
+  L.first.next.next = L.first.next;
+  ```
+  上述操作会导致列表元素自指，从而产生无限循环风险。解决这一问题的方案很简单——将`SLList`类的`first`变量从`public`改为`private`即可。  
+  这样，`first`变量只能在`SLList.java`中被访问，相当于限制了其他类的访问权限。
+## 第三次改进
++ 当然，我们还可以将`IntNode`类嵌入`SLList.java`中：
+  ```java
+  public class SLList {
+       public class IntNode { // 当然这里也可以改为private
+            public int item;
+            public IntNode next;
+            public IntNode(int i, IntNode n) {
+                item = i;
+                next = n;
+            }
+       }
+
+       private IntNode first; 
+
+       public SLList(int x) {
+           first = new IntNode(x, null);
+       } 
+  // 其他方法省略……
+  }
+  ```
+  注意到上述代码`IntNode`类没有使用`SLList`类的变量和方法，因此可以在声明中加上`static`。这样可以节省一些内存空间。
++ 下面我们增加`addLast()`（在列表末尾插入元素）和`size()`（求列表大小）两个方法：
+  ```java
+  public void addLast(int x) { //迭代法实现
+      IntNode p = first;
+
+      while (p.next != null) {
+          p = p.next;
+      }
+      p.next = new IntNode(x, null);
+  }
+
+  private static int size(IntNode p) { //递归法实现
+      if (p.next == null) {
+          return 1;
+      }
+
+      return 1 + size(p.next);
+  }
+
+  public int size() { 
+      return size(first);
+  }
+  ```
+  注意到上面有两个`size`方法，但参数不同，这在java中是允许的（被称为重载方法）。
+## 第四次改进
++ 上面实现的`size`方法仍然存在不足：其运行时间与列表大小成正比，这会导致列表元素较多时运行效率低下。
++ 对此，我们考虑在构建列表时就实时存储列表的大小：【也称为缓存技术】
+  ```java
+  public class SLList {
+      /* IntNode声明已省略 **/
+      private IntNode first;
+      private int size;
+
+      public SLList(int x) {
+          first = new IntNode(x, null);
+          size = 1;
+      }
+
+      public void addFirst(int x) {
+          first = new IntNode(x, first);
+          size += 1;
+      }
+
+      public int size() {
+          return size;
+      }
+      ...
+  }
+  ```
+  这会导致`addFirst`等方法运行时间略微变长，内存占用也略微增大，但这些都是可以接受的。
+## 第五次改进
++ 上面的列表实现已经几乎完美了，但仍然存在一个小bug：考虑以下列表
+  ```java
+  public SLList() {
+      first = null;
+      size = 0;
+  }
+  ```
+  这相当于建立了一个空列表，而对其使用`addLast`方法会导致报错。这本质上是因为`null`值在访问`next`属性时会产生异常。  
++ 一个直接的解决方法就是在`addLast`中加入特例判断：
+  ```java
+  if (first == null) {
+      first = new IntNode(x, null);
+      return;
+  }
+  ```
+  不过这种“打补丁”的方法不够简洁，我们希望所有列表（包括空列表）的处理方式能够统一。
++ 为此，我们引入**哨兵节点（sentinel node）**【如果上过国内数据结构的话，这个就相当于链表的头结点】，作为列表的占位符。具体实现如下：
+  ```java
+  public class SLList {
+      // 关于IntNode的实现略
+      private IntNode sentinel; // 作为列表第一个节点
+      private int size;
+      public SLList(int x) {
+          sentinel = new IntNode(114514, null); // 可以任意取值
+          sentinel.next = new IntNode(x, null);
+          size = 1;
+      }
+      public SLList() { // 构建一个空列表
+          sentinel = new IntNode(67, null);
+          size = 0;
+      }
+
+      public void addFirst(int x) {
+          sentinel.next = new IntNode(x, sentinel.next);
+          size += 1;
+      }
+
+      public int getFirst() {
+          return sentinel.next.item;
+      }
+
+      public void addLast(int x) {
+          size += 1;
+          IntNode p = sentinel;
+          while (p.next != null) { //这样节点p就一定不是null
+              p = p.next;
+          }
+
+          p.next = new IntNode(x, null);
+      }
+
+      public int size() {
+          return size;
+      }
+  }
+  ```
+## 总结：不变量
+在上述`SLList`列表中，存在以下不变量（总是成立的事实）：
++ `sentinel`总是指向一个哨兵节点；
++ 第一个元素（若有）总是在`sentinel.next.item`位置；
++ `size`变量总是表示当前列表元素总数。
+
+了解这些不变量对于后续代码维护非常重要。

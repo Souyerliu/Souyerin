@@ -3,7 +3,7 @@ title: DATA8 CHAPTER 1
 date: 2026-02-14 19:54:53
 categories: [数据科学, DATA8]
 tags:
-  - data science
+  - 数据科学
   - jupyter notebook
 cover: ./valentine_logo.png
 ---
@@ -13,7 +13,7 @@ cover: ./valentine_logo.png
 - Lecture：[sp23](https://www.bilibili.com/video/BV19eqHYSEDG)
 - 公开资料仓库：[materials](https://github.com/data-8/materials-fds)
 - 官方教材：[Computational and Inferential Thinking](https://inferentialthinking.com/)
-- DATA 8大致对应国内的数据科学导论（或类似课程），内容比较基础，主要讲述一些基本的数据处理与可视化方法，为后续进阶课程（如DATA 100,DATA 140）做铺垫。
+- DATA 8大致对应国内的数据科学导论（或类似课程），内容比较基础，主要讲述一些基本的数据处理与可视化方法，为后续进阶课程（如DATA 100，DATA 140）做铺垫。
 - 本课程使用Python+Jupyter Notebook进行数据分析。安装Anaconda（或类似环境）即可满足要求。使用的库主要为python的[datascience](https://data8.org/datascience/)库（由UCB教授们开发）【但为了增强实用性，笔者会使用python的pandas、numpy和matplotlib三件套编写代码】
 
 # 介绍（Introduction）

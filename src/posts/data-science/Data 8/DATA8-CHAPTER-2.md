@@ -3,7 +3,7 @@ title: DATA8 CHAPTER 2
 date: 2026-02-18 14:55:42
 categories: [数据科学, DATA8]
 tags:
-  - data science
+  - 数据科学
   - jupyter notebook
 cover: ./valentine_logo.png
 ---

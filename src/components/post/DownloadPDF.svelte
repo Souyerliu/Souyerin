@@ -121,7 +121,7 @@
   };
 </script>
 
-<div style="display:flex;flex-direction:column;align-items:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid;border-color:var(--divider-color)">
+<div style="display:flex;flex-direction:column;align-items:center;margin-top:2rem;padding-top:1.5rem">
   <button
     type="button"
     style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.625rem 1.5rem;border:1px solid;border-color:var(--primary-color);color:var(--primary-color);border-radius:0.5rem;background:transparent;cursor:pointer"
