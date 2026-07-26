@@ -173,7 +173,7 @@
     <button type="button" onclick={scrollToTop} aria-label="返回顶部">
       <i class="i-ri-arrow-up-line"></i>
     </button>
-    <span class="percent">{percentLabel}</span>
+    <span class="percent" aria-label={`阅读进度 ${percentLabel}`}>{percentLabel}</span>
   </li>
   {#if hasComments}
     <li class="tool">

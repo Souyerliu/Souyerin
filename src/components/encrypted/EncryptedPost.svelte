@@ -63,7 +63,7 @@
     {@html decryptedContent}
   </div>
 {:else if isDecrypting}
-  <div class="encrypted-post encrypted-decrypting">
+  <div class="encrypted-post encrypted-decrypting" aria-live="polite" aria-busy="true">
     <div class="loading-spinner"></div>
     <p class="encrypted-decrypting-text">{t("encrypted.decrypting")}</p>
   </div>

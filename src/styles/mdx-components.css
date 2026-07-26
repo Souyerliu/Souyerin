@@ -92,7 +92,6 @@
 }
 
 .md .mdx-collapse__summary {
-  outline: none;
   cursor: pointer;
   padding: 0.625rem;
   background: var(--note-bg, none);

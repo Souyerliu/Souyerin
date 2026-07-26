@@ -149,6 +149,30 @@
 
       if (event.key === "Escape") {
         closeSearch();
+        return;
+      }
+
+      // 搜索面板内焦点捕获
+      if (event.key === "Tab" && visible && panelElement) {
+        const focusableElements = panelElement.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstFocusable = focusableElements[0];
+        const lastFocusable = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            event.preventDefault();
+            lastFocusable.focus();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            event.preventDefault();
+            firstFocusable.focus();
+          }
+        }
       }
     };
 
@@ -602,14 +626,12 @@
   }
 
   :global(pagefind-input::part(input)) {
-    outline: none !important;
     border-color: transparent !important;
     box-shadow: none !important;
   }
 
   :global(pagefind-input::part(input):focus),
   :global(pagefind-input::part(input):focus-visible) {
-    outline: none !important;
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-red) 30%, transparent) !important;
   }
 

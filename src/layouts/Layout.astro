@@ -112,6 +112,12 @@ const live2dInitScript = live2dEnabled
       if (el) el.remove();
     }
 
+    // 注入桌面端偏移样式：将 Live2D 移到主内容区下方，避免遮挡左侧栏
+    const offsetStyle = document.createElement("style");
+    offsetStyle.textContent =
+      "@media (min-width: 1024px) { #waifu { left: 15rem !important; } }";
+    document.head.appendChild(offsetStyle);
+
     const doInit = () => {
       if (typeof initWidget !== "undefined") {
         initWidget(cfg);
@@ -254,6 +260,10 @@ import SearchPage from "@/components/search/SearchPage.svelte";
     data-visibility-title-config={JSON.stringify(visibilityTitleConfig)}
     data-layout-mode={layoutMode}
   >
+    <!-- 跳过导航链接，方便键盘用户直达主内容 -->
+    <a href="#main-content" class="skip-link">跳到主要内容</a>
+    <!-- 全局 aria-live 区域，供动态内容向屏幕阅读器播报 -->
+    <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <NavBar
       client:load
       name={siteName}
@@ -279,7 +289,7 @@ import SearchPage from "@/components/search/SearchPage.svelte";
         postMeta={postMeta}
       />
       <Waves />
-      <main>
+      <main id="main-content">
         <ActiveLayout
           posts={posts}
           widgetsConfig={widgetsConfig}

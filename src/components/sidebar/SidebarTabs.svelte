@@ -17,6 +17,7 @@
 {#if panels.length > 1}
   <ul
     class="tab absolute inline-flex pt-[30px] pb-2.5 px-0 m-0 min-h-[30px] list-none"
+    role="tablist"
   >
     {#each panels as panel, i (panel.id)}
       {@const iconClass =
@@ -31,6 +32,9 @@
         class={`item ${panel.id} ${activePanel === panel.id ? "active" : ""} ${i === 1 ? "mx-2.5" : ""}`}
         onclick={() => onSelect(panel.id)}
         type="button"
+        role="tab"
+        aria-selected={activePanel === panel.id}
+        tabindex={activePanel === panel.id ? 0 : -1}
       >
         {#if iconClass}
           <div class={`${iconClass}`}></div>

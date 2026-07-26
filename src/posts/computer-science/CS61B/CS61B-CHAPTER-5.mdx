@@ -1,0 +1,176 @@
+---
+title: CS61B CHAPTER 5
+date: 2026-07-21 09:03:30
+categories: [计算机科学, CS61B]
+tags:
+  - JAVA
+  - 数据结构
+cover: ./61B-header.png
+---
+
+前面我们实现了`SLList`类，其相比最初的`IntList`实用性与可靠性已经大幅提升。下面我们将基于此进一步改造，以构建类似数组的列表。
+# DLList
++ 首先，我们考虑对之前定义的`addLast`方法进行改造。目前这个方法的效率较低，需要遍历整个列表后在操作。为此，我们考虑类似`size`的处理方法，增加一个变量`last`记录当前的最后一个元素：
+  ```java
+  public class SLList {
+      private IntNode sentinel;
+      private IntNode last;
+      private int size;    
+
+      public void addLast(int x) {
+          last.next = new IntNode(x, null);
+          last = last.next;
+          size += 1;
+      }
+      ...
+  }
+  ```
+  这样确实提高了更新速度（同时访问最后一个元素也更加方便），但如果要删去最后一个元素仍然效率较低（需要访问倒数第二个元素）。  
+  对此，我们需要对列表结构进行进一步改造：
+## 第六次改进
++ 一个自然的想法就是在`IntNode`中增加访问上一个元素的指针：
+  ```java
+  public class IntNode {
+      public IntNode prev;
+      public int item;
+      public IntNode next;
+  }
+  ```
+  这样的列表我们也称为“双向链表”（Doubly Linked List），简称`DLList`。（与之对应，之前我们定义的列表称为单向链表Single Linked List，这便是`SLList`名称的由来）  
++ 构建出双向链表后，我们就能写出效率更高的`removeLast`方法：
+```java
+  public class DLList {
+      private IntNode sentinel;
+      private IntNode last;
+      private int size;    
+
+      // addLast 方法见上
+      public int removeLast() {
+          int last_item = last.item;
+          last = last.prev;
+          last.next = null;
+          size -= 1;
+          return last_item;
+      }
+
+      ...
+  }
+  ```
+## 第七次改进
++ 在进行上述改造后，`DLList`仍然存在一个问题：无法保证`last`总是指向非哨兵结点，这可能导致实现某些功能需要额外判断。
++ 对此，我们有两种解决方案：
+  1. 增加一个哨兵结点（作为尾结点），与头结点对称；
+  2. 将最后一个结点的`next`指针指向头结点，这样就构建了一个“循环列表”。此时哨兵节点既是头结点又是尾结点。
+## 类型泛化
+现在我们构建的`DLList`只支持存储整型数据，而我们希望这个类可以支持多种类型数据（就像java内置列表一样）。
++ 解决这个问题需要利用java的一个特性：在类定义里使用尖括号`<...>`（里面需要非基本类型占位符），这样就能接受任何类型的数据。比如：
+  ```java
+    public class DLList<MewType> {
+        private IntNode sentinel;
+        private int size;
+
+        public class IntNode { //这里因为要访问外部MewType类型，因此考虑去掉static
+            public IntNode prev;
+            public MewType item; //注意这里也需要相应改动
+            public IntNode next;
+            ...
+        }
+        ...
+  }
+  ```
+  而在进行实例化时，也需要带上尖括号（等号左边尖括号内填数据类型，右边尖括号内可以为空）：
+  ```java
+  DLList<String> d2 = new DLList<>("hello");
+  d2.addLast("world");
+  ```
+  就像之前java内置列表的格式一样。注意左边尖括号内只能填入引用数据类型（如`Integer`,`String`），而不能填`int`，`char`之类的基本数据类型。
++ 关于泛化类型数据结构的使用，遵循以下原则：
+  1. 在构造数据结构的`.java`文件中，只需在文件顶部的类名之后一次性声明泛型类型名称（如上面的`MewType`）即可。
+  2. 在其他使用该数据结构的`.java`文件中，在声明时指定所需的具体类型，在实例化时使用尖括号。
+
+# Array（数组）
++ 经过上面那么多次改进，我们终于基本完美实现了链表的功能。然而，链表还是存在一个缺陷：无法高效访问其内部任意位置的元素，尤其是中间的元素。
++ 当然，可以通过进一步改造进行优化，不过这里我们会介绍另一种解决方案——数组。
++ 在定义数组之前，先回顾一下变量声明与内存空间获取的方法：
+  1. 基本类型定义（如`int x;`）：提供32位内存用于存储数据。
+  2. 引用类型定义（如`Walrus w1;`）：提供64位内存用于存储数据所在地址。
+  3. 引用类型变量声明（如`Walrus w2 = new Walrus(30, 5.6);`）：同时提供数据地址空间（给引用变量）与数据空间（给内部实例变量）。
++ 而数组的空间使用与类的实例对象不同，它使用一系列连续的内存空间，通过数组名称+索引进行访问，如`A[i]`。
+  + 另外，数组的长度$N$也是固定的，其每个元素类型也都相同（编号为$0\sim N-1$），而且没有方法定义。
++ 数组的一大优势就是访问任意位置的元素所需时间都是恒定的（详细可见计算机组成原理相关内容）。
+## AList
++ 下面我们将用数组定义一个新类`AList`，使其功能与`DLList`类似。与`SLList`类似，在实现之前，我们先明确`AList`的不变量：
+  1. 下一个元素插入的位置索引总是`size`。
+  2. `size`总是为`AList`元素的数量。
+  3. `AList`列表最后一个元素的索引总是`size - 1`。
++ 具体实现如下：
+  ```java
+  public class AList {
+      private int[] items;
+      private int size;
+
+      /** 构造一个空数组列表 */
+      public AList() {
+          items = new int[100]; //确定数组大小
+          size = 0;
+      }
+
+      /** 将 x 插入数组列表末尾 */
+      public void addLast(int x) {
+          items[size] = x;
+          size += 1;
+      }
+
+      /** 返回数组列表末端元素 */
+      public int getLast() {
+          return items[size - 1];
+      }
+
+      /** 返回数组索引 i 对应的元素 */
+      public int get(int i) {
+          if (i >= items.length) { //插入越界异常
+              throw new IllegalArgumentException();
+          }
+          return items[i];
+      }
+
+      public int size() {
+          return size;
+      }
+
+      /** 返回并删除数组列表末端元素 */
+      public int removeLast() {
+          int x = getLast();
+          size = size - 1;
+          return x;
+      }
+  }
+  ```
+  关于删除数组列表末端元素，这里进行简单说明：根据上面的不变量原则，我们不需要对数组末端元素进行修改，只需要改动`size`即可。
+## 补充
++ 下面补充一些数组的相关知识：
++ 首先，数组的定义主要有以下三种方式：
+  1. `x = new int[3];`
+  2. `y = new int[]{1, 2, 3, 4, 5};`
+  3. `int[] z = {9, 10, 11, 12, 13};`
+
+  第一种直接确定数组大小（元素用默认值填充），后两种则根据给定元素数量确定大小。这三种定义方式没有优劣之分。
++ 关于数组的基本用法作略（自行搜索网上资料），下面只补充java特有的一个方法：`System.arraycopy`。
+  + 它的作用是将数组的一个切片复制到另一个数组中，具体形式为：
+    ```java
+    System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+    ```
+    参数从左到右分别为：被复制数组名称，被复制数组切片起始位置，复制目标数组名称，目标数组复制起始位置，复制长度。这等价于python的`dest[destPos:destPos + length] = src[srcPos:srcPos + length]`。  
+    这个方法的运行速度比循环复制更快，但可读性更弱一些，且没有边界检查。
+    > 注：这与数组直接赋值（`=`）不同，二者区别可参考原始数据类型与引用数据类型使用等号的区别。
+### 二维数组
++ 二维数组可看作数组的数组。
+  + 其定义声明格式通常为：`int[][] MewType = new int[4][]`，其中右边第一个方括号内的数字可以理解为使用的内存空间组数（每组内存空间对应一个一维数组），而第二个方括号内数字可以为空（此时每个一维数组均为`null`，需要后续通过元素数量定义）
+  + 当然，也可以直接用嵌套数组定义：
+    ```java
+    int[][] pascal = new int[][]{{1}, {1, 1},
+                                 {1, 2, 1}, {1, 3, 3, 1}};
+    ```
+### 数组与类
++ 前面我们提到，数组元素是通过方括号+索引访问，而类的属性需要通过点表达式访问；数组元素类型都相同，而类的属性类型可以不相同。
++ 虽然类的属性更加灵活，但代价是无法直接通过属性名称字符串直接访问对应属性值（在java中可以用一种称为reflection的方法进行访问，但本课程中不会涉及）

@@ -97,13 +97,41 @@
       if (typeof document !== "undefined") {
         document.body.style.overflow = "hidden";
       }
+      // 延迟聚焦到代码块，确保 DOM 已更新
+      setTimeout(() => {
+        codeblockElement?.focus();
+      }, 100);
     }
   }
 
-  // 监听 ESC 键退出全屏
+  // 监听 ESC 键退出全屏 + Tab 焦点捕获
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "Escape" && isFullscreen) {
       toggleFullscreen();
+      return;
+    }
+
+    // 全屏模式下的焦点捕获
+    if (e.key === "Tab" && isFullscreen && codeblockElement) {
+      const focusableElements = codeblockElement.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusableElements.length === 0) return;
+
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable.focus();
+        }
+      }
     }
   }
 
@@ -154,6 +182,10 @@
   class="codeblock {isDark ? 'dark' : ''} {isFullscreen
     ? 'fullscreen'
     : ''} {isExiting ? 'exiting' : ''}"
+  role={isFullscreen ? "dialog" : undefined}
+  aria-label={isFullscreen ? "Code block fullscreen view" : undefined}
+  aria-modal={isFullscreen ? "true" : undefined}
+  tabindex={isFullscreen ? "-1" : undefined}
 >
   <div class="header">
     <div class="controls">

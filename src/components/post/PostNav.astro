@@ -40,7 +40,7 @@ function resolveCover(post?: NavPost) {
 }
 ---
 
-<div class="post-nav">
+<nav class="post-nav" aria-label={t("post.previousPost") + " / " + t("post.nextPost")}>
   <div class="item left">
     {
       prevPost && (
@@ -94,4 +94,4 @@ function resolveCover(post?: NavPost) {
       )
     }
   </div>
-</div>
+</nav>

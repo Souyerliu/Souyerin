@@ -34,6 +34,7 @@
         <a
           href={link.url}
           title={link.url}
+          aria-label={name}
           class={`item ${name}`}
           target="_blank"
           rel="noopener noreferrer"

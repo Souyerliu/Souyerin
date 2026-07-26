@@ -99,6 +99,20 @@ export default defineConfig({
   vite: {
     build: {
       cssCodeSplit: true,
+      rollupOptions: {
+        onwarn(warning, warn) {
+          // Svelte 模板中通过 transition:fly 使用，Rollup 无法识别
+          if (
+            warning.code === "UNUSED_EXTERNAL_IMPORT" &&
+            warning.message.includes('"fly"') &&
+            warning.message.includes("svelte/transition") &&
+            warning.message.includes("DropBox.svelte")
+          ) {
+            return;
+          }
+          warn(warning);
+        },
+      },
     },
     resolve: {
       alias: {

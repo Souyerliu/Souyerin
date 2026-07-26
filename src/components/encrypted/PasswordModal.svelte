@@ -94,7 +94,7 @@
 </script>
 
 <div class="encrypted-post encrypted-lock-screen">
-  <div class="encrypted-lock-icon">
+  <div class="encrypted-lock-icon" aria-hidden="true">
     <i class="i-ri-lock-line"></i>
   </div>
 
@@ -105,8 +105,10 @@
   </p>
 
   <form class="encrypted-password-form" onsubmit={handleSubmit}>
+    <label for="encrypted-password-input" class="sr-only">{_passwordPlaceholder}</label>
     <input
       bind:this={inputRef}
+      id="encrypted-password-input"
       type="password"
       class="encrypted-password-input"
       placeholder={_passwordPlaceholder}
@@ -131,7 +133,7 @@
     </button>
 
     {#if error}
-      <div class="encrypted-error">
+      <div class="encrypted-error" role="alert">
         <i class="i-ri-error-warning-line icon"></i>
         <span>{error}</span>
       </div>

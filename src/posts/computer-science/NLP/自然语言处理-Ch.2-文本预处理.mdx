@@ -1,0 +1,370 @@
+---
+title: 自然语言处理 Ch.2 文本预处理
+date: 2026-07-19 23:16:26
+categories: [计算机科学,自然语言处理]
+tags: 
+    - 自然语言处理
+cover: ./cover.png
+---
+
+文本预处理主要包括数据获取、文本清洗、分词、去停用词、词形归一化、词性标注、文本标准化与文本特征化这些步骤。
+
+其中，文本标准化（也称为正则化）的目的在于将非标准文本转化为标准文本，以方便计算机理解。
+# 正则表达式（Regular Expressions，Regex）
++ 在进行文本清洗时，最常用的手段就是使用正则表达式。正则表达式使用某种预定义的模式去匹配一类具有共同特征的字符串，主要用于处理字符串，可以快速、准确地完成复杂的查找、替换等处理要求。
+    + 具体而言，正则表达式就是对字符串（包括普通字符，例如 a 到 z 之间的字母）和特殊字符（称为“元字符”）操作的一种逻辑公式。使用单个字符串来描述匹配一系列符合某个句法规则的字符串。
++ 正则表达式的匹配过程：依次拿出表达式和文本中的字符比较，如果每一个字符都能匹配，则匹配成功，否则匹配失败。如果有多个匹配项，则可以将搜索设计为返回行上的每个匹配项，或者只返回第一个匹配项。
++ 关于正则表达式语法详细可见[菜鸟教程](https://www.runoob.com/regexp/regexp-syntax.html)和[python re模块](https://docs.python.org/zh-cn/3/library/re.html#module-re)，下面只给出一些常见形式及其用法：
+    | **模式** | **含义** | **示例** |
+    |---|---|---|
+    | `literal` | 直接匹配该字面字符串 | `/woodchucks/` 匹配 "woodchucks" |
+    | `.` | 匹配任意单个字符（除 `\n`） | `beg.n` 匹配 `begin`、`begun`、`beg3n` |
+    | `\d` | 匹配任意数字，等价于 `[0-9]` | `\d{4}` 匹配年份 `2008` |
+    | `\D` | 匹配任意非数字字符 | `\D+` 匹配字母或符号序列 |
+    | `\w` | 匹配字母、数字或下划线，等价于 `[A-Za-z0-9_]` | `\w+` 匹配单词 |
+    | `\W` | 匹配非单词字符 | `\W+` 匹配空格或标点 |
+    | `\s` | 匹配任意空白字符（空格、制表、换行） | `\s+` 分割词 |
+    | `\S` | 匹配任意非空白字符 | `\S+` 匹配连续非空白串 |
+    | `[abc]` | 字符集合，匹配方括号内任一字符 | `[tT]he` 匹配 `the` 或 `The` |
+    | `[^abc]` | 否定字符集合，匹配不在集合内的任一字符 | `^[^A-Za-z]` 匹配以非字母开头的行 |
+    | `*` | 前一项出现 0 次或多次（可有可无，贪婪） | `ba*` 匹配 `b`、`ba`、`baa` |
+    | `+` | 前一项出现 1 次或多次 | `o+h!` 匹配 `oh!`、`ooh!` |
+    | `?` | 前一项出现 0 次或 1 次（可选） | `colou?r` 匹配 `color` 或 `colour` |
+    | `{m}` | 前一项恰好出现 m 次 | `\d{4}` 匹配 4 位数字 |
+    | `{m,n}` | 前一项出现 m 到 n 次 | `a{1,3}` 匹配 `a`、`aa`、`aaa` |
+    | `^` | 匹配字符串或行的开头（锚点） | `^[A-Z]` 匹配以大写字母开头的行 |
+    | `$` | 匹配字符串或行的结尾（锚点） | `I.$` 匹配以 `I.` 结尾的句子 |
+    | `\|` | 或（disjunction），匹配左或右子模式 | `python\|perl` 匹配 `python` 或 `perl` |
+    | `( ... )` | 捕获组，保存匹配内容为编号或命名组 | `(\d{4})-(\d{2})-(\d{2})` 捕获年/月/日 |
+    | `(?: ... )` | 非捕获组，仅分组不保存编号 | `(?:http://)?www\.` 可选协议但不捕获 |
+    | `(?P<name> ... )` | 命名捕获组，通过名字访问 | `(?P<year>\d{4})` |
+    | `(?=pattern)` | 正向零宽预查：后面必须跟着 pattern（不消耗字符） | `windows(?=2018\|1989)`  匹配 `windows` 当后接 `2018` 或 `1989` |
+    | `(?!pattern)` | 负向零宽预查：后面不能是 pattern（不消耗字符） | `windows(?!2018\|1989)` 匹配不跟 `2018`/`1989` 的 `windows` |
+    | `(?<=pattern)` | 正向零宽回查：前面必须是 pattern（不消耗字符） | `(?<=windows)2019` 匹配前面是 `windows` 的 `2019` |
+    | `(?<!pattern)` | 负向零宽回查：前面不能是 pattern（不消耗字符） | `(?<!microfost)2019` 匹配不被 `microfost` 前缀的 `2019` |
+    | `(.)\1+` | 捕获并匹配重复字符（反向引用） | `(.)\1+` 匹配 `aa`、`bbb` |
+    | `(?P<f>\b\w+\b)\s+(?P=f)` | 匹配连续重复出现的单词 | 匹配 `the the` 形式 |
++ 具体使用例：
+    ```python
+    import re
+
+    text = """
+    Woodchucks are funny animals. 
+    Color or colour, both are fine. 
+    Numbers: 1234, 56.78, abc, DEF. 
+    Email: test_user123@example.com 
+    IP: 192.168.0.1 
+    Date: 2026-07-23
+    Password: Abc123_.
+    Repeat: hello hello world
+    """
+
+    # 1. compile
+    pattern = re.compile(r'\d{4}-\d{2}-\d{2}')  # 日期匹配
+    print("compile + match:", pattern.match("2008-12-03"))
+
+    # 2. match
+    m = re.match(r'^[A-Z]', "Hello World")
+    print("match:", m.group() if m else None)
+
+    # 3. search
+    s = re.search(r'woodchucks', "Woodchucks: interesting links to woodchucks")
+    print("search:", s.group() if s else None)
+
+    # 4. findall
+    fa = re.findall(r'[a-zA-Z]+', text)
+    print("findall:", fa)
+
+    # 5. finditer
+    fi = re.finditer(r'\d+', text)
+    print("finditer:")
+    for match in fi:
+        print(f"  {match.group()} at {match.start()}-{match.end()}")
+
+    # 6. split
+    sp = re.split(r'[,. ]+', "alpha.beta .... gama delta")
+    print("split:", sp)
+
+    # 7. sub
+    sub1 = re.sub(r'colour', 'color', "I like colour")
+    print("sub simple:", sub1)
+
+    sub2 = re.sub(r'(\w)(?=.*\1)', '*', "banana")  # 替换重复字符
+    print("sub with lookahead:", sub2)
+
+    # 8. 捕获组
+    cg = re.match(r'(\d{4})-(\d{2})-(\d{2})', "2008-12-03")
+    print("groups:", cg.groups())
+
+    # 9. 命名捕获组
+    ncg = re.match(r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})', "2008-12-03")
+    print("named groups:", ncg.group("year"), ncg.group("month"), ncg.group("day"))
+
+    # 10. 非捕获组 + lookahead/lookbehind
+    s = "windows2019windows2018windows1989"
+    print("positive lookahead:", re.sub(r"windows(?=2018|1989)", "microsoft", s))
+    print("negative lookahead:", re.sub(r"windows(?!2018|1989)", "microsoft", s))
+
+    s2 = "windows2019microsoft2019windows1989"
+    print("positive lookbehind:", re.sub(r"(?<=windows)2019", "pattern", s2))
+
+    s3 = "windows2019microfost2019"
+    print("negative lookbehind:", re.sub(r"(?<!microfost)2019", "pattern", s3))
+
+    # 11. 反向引用
+    print("backreference:", re.findall(r'(.)\1+', "aabbcccdd"))
+
+    # 12. 连续重复单词
+    print("double words:", re.findall(r'(?P<f>\b\w+\b)\s+(?P=f)', "hello hello world"))
+
+    ```
+    输出：
+    ```
+    compile + match: <re.Match object; span=(0, 10), match='2026-07-23'>
+    match: H
+    search: woodchucks
+    findall: ['Woodchucks', 'are', 'funny', 'animals', 'Color', 'or', 'colour', ...]
+    finditer:
+    1234 at 73-77
+    56 at 79-81
+    78 at 82-84
+    split: ['alpha', 'beta', 'gama', 'delta']
+    sub simple: I like color
+    sub with lookahead: b*n*n*
+    groups: ('2026', '07', '23')
+    named groups: 2026 07 23
+    positive lookahead: windows2019microsoft2018microsoft1989
+    negative lookahead: microsoft2019windows2018windows1989
+    positive lookbehind: windowspatternmicrosoft2019windows1989
+    negative lookbehind: windowspatternmicrofost2019
+    backreference: ['aa', 'bb', 'ccc', 'dd']
+    double words: ['hello hello']
+    ```
+    > 注：以上正则表达式匹配主要针对英文字符及数字，对于中文字符的正则表达式处理需要使用后续介绍的Unicode。
+# 文本标记化（Tokenization）
++ 计算机分词使用的方法是文本标记化，其主要作用是把一段原始文本分解成更小的单元（称为标记/词元，即Token），以便计算机能够更好地理解和处理。
+    + 词元（Token）可以是词（word）、子词（subword）、字符（character），甚至是符号。
++ 关于分词的符号约定如下：
+    1. $N$：词元的个数
+    2. $V$：词表中类型（不同词元）的个数
+    3. $|V|$：词表的大小
+
+    一般$|V|$与$N$呈正相关。另一方面，由于词表大小优先，所以总是有可能会出现词表中没有的词，此时将其称为未登录词。
++ 在python中，常使用[nltk](https://www.nltk.org/)的`tokenize`库对文本进行标记化。（可参见[官方文档](https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize)）
+    + 示例：
+        ```python
+        import nltk.tokenize as tk
+        doc = "Are you curious about tokenization? Let's see how it works!"
+        # 按词拆分
+        tokens = tk.word_tokenize(doc)
+        for i, token in enumerate(tokens):
+            print(f"{i + 1:2d} {token}")
+        
+        # 按词和标点拆分
+        tokenizer = tk.WordPunctTokenizer()
+        tokens = tokenizer.tokenize(doc)
+        for i, token in enumerate(tokens):
+            print(f"{i + 1:2d} {token}")
+        ```
+        输出结果：
+        ```
+        1 Are
+        2 you
+        3 curious
+        4 about
+        5 tokenization
+        6 ?
+        7 Let
+        8 's
+        9 see
+        10 how
+        11 it
+        12 works
+        13 !
+        1 Are
+        2 you
+        3 curious
+        4 about
+        5 tokenization
+        6 ?
+        7 Let
+        8 's
+        9 see
+        10 how
+        11 it
+        12 works
+        13 !
+        ```
+> 实际上，对于不同语言文本的分词涉及到对语言特征本身的研究，这里就不详细展开了。
+## Unicode
++ 计算机是如何处理不同语言的字符的呢？这就不得不提到Unicode标准。其编码方式类似ASCII编码，被称为**码位（code point）**。
+    + 码位的范围从`0`到`0x10FFFF`（总共超过一百万个，使用前缀`U+`表示），这给新字符保留了充分大的空间。其中前127个码位于ASCII完全一致。【完整的码表可参见[官方链接](https://www.unicode.org/charts/PDF/)】
+    + 其中，中文字符属于CJK字符集，主要位于`U+4E00`到`U+9FFF`，因此提取常用汉字的正则表达式即为`[\u4E00-\u9FFF]`。【当然，如果使用第三方库[regex](https://pypi.org/project/regex/)的话可以用更简便的方式表达：`\p{Han}`】
+    + 需要注意的是，码位并不指定字形（glyph），即字符的视觉呈现形式。对于不同字体的同一个字符，其Unicode码都是相同的。
++ 那么计算机又是如何存储这些码位的呢？实际上，存在多种编码方案（被称为UTF）。
+    + 最容易理解的编码方案是UTF-32，它采用4字节（32位）存储一个字符，这样无需处理就能存储所有Unicode字符。（比如`hello`的编码方案即为`00 00 00 68 00 00 00 65 00 00 00 6C 00 00 00 6C 00 00 00 6F`）然而，UTF-32所需要的存储空间是ASCII的4倍，这会导致大量空间被浪费。
+    + 与之相比，另一种编码方案UTF-8（也是目前最主流的编码方案）表示字符就更加高效。它使用变长编码，即有些字符使用的字节少，有些字符使用的字节多一些。
+        + 具体而言，每个字符会得到其所需要的最少字节数。【具体可参见[官方文档](https://www.unicode.org/versions/latest/core-spec/chapter-3/#G27288)，这样所有使用ASCII的文件大小不会增大】
+        + 除此之外，UTF-8还可以进行自同步（self-synchronizing）：即使文件部分损坏，只需向前或向后最多扫描 3 个字节，就能重新定位到下一个或上一个字符的起始位置。
+        + 目前几乎所有编程语言的文本编码都使用UTF-8，当然在读取外部文本时仍然建议显式规定编码。
+# 词形归一化（Word Normalization）
+> 注：中文文本没有这一步骤。
++ 英文文本的词形归一化主要包括词干提取（Stemming）与词形还原（Lemmatisation）两种方式。其核心目的是将长相不同，但是含义相同的词统一起来，这样方便后续的处理和分析。
+    + 词干提取是去除单词的前后缀得到词根的过程。常见的前后词缀有名词的复数、进行式、过去分词等。（如`plays`，`playing`和`played`都转换为`play`）
+    + 词形还原是基于词典，将单词的复杂形态转变成最基础的形态，其保证单词原型一定是合法的单词。（如`goes`，`going`和`went`都转换为`go`，这是词干提取无法做到的）
+
+    两种方式各有优缺点：词干提取速度快但不精确（对不规则动词无效），而词形还原精确但较慢（需要词典和词性标注）。
++ 下面给出词干提取与词形还原的示例代码：
+    1. 词干提取（具体算法可参考[官方文档](https://www.nltk.org/api/nltk.stem.html#nltk-stem-package)）
+        ```python
+        import nltk.stem.porter as pt # 最基础，提取最温和
+        import nltk.stem.snowball as sb # 在porter算法基础上改进
+        import nltk.stem.lancaster as lc # 提取最激进，速度最快
+        
+        for token in tokens:
+            pt_stem = pt.PorterStemmer().stem(token) 
+            sb_stem = sb.SnowballStemmer("english").stem(token)
+            lc_stem = lc.LancasterStemmer().stem(token) 
+            print(f"{token:>8} {pt_stem:>8} {sb_stem:>8} {lc_stem:>8}")    
+        ```
+        输出结果：
+        ```
+            Are      are      are       ar
+            you      you      you      you
+        curious   curiou  curious     cury
+        about    about    about    about
+        tokenization    token    token      tok
+            ?        ?        ?        ?
+            Let      let      let      let
+            's       's       's       's
+            see      see      see      see
+            how      how      how      how
+            it       it       it       it
+        works     work     work     work
+            !        !        !        !
+        ```
+    2. 词形还原
+        ```python
+        import nltk.stem as ns
+        doc ='table probably wolves playing is dog the beaches grounded dreamt envision.'
+
+        # 按词拆分
+        tokens = tk.word_tokenize(doc)
+        lemmatizer = ns.WordNetLemmatizer()
+        for token in tokens:
+            # 将名词还原为单数形式
+            n_lemma = lemmatizer.lemmatize(token, pos='n')
+            # 将动词还原为原型形式
+            v_lemma = lemmatizer.lemmatize(token, pos='v')
+            print(f"{token:>8} {n_lemma:>8} {v_lemma:>8}")
+        ```
+        注意单次函数调用只能考虑一个词性，因为同一个单词作为不同词性含义可能完全不同。
++ 当然，词性归一化还需要处理一些特殊情况，比如：
+    + 特殊符号（如`China's capital`，`isn't`，`m.p.h.`等）
+    + 连字符（如`state-of-the-art`，`well-known`等）
+    + 专有名词（如`Adidas`，`United States`等）
+
+# 中文分词
++ 中文分词是自然语言处理中的一大难题，因为：
+    + 中文词语包含多个字（中文词语平均长度是2.4个字），无法以字为单位分割
+    + 单个汉字通常表示一个音节和一个语素，存在组合歧义，未登录歧义，交集歧义等
++ 解决这个问题的方案通常有两种：基于规则/词典的分词方法与基于统计的分词方法。
++ 基于规则/词典的分词方法主要包括：
+    1. 完全切分：可以理解为给出所有可能的切分路径
+    2. 正向最长匹配：从句子左端（开头）开始，每次取最大词长的候选字符串，在词典中尝试匹配。若匹配失败，则去掉最右边一个字继续匹配，直到匹配成功或变为单字；然后移动到下一个未处理的位置继续。
+        + 示例：`sentence = "我们在野生动物园玩"`，`dict = {"我们", "在", "玩", "在野", "野生", "生动", "动物", "动物园", "野生动物园"}`
+        + 切分结果为：`我们/在野/生动/物/园/玩`（单字字典词为3，非词典词为2）
+    3. 逆向最长匹配：逆向构建逆向词典，句子逆排序，然后使用正向最大匹配算法
+        + 示例同上，切分结果为：`玩/园物动生野/在/们我`（逆序）$\Longrightarrow$ `我们/在/野生动物园/玩`（正序，单字字典词为2，非词典词为0）
+    4. 双向最长匹配：即用两种算法都切一遍，然后根据词越长越好、非词典词和单字词越少越好的原则选取其中一种分词结果输出。
+        + 示例同上，最终选取逆向匹配结果作为输出。
++ 基于统计的分词方法则主要包括最大概率法、字标注法等。
++ 在python中，主要使用`jieba`库进行中文分词。其主要有三种分词模式：
+    + 全模式：把句子中所有的可以成词的词语都扫描出来，速度非常快，但是不能解决歧义；
+    + 精确模式：试图将句子最精确地切开，适合文本分析；
+    + 搜索引擎模式：在精确模式的基础上，对长词再次切分，提高召回率，适合用于搜索引擎分词。
+
+    同时支持繁体分词与自定义词典。使用例如下：
+    ```python
+    import jieba
+    seg_list = jieba.cut("我来到北京清华大学", cut_all = True)
+    print("Full Mode: " + "/ ".join(seg_list)) # 全模式
+    seg_list = jieba.cut("我来到北京清华大学", cut_all = False)
+    print("Default Mode: " + "/ ".join(seg_list)) # 精确模式
+    seg_list = jieba.cut("他来到了网易杭研大厦") # 默认是精确模式
+    print(", ".join(seg_list))
+    seg_list = jieba.cut_for_search("小明硕士毕业于中国科学院计算所，后在日本京都大学深造") # 搜索引擎模式
+    print(", ".join(seg_list))
+    ```
+    输出结果：
+    ```
+    Full Mode: 我/ 来到/ 北京/ 清华/ 清华大学/ 华大/ 大学
+    Default Mode: 我/ 来到/ 北京/ 清华大学
+    他, 来到, 了, 网易, 杭研, 大厦
+    小明, 硕士, 毕业, 于, 中国, 科学, 学院, 科学院, 中国科学院, 计算, 计算所, ，, 后, 在, 日本, 京都, 大学, 日本京都大学, 深造
+    ```
+    jieba在分词时使用了字典树（Trie树）数据结构加快检索效率。【关于字典树的具体概念可参考数据结构课程或CS 61B】
+# 最短编辑距离
++ 最后我们补充一个衡量两个字符串之间相似程度的指标：最短编辑距离（Minimum Edit Distance）。其广泛应用于拼写纠正、计算生物学、机器翻译、信息抽取、语音识别等领域中。
++ 两个字符串之间的最短编辑距离，是指从一个字符串转换为另一个字符串的最少编辑操作（插入，删除与替换）的次数。这也被称为莱文斯坦距离（Levenshtein Distance）。
+    + 当然，最短编辑距离也有一个变体：当不允许进行替换操作（或者将替换操作权重改为2）时，这个编辑距离也被称作LCS距离（LCS表示最长公共子序列，其可以在求解LCS距离中得到）。
++ 那么如何计算最短编辑距离呢？一种直接的想法是枚举所有的路径，但这样效率太低。
+    + 于是，我们考虑更换一种方式：使用动态规划方法记录到达某个状态的最短路径。对此，符号定义如下：
+        + 两个字符串$X$和$Y$，长度分别为$n$和$m$
+        + 定义$D(i,j)$为$X[1\dots i]$和$Y[1\dots j]$（即$X$的前$i$个字符和$Y$的前$j$个字符）之间的最短编辑距离，则$X$与$Y$的最短编辑距离即为$D(n,m)$。
+    + 那么动态规划递推式为：
+        $$
+        D[i,j] = \min \begin{cases} 
+        D[i-1,j] + \text{del-cost}(X[i]) \\
+        D[i,j-1] + \text{ins-cost}(Y[j]) \\
+        D[i-1,j-1] + \text{sub-cost}(X[i], Y[j])
+        \end{cases}
+        $$
+    + 在记录最短编辑距离的同时，我们也需要记录将两个字符串的每个字符相互对齐的路径。
+        + 具体而言，可以使用另一个表格，在进行动态规划递推时记录最小值的来源，对应删除/插入/替换操作。
++ 代码示例如下（使用LCS距离）：
+```python
+import numpy as np
+def med(A,B):
+    d = np.zeros((len(A)+1,len(B)+1))
+    tr = np.zeros((len(A)+1,len(B)+1))
+    for i in range(1,len(A)+1):
+        d[i][0]=i
+        tr[i][0]=1
+    for j in range(1,len(B)+1):
+        d[0][j]=j
+        tr[0][j]=0
+    for i in range(1,len(A)+1):
+        for j in range(1,len(B)+1):
+            rep = 0
+            if A[i-1]!=B[j-1]:
+                rep = 2
+            d[i][j]=min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+rep)
+            if d[i][j]==d[i-1][j]+1:
+                tr[i][j]=1
+            elif d[i][j]==d[i][j-1]+1:
+                tr[i][j]=0
+            else:
+                tr[i][j]=2
+    return d,tr
+A = 'intension'
+B = 'execusion'
+dist,tr = med(A,B)
+print(int(dist[len(A)][len(B)]))
+cur_i,cur_j = len(A),len(B)
+path = []
+while dist[cur_i][cur_j]!=0:
+    if tr[cur_i][cur_j]==2:
+        if dist[cur_i][cur_j]!=dist[cur_i-1][cur_j-1]:
+            path.append("替换" + str(A[cur_i-1]) + "为" + str(B[cur_j-1]))
+        cur_i-=1
+        cur_j-=1
+    elif tr[cur_i][cur_j]==1:
+        path.append("删除" + str(A[cur_i-1]))
+        cur_i-=1
+    else:
+        path.append("插入" + str(B[cur_j-1]))
+        cur_j-=1
+for item in reversed(path):
+    print(item)
+```
