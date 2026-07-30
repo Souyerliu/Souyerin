@@ -1,0 +1,203 @@
+---
+title: CS61B CHAPTER 6
+date: 2026-07-27 22:25:37
+categories: [计算机科学, CS61B]
+tags:
+  - JAVA
+  - 数据结构
+cover: ./61B-header.png
+---
+本讲我们将阐述编程中的一个重要环节——测试代码。【btw，在LLM时代笔者认为这比debug更加重要】
+> 注：下述代码均在IntelliJ IDEA中编写，不保证其他IDE中有类似结果。
+# 测试（Testing）
++ 如何判断我们写的代码是否准确？在学习初期，我们往往会通过手动输入交互或将代码提交到OJ网站进行测试。
++ 然而，现实中我们常常需要自己编写测试样例，甚至编写整个测试代码。
+## 随机测试（Ad Hoc Testing）
++ 我们以字符串排序为例（假设已经编写了排序代码类方法`Sort.sort(xxx)`），对此可以编写如下的测试类：
+    ```java
+    public class TestSort {
+        /** 测试 Sort 类的 sort 方法 */
+        public static void testSort() {
+            String[] input = {"must", "be", "the", "water"};
+            String[] expected = {"be", "must", "the", "water"};
+            Sort.sort(input);
+            for (int i = 0; i < input.length; i += 1) {
+                if (!input[i].equals(expected[i])) {
+                    System.out.println("Mismatch in position " + i + ", expected: " + expected + ", but got: " + input[i] + ".");
+                    break;
+                }
+            }
+        }
+
+        public static void main(String[] args) {
+            testSort();
+        }
+    }
+    ```
+    编写完成后，我们可以创建一个空方法对其功能进行测试：
+    ```java
+    public class Sort {
+        /** 创建一个空方法 */
+        public static void sort(String[] x) { 
+            return;       
+        }
+    }
+    ```
+    运行`TestSort`后会得到如下结果：
+    ```
+    Mismatch in position 0, expected: be, but got: must.
+    ```
+    这就说明我们的测试有效。注意到上面我们使用了循环进行测试，虽然不算太复杂，但之后对大型程序再使用这种随机测试就比较繁琐。
++ 对此，我们考虑使用Google的`Truth`库替代（可参见[官网](https://truth.dev/)）：
+## Truth测试
++ Truth库的测试属于Java单元测试的一种（除此之外还有JUnit，AssertJ等），其原理与python的`assert`语句类似，通过断言系统检测代码输出与期望输出之间的差异，在适当的时机抛出异常。
++ 下面我们将上面的`TestSort`类用Truth语句改写：
+    ```java
+    import static com.google.common.truth.Truth.assertThat;
+    public class testSort {
+        public static void testSort() {
+            String[] input = {"must", "be", "the", "water"};
+            String[] expected = {"be", "must", "the", "water"};
+            Sort.sort(input);
+
+            assertThat(input).isEqualTo(expected);
+        }
+
+        public static void main(String[] args) {
+            testSort();
+        }
+    }
+    ```
+    运行后报出的异常形式：
+    ```java
+    Exception in thread "main" expected        : [be, must, the, water]
+    but was         : [must, be, the, water]
+    differs at index: [0]
+        at testSort.testSort(testSort.java:8)
+        at testSort.main(testSort.java:12)
+    ```
+    当然，为了更接近真实的单元测试，我们还需要对上述代码进行微调（去掉主函数，增加`@Test`注解，将测试类改为非静态）：
+    ```java
+    import org.junit.jupiter.api.Test;
+    import static com.google.common.truth.Truth.assertThat;
+    public class TestSort {
+        @Test
+        public void testSort() {
+            String[] input = {"must", "be", "the", "water"};
+            String[] expected = {"be", "must", "the", "water"};
+            Sort.sort(input);
+
+            assertThat(input).isEqualTo(expected);
+        }
+    }
+    ```
+    这样我们就完成了单元测试代码的编写。【当测试通过时，我们就能收获一个大大的✅️】
+## 选择排序
++ 在编写完测试代码后，我们就来编写用于测试的代码，即实现一个排序算法。这里我们考虑最简单的算法——选择排序（Selection Sort）算法。
++ 选择排序算法主要包含下述三个步骤：
+    1. 找出最小的元素；
+    2. 将最小元素移到最前面（与最前面的元素交换位置）；
+    3. 对剩余的元素再进行选择排序，以此类推。
++ 下面我们分别实现这三个步骤：
+    + 首先是找到最小元素：
+        ```java
+        public static String findSmallest(String[] x) {
+            String smallest = x[0];
+            for (int i = 0; i < x.length; i += 1) {
+                int cmp = x[i].compareTo(smallest); // java中不能直接使用不等号比较字符串
+                if (cmp < 0) { 
+                    smallest = x[i];
+                }
+            }
+            return smallest;
+        }
+        ```
+        我们可以编写下述测试类验证：
+        ```java
+        public static void testFindSmallest() {
+            String[] input = {"i", "have", "two", "balls"};
+            String expected = "balls";
+
+            String actual = Sort.findSmallest(input);
+            assertThat(actual).isEqualTo(expected);     
+
+            String[] input2 = {"yuri", "is", "GOAT"};
+            String expected2 = "GOAT";
+
+            String actual2 = Sort.findSmallest(input2);
+            assertThat(actual2).isEqualTo(expected2);  
+        }
+        ```
+    + 然后是交换元素，这个不难实现：
+        ```java
+        public static void swap(String[] x, int a, int b) {
+            String temp = x[a];
+            x[a] = x[b];
+            x[b] = temp;
+        }
+        ```
+        注意到这里使用了字符串数组的索引，所以需要对上面的`findSmallest`类进行修改：
+        ```java
+        public static int findSmallest(String[] x) {
+            int smallestIndex = 0;
+            for (int i = 0; i < x.length; i += 1) {
+                int cmp = x[i].compareTo(x[smallestIndex]);
+                if (cmp < 0) {
+                    smallestIndex = i;
+                }
+            }
+            return smallestIndex;
+        }
+
+        public static void testFindSmallest() { // 对应的测试类
+            String[] input = {"i", "have", "two", "balls"};
+            int expected = 3;
+
+            int actual = Sort.findSmallest(input);
+            assertThat(actual).isEqualTo(expected); 
+
+            String[] input2 = {"yuri", "is", "GOAT"};
+            int expected2 = 2;
+
+            int actual2 = Sort.findSmallest(input);
+            assertThat(actual2).isEqualTo(expected2); 
+        }
+        ```
+    + 接着我们综合使用这两个类，实现前两个步骤：
+        ```java
+        /** Sorts strings destructively. */
+        public static void sort(String[] x) { 
+            int smallestIndex = findSmallest(x);
+            swap(x, 0, smallestIndex);
+        }
+        ```
+    + 那么第三个步骤（递归迭代）如何实现？注意到在递归时我们需要不断对字符串数组取子集，所以我们需要增加一个参数`start`表示当前子字符串数组起始索引：
+        ```java
+        public static int findSmallest(String[] x, int start) {
+            int smallestIndex = start;
+            for (int i = start; i < x.length; i += 1) {
+                int cmp = x[i].compareTo(x[smallestIndex]);
+                if (cmp < 0) {
+                    smallestIndex = i;
+                }
+            }
+            return smallestIndex;
+        }
+        // 对应测试类略
+
+        private static void sort(String[] x, int start) { 
+            if (start == x.length) {
+                return;
+            }
+            int smallestIndex = findSmallest(x, start);
+            swap(x, start, smallestIndex);
+            sort(x, start + 1);
+        }
+
+        public static void sort(String[] x) { 
+            sort(x, 0);
+        }
+        ```
+        这样我们就完整实现了选择排序算法。
++ 当然，在编写代码的过程中，我们可以不断利用已有的`testSort`测试类进行检验，不断调试。总而言之，综合测试和调试器，可以很大程度上方便我们排查问题，并更高效地编写代码。
++ 另外，除了单元测试，有时还需要进行集成测试验证不同模块之间的交互是否正常，这里不详细展开。

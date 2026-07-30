@@ -1,13 +1,11 @@
 {
   "models": [
     [
-      "nanami/casual-2023",
-      "nanami/casual_summer-2023",
-      "nanami/casual_winter-2023",
-      "nanami/school_summer-2023",
-      "nanami/school_winter-2023",
-      "nanami/birthday_2022",
-      "nanami/live_default"
+      "sakiko/casual-2023",
+      "sakiko/event_297_story_01",
+      "sakiko/jh_school_winter-2023",
+      "sakiko/school_summer-2023",
+      "sakiko/school_winter-2023"
     ],
     [
       "soyo/039_casual-2023",
@@ -17,5 +15,5 @@
       "soyo/039_live_default"
     ]
   ],
-  "messages": ["七深 (Nanami)", "素世 (Soyo)"]
+  "messages": ["祥子 (Sakiko)", "素世 (Soyo)"]
 }

@@ -1,0 +1,154 @@
+---
+title: 机器学习方法 Ch.9 LR与最大熵模型
+date: 2026-07-11 22:30:46
+categories: [计算机科学,机器学习方法]
+tags:
+    - 监督学习
+cover: ./ml.png
+---
+在[Introduction](/posts/computer-science/machine-learning/机器学习方法-ch1-introduction/#分类模型)中，我们简单提到了Logistic回归模型，这是最简单也是最常见的分类模型。本节我们将从最基本的二项逻辑斯蒂回归开始，推广到多项逻辑斯蒂回归，然后和最大熵模型进行比较。
+# 逻辑斯蒂回归模型
+## Logistic分布
++ 首先定义Logistic分布的分布函数与概率密度函数：
+    $$
+    \begin{aligned}
+    F(x)&=\frac{1}{1+e^{-\frac{x-\mu}{s}}}\\
+    f(x)&=\frac{e^{-\frac{x-\mu}{s}}}{s\left(1+e^{-\frac{x-\mu}{s}}\right)^2}
+    \end{aligned}
+    $$
+    其中$\mu\in\R$为位置参数，$s>0$为形状参数。分布图像如下：![logistic distribution](./机器学习方法-Ch.9-LR与最大熵模型/logistic-distribution.png)
+    可以看到分布函数呈S形（Sigmoid函数就是$\mu=0,s=1$时的曲线），且关于$\displaystyle\left(\mu,\frac{1}{2}\right)$中心对称。
+## 二项逻辑斯蒂回归
++ 二项逻辑斯蒂回归模型的输出是二分类，其条件概率分布为参数化的Logistic分布，即
+    $$
+    \begin{aligned}
+    P(y=1|\mathbf{x})&=\frac{1}{1+e^{-(\mathbf{w}\cdot\mathbf{x}+b)}}\\
+    P(y=0|\mathbf{x})&=\frac{e^{-(\mathbf{w}\cdot\mathbf{x}+b)}}{1+e^{-(\mathbf{w}\cdot\mathbf{x}+b)}}\\
+    \end{aligned}
+    $$
+    其中$\mathbf{x}$为$M$维特征向量，$\mathbf{w}$为$M$维权重向量，$b$为偏置。模型就是根据两个条件概率的大小比较得到最终的输出。
+    > 有时也将偏置项并入权重向量，即$\mathbf{w}=(w_1,w_2,\cdots,w_M,b)^\top,\mathbf{x}=(x_1,x_2,\cdots,x_M,1)^\top$。
++ 这个模型也可以看作对输入进行仿射变换（线性变换+平移）后，再经过一次非线性（Sigmoid）变换。【其输出与[前馈神经网络](/posts/computer-science/machine-learning/机器学习方法-ch3-人工神经网络/#激活函数)中神经元的变换等价】
++ 与线性模型的关系：考虑对数几率（logit函数）
+    $$
+    \text{logit}(P)=\log\frac{P}{1-P}
+    $$
+    那么将上述两个概率代入得
+    $$
+    \begin{aligned}
+    \log\frac{P(y=1|\mathbf{x})}{1-P(y=1|\mathbf{x})}&=\mathbf{w}\cdot\mathbf{x}+b\\
+    \log\frac{P(y=0|\mathbf{x})}{1-P(y=0|\mathbf{x})}&=-(\mathbf{w}\cdot\mathbf{x}+b)   
+    \end{aligned}
+    $$
+    因此模型具有良好的解释性：每一维特征对应的权重表示该特征对分类的贡献（大小与方向）。
++ 二项逻辑斯蒂回归模型还有另一种形式——分类标签$y=\{-1,+1\}$。此时考虑负对数损失函数（分类模型的目标是正确输出条件概率尽量接近$1$），那么
+    $$
+    \begin{aligned}
+    -\log_2 P(y = +1 | \mathbf{x}) &= -\log_2 \frac{1}{1 + e^{-(\mathbf{w} \cdot \mathbf{x} + b)}}\\
+    &= \log_2 \left[1 + e^{-y f(\mathbf{x})}\right],\\[10pt]
+    -\log_2 P(y = -1 | \mathbf{x}) &= -\log_2 \frac{e^{-(\mathbf{w}\cdot \mathbf{x} + b)}}{1 + e^{-(\mathbf{w} \cdot \mathbf{x} + b)}}\\
+    &= \log_2 \left[1 + e^{-y f(\mathbf{x})}\right] 
+    \end{aligned}
+    $$
+    因此可以统一为对数损失或逻辑斯谛损失$\log_2 \left[1 + e^{-y f(\mathbf{x})}\right]$。
+## 多项逻辑斯蒂回归
++ 将上述模型从二分类推广到多分类，就得到了多项逻辑斯蒂回归模型。其条件概率分布形式如下：
+    $$
+    \begin{aligned}
+    P(y = c_k \mid \mathbf{x}) &= \frac{\exp(\mathbf{w}_k \cdot \mathbf{x} + b_k)}{\displaystyle 1 + \sum_{k=1}^{K-1} \exp(\mathbf{w}_k \cdot \mathbf{x} + b_k)}, \quad k = 1, 2, \cdots, K-1 \\
+    P(y = c_K \mid \mathbf{x}) &= \frac{1}{\displaystyle 1 + \sum_{k=1}^{K-1} \exp(\mathbf{w}_k \cdot \mathbf{x} + b_k)}
+    \end{aligned}
+    $$
+    由此可知多项逻辑斯蒂回归模型（包含二项逻辑斯蒂回归模型）属于概率判别模型。在计算所有类别的条件概率后，模型选择最大概率对应的类别作为输出结果。
++ 与线性模型的关系：类似上面的推导，我们可以将一个类别（$y=c_K$）作为参照类，那么其他类别（$y\in\{c_1,\cdots,c_{K-1}\}$）与参照类的对数几率是关于特征向量$\mathbf{x}$的线性函数。
++ 上面的条件概率分布中参数为$K-1$类，而实际上模型也可以定义在$K$类参数上：
+    $$
+    P(y = c_k \mid \mathbf{x}) = \frac{\exp(\mathbf{w}_k \cdot \mathbf{x} + b_k)}{\displaystyle\sum_{k=1}^{K} \exp(\mathbf{w}_k \cdot \mathbf{x} + b_k)}, \quad k = 1, 2, \cdots, K
+    $$
+    这与多分类前馈神经网络输出层形式等价。这个函数也被称为softmax函数。
+
+# 最大熵模型（maxEnt）
+## 最大熵原理
++ 最大熵原理由杰尼斯【贝叶斯学派代表人物】与1957年提出，其核心是：学习概率模型时，在所有可能的概率模型（分布）中，熵最大的模型是最好的模型。
++ 关于熵的概念已经在[决策树](/posts/computer-science/machine-learning/机器学习方法-ch6-决策树/)章节中阐述。设$\mathbf{x}$的概率分布为$P(\mathbf{x})$，那么它的熵为
+    $$
+    H(P)=-\sum_{\mathbf{x}\in\mathcal{X}}P(\mathbf{x})\log P(\mathbf{x})
+    $$
+    那么可以证明$H(P)$在$P(\mathbf{x})$为均匀分布时取得最大值$\log|\mathcal{X}|$（$|\mathcal{X}|$表示$\mathcal{X}$取值个数）。
+    因此，利用最大熵原理估计概率就是在约束条件下尽量取等概率。
+## 最大熵模型定义
++ 给定训练数据集，考虑联合分布$P(\mathbf{x},y)$的经验分布和$P(\mathbf{x})$的经验分布，分别用$\tilde{P}(\mathbf{x},y)$和$\tilde{P}(\mathbf{x})$表示。那么它们的表达式为：
+    $$
+    \tilde{P}(\mathbf{x},y)=\frac{N(\mathbf{x},y)}{N},\quad \tilde{P}(\mathbf{x})=\frac{N(\mathbf{x})}{N}.
+    $$
+    其中$N(\mathbf{x},y),N(\mathbf{x})$和$N$分别表示训练样本中$\mathbf{x}$和$y$同时出现的频数，$\mathbf{x}$出现的频数和总训练样本量。
++ 然后定义特征函数$f(\mathbf{x},y)$，其类似于示性函数，即$\mathbf{x}$与$y$满足某种条件时值为$1$，否则值为$0$。
++ 接着考虑特征函数关于联合经验分布的期望
+    $$
+    E_{\tilde{P}}(f)=\sum_{\mathbf{x},y}\tilde{P}(\mathbf{x},y)f(\mathbf{x},y)
+    $$
+    以及关于模型与先验分布$\tilde{P}(\mathbf{x})$的期望
+    $$
+    E_{P}(f)=\sum_{\mathbf{x},y}\tilde{P}(\mathbf{x})P(y|\mathbf{x})f(\mathbf{x},y)
+    $$
+    对此，我们假设两个期望相等，即$E_{\tilde{P}}(f)=E_P(f)$，这样就得到了模型的约束条件。如果总共$M$个特征函数$f_j(\mathbf{x},y),j=1,2,\cdots,M$，那么就总共$M$个约束条件。
++ 综上，我们得到最大熵模型的定义：假设满足所有约束条件的模型集合为
+    $$
+    \mathcal{C} \equiv \left\{ P \in \mathcal{P} \mid E_P(f_j) = E_{\tilde{P}}(f_j), \quad j = 1, 2, \cdots, M \right\}
+    $$
+    定义在条件概率分布$P(y|\mathbf{x})$上的**条件熵**为
+    $$
+    H(P) = - \sum_{\mathbf{x},y} \tilde{P}(\mathbf{x}) P(y|\mathbf{x}) \log P(y|\mathbf{x})
+    $$
+    则模型集合$\mathcal{C}$中条件熵$H(P)$最大的模型称为最大熵模型。
+    > 关于条件熵表达式如何得到：
+    > $$
+    > \begin{aligned}
+    > H(P)&=\sum_{i=1}^{|\mathcal{X}|}\tilde{P}(x_i)H(y|\mathbf{x}=x_i)\\
+    > &=\sum_{i=1}^{|\mathcal{X}|}\tilde{P}(x_i)\cdot\sum_{j=1}^{|\mathcal{Y}|}-P(y_i|x_i)\log P(y_i|x_i)\\
+    > &=-\sum_{i=1}^{|\mathcal{X}|}\sum_{j=1}^{|\mathcal{Y}|}\tilde{P}(x_i)\cdot P(y_i|x_i)\log P(y_i|x_i)\\
+    > &=- \sum_{\mathbf{x},y} \tilde{P}(\mathbf{x}) P(y|\mathbf{x}) \log P(y|\mathbf{x}).
+    > \end{aligned}
+    > $$
+## 最大熵模型的学习
++ 通过定义，我们可以发现最大熵模型的学习过程实际就是一个带约束的最优化过程：
+    $$
+    \begin{aligned}
+    \max_{P \in \mathcal{C}} \quad & H(P) = -\sum_{\mathbf{x},y} \tilde{P}(\mathbf{x}) P(y|\mathbf{x}) \log P(y|\mathbf{x}) \\[10pt]
+    \text{s.t.} \quad & E_P(f_j) = E_{\tilde{P}}(f_j), \quad j = 1, 2, \cdots, M \\[5pt]
+    & \sum_y P(y|\mathbf{x}) = 1
+    \end{aligned}
+    $$
++ 具体优化推导如下（原理可参考CS 127）：
+<Note type="primary" title="推导过程">
++ 引入拉格朗日乘子，定义拉格朗日函数$L(P,\mathbf{w})$：
+    $$
+    \begin{aligned}
+    L(P,\mathbf{w})&\triangleq -H(P)+w_0\left(1-\sum_y P(y|\mathbf{x})\right)+\sum_{j=1}^Mw_j(E_{\tilde{P}}(f_j)-E_P(f_j))\\
+    = &\sum_{\mathbf{x},y} \tilde{P}(\mathbf{x})P(y|\mathbf{x})\log P(y|\mathbf{x}) + w_0\left(1-\sum_y P(y|\mathbf{x})\right) \\
+    &+ \sum_{j=1}^M w_j \left( \sum_{\mathbf{x},y} \tilde{P}(\mathbf{x},y)f_j(\mathbf{x},y) - \sum_{\mathbf{x},y} \tilde{P}(\mathbf{x})P(y|\mathbf{x})f_j(\mathbf{x},y) \right)
+    \end{aligned}
+    $$
+    于是原始问题变为$\displaystyle\min_{P\in\mathcal{C}}\max_{\mathbf{w}}L(P,\mathbf{w})$【这里$P$表示条件概率$P(y|\mathbf{x})$】，由此得到对偶问题为$\displaystyle\max_{\mathbf{w}}\min_{P\in\mathcal{C}}L(P,\mathbf{w})$，且二者得到的解等价。
++ 对于对偶问题，先固定$\mathbf{w}$，求$\displaystyle\min_{P\in\mathcal{C}}L(P,\mathbf{w})$。计算$L(P,\mathbf{w})$对$P$的偏导：
+    $$
+    \begin{aligned}
+    \frac{\partial L(P, w)}{\partial P(y|\mathbf{x})}=&\sum_{\mathbf{x},y} \tilde{P}(\mathbf{x}) \left( \log P(y|\mathbf{x}) + 1 \right) - \sum_y w_0 - \sum_{\mathbf{x},y} \left( \tilde{P}(\mathbf{x}) \sum_{j=1}^M w_j f_j(\mathbf{x}, y) \right)\\
+    =&\sum_{\mathbf{x},y} \tilde{P}(\mathbf{x}) \left( \log P(y|\mathbf{x}) + 1 - w_0 - \sum_{j=1}^M w_j f_j(\mathbf{x}, y) \right)
+    \end{aligned}
+    $$
+    当偏导数为$0$时
+    $$
+    P_w(y|\mathbf{x})=\exp\left(\sum_{j=1}^M w_j f_j(\mathbf{x}, y) + w_0 - 1\right) = \frac{\displaystyle\exp\left(\sum_{j=1}^M w_j f_j(\mathbf{x}, y)\right)}{\exp(1 - w_0)}
+    $$
+    再根据条件$\displaystyle \sum_y P(y|\mathbf{x}) = 1$确定权重$w_0$，得到
+    $$
+    P_w(y|\mathbf{x})=\frac{\displaystyle\exp\left(\sum_{j=1}^M w_j f_j(\mathbf{x}, y)\right)}{\displaystyle\sum_{y}\exp\left(\sum_{j=1}^M w_j f_j(\mathbf{x}, y)\right)}.
+    $$
+    最后将$P_w(y|\mathbf{x})$代入$L(P,\mathbf{w})$，对$\mathbf{w}$取最大值即可。
+</Note>
++ 可以证明最大熵模型学习中的对偶函数最大化等价于最大熵模型的极大似然估计。【过程略】
++ 另一方面，由上述推导可知，最大熵模型与逻辑斯谛回归模型有类似的形式，它们都是对数线性模型。可以认为逻辑斯谛回归模型是最大熵模型的特殊情况。（特征函数包括输入函数）
++ 最大熵原理与指数分布族也有密切的关系。在不同的约束条件下，应用最大熵原理可以得到指数分布族的不同分布。
+# 学习算法
+从最优化的观点看，逻辑斯蒂回归模型和最大熵模型的目标函数都是光滑的凸函数，保证能找到全局最优解。常用的学习方法有梯度下降法、牛顿法或拟牛顿法。【具体略，或许在CS 127中会有涉及】
