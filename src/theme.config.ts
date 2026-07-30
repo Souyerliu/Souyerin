@@ -136,12 +136,12 @@ export default defineConfig({
       // 推荐与站点语言保持一致
       lang: "zh-CN",
       emoji: [
-        "https://unpkg.com/@waline/emojis@1.0.1/weibo",
-        "https://unpkg.com/@waline/emojis@1.0.1/alus",
-        "https://unpkg.com/@waline/emojis@1.0.1/bilibili",
-        "https://unpkg.com/@waline/emojis@1.0.1/qq",
-        "https://unpkg.com/@waline/emojis@1.0.1/tieba",
-        "https://unpkg.com/@waline/emojis@1.0.1/tw-emoji",
+        "https://cdn.jsdelivr.net/npm/@waline/emojis@1.0.1/weibo",
+        "https://cdn.jsdelivr.net/npm/@waline/emojis@1.0.1/alus",
+        "https://cdn.jsdelivr.net/npm/@waline/emojis@1.0.1/bilibili",
+        "https://cdn.jsdelivr.net/npm/@waline/emojis@1.0.1/qq",
+        "https://cdn.jsdelivr.net/npm/@waline/emojis@1.0.1/tieba",
+        "https://cdn.jsdelivr.net/npm/@waline/emojis@1.0.1/tw-emoji",
       ],
     },
   },

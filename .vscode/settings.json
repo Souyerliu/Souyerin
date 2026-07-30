@@ -3,5 +3,7 @@
     "src/i18n",
     "old_project/hexo-theme-shokaX/languages",
     "src/i18n/locales"
-  ]
+  ],
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda"
 }

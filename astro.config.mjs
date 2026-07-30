@@ -54,6 +54,18 @@ export default defineConfig({
     defaultStrategy: "hover",
   },
 
+  image: {
+    service: {
+      entrypoint: "astro/assets/services/sharp",
+    },
+    // 自动转换为 WebP 和 AVIF 格式
+    remotePatterns: [
+      {
+        protocol: "https",
+      },
+    ],
+  },
+
   integrations: [
     UnoCSS({
       injectReset: true,

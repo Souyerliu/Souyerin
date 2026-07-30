@@ -79,8 +79,10 @@ const enableThirdColumn = layoutMode === "three-column";
 const live2dConfig = themeConfig.live2d;
 const live2dEnabled = live2dConfig?.enable ?? false;
 
-// 预计算 Live2D 初始化脚本（不依赖 autoload.js，手动加载 waifu.css + waifu-tips.js 后自行初始化）
-const LIVE2D_CDN_BASE = "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist";
+// 预计算 Live2D 初始化脚本（延迟加载，不阻塞首屏渲染）
+// Live2D Widget: 使用 jsdelivr 主站，中国大陆访问更稳定
+// 注意：cubism.live2d.com 在中国大陆可能较慢，如有条件建议自托管 cubismcore.min.js
+const LIVE2D_CDN_BASE = "https://cdn.jsdelivr.net/npm/live2d-widgets@1.0.1/dist";
 const live2dInitScript = live2dEnabled
   ? `{
     const base = "${LIVE2D_CDN_BASE}";
@@ -112,12 +114,6 @@ const live2dInitScript = live2dEnabled
       if (el) el.remove();
     }
 
-    // 注入桌面端偏移样式：将 Live2D 移到主内容区下方，避免遮挡左侧栏
-    const offsetStyle = document.createElement("style");
-    offsetStyle.textContent =
-      "@media (min-width: 1024px) { #waifu { left: 15rem !important; } }";
-    document.head.appendChild(offsetStyle);
-
     const doInit = () => {
       if (typeof initWidget !== "undefined") {
         initWidget(cfg);
@@ -133,20 +129,36 @@ const live2dInitScript = live2dEnabled
       }
     };
 
-    // waifu-tips.js 是 ES module，浏览器会缓存，只需加载一次
-    if (typeof initWidget !== "undefined") {
-      doInit();
-    } else {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = base + "/waifu.css";
-      document.head.appendChild(link);
+    // 延迟加载：等页面 load 事件后再加载 Live2D，不阻塞首屏
+    const loadLive2D = () => {
+      // 注入桌面端偏移样式：将 Live2D 移到主内容区下方，避免遮挡左侧栏
+      const offsetStyle = document.createElement("style");
+      offsetStyle.textContent =
+        "@media (min-width: 1024px) { #waifu { left: 15rem !important; } }";
+      document.head.appendChild(offsetStyle);
 
-      const script = document.createElement("script");
-      script.type = "module";
-      script.src = base + "/waifu-tips.js";
-      script.onload = doInit;
-      document.head.appendChild(script);
+      if (typeof initWidget !== "undefined") {
+        doInit();
+      } else {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = base + "/waifu.css";
+        document.head.appendChild(link);
+
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = base + "/waifu-tips.js";
+        script.onload = doInit;
+        document.head.appendChild(script);
+      }
+    };
+
+    // 使用 requestIdleCallback 延迟到浏览器空闲时加载，
+    // 并用 3 秒兜底确保 Live2D 最终被加载
+    if (typeof requestIdleCallback !== "undefined") {
+      requestIdleCallback(loadLive2D, { timeout: 3000 });
+    } else {
+      setTimeout(loadLive2D, 3000);
     }
   }`
   : "";
