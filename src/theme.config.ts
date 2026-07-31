@@ -132,16 +132,18 @@ export default defineConfig({
     enable: true,
     waline: {
       // 替换为你的 Waline 服务端地址，例如: https://comments.example.com
-      serverURL: "https://souyer-comments.vercel.app",
+      serverURL: "https://souyerincomments.dpdns.org",
       // 推荐与站点语言保持一致
       lang: "zh-CN",
+      dark: "auto",
       emoji: [
-        "https://unpkg.com/@waline/emojis@1.0.1/weibo",
-        "https://unpkg.com/@waline/emojis@1.0.1/alus",
-        "https://unpkg.com/@waline/emojis@1.0.1/bilibili",
-        "https://unpkg.com/@waline/emojis@1.0.1/qq",
-        "https://unpkg.com/@waline/emojis@1.0.1/tieba",
-        "https://unpkg.com/@waline/emojis@1.0.1/tw-emoji",
+        // 使用国内 npm CDN 镜像加速，可按需替换为自建 CDN
+        "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/weibo",
+        "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/alus",
+        "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/bilibili",
+        "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/qq",
+        "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/tieba",
+        "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/tw-emoji",
       ],
     },
   },
