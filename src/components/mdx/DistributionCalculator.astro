@@ -114,7 +114,7 @@
     function waitForJStat(cb) {
       if (window.jStat) return cb();
       var s = document.createElement("script");
-      s.src = "https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js";
+      s.src = "https://unpkg.com/jstat@1.9.6/dist/jstat.min.js";
       s.onload = cb;
       document.head.append(s);
     }

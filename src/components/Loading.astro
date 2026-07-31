@@ -395,38 +395,20 @@
   }
 </style>
 
-<script is:inline>
-  (function () {
-    var MINIMUM_LOADING_TIME = 500;
-    var MAX_TIMEOUT = 8000; // 8 秒硬超时，兜底防止加载动画永远卡住
+<script>
+  const MINIMUM_LOADING_TIME = 500;
 
-    function hideLoading() {
-      var loading = document.getElementById("loading");
-      if (!loading) return;
-      // 使用双重 rAF 确保首帧已渲染
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          setTimeout(function () {
-            loading.classList.add("hidden");
-          }, MINIMUM_LOADING_TIME);
-        });
+  // TODO: 仅在第一次访问时显示加载动画
+  window.addEventListener("DOMContentLoaded", () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const loading = document.getElementById("loading");
+        if (!loading) return;
+
+        setTimeout(() => {
+          loading.classList.add("hidden");
+        }, MINIMUM_LOADING_TIME);
       });
-    }
-
-    // 情况 1：DOM 尚未解析完毕，等待 DOMContentLoaded
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", hideLoading);
-    } else {
-      // 情况 2：脚本执行时 DOM 已经就绪（常见于 module script / Rocket Loader 延迟加载）
-      hideLoading();
-    }
-
-    // 硬超时兜底：无论什么情况，MAX_TIMEOUT 后强制隐藏
-    setTimeout(function () {
-      var loading = document.getElementById("loading");
-      if (loading && !loading.classList.contains("hidden")) {
-        loading.classList.add("hidden");
-      }
-    }, MAX_TIMEOUT);
-  })();
+    });
+  });
 </script>

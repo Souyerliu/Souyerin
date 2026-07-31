@@ -103,11 +103,46 @@ draft: true
             P(w_i|w_{i-1}) = \frac{C(w_{i-1}, w_i)}{C(w_{i-1})}\Longrightarrow P(w_i|w_{i-1}) = \frac{C(w_{i-1}, w_i) + \alpha}{C(w_{i-1}) + \alpha |V|}
             $$
     2. 减值法/折扣法  
-        修改训练样本中事件的实际计数，使样本中（实际出现的）不同事件的概率之和小于1，剩余的概率量分配给未见概率。具体包括以下方法：
-        + Good-Turing 估计
-        + Back-off 方法
-        + 绝对减值法
-        + 线性减值法
+        修改训练样本中事件的实际计数，使样本中（实际出现的）不同事件的概率之和小于1，剩余的概率量分配给未登录词。具体包括以下方法：
+        + Good-Turing 估计  
+            记$N$为训练样本中所有n-gram的总数，$r$为样本中n-gram出现的频数，$n_r$为出现次数恰好为$r$的n-gram数量，则有
+            $$
+            N=\sum_{r=1}^\infty n_rr=\sum_{r=0}^\infty n_{r+1}(r+1)
+            $$
+            于是考虑调整频数$r$：$r^*=(r+1)\times\dfrac{n_{r+1}}{n_r}$（如果$n_{r+1}=0$则频数保持不变），那么出现$r$次的每个n-gram出现的概率变为
+                $$
+                p_r=\frac{r^*}{N}
+                $$
+                此时$\displaystyle\sum_{r=1}^\infty p_r< 1$，多余的概率就分给未登录词（每个未登录词出现概率为$\dfrac{n_1}{Nn_0}$）。
+        + Back-off方法（也称为katz回退）
+            + 当某个n-gram在样本中出现的频率大于阈值$K$（通常取$0$或$1$）时，在原有概率估计值上乘以折扣系数（类似Good-Turing）；
+            + 否则使用低阶（即(n-1)-gram概率）替代n-gram概率（需要乘上归一化因子）。
+
+            以Bigram为例：
+            $$
+            p_{\text{katz}}(w_i \mid w_{i-1}) = 
+            \begin{cases} 
+            d_r \dfrac{C(w_{i-1},w_i)}{C(w_{i-1})} & \quad \text{if } C(w_{i-1},w_i) = r > 0 \\[10pt]
+            \alpha(w_{i-1}) \dfrac{C(w_i)}{N} & \quad \text{if } C(w_{i-1},w_i) = 0 
+            \end{cases}
+            $$
+        + 绝对减值法  
+            + 对于所有出现频次大于$0$的n-gram，将词频统一减去一个常量$b$（$0< b\leq 1$），最终得到的概率估计为：
+                $$
+                p_r=\begin{cases}
+                \dfrac{r-b}{N},&r>0\\[10pt]
+                \dfrac{b\sum_{r=1}^\infty n_r}{Nn_0},&r=0
+                \end{cases}
+                $$
+        + 线性减值法  
+            从每个频数$r$中减去与该频数成正比的量（减值函数为线性的），剩余概率量$\alpha$被$n_0$个未见事件均分，得到概率估计：
+            $$
+            p_r = \begin{cases} 
+            \dfrac{(1-\alpha)r}{N} & r > 0 \\[10pt]
+            \dfrac{\alpha}{n_0} & r = 0 
+            \end{cases}
+            $$
+            其中$\alpha$的优化值为$\dfrac{n_1}{N}$。【与Good-Turing对齐】
 
     3. 插值法  
         用低阶语法估计高阶语法，即当(n+1)-gram的值不能从训练数据中准确估计时，用n-gram来替代。示例：
