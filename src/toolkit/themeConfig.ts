@@ -181,6 +181,19 @@ interface WidgetsConfig {
   recentCommentsLimit?: number;
 }
 
+interface WalineEmojiInfo {
+  /** 选项卡上的 Emoji 名称 */
+  name: string;
+  /** Emoji 通用路径前缀 */
+  prefix?: string;
+  /** Emoji 图片的类型，会作为文件扩展名使用 */
+  type?: string;
+  /** 选项卡显示的 Emoji 图标 */
+  icon: string;
+  /** Emoji 图片列表 */
+  items: string[];
+}
+
 interface WalineClientConfig {
   /**
    * Waline 服务端地址。
@@ -209,6 +222,17 @@ interface WalineClientConfig {
    * - CSS 选择器: 当选择器命中时启用暗黑模式
    */
   dark?: boolean | string;
+
+  /**
+   * 自定义表情包列表。
+   * - 支持 Waline 表情预设 URL 或 EmojiInfo 对象
+   */
+  emoji?: (string | WalineEmojiInfo)[];
+
+  /**
+   * 每页评论数量。
+   */
+  pageSize?: number;
 }
 
 interface CommentsConfig {

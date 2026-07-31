@@ -135,7 +135,7 @@ export default defineConfig({
       serverURL: "https://souyerincomments.dpdns.org",
       // 推荐与站点语言保持一致
       lang: "zh-CN",
-      dark: "auto",
+      dark: 'html[data-theme="dark"]',
       emoji: [
         // 使用国内 npm CDN 镜像加速，可按需替换为自建 CDN
         "https://registry.npmmirror.com/@waline/emojis/1.0.1/files/weibo",

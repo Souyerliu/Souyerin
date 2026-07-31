@@ -10,7 +10,7 @@
     dark?: boolean | string;
     path?: string;
     pagePath?: string;
-    emoji?: any; 
+    emoji?: any;
   }
 
   const {
@@ -24,10 +24,25 @@
 
   let walineEl = $state<HTMLDivElement | null>(null);
 
-  onMount(() => {
-    if (!serverURL || !walineEl) {
-      return;
+  /**
+   * 根据 dark 配置值与当前 DOM 状态解析暗色模式是否启用。
+   * - boolean: 直接返回
+   * - "auto": 跟随系统 prefers-color-scheme
+   * - CSS 选择器字符串: 检查选择器是否匹配（如 'html[data-theme="dark"]'）
+   */
+  function resolveDark(): boolean {
+    if (typeof dark === "boolean") return dark;
+    if (typeof dark === "string") {
+      if (dark === "auto") {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+      }
+      return !!document.querySelector(dark);
     }
+    return false;
+  }
+
+  onMount(() => {
+    if (!serverURL || !walineEl) return;
 
     const finalPath =
       path ||
@@ -39,11 +54,21 @@
       serverURL,
       path: finalPath,
       lang,
-      dark,
+      dark: resolveDark(),
       emoji,
     });
 
+    // 监听 <html data-theme> 变化，同步更新 Waline 暗色模式
+    const observer = new MutationObserver(() => {
+      waline?.update?.({ dark: resolveDark() });
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
     return () => {
+      observer.disconnect();
       waline?.destroy();
     };
   });
