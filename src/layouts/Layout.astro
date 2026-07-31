@@ -112,24 +112,47 @@ const live2dInitScript = live2dEnabled
       if (el) el.remove();
     }
 
-    // 注入桌面端偏移样式：将 Live2D 移到主内容区下方，避免遮挡左侧栏
-    const offsetStyle = document.createElement("style");
-    offsetStyle.textContent =
-      "@media (min-width: 1024px) { #waifu { left: 15rem !important; } }";
-    document.head.appendChild(offsetStyle);
+    /** 根据屏幕宽度计算 Live2D 靠右侧的 right 值（rem → px） */
+    function getWaifuRightPx() {
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      // >=1440px: 避开右边栏 (15rem + 1rem gap)；否则: 距右边缘 1rem
+      return window.innerWidth >= 1440 ? 16 * rem : 1 * rem;
+    }
+
+    /** 将 Live2D 模型移到右侧 + 工具栏移到左侧 + 控制 z-index
+     *  注意：#waifu-toggle（黄色开关按钮）保持原始位置（左边缘），不跟随模型 */
+    function positionWaifu() {
+      const w = document.getElementById("waifu");
+      const tool = document.getElementById("waifu-tool");
+      if (w) {
+        w.style.right = getWaifuRightPx() + "px";
+        w.style.left = "auto";
+        w.style.zIndex = "10";
+      }
+      if (tool) {
+        tool.style.left = "-28px";
+        tool.style.right = "auto";
+      }
+    }
+
+    // 监听窗口 resize 更新位置（三栏/两栏切换时 right 值不同）
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(positionWaifu, 100);
+    });
+
+    // MutationObserver：等 initWidget 创建 #waifu 后立即定位
+    const observer = new MutationObserver(() => {
+      if (document.getElementById("waifu")) {
+        positionWaifu();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     const doInit = () => {
       if (typeof initWidget !== "undefined") {
         initWidget(cfg);
-        // 提升 z-index，防止被主题导航栏 (z-9) 覆盖
-        for (let i = 0; i < 20; i++) {
-          setTimeout(() => {
-            const w = document.getElementById("waifu");
-            if (w) w.style.zIndex = "9998";
-            const t = document.getElementById("waifu-toggle");
-            if (t) t.style.zIndex = "9999";
-          }, i * 200);
-        }
       }
     };
 

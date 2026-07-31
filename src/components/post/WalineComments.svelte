@@ -59,8 +59,9 @@
     });
 
     // 监听 <html data-theme> 变化，同步更新 Waline 暗色模式
+    // 注意：update 需同时传入 emoji，否则 Waline 会重置为默认表情包
     const observer = new MutationObserver(() => {
-      waline?.update?.({ dark: resolveDark() });
+      waline?.update?.({ dark: resolveDark(), emoji });
     });
     observer.observe(document.documentElement, {
       attributes: true,
