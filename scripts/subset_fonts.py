@@ -1,10 +1,52 @@
-"""为中文字体创建子集：保留 used-chars.txt 中的所有字符 + ASCII + 标点 + 常用符号"""
+"""为中文字体创建子集：保留 used-chars.txt 中的所有字符 + ASCII + 标点 + 常用符号 + Live2D 看板娘文本"""
+import json
 import os
 import subprocess
 import sys
 
 FONTS_DIR = os.path.join(os.path.dirname(__file__), "..", "src", "assets", "fonts")
 CHARS_FILE = os.path.join(os.path.dirname(__file__), "used-chars.txt")
+LIVE2D_DIR = os.path.join(os.path.dirname(__file__), "..", "public", "live2d-models")
+
+def extract_chars_from_json(filepath):
+    """递归提取 JSON 文件中所有字符串包含的字符"""
+    chars = set()
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return chars
+
+    def walk(obj):
+        if isinstance(obj, str):
+            for c in obj:
+                if c.strip():
+                    chars.add(c)
+        elif isinstance(obj, list):
+            for item in obj:
+                walk(item)
+        elif isinstance(obj, dict):
+            for v in obj.values():
+                walk(v)
+
+    walk(data)
+    return chars
+
+
+def extract_chars_from_live2d():
+    """提取 Live2D 看板娘目录下所有 JSON 文件中的字符"""
+    chars = set()
+    if not os.path.isdir(LIVE2D_DIR):
+        return chars
+
+    for fname in os.listdir(LIVE2D_DIR):
+        if fname.endswith(".json"):
+            fpath = os.path.join(LIVE2D_DIR, fname)
+            file_chars = extract_chars_from_json(fpath)
+            chars.update(file_chars)
+
+    return chars
+
 
 def build_charset():
     """收集所有需要保留的字符"""
@@ -38,6 +80,10 @@ def build_charset():
         for c in text:
             if c.strip():
                 chars.add(c)
+
+    # 4. 提取 Live2D 看板娘 JSON 中的字符（waifu-tips.json / model_list.json 等）
+    live2d_chars = extract_chars_from_live2d()
+    chars.update(live2d_chars)
 
     return "".join(sorted(chars))
 

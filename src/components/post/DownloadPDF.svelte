@@ -33,7 +33,7 @@
       inlineEssentialStyles(article, clone);
       resolveImageUrls(clone);
 
-      const removeSel = [".pdf-download-area", "ai-similar-posts"];
+      const removeSel = [".pdf-download-area", "ai-similar-posts", ".ai-summary-card"];
       for (const sel of removeSel) {
         clone.querySelectorAll(sel).forEach((e) => e.remove());
       }
