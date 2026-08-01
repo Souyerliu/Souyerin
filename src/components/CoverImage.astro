@@ -16,6 +16,9 @@ const animationDelay = isListItem ? `${index * 6}s` : "0s";
 // Astro 的 <Image /> 需要 ImageMetadata；字符串（public 路径/远程 URL）用 <img> 兜底
 const isStringSrc = typeof src === "string";
 const imgSrc = isStringSrc ? (src as string) : (src as ImageMetadata).src;
+// 只有第一张图（index=0）eager 加载，其余 lazy；单图模式维持 eager
+const loading = isListItem && index !== 0 ? "lazy" : "eager";
+const fetchpriority = isListItem && index !== 0 ? "low" : "high";
 ---
 
 {
@@ -32,9 +35,11 @@ const imgSrc = isStringSrc ? (src as string) : (src as ImageMetadata).src;
         src={imgSrc}
         alt={alt}
         class="cover-image"
-        loading="eager"
+        loading={loading}
         decoding="async"
-        fetchpriority="high"
+        fetchpriority={fetchpriority}
+        width="1920"
+        height="1080"
       />
     </li>
   ) : (

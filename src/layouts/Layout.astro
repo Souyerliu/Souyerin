@@ -269,6 +269,9 @@ import SearchPage from "@/components/search/SearchPage.svelte";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <!-- 预连接外部 CDN，减少 DNS/TCP/TLS 握手延迟 -->
+    <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://cubism.live2d.com" />
     <link id="favicon" rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
 
