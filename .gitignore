@@ -31,8 +31,8 @@ old_project
 .env*.local
 hyacine.code-workspace
 generated/
-.hyacine
 
+# hyacine 配置文件（含 API Key，仅保留本地）
 hyacine.yml
 
 src/posts/.vscode
