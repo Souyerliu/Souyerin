@@ -54,6 +54,11 @@
 
     if (items.length === 0) return;
 
+    // 立即显示前 4 个分类卡片（覆盖首屏可见区域）
+    items.slice(0, 4).forEach((item) => {
+      item.classList.add("show");
+    });
+
     // Intersection Observer for scroll animations
     const io = new IntersectionObserver(
       (entries) => {
@@ -70,22 +75,30 @@
       },
       {
         root: null,
-        threshold: [0.3],
+        // 降低阈值，让检测更灵敏
+        threshold: [0, 0.1],
       },
     );
 
-    // Observe all items
-    items.forEach((item) => {
-      io.observe(item);
+    // 使用 rAF 确保 DOM 布局完成后再开始观察
+    requestAnimationFrame(() => {
+      items.forEach((item) => {
+        io.observe(item);
+      });
     });
 
-    // Show first 2 items immediately
-    items.slice(0, 2).forEach((item) => {
-      item.classList.add("show");
-    });
+    // 兜底：2 秒后强制显示所有仍未显示的卡片
+    const fallbackTimer = setTimeout(() => {
+      items.forEach((item) => {
+        if (!item.classList.contains("show")) {
+          item.classList.add("show");
+        }
+      });
+    }, 2000);
 
     // Cleanup
     return () => {
+      clearTimeout(fallbackTimer);
       items.forEach((item) => io.unobserve(item));
     };
   });

@@ -3,5 +3,5 @@ date: 2026-08-01T14:20:15+08:00
 ---
 
 emm，基本上做好本地优化了~  
-新域名：https://souyerin.top   
+新域名：https://souyerin.top  
 欢迎收藏！

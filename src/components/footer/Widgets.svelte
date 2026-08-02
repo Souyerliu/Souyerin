@@ -217,11 +217,11 @@
             </li>
           {/each}
         {:else if loadFailed}
-          <li class="item text-grey-5 py-4 text-center">
+          <li class="load-state text-grey-5 py-4 text-center">
             {t("footer.recentCommentsLoadFailed")}
           </li>
         {:else}
-          <li class="item text-grey-5 py-4 text-center">
+          <li class="load-state text-grey-5 py-4 text-center">
             {t("footer.noRecentComments")}
           </li>
         {/if}

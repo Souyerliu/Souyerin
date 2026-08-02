@@ -120,14 +120,21 @@ const live2dInitScript = live2dEnabled
     }
 
     /** 将 Live2D 模型移到右侧 + 工具栏移到左侧 + 控制 z-index
-     *  注意：#waifu-toggle（黄色开关按钮）保持原始位置（左边缘），不跟随模型 */
+     *  注意：#waifu-toggle（黄色开关按钮）保持原始位置（左边缘），不跟随模型
+     *  宽度 < 1024px 时隐藏看板娘（与 FloatingToolbar 侧边栏按钮断点一致） */
     function positionWaifu() {
       const w = document.getElementById("waifu");
+      const toggle = document.getElementById("waifu-toggle");
       const tool = document.getElementById("waifu-tool");
+      const isNarrow = window.innerWidth < 1024;
       if (w) {
+        w.style.display = isNarrow ? "none" : "";
         w.style.right = getWaifuRightPx() + "px";
         w.style.left = "auto";
         w.style.zIndex = "10";
+      }
+      if (toggle) {
+        toggle.style.display = isNarrow ? "none" : "";
       }
       if (tool) {
         tool.style.left = "-28px";

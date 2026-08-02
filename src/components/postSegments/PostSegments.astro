@@ -49,6 +49,9 @@ const { posts = [] } = Astro.props;
     );
 
     if (items.length > 0) {
+      // 立即显示前 3 篇文章（覆盖首屏可见区域）
+      items.slice(0, 3).forEach((item) => item.classList.add("show"));
+
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -62,16 +65,24 @@ const { posts = [] } = Astro.props;
         },
         {
           root: null,
-          threshold: [0.3],
+          // 降低阈值，让检测更灵敏
+          threshold: [0, 0.1],
         },
       );
 
-      items.forEach((item) => io.observe(item));
+      // 使用 rAF 确保 DOM 布局完成后再开始观察
+      requestAnimationFrame(() => {
+        items.forEach((item) => io.observe(item));
+      });
 
-      // Show first item immediately
-      if (items[0]) {
-        items[0].classList.add("show");
-      }
+      // 兜底：2 秒后强制显示所有仍未显示的卡片
+      setTimeout(() => {
+        items.forEach((item) => {
+          if (!item.classList.contains("show")) {
+            item.classList.add("show");
+          }
+        });
+      }, 2000);
     }
   }
 </script>

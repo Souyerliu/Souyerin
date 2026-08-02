@@ -7,7 +7,46 @@ tags:
     - 优化模型
     - 最优化理论
 cover: ./EECS127.png
-draft: true
 ---
 
 # 线性回归与岭回归
+## 线性方程扰动问题
+在讨论一般的凸优化问题之前，我们先从一个基本的线性方程扰动问题开始研究。
++ 考虑一个系统：$A\vec{x}=\vec{y}$，其中矩阵$A$可逆（可看作系统内部属性），$\vec{y}$为观测值，而$\vec{x}$则是从观测值反推出的未知量（可看作系统的解）。
+    + 我们需要考察当观测值有扰动时，对应的解扰动的度量。具体而言，对于一个加入扰动的系统：
+        $$
+        A(\vec{x}+\vec{\delta}_x)=\vec{y}+\vec{\delta}_y
+        $$
+        我们希望在给定$\|\vec{y}\|_2$和$\|\vec{\delta}_y\|_2$的前提下对解的变化率$\dfrac{\|\vec{\delta}_x\|_2}{\|\vec{x}\|_2}$进行评估。特别地，我们希望强化系统的稳健性，即让这个变化率尽量的小。
++ 下面我们对这个变化率给出一个上界：
+    + 首先求$\|\vec{\delta}_x\|_2$的上界：
+        $$
+        \begin{aligned}
+        A\vec{\delta}_x&=\vec{\delta}_y\Longrightarrow \vec{\delta}_x=A^{-1}\vec{\delta}_y\\
+        \Longrightarrow \|\vec{\delta}_x\|_2&=\|A^{-1}\vec{\delta}_y\|_2\leq\max_{\substack{\vec{z}\in\R^n\\\|\vec{z}\|_2=\|\vec{\delta}_y\|_2}}\|A^{-1}\vec{z}\|_2=\max_{\substack{\vec{z}\in\R^n\\\|\vec{z}\|_2=1}}\|A^{-1}\vec{z}\|_2\|\vec{\delta}_y\|_2=\|A^{-1}\|_2\|\vec{\delta}_y\|_2
+        \end{aligned}
+        $$
+        其中$\|A^{-1}\|_2$表示矩阵的谱范数。
+    + 然后求$\|\vec{x}\|_2$的下界：
+        $$
+        \|\vec{y}\|_2=\|A\vec{x}\|_2\leq\|A\|_2\|\vec{x}\|_2\Longrightarrow \|\vec{x}\|_2\geq\frac{\|\vec{y}\|_2}{\|A\|_2}
+        $$ 
+    + 二者结合得到总体的上界：
+        $$
+        \frac{\|\vec{\delta}_x\|_2}{\|\vec{x}\|_2}\leq \|A\|_2\|A^{-1}\|_2\frac{\|\vec{\delta}_y\|_2}{\|\vec{y}\|_2}.
+        $$
++ 由此可知解的扰动受到观测值扰动的控制。而由谱范数与SVD的结论，$\|A\|_2$可用$\sigma_1\{A\}$表示，而$\|A^{-1}\|_2$可用$\sigma_1\{A^{-1}\}=\dfrac{1}{\sigma_n\{A\}}$表示。于是可以定义
+    $$
+    \kappa(A)\coloneqq \|A\|_2\|A^{-1}\|_2=\frac{\sigma_1\{A\}}{\sigma_n\{A\}}
+    $$
+    称$\kappa(A)$为$A$的条件数（condition number）。（当然，条件数的定义也可以推广到不可逆矩阵，此时值为无穷大）
+    + 由定义可知，条件数刻画了观测值扰动对解扰动影响的相对比率。条件数越大，观测值的微小扰动就越可能导致解的大幅扰动。
++ 另外，由于现实情况中矩阵$A$一般不是方阵（行数一般大于列数），此时我们使用正规方程（normal equation）替代：
+    $$
+    A^\top A\vec{x}=A^\top\vec{y}
+    $$
+    此时使用的条件数变为$\kappa(A^\top A)$。又因为$A^\top A$是半正定对称矩阵，其特征值与奇异值相等，所以条件数可以表示为
+        $$
+        \kappa(A^\top A)=\frac{\lambda_{\max}\{A^\top A\}}{\lambda_{\min}\{A^\top A\}}.
+        $$
+## 岭回归
