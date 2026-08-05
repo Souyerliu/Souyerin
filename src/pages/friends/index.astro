@@ -7,7 +7,8 @@ import themeConfig from "@/theme.config";
 import astroConfig from "../../../astro.config.mjs";
 
 const friendsConfig = themeConfig.friends;
-const friendLinks = friendsConfig?.links ?? [];
+const personalLinks = friendsConfig?.personal ?? [];
+const toolLinks = friendsConfig?.tools ?? [];
 const pageTitle = friendsConfig?.title ?? "友链";
 const pageDescription =
   friendsConfig?.description ?? "卡片式展示，支持站点预览与主题色点缀。";
@@ -31,7 +32,14 @@ const friendsJson = JSON.stringify(friendsSnippet, null, 2);
       <h2>友链列表</h2>
     </div>
     <section class="friend-section friend-links-section">
-      <FriendLinks links={friendLinks} />
+      <FriendLinks links={personalLinks} />
+    </section>
+    <div class="friend-divider" role="separator"></div>
+    <div class="friend-header">
+      <h2>工具箱</h2>
+    </div>
+    <section class="friend-section friend-tools-section">
+      <FriendLinks links={toolLinks} />
     </section>
   </div>
 </Layout>
@@ -107,6 +115,22 @@ const friendsJson = JSON.stringify(friendsSnippet, null, 2);
   .friend-links-section h3 {
     margin: 0 0 0.75rem;
     color: var(--grey-7);
+  }
+
+  .friend-tools-section h3 {
+    margin: 0 0 0.75rem;
+    color: var(--grey-7);
+  }
+
+  .friend-divider {
+    margin: 2.5rem 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--grey-4),
+      transparent
+    );
   }
 
   .friend-snippet p {

@@ -402,8 +402,10 @@ interface FriendsConfig {
   color?: ThemeColorValue;
   /** 友链配置示例使用的站点预览图（可选） */
   siteImage?: string;
-  /** 友链列表 */
-  links: FriendLinkConfig[];
+  /** 个人友链列表 */
+  personal: FriendLinkConfig[];
+  /** 工具箱列表 */
+  tools: FriendLinkConfig[];
 }
 
 interface TagCloudConfig {
@@ -767,13 +769,24 @@ function normalizeThemeConfigColors(config: ShokaXThemeConfig): ShokaXThemeConfi
     );
   }
 
-  if (config.friends?.links) {
-    config.friends.links.forEach((link, index) => {
+  if (config.friends?.personal) {
+    config.friends.personal.forEach((link, index) => {
       if (!link.color) return;
       link.color = sanitizeThemeColor(
         link.color,
         DEFAULT_THEME_COLORS.friend,
-        `friends.links[${index}].color`,
+        `friends.personal[${index}].color`,
+      );
+    });
+  }
+
+  if (config.friends?.tools) {
+    config.friends.tools.forEach((link, index) => {
+      if (!link.color) return;
+      link.color = sanitizeThemeColor(
+        link.color,
+        DEFAULT_THEME_COLORS.friend,
+        `friends.tools[${index}].color`,
       );
     });
   }

@@ -141,6 +141,14 @@
       "text": ["这是我家主人~", "我家主人好看吗？"]
     },
     {
+      "selector": ".friend-title",
+      "text": ["要去<span>{text}</span>看看吗？"]
+    },
+    {
+      "selector": ".friend-card",
+      "text": [""]
+    },
+    {
       "selector": "img",
       "text": ["点击图片可以放大呢！"]
     },

@@ -115,6 +115,7 @@
       childCount={category.childCount}
       posts={category.posts}
       isActive={activeIndex === index}
+      index={index}
       onMouseEnter={() => handleMouseEnter(index)}
       onMouseLeave={() => handleMouseLeave(index)}
     />

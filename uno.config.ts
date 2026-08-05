@@ -34,9 +34,15 @@ function collectConfigIcons() {
     });
   }
 
-  // 预留：若未来在 friends.links 中引入 icon 字段，这里会自动纳入。
-  if (themeConfig.friends?.links) {
-    themeConfig.friends.links.forEach((link) => {
+  // 预留：若未来在 friends 中引入 icon 字段，这里会自动纳入。
+  if (themeConfig.friends?.personal) {
+    themeConfig.friends.personal.forEach((link) => {
+      const icon = (link as { icon?: string }).icon;
+      pushNormalizedIcon(icons, icon);
+    });
+  }
+  if (themeConfig.friends?.tools) {
+    themeConfig.friends.tools.forEach((link) => {
       const icon = (link as { icon?: string }).icon;
       pushNormalizedIcon(icons, icon);
     });

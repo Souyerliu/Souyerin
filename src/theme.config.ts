@@ -187,19 +187,19 @@ export default defineConfig({
     selectedCategories: [
       {
         name: "自然语言处理",
-        cover: "/images/NLP.png",
+        cover: "/images/NLP.webp",
       },
       {
         name: "CS61B",
-        cover: "/images/61B-header.png",
+        cover: "/images/61B-header.webp",
       },
       {
         name: "CS127",
-        cover: "/images/EECS127.png",
+        cover: "/images/EECS127.webp",
       },
       {
         name: "机器学习方法",
-        cover: "/images/ml.png",
+        cover: "/images/ml.webp",
       },
     ],
     pageSize: 10,
@@ -226,41 +226,7 @@ export default defineConfig({
     // avatar: "https://example.com/your-avatar.png",
     // color: "var(--color-pink)",
     // siteImage: "https://example.com/your-site-preview.png",
-    links: [
-      // {
-      //   url: "https://astro.build/",
-      //   title: "Astro",
-      //   desc: "全站体验轻快的静态站点框架，适合内容型站点与博客。",
-      //   author: "Astro Team",
-      //   avatar: "https://avatars.githubusercontent.com/u/44914786?s=200&v=4",
-      //   color: "var(--color-orange)",
-      //   siteImage: "https://astro.build/assets/press/astro-logo-dark.svg",
-      // },
-      // {
-      //   url: "https://svelte.dev/",
-      //   title: "Svelte",
-      //   desc: "编译时框架，现代与简洁，组件写起来很顺手。",
-      //   author: "Svelte Team",
-      //   avatar: "https://avatars.githubusercontent.com/u/23617963?s=200&v=4",
-      //   color: "var(--color-red)",
-      // },
-      // {
-      //   url: "https://vite.dev/",
-      //   title: "Vite",
-      //   desc: "快速的前端开发构建工具，HMR 体验很棒。",
-      //   author: "Vite Team",
-      //   avatar: "https://avatars.githubusercontent.com/u/65625612?s=200&v=4",
-      //   color: "var(--color-blue)",
-      // },
-      // {
-      //   url: "https://bun.sh/",
-      //   title: "Bun",
-      //   desc: "一体化 JavaScript 运行时，速度与工具链兼备。",
-      //   author: "Bun Team",
-      //   avatar: "https://avatars.githubusercontent.com/u/108928776?s=200&v=4",
-      //   color: "var(--color-green)",
-      //   siteImage: "https://bun.sh/logo.svg",
-      // },
+    personal: [
       {
         url: "https://cosx.org/",
         title: "统计之都",
@@ -268,31 +234,6 @@ export default defineConfig({
         author: "COS",
         avatar: "https://cosx.org/img/logo.png",
         color: "#8C1F22",
-      },
-      {
-        url: "https://karnaughmapsolver.com/zh",
-        title: "卡诺图求解器",
-        desc: "不止求解卡诺图，数电好帮手。",
-        author: "KMap-Solver",
-        avatar: "https://karnaughmapsolver.com/favicon.ico",
-        color: "#Fa9B57",
-      },
-      {
-        url: "https://wavedrom.com/editor.html",
-        title: "Wavedrom",
-        author: "Aliaksei Chapyzhenka",
-        desc: "基于javascript的时序电路波形图绘制工具，数电好帮手×2。",
-        avatar: "https://wavedrom.com/images/favicon.ico",
-        color: "#141414",
-      },
-      {
-        url: "https://myecnu.org/",
-        title: "ECNU·驿站",
-        author: "zeyi",
-        desc: "软院同学制作的ECNU学习资源集合。",
-        avatar:
-          "https://avatars.githubusercontent.com/u/229353891?s=400&u=402f153bc2eeeeb04db6bb419dd231173dd0b045&v=4",
-        color: "#cc002c",
       },
       {
         url: "https://sqzr2319.github.io/",
@@ -309,6 +250,33 @@ export default defineConfig({
         desc: "懒惰骄傲不耐烦",
         avatar: "https://cloudingyu.github.io/img/profile_pic.jpg",
         color: "#f4b677",
+      },
+      {
+        url: "https://myecnu.org/",
+        title: "ECNU·驿站",
+        author: "zeyi",
+        desc: "软院同学制作的ECNU学习资源集合。",
+        avatar:
+          "https://avatars.githubusercontent.com/u/229353891?s=400&u=402f153bc2eeeeb04db6bb419dd231173dd0b045&v=4",
+        color: "#cc002c",
+      },
+    ],
+    tools: [
+      {
+        url: "https://karnaughmapsolver.com/zh",
+        title: "卡诺图求解器",
+        desc: "不止求解卡诺图，数电好帮手。",
+        author: "KMap-Solver",
+        avatar: "https://karnaughmapsolver.com/favicon.ico",
+        color: "#Fa9B57",
+      },
+      {
+        url: "https://wavedrom.com/editor.html",
+        title: "Wavedrom",
+        author: "Aliaksei Chapyzhenka",
+        desc: "基于javascript的时序电路波形图绘制工具，数电好帮手×2。",
+        avatar: "https://wavedrom.com/images/favicon.ico",
+        color: "#141414",
       },
     ],
   },

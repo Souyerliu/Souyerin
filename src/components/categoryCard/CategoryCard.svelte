@@ -18,6 +18,7 @@
     childCount?: number;
     posts: PostInfo[];
     isActive?: boolean;
+    index?: number;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
   }
@@ -31,9 +32,13 @@
     childCount = 0,
     posts,
     isActive = false,
+    index = 0,
     onMouseEnter,
     onMouseLeave,
   }: Props = $props();
+
+  // 首屏前 4 张卡片立即加载，其余懒加载（国内访问加速）
+  const eager = $derived(index < 4);
 
   function handleMouseEnter() {
     if (onMouseEnter) {
@@ -71,7 +76,18 @@
   onmouseleave={handleMouseLeave}
   ontouchstart={handleTouchStart}
 >
-  <div class="cover" style={cover ? `background-image: url(${cover})` : ""}>
+  <div class="cover">
+    {#if cover}
+      <!-- 用 <img> 替代 CSS background-image，以支持 loading=lazy 懒加载 -->
+      <img
+        class="cover-img"
+        src={cover}
+        alt={name}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        fetchpriority={eager ? "high" : "auto"}
+      />
+    {/if}
     <h2 class="title">{name}</h2>
     {#if topCategory}
       <span>{topCategory.name}</span>
@@ -167,17 +183,22 @@
   .cover {
     background-position: center;
     background-size: cover;
-    background-image: linear-gradient(
-      to bottom right,
-      var(--color-pink),
-      var(--color-orange)
-    );
     padding: 0.5rem 1rem;
     font-size: 1.125rem;
     color: var(--header-text-color, var(--grey-0));
     overflow: hidden;
     transform: rotateY(0deg);
     position: relative;
+  }
+
+  /* 封面图：绝对定位铺满，位于渐变兜底之上、overlay/文字之下 */
+  .cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
   }
 
   .cover::before {
@@ -190,7 +211,8 @@
     bottom: 0;
     background-image: var(--cover-overlay-gradient);
     opacity: 0.25;
-    z-index: var(--z-base);
+    /* 需高于 .cover-img(z-index: 0)，否则会被图片盖住看不见 */
+    z-index: var(--z-content);
   }
 
   .cover .title {

@@ -40,6 +40,11 @@ if (themeConfig.diagnostics?.suppressFsWatcherMaxListenersWarning !== false) {
   installProcessWarningFilter();
 }
 
+// 预热 sharp 原生模块：
+// 规避 Windows 下 Bun 并发加载 sharp（libvips DLL）偶发 ERR_DLOPEN_FAILED 的问题。
+// 在 config 加载阶段完成单次加载后，后续图片生成任务的 import('sharp') 命中模块缓存。
+await import("sharp").catch(() => {});
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://souyerin.top",
