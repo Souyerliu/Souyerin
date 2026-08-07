@@ -145,6 +145,9 @@
     /* 防止动画导致CLS - 预留空间 */
     will-change: opacity, transform;
     contain-intrinsic-height: 14rem;
+    /* 防止封面图在初始渲染时撑破容器 */
+    overflow: hidden;
+    contain: layout paint size;
   }
 
   :global(.item.show) {
