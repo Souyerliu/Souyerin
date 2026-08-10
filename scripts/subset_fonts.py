@@ -1,8 +1,9 @@
 """为中文字体创建子集：保留 used-chars.txt 中的所有字符 + ASCII + 标点 + 常用符号 + Live2D 看板娘文本"""
 import json
 import os
-import subprocess
-import sys
+
+from fontTools.subset import Subsetter
+from fontTools.ttLib import TTFont
 
 FONTS_DIR = os.path.join(os.path.dirname(__file__), "..", "src", "assets", "fonts")
 CHARS_FILE = os.path.join(os.path.dirname(__file__), "used-chars.txt")
@@ -98,28 +99,26 @@ def main():
         ("MapleMono-CN-Regular.ttf", "MapleMono-CN-Regular-subset.woff2"),
     ]
 
-    # Convert chars to hex codepoints
-    hex_codes = ",".join(f"{ord(c):04X}" for c in charset)
-    
+    unicodes = [ord(c) for c in charset]
+
     for src, dst in fonts_to_subset:
         if not os.path.exists(src):
             print(f"SKIP: {src} not found")
             continue
         print(f"\nSubsetting {src} -> {dst} ...")
-        cmd = [
-            sys.executable, "-m", "fontTools.subset",
-            f"--unicodes={hex_codes}",
-            "--output-file=" + dst,
-            "--flavor=woff2",
-            src,
-        ]
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode == 0:
-            src_size = os.path.getsize(src) / (1024 * 1024)
-            dst_size = os.path.getsize(dst) / (1024 * 1024)
-            print(f"  OK: {src_size:.1f}MB -> {dst_size:.2f}MB ({dst_size*1024:.0f}KB)")
-        else:
-            print(f"  FAILED: {result.stderr[-500:]}")
+
+        font = TTFont(src)
+        subsetter = Subsetter()
+        subsetter.populate(unicodes=unicodes)
+        subsetter.subset(font)
+
+        font.flavor = "woff2"
+        font.save(dst)
+        font.close()
+
+        src_size = os.path.getsize(src) / (1024 * 1024)
+        dst_size = os.path.getsize(dst) / (1024 * 1024)
+        print(f"  OK: {src_size:.1f}MB -> {dst_size:.2f}MB ({dst_size*1024:.0f}KB)")
 
 
 if __name__ == "__main__":

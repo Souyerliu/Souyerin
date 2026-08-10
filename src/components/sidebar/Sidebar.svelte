@@ -217,6 +217,7 @@
               <SidebarContents
                 toc={effectiveToc}
                 isActive={activePanel === "contents"}
+                currentSlug={currentSlug}
               />
             {/if}
           </SidebarPanel>

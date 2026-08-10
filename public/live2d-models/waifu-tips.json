@@ -1,4 +1,28 @@
 {
+  "models": [
+    {
+      "name": "sakiko",
+      "paths": [
+        "sakiko/casual-2023",
+        "sakiko/event_297_story_01",
+        "sakiko/jh_school_winter-2023",
+        "sakiko/school_summer-2023",
+        "sakiko/school_winter-2023"
+      ],
+      "message": "祥子 (Sakiko)"
+    },
+    {
+      "name": "soyo",
+      "paths": [
+        "soyo/039_casual-2023",
+        "soyo/039_school_summer-2023",
+        "soyo/039_school_winter-2023",
+        "soyo/039_birthday_2024_ssr",
+        "soyo/039_live_default"
+      ],
+      "message": "素世 (Soyo)"
+    }
+  ],
   "mouseover": [
     {
       "selector": "#waifu-tool-hitokoto",
@@ -6,15 +30,15 @@
     },
     {
       "selector": "#waifu-tool-asteroids",
-      "text": ["要不要来玩飞机大战？", "怎么，你想来和我玩个游戏？"]
+      "text": ["要不要来玩飞机大战？", "想和我来一局游戏吗？"]
     },
     {
       "selector": "#waifu-tool-switch-model",
-      "text": ["要切换看板娘吗？", "想见见我的小伙伴吗？", "七深和素世，你更喜欢谁呢？"]
+      "text": ["想见见我的小伙伴吗？", "要切换看板娘吗？"]
     },
     {
       "selector": "#waifu-tool-switch-texture",
-      "text": ["喜欢换装 PLAY 吗？", "这次要扮演什么呢？", "变装！"]
+      "text": ["喜欢换装吗？", "这次要扮演什么呢？"]
     },
     {
       "selector": "#waifu-tool-photo",
@@ -49,14 +73,6 @@
       "text": ["翻页比较麻烦吗，那就来看看文章归档吧。", "文章目录都整理在这里啦！"]
     },
     {
-      "selector": "a[href='/friends/']",
-      "text": ["这是我的朋友们哦ヾ(◍°∇°◍)ﾉﾞ", "要去大佬们的家看看吗？"]
-    },
-    {
-      "selector": "a[href='/moments/']",
-      "text": ["主人最近又发了什么新动态呢？", "看看主人的说说去～"]
-    },
-    {
       "selector": "a[href='/random/'], .nav-action",
       "text": ["随机看一篇文章，考验运气的时候到了！", "让命运决定今天读什么～"]
     },
@@ -82,7 +98,7 @@
     },
     {
       "selector": ".floating-toolbar button[aria-label='显示或隐藏播放器']",
-      "text": ["想听歌了吗？主人收藏了好多好听的曲子呢～", "来点背景音乐吧！"]
+      "text": ["想听歌了吗？来点背景音乐吧～"]
     },
     {
       "selector": ".floating-toolbar button[aria-label='播放或暂停']",
@@ -141,10 +157,6 @@
       "text": ["这是我家主人~", "我家主人好看吗？"]
     },
     {
-      "selector": ".friend-title",
-      "text": ["要去<span>{text}</span>看看吗？"]
-    },
-    {
       "selector": ".friend-card",
       "text": [""]
     },
@@ -165,20 +177,12 @@
       "text": ["要记得规范转载哦。", "所有文章均采用 CC BY-NC-SA 4.0 许可协议～"]
     },
     {
-      "selector": ".menu-title",
-      "text": ["这是 Souyer 的博客～"]
-    },
-    {
       "selector": ".ai-summary-card",
       "text": ["AI 帮你总结了这篇文章的要点哦～", "太长不看？AI 已经帮你提炼好啦！"]
     },
     {
       "selector": ".extra-list__link, a[href^='/moments/']",
       "text": ["看看主人最近又吐槽了什么～", "哎呀，主人在碎碎念呢！"]
-    },
-    {
-      "selector": ".i-ri-netease-cloud-music-line",
-      "text": ["网易云音乐，启动！", "主人的歌单超好听的！"]
     },
     {
       "selector": "[class*='announce']",
@@ -194,7 +198,7 @@
     { "date": "01/01", "text": "<span>元旦</span>了呢，新的一年又开始了，今年是{year}年～" },
     { "date": "02/14", "text": "又是一年<span>情人节</span>，{year}年找到对象了嘛～" },
     { "date": "05/01", "text": "今天是<span>五一劳动节</span>，计划好假期去哪里了吗～" },
-    { "date": "06/01", "text": "<span>儿童节</span>了呢，快活的时光总是短暂…" },
+    { "date": "06/01", "text": "<span>儿童节</span>了呢，快活的时光总是短暂……" },
     { "date": "10/01", "text": "<span>国庆节</span>到了，为祖国母亲庆生！" },
     { "date": "12/20-12/31", "text": "这几天是<span>圣诞节</span>，主人肯定又去剁手买买买了～" }
   ],
@@ -222,5 +226,156 @@
     "referrer": "Hello！来自 <span>$1</span> 的朋友",
     "hoverBody": ["干嘛呢你，快把手拿开～～", "鼠…鼠标放错地方了！", "你要干嘛呀？", "喵喵喵？"],
     "tapBody": ["是…是不小心碰到了吧…", "别摸我，有什么好摸的！", "再摸的话我可要报警了！⌇●﹏●⌇"]
+  },
+  "characterTips": {
+    "0": {
+      "mouseover": [
+        {
+          "selector": "nav a[href='/']",
+          "text": ["回首页看看吧，我会一直在这里等你的。", "首页是旅途的起点呢。"]
+        },
+        {
+          "selector": "a[href='/about/']",
+          "text": [
+            "想知道我家主人的事？唔…他可是个很不错的人呢。",
+            "主人是个把人生托付给梦想的人哦。"
+          ]
+        },
+        {
+          "selector": "a[href='/tags/']",
+          "text": ["标签就像是命运之书上的一行行索引呢。", "用标签来编织属于你的阅读之旅吧。"]
+        },
+        {
+          "selector": "a[href='/categories/']",
+          "text": [
+            "文章们各归其位，就像乐队里每个人都有自己的担当。",
+            "分门别类，井然有序，这才合乎礼数呢。"
+          ]
+        },
+        {
+          "selector": "a[href='/friends/']",
+          "text": ["命运共同体的伙伴们，值得你去认识。", "能被称为朋友的人，都是羁绊的证明哦。"]
+        },
+        {
+          "selector": "a[href='/moments/']",
+          "text": ["主人留下的点滴回忆……去看看吗？", "每一段碎碎念，都是无法忘却的瞬间。"]
+        },
+        {
+          "selector": ".menu-title",
+          "text": [
+            "欢迎来到 Souyer 的博客。我是丰川祥子，请多指教。",
+            "这里是主人构筑的小小世界呢。"
+          ]
+        },
+        {
+          "selector": ".friend-title",
+          "text": ["<span>{text}</span>……也是命运之网上的一根丝线呢。"]
+        },
+        {
+          "selector": ".i-ri-netease-cloud-music-line",
+          "text": [
+            "音乐是灵魂的慰藉。主人的品味，值得信赖。",
+            "好的音乐就像月光，能照亮人心最深的地方。"
+          ]
+        }
+      ],
+      "message": {
+        "default": [
+          "欢迎来到这座小小的庭院。我是丰川祥子，请把你宝贵的时间……稍微分给我一些吧。",
+          "今天也在为了什么而努力呢？即便是微小的步伐，也终将抵达远方。",
+          "命运就像琴键，黑白交替，但旋律由你自己谱写。"
+        ],
+        "hoverBody": [
+          "……你在做什么呢？这样很失礼哦。",
+          "鼠标不是用在这种地方的。",
+          "就算是看板娘，也是有尊严的。"
+        ],
+        "tapBody": ["……这可是不行的。", "请不要这样。", "わたくし、そういうのはちょっと……"],
+        "changeSuccess": "这身装束，还合身吗？",
+        "changeFail": "……就只有这些衣服了。",
+        "photo": "拍好了吗？希望你能好好珍藏呢。",
+        "goodbye": "即便忘记了也不要紧……我会一直在这里。",
+        "welcome": "欢迎阅读<span>「$1」</span>，愿这段文字能触动你的心。",
+        "referrer": "从 <span>$1</span> 远道而来的客人，欢迎光临。"
+      }
+    },
+    "1": {
+      "mouseover": [
+        {
+          "selector": "nav a[href='/']",
+          "text": ["回首页看看吧，累了就回来歇歇～", "回首页看看吧，这里永远是你的港湾哦。"]
+        },
+        {
+          "selector": "a[href='/about/']",
+          "text": [
+            "啊，想知道主人的事吗？说来话长呢……要不要喝杯红茶慢慢聊？",
+            "主人啊……是个让人有点放心不下的人呢。"
+          ]
+        },
+        {
+          "selector": "a[href='/tags/']",
+          "text": [
+            "标签就像收纳盒，把文章整理得妥妥当当的～",
+            "来看看标签吧，说不定能找到感兴趣的话题呢。"
+          ]
+        },
+        {
+          "selector": "a[href='/categories/']",
+          "text": ["分类都整理好了，我很擅长做这种事呢。", "文章分类就交给我吧，保证井井有条～"]
+        },
+        {
+          "selector": "a[href='/friends/']",
+          "text": [
+            "这些都是主人的好朋友哦，要去打个招呼吗？",
+            "大家都是温暖的人呢，就像当年的我们一样……"
+          ]
+        },
+        {
+          "selector": "a[href='/moments/']",
+          "text": ["主人的动态啊……有时候真让人操心呢。", "看看主人又在嘀咕什么吧，说不定又熬夜了……"]
+        },
+        {
+          "selector": ".menu-title",
+          "text": [
+            "欢迎来到 Souyer 的博客～我是长崎爽世，请多关照哦。",
+            "这里是主人的小天地，希望你能喜欢。"
+          ]
+        },
+        {
+          "selector": ".friend-title",
+          "text": ["<span>{text}</span>……要去看看吗？我帮你泡杯红茶带着～"]
+        },
+        {
+          "selector": ".i-ri-netease-cloud-music-line",
+          "text": [
+            "主人的歌单啊……有时候听着听着就会想起以前的事呢。",
+            "音乐是心灵的港湾，累了就听一首吧。"
+          ]
+        }
+      ],
+      "message": {
+        "default": [
+          "嗨～欢迎来到主人的博客，我是长崎爽世。有什么需要我帮忙的吗？",
+          "今天过得怎么样？累了的话就休息一下吧，我帮你泡杯红茶。",
+          "大家在这里都很开心呢……这种感觉，我很珍惜。"
+        ],
+        "hoverBody": [
+          "等、等一下，你手放在哪里呢？",
+          "真是的……不要这样捉弄我啦。",
+          "就算是我，也是会生气的哦……大概。"
+        ],
+        "tapBody": [
+          "呀……不要乱碰啦。",
+          "真是的，有什么好摸的……",
+          "再这样的话，今天的红茶就没你的份了。"
+        ],
+        "changeSuccess": "这身打扮怎么样？好看吗？",
+        "changeFail": "啊啦……好像只有这些了呢。",
+        "photo": "拍好了吗？要好好收着哦～",
+        "goodbye": "要走了吗……记得有空再回来看看哦。",
+        "welcome": "欢迎阅读<span>「$1」</span>～来杯红茶慢慢看吧。",
+        "referrer": "哎呀，有从 <span>$1</span> 来的客人呢，欢迎欢迎～"
+      }
+    }
   }
 }

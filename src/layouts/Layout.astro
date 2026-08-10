@@ -158,6 +158,63 @@ const live2dInitScript = live2dEnabled
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // 根据当前 Live2D 角色动态切换台词（Proxy 拦截 waifu-tips.json 的 fetch）
+    const _waifuOrigFetch = window.fetch;
+    window.fetch = function (url, ...args) {
+      const urlStr = typeof url === "string" ? url : url.url || "";
+      if (urlStr === cfg.waifuPath || urlStr.endsWith("/waifu-tips.json")) {
+        return _waifuOrigFetch.call(window, url, ...args).then((resp) =>
+          resp.json().then((allTips) => ({
+            ok: true,
+            status: 200,
+            json: () =>
+              Promise.resolve(
+                new Proxy(allTips, {
+                  get(target, prop) {
+                    const modelId =
+                      localStorage.getItem("modelId") || "0";
+                    const charTips =
+                      target.characterTips &&
+                      target.characterTips[modelId];
+                    if (prop === "models") return target.models;
+                    if (!charTips) return target[prop];
+                    if (prop === "mouseover") {
+                      return [
+                        ...(target.mouseover || []),
+                        ...(charTips.mouseover || []),
+                      ];
+                    }
+                    if (prop === "click") {
+                      return [
+                        ...(target.click || []),
+                        ...(charTips.click || []),
+                      ];
+                    }
+                    if (prop === "message") {
+                      const merged = Object.assign({}, target.message);
+                      const cm = charTips.message || {};
+                      for (const k of Object.keys(cm)) {
+                        if (k === "default") {
+                          merged[k] = [
+                            ...(target.message.default || []),
+                            ...(cm.default || []),
+                          ];
+                        } else {
+                          merged[k] = cm[k];
+                        }
+                      }
+                      return merged;
+                    }
+                    return target[prop];
+                  },
+                }),
+              ),
+          })),
+        );
+      }
+      return _waifuOrigFetch.call(window, url, ...args);
+    };
+
     const doInit = () => {
       if (typeof initWidget !== "undefined") {
         initWidget(cfg);

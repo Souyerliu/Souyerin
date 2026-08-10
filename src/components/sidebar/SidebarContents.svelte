@@ -5,13 +5,17 @@
   interface Props {
     toc?: TocItem[]
     isActive?: boolean
+    currentSlug?: string
   }
 
-  const { toc = [], isActive = false }: Props = $props()
+  const { toc = [], isActive = false, currentSlug = '' }: Props = $props()
 
   let activeIndex = $state(0)
   let currentItems = $state(new Set<number>())
   let containerElement: HTMLElement | null = $state(null)
+
+  // 构建当前文章的完整基础 URL
+  const postBaseUrl = $derived(currentSlug ? `/posts/${currentSlug}/` : '')
 
   // Helper function to render nested TOC items
   function getTocItemClass(index: number): string {
@@ -34,6 +38,23 @@
         behavior: 'smooth',
       })
       activeIndex = index
+      // 更新浏览器 URL 为完整文章路径 + hash，与搜索结果点击链接效果一致
+      if (postBaseUrl) {
+        const newUrl = `${postBaseUrl}#${id}`
+        window.history.replaceState(null, '', newUrl)
+      }
+    }
+  }
+
+  // 子级 TOC 点击：只滚动 + 更新 URL，不更新 activeIndex（子级不在扁平 toc 数组中）
+  function handleChildTocClick(event: MouseEvent, id: string) {
+    event.preventDefault()
+    const target = document.getElementById(id)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' })
+      if (postBaseUrl) {
+        window.history.replaceState(null, '', `${postBaseUrl}#${id}`)
+      }
     }
   }
 
@@ -148,7 +169,11 @@
             <ol class='toc-child'>
               {#each item.children as child}
                 <li class='toc-item'>
-                  <a href={`#${child.id}`} class='toc-link'>
+                  <a
+                    href={`#${child.id}`}
+                    class='toc-link'
+                    onclick={e => handleChildTocClick(e, child.id)}
+                  >
                     {child.text}
                   </a>
                 </li>
