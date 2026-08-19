@@ -85,16 +85,16 @@ cover: ./ml.png
 + 然后定义特征函数$f(\mathbf{x},y)$，其类似于示性函数，即$\mathbf{x}$与$y$满足某种条件时值为$1$，否则值为$0$。
 + 接着考虑特征函数关于联合经验分布的期望
     $$
-    E_{\tilde{P}}(f)=\sum_{\mathbf{x},y}\tilde{P}(\mathbf{x},y)f(\mathbf{x},y)
+    \mathbb{E}_{\tilde{P}}(f)=\sum_{\mathbf{x},y}\tilde{P}(\mathbf{x},y)f(\mathbf{x},y)
     $$
     以及关于模型与先验分布$\tilde{P}(\mathbf{x})$的期望
     $$
-    E_{P}(f)=\sum_{\mathbf{x},y}\tilde{P}(\mathbf{x})P(y|\mathbf{x})f(\mathbf{x},y)
+    \mathbb{E}_{P}(f)=\sum_{\mathbf{x},y}\tilde{P}(\mathbf{x})P(y|\mathbf{x})f(\mathbf{x},y)
     $$
-    对此，我们假设两个期望相等，即$E_{\tilde{P}}(f)=E_P(f)$，这样就得到了模型的约束条件。如果总共$M$个特征函数$f_j(\mathbf{x},y),j=1,2,\cdots,M$，那么就总共$M$个约束条件。
+    对此，我们假设两个期望相等，即$\mathbb{E}_{\tilde{P}}(f)=\mathbb{E}_P(f)$，这样就得到了模型的约束条件。如果总共$M$个特征函数$f_j(\mathbf{x},y),j=1,2,\cdots,M$，那么就总共$M$个约束条件。
 + 综上，我们得到最大熵模型的定义：假设满足所有约束条件的模型集合为
     $$
-    \mathcal{C} \equiv \left\{ P \in \mathcal{P} \mid E_P(f_j) = E_{\tilde{P}}(f_j), \quad j = 1, 2, \cdots, M \right\}
+    \mathcal{C} \equiv \left\{ P \in \mathcal{P} \mid \mathbb{E}_P(f_j) = \mathbb{E}_{\tilde{P}}(f_j), \quad j = 1, 2, \cdots, M \right\}
     $$
     定义在条件概率分布$P(y|\mathbf{x})$上的**条件熵**为
     $$
@@ -115,7 +115,7 @@ cover: ./ml.png
     $$
     \begin{aligned}
     \max_{P \in \mathcal{C}} \quad & H(P) = -\sum_{\mathbf{x},y} \tilde{P}(\mathbf{x}) P(y|\mathbf{x}) \log P(y|\mathbf{x}) \\[10pt]
-    \text{s.t.} \quad & E_P(f_j) = E_{\tilde{P}}(f_j), \quad j = 1, 2, \cdots, M \\[5pt]
+    \text{s.t.} \quad & \mathbb{E}_P(f_j) = \mathbb{E}_{\tilde{P}}(f_j), \quad j = 1, 2, \cdots, M \\[5pt]
     & \sum_y P(y|\mathbf{x}) = 1
     \end{aligned}
     $$
@@ -124,7 +124,7 @@ cover: ./ml.png
 + 引入拉格朗日乘子，定义拉格朗日函数$L(P,\mathbf{w})$：
     $$
     \begin{aligned}
-    L(P,\mathbf{w})&\triangleq -H(P)+w_0\left(1-\sum_y P(y|\mathbf{x})\right)+\sum_{j=1}^Mw_j(E_{\tilde{P}}(f_j)-E_P(f_j))\\
+    L(P,\mathbf{w})&\triangleq -H(P)+w_0\left(1-\sum_y P(y|\mathbf{x})\right)+\sum_{j=1}^Mw_j(\mathbb{E}_{\tilde{P}}(f_j)-\mathbb{E}_P(f_j))\\
     = &\sum_{\mathbf{x},y} \tilde{P}(\mathbf{x})P(y|\mathbf{x})\log P(y|\mathbf{x}) + w_0\left(1-\sum_y P(y|\mathbf{x})\right) \\
     &+ \sum_{j=1}^M w_j \left( \sum_{\mathbf{x},y} \tilde{P}(\mathbf{x},y)f_j(\mathbf{x},y) - \sum_{\mathbf{x},y} \tilde{P}(\mathbf{x})P(y|\mathbf{x})f_j(\mathbf{x},y) \right)
     \end{aligned}

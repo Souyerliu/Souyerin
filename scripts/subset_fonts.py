@@ -57,7 +57,22 @@ def build_charset():
     for c in range(32, 127):
         chars.add(chr(c))
 
-    # 2. 常用标点和符号
+    # 2. 日语五十音：平假名 + 片假名
+    # 平假名 U+3041–U+3096, 浊点半浊点 U+3099–U+309C, 繰返し記号 U+309D–U+309F
+    for c in range(0x3041, 0x3097):
+        chars.add(chr(c))
+    for c in range(0x3099, 0x30A0):
+        chars.add(chr(c))
+    # 片假名 U+30A1–U+30FA, 繰返し記号 U+30FD–U+30FF
+    for c in range(0x30A1, 0x30FB):
+        chars.add(chr(c))
+    for c in range(0x30FD, 0x3100):
+        chars.add(chr(c))
+    # 半角片假名 U+FF66–U+FF9F
+    for c in range(0xFF66, 0xFFA0):
+        chars.add(chr(c))
+
+    # 3. 常用标点和符号
     extra = (
         "　、。〃々「」『』【】〒〓〔〕〖〗！＂＃＄％＆＇（）＊＋，－．／：；＜＝＞？＠［＼］＾＿｀｛｜｝～"
         "¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
@@ -74,7 +89,7 @@ def build_charset():
     for c in extra:
         chars.add(c)
 
-    # 3. 读取 used-chars.txt 中的中文字符
+    # 4. 读取 used-chars.txt 中的中文字符
     if os.path.exists(CHARS_FILE):
         with open(CHARS_FILE, "r", encoding="utf-8") as f:
             text = f.read()
@@ -82,7 +97,7 @@ def build_charset():
             if c.strip():
                 chars.add(c)
 
-    # 4. 提取 Live2D 看板娘 JSON 中的字符（waifu-tips.json / model_list.json 等）
+    # 5. 提取 Live2D 看板娘 JSON 中的字符（waifu-tips.json / model_list.json 等）
     live2d_chars = extract_chars_from_live2d()
     chars.update(live2d_chars)
 

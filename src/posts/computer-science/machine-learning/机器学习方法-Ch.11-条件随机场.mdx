@@ -151,12 +151,12 @@ cover: ./ml.png
 + 由前向-后向向量，我们可以得到特征函数的期望：
     $$
     \begin{aligned}
-    E_{P(\mathbf{y}|\mathbf{x})}[f_j]
+    \mathbb{E}_{P(\mathbf{y}|\mathbf{x})}[f_j]
     &= \sum_y P(\mathbf{y}|\mathbf{x})f_j(\mathbf{y}, \mathbf{x}) \\
     &= \sum_y P(\mathbf{y}|\mathbf{x}) \sum_{t=1}^{T+1} f_j(y_{t-1}, y_t, \mathbf{x}, t) \\
     &= \sum_{t=1}^{T+1} \sum_{y_{t-1}, y_t} f_j(y_{t-1}, y_t, \mathbf{x}, t)
     \frac{\alpha_{t-1}(y_{t-1}|\mathbf{x})\Psi_t(y_{t-1}, y_t,\mathbf{x})\beta_t(y_t|\mathbf{x})}{Z(\mathbf{x})},\quad j = 1, 2, \cdots, M.\\[20pt]
-    E_{\tilde{P}(\mathbf{x}, \mathbf{y})}[f_j]&= \sum_{\mathbf{x}, \mathbf{y}} \tilde{P}(\mathbf{x}, \mathbf{y})f_j(\mathbf{y}, \mathbf{x}) \\
+    \mathbb{E}_{\tilde{P}(\mathbf{x}, \mathbf{y})}[f_j]&= \sum_{\mathbf{x}, \mathbf{y}} \tilde{P}(\mathbf{x}, \mathbf{y})f_j(\mathbf{y}, \mathbf{x}) \\
     &= \sum_{\mathbf{x}} \tilde{P}(\mathbf{x}) \sum_{\mathbf{y}} P(\mathbf{y}|\mathbf{x}) \sum_{t=1}^{T+1} f_j(y_{t-1}, y_t, \mathbf{x}, t) \\
     &= \sum_{\mathbf{x}} \tilde{P}(\mathbf{x})\sum_{t=1}^{T+1} \sum_{y_{t-1}, y_t} f_j(y_{t-1}, y_t, \mathbf{x}, t)
     \frac{\alpha_{t-1}(y_{t-1}|\mathbf{x})\Psi_t(y_{t-1}, y_t,\mathbf{x})\beta_t(y_t|\mathbf{x})}{Z(\mathbf{x})}, \quad j = 1, 2, \cdots, M.
@@ -179,8 +179,8 @@ cover: ./ml.png
         对参数求梯度得
         $$
         \begin{aligned}
-        \frac{\partial L}{\partial w_j} &= \sum_{\mathbf{x},\mathbf{y}} \tilde{P}(\mathbf{x}) P_{\mathbf{w}}(\mathbf{y}|\mathbf{x}) f_j(\mathbf{y},\mathbf{x}) - E_{\tilde{P}(\mathbf{x}, \mathbf{y})}[f_j], \\
-        &=\sum_{\mathbf{x},\mathbf{y}} \tilde{P}(\mathbf{x})\cdot E_{P(\mathbf{y}|\mathbf{x})}[f_j]- E_{\tilde{P}(\mathbf{x}, \mathbf{y})}[f_j], \quad j = 1, 2, \cdots, M
+        \frac{\partial L}{\partial w_j} &= \sum_{\mathbf{x},\mathbf{y}} \tilde{P}(\mathbf{x}) P_{\mathbf{w}}(\mathbf{y}|\mathbf{x}) f_j(\mathbf{y},\mathbf{x}) - \mathbb{E}_{\tilde{P}(\mathbf{x}, \mathbf{y})}[f_j], \\
+        &=\sum_{\mathbf{x},\mathbf{y}} \tilde{P}(\mathbf{x})\cdot \mathbb{E}_{P(\mathbf{y}|\mathbf{x})}[f_j]- \mathbb{E}_{\tilde{P}(\mathbf{x}, \mathbf{y})}[f_j], \quad j = 1, 2, \cdots, M
         \end{aligned}
         $$
         其中第二项可以直接计算，而第一项需要用前向-后向算法计算，最终得到权重估计。

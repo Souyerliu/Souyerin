@@ -160,6 +160,31 @@ const live2dInitScript = live2dEnabled
 
     // 根据当前 Live2D 角色动态切换台词（Proxy 拦截 waifu-tips.json 的 fetch）
     const _waifuOrigFetch = window.fetch;
+    // 追踪 message.default 数组，用于模型切换时原地更新
+    window.__waifuMsgState = window.__waifuMsgState || { defaultArr: null, seasonal: [], globalDefaults: [], lastModelId: "0" };
+    const _msgState = window.__waifuMsgState;
+    // 拦截 localStorage.setItem 以检测模型切换（仅 patch 一次，避免 view transitions 重复执行时递归）
+    if (!Storage.prototype.__waifuStoragePatched) {
+      Storage.prototype.__waifuStoragePatched = true;
+      const _origStorageSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        _origStorageSetItem.call(this, key, value);
+        if (key === "modelId" && _msgState.defaultArr && value !== _msgState.lastModelId) {
+          _msgState.lastModelId = value;
+          // 原地重建 default 数组：全局默认 + 角色默认 + 季节性消息
+          _msgState.defaultArr.length = 0;
+          const _push = Array.prototype.push;
+          _push.apply(_msgState.defaultArr, _msgState.globalDefaults);
+          const allTips = _msgState._allTips;
+          if (allTips) {
+            const ct = allTips.characterTips && allTips.characterTips[value];
+            const charDefaults = (ct && ct.message && ct.message.default) || [];
+            _push.apply(_msgState.defaultArr, charDefaults);
+          }
+          _push.apply(_msgState.defaultArr, _msgState.seasonal);
+        }
+      };
+    }
     window.fetch = function (url, ...args) {
       const urlStr = typeof url === "string" ? url : url.url || "";
       if (urlStr === cfg.waifuPath || urlStr.endsWith("/waifu-tips.json")) {
@@ -179,15 +204,16 @@ const live2dInitScript = live2dEnabled
                     if (prop === "models") return target.models;
                     if (!charTips) return target[prop];
                     if (prop === "mouseover") {
+                      // 角色专属项优先，解决相同 selector 被全局项抢先匹配的问题
                       return [
-                        ...(target.mouseover || []),
                         ...(charTips.mouseover || []),
+                        ...(target.mouseover || []),
                       ];
                     }
                     if (prop === "click") {
                       return [
-                        ...(target.click || []),
                         ...(charTips.click || []),
+                        ...(target.click || []),
                       ];
                     }
                     if (prop === "message") {
@@ -195,10 +221,23 @@ const live2dInitScript = live2dEnabled
                       const cm = charTips.message || {};
                       for (const k of Object.keys(cm)) {
                         if (k === "default") {
-                          merged[k] = [
+                          // 创建"活的" default 数组：被库捕获后，仍可在模型切换时原地更新
+                          const arr = [
                             ...(target.message.default || []),
                             ...(cm.default || []),
                           ];
+                          // 拦截 push 以追踪季节性消息（库会在初始化后 push 节日/时间段消息）
+                          const origPush = arr.push;
+                          arr.push = function (...items) {
+                            _msgState.seasonal.push(...items);
+                            return origPush.apply(this, items);
+                          };
+                          // 保存状态引用，供 localStorage hook 原地更新
+                          _msgState.defaultArr = arr;
+                          _msgState.globalDefaults = [...(target.message.default || [])];
+                          _msgState.lastModelId = modelId;
+                          _msgState._allTips = target;
+                          merged[k] = arr;
                         } else {
                           merged[k] = cm[k];
                         }

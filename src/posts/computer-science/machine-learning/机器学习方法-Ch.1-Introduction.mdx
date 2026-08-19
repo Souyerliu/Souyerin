@@ -68,7 +68,7 @@ A：当时的笔记完全是囫囵吞枣，蜻蜓点水，纯粹是为了应付�
     + 对于给定的测试样本$x_0$，其测试均方误差可分解为：
         $$
         \begin{aligned}
-        E \left( y_0 - \hat{f}(x_0) \right)^2 &=E \left( y_0 - E\hat{f}(x_0) \right)^2 + E \left(\hat{f}(x_0)-E\hat{f}(x_0)\right)^2+E(\epsilon^2)\\
+        \mathbb{E} \left( y_0 - \hat{f}(x_0) \right)^2 &=\mathbb{E} \left( y_0 - \mathbb{E}\hat{f}(x_0) \right)^2 + \mathbb{E} \left(\hat{f}(x_0)-\mathbb{E}\hat{f}(x_0)\right)^2+\mathbb{E}(\epsilon^2)\\
         &=\left[\operatorname{Bias}(\hat{f}(x_0))\right]^2 +\operatorname{Var}(\hat{f}(x_0))+ \operatorname{Var}(\epsilon)
         \end{aligned}
         $$
@@ -101,7 +101,7 @@ A：当时的笔记完全是囫囵吞枣，蜻蜓点水，纯粹是为了应付�
         + 分类器预测：$\hat{G}(x)$
         + 预测损失：$L(g_k, g)$ 表示预测 $g$，真实标签是 $g_k$ 的损失
             + 最简单的损失是0-1损失：$L(g_k, g) =\begin{cases}0, & g = g_k \\1, & g \neq g_k \end{cases}$
-        + 最小化：$E\left[L(g_k, \hat{G}(x))\right]$
+        + 最小化：$\mathbb{E}\left[L(g_k, \hat{G}(x))\right]$
             + 即最小化：$\displaystyle\sum_{j=1}^{k} L(g_j, \hat{G}(x)) P(g_j | X = x)$
             + 即：$\displaystyle\hat{G}(x) = \arg \min_{g} \sum_{j=1}^{k} L(g_j, g) P(g_j | X = x)$
         > 然而后验概率$P(g_j | X = x)$不容易求（需要知道数据的联合分布或似然+先验概率），故这个分类器无法直接实现。

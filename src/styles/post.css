@@ -743,6 +743,11 @@
   overflow-y: hidden;
 }
 
+/* Keep Chinese text inside formulas consistent with the article body. */
+.md .katex .cjk_fallback {
+  font-family: var(--font-body);
+}
+
 /* ============================================
    Note/Details Container Styles
    ============================================ */
