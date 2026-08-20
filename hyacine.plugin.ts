@@ -1,6 +1,6 @@
 import { defineConfig } from "@hyacine/core/config";
 
-import SiteUpTime from "@hyacine/site-uptime";
+import SiteUpTime from "./src/plugins/site-uptime";
 import MouseFirework from "@hyacine/mouse-firework";
 
 export default defineConfig({
