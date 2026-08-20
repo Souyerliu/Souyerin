@@ -1,0 +1,526 @@
+---
+title: PyTorch入门（下）
+date: 2026-05-30 13:10:04
+categories: [计算机科学]
+tags:
+    - PyTorch
+    - 深度学习
+cover: ./pytorch_seo.png
+---
+
+# PyTorch构建神经网络
++ PyTorch神经网络主要使用`torch.nn`库，下面我们将围绕这个库进行神经网络的搭建。（可参见[官方文档](https://docs.pytorch.ac.cn/docs/stable/nn.html)）
+> 土堆的教程只涉及了卷积神经网络，其他神经网络结构类似。
+## 容器（Container）
++ 构建一个神经网络，首先需要一个容器。PyTorch中最重要的容器是`Module`，它是所有神经网络模块的基类，所有的神经网络模型都是在`nn.Module`类的基础上进行修改。
++ 一个神经网络模型的示例如下：
+    ```python
+    import torch
+    import torchvision
+    from torch import nn
+    from torch.nn import Conv2d
+    from torch.utils.data import DataLoader
+    from torch.utils.tensorboard import SummaryWriter
+
+    dataset = torchvision.datasets.CIFAR10("./data", train=False, transform=torchvision.transforms.ToTensor(),
+                                        download=True)
+    dataloader = DataLoader(dataset, batch_size=64)
+
+    class Model(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.conv1 = Conv2d(in_channels=3, out_channels=6, kernel_size=3, stride=1, padding=0)
+
+        def forward(self, x):
+            x = self.conv1(x)
+            return x
+
+    model = Model()
+
+    writer = SummaryWriter("./logs")
+
+    step = 0
+    for data in dataloader:
+        imgs, targets = data
+        output = model(imgs)
+        print(imgs.shape) # torch.Size([64, 3, 32, 32])，最后一个batch大小为16，下同
+        print(output.shape) # torch.Size([64, 6, 30, 30])    
+        writer.add_images("input", imgs, step)
+
+        output = torch.reshape(output, (-1, 3, 30, 30)) # torch.Size([64, 6, 30, 30]) -> [128, 3, 30, 30]
+        writer.add_images("output", output, step)
+
+        step = step + 1
+    ```
+    + 其中`super().__init__()`表示沿用父类`nn.Module`的`__init__`参数，另外在`Model`类中必须对`forward`方法进行修改。具体的属性和方法会在下面进行详细阐释。
++ 另一个比较重要的容器是`Sequential`，使用它构建神经网络就更加简洁，直接按顺序列举所有的函数即可。示例（LeNet-5神经网络）：
+    ```python
+    import torch
+    from torch import nn
+    from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, Sequential
+    class Model(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.model1 = Sequential(
+                Conv2d(3, 32, 5, padding=2),
+                MaxPool2d(2),
+                Conv2d(32, 32, 5, padding=2),
+                MaxPool2d(2),
+                Conv2d(32, 64, 5, padding=2),
+                MaxPool2d(2),
+                Flatten(),
+                Linear(1024, 64),
+                Linear(64, 10)
+            )
+
+        def forward(self, x):
+            x = self.model1(x)
+            return x
+    ```
+## 卷积层（Convolution Layer）
++ 在上面的代码中，我们使用了卷积层（`torch.nn.Conv2d`），下面就来详细解释其用法（关于卷积神经网络的概念可参见[机器学习方法-卷积神经网络](/posts/computer-science/machine-learning/机器学习方法-ch4-卷积神经网络/)，此处作略）
++ `Conv2d`的格式为：`torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros', device=None, dtype=None)`，下面对主要参数进行解释：
+    |参数|解释|
+    |:--:|:--:|
+    |`in_channels`|输入图像通道数（如RGB三通道）|
+    |`out_channels`|输出图像通道数（等于卷积核数量）|
+    |`kernel_size`|卷积核大小（可输入单个整数或二元素元组）|
+    |`stride`|卷积核移动步长|
+    |`padding`|卷积边缘填充（默认填充0）|
+    |`bias`|是否学习偏置|
+    + 其中必要参数为`in_channels`、`out_channels`和`kernel_size`，使用例可见上（卷积层属性在`__init__`中定义）。
+<Note type="info" title="R语言apply家族">
+在土堆的演示中使用了`torch.nn.functional.conv2d`这个函数，它与`torch.nn.Conv2d`的区别在于前者是后者的具体实现（需要输入原始张量数据）。下面是使用这个函数的示例：
+```python
+import torch
+import torch.nn.functional as F
+
+input = torch.tensor([[1, 2, 0, 3, 1],
+                      [0, 1, 2, 3, 1],
+                      [1, 2, 1, 0, 0],
+                      [5, 2, 3, 1, 1],
+                      [2, 1, 0, 1, 1]])
+
+kernel = torch.tensor([[1, 2, 1],
+                       [0, 1, 0],
+                       [2, 1, 0]])
+
+input = torch.reshape(input, (1, 1, 5, 5))
+kernel = torch.reshape(kernel, (1, 1, 3, 3))
+
+print(input.shape)
+print(kernel.shape)
+
+output = F.conv2d(input, kernel, stride=1, padding=1)
+print(output)     
+# tensor([[[[ 1,  3,  4, 10,  8],
+#           [ 5, 10, 12, 12,  6],
+#           [ 7, 18, 16, 16,  8],
+#           [11, 13,  9,  3,  4],
+#           [14, 13,  9,  7,  4]]]])
+```
+其中`torch.reshape`的功能为改变张量的维数（因为`torch.nn.functional.conv2d`需要指定`mini-batch`和`group`数量）。
++ 在前面的例子中，对图像的`output`也进行了`reshape`，这是因为在tensorBoard只支持RGB三通道图像输出，因此需要转换维度。（第一个参数`-1`表示自动推断该维度的大小）
+</Note>
+## 池化层（Pooling Layer）
++ 以最大池化为例：`torch.nn.MaxPool2d(kernel_size, stride=None, padding=0, dilation=1, return_indices=False, ceil_mode=False)`。其参数与卷积层基本相同，除了以下几点：
+    1. 池化层步长`stride`的默认值为`kernel_size`，即池化核边长。
+    2. 对`dilation`参数的补充：`dilation`可以理解为核与输入的二维图像作池化操作时对应位置的间隔（可参考[conv_arithmetic](https://github.com/vdumoulin/conv_arithmetic/blob/master/gif/dilation.gif)）
+    3. `ceil_mode`控制计算输出维度时上取整或下取整。（默认下取整）
++ 示例代码：
+```python
+import torch
+from torch import nn
+from torch.nn import MaxPool2d
+
+input = torch.tensor([[1,2,0,3,1],
+                      [0,1,2,3,1],
+                      [1,2,1,0,0],
+                      [5,2,3,1,1],
+                      [2,1,0,1,1]],dtype = torch.float32)
+input = torch.reshape(input, (-1, 1, 5, 5))
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.maxpool1 = MaxPool2d(kernel_size=3, ceil_mode=True)
+
+    def forward(self, input):
+        output = self.maxpool1(input)
+        return output
+
+model = Model()
+output = model(input)
+print(output)
+# tensor([[[[2., 3.],
+#           [5., 1.]]]])
+```
+其中`input`张量指定`dtype`是因为池化只支持浮点类型数据输入（卷积层同理）。
+## 非线性激活（Non-linear Activations）
++ 神经网络中另一个重要的函数就是非线性激活函数。常见的激活函数包括`nn.Sigmoid`、`nn.Tanh`、`nn.ReLU`等。（更多非线性激活函数可参见[官方文档](https://docs.pytorch.ac.cn/docs/stable/nn.html#non-linear-activations-weighted-sum-nonlinearity)）
++ 使用例（只给出`Model`类，这也是许多模型中只会展示的核心，下同）：
+```python
+import torch
+from torch import nn
+from torch.nn import ReLU, Sigmoid
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.relu1 = ReLU()
+        self.sigmoid1 = Sigmoid()
+
+    def forward(self, input):
+        output = self.sigmoid1(input)
+        return output
+```
+## 归一化层（Normalization Layer）
++ 如`nn.BatchNorm2d`，对应神经网络的Batch-Normalization，一般只设置一个参数：`num_features`，其对应四维输入的`Channel`（输入通道数）维度。
+## 线性层（Linear Layer）
++ 主要用`nn.Linear`，包含两个参数：`input_features`和`output_features`，分别表示输入样本数与输出样本数（或者也可以理解为全连接神经网络中前后两层神经元的数量）
++ 使用例：
+```python
+import torch
+import torchvision
+from torch import nn
+from torch.nn import Linear
+from torch.utils.data import DataLoader
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.linear1 = Linear(196608, 10)
+
+    def forward(self, input):
+        output = self.linear1(input)
+        return output
+
+dataset = torchvision.datasets.CIFAR10("../data", train=False, transform=torchvision.transforms.ToTensor(),
+                                       download=True)
+
+dataloader = DataLoader(dataset, batch_size=64)
+
+for data in dataloader:
+    imgs, targets = data
+    print(imgs.shape) # torch.Size([64, 3, 32, 32])
+    output = torch.flatten(imgs) # 相当于torch.reshape(imgs, (1, 1, 1, -1))并转为一维张量
+    print(output.shape) # torch.Size([196608])
+    output = Model(output)
+    print(output.shape) # torch.Size([10])
+```
+
++ 最后补充一个小点：在验证编写的神经网络是否正确，可以用下面两种方法：
+    1. 自主设定特定维度的输入数据张量（比如`torch.ones`，`torch.randn`等），然后输出输出层维度；
+    2. 使用`torchvision.tensorboard`的`add_graph`功能将神经网络可视化。
+
+## 损失函数（Loss Function）
++ 神经网络中损失函数的两大作用：计算实际输出与目标之间的差距、更新权重与输出的依据
++ `torch.nn`中提供了多种损失函数，包括：
+    |损失函数|表达式|
+    |:-----:|:---:|
+    |`nn.L1Loss`|$\displaystyle l(x,y)=\sum_{i=1}^N\vert x_i-y_i\vert $或$\displaystyle l(x,y)=\frac{1}{n}\sum_{i=1}^N\vert x_i-y_i\vert$，由`reduction`参数决定（下同）|
+    |`nn.MSELoss`|$\displaystyle l(x,y)=\sum_{i=1}^N(x_i-y_i)^2$或$\displaystyle l(x,y)=\frac{1}{n}\sum_{i=1}^N(x_i-y_i)^2$|
+    |`nn.CrossEntropyLoss`|$\displaystyle l(x,y) = -\sum_{n=1}^N\sum_{c=1}^C w_c \log \frac{\exp(x_{n,c})}{\sum_{i=1}^C \exp(x_{n,i})} y_{n,c}$或取均值|
++ 注意传入参数均为张量（数据均为浮点数），且第一个维度相同。使用例：
+```python
+import torch
+from torch.nn import L1Loss
+from torch import nn
+
+inputs = torch.tensor([1, 2, 3], dtype=torch.float32)
+targets = torch.tensor([1, 2, 5], dtype=torch.float32)
+
+inputs = torch.reshape(inputs, (1, 1, 1, 3))
+targets = torch.reshape(targets, (1, 1, 1, 3))
+
+loss = L1Loss(reduction='sum')
+result = loss(inputs, targets)
+
+loss_mse = nn.MSELoss()
+result_mse = loss_mse(inputs, targets)
+
+print(result) # tensor(2.)
+print(result_mse) # tensor(1.3333)
+
+x = torch.tensor([0.1, 0.2, 0.3])
+y = torch.tensor([1])
+x = torch.reshape(x, (1, 3))
+loss_cross = nn.CrossEntropyLoss()
+result_cross = loss_cross(x, y)
+print(result_cross) # tensor(1.1019)
+```
++ 有了损失函数，我们就能对神经网络的参数进行反向传播更新。示例：
+```python
+import torchvision
+from torch import nn
+from torch.nn import Sequential, Conv2d, MaxPool2d, Flatten, Linear
+from torch.utils.data import DataLoader
+
+dataset = torchvision.datasets.CIFAR10("../data", train=False, transform=torchvision.transforms.ToTensor(),
+                                       download=True)
+
+dataloader = DataLoader(dataset, batch_size=1)
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model1 = Sequential(
+            Conv2d(3, 32, 5, padding=2),
+            MaxPool2d(2),
+            Conv2d(32, 32, 5, padding=2),
+            MaxPool2d(2),
+            Conv2d(32, 64, 5, padding=2),
+            MaxPool2d(2),
+            Flatten(),
+            Linear(1024, 64),
+            Linear(64, 10)
+        )
+
+    def forward(self, x):
+        x = self.model1(x)
+        return x
+
+loss = nn.CrossEntropyLoss()
+model = Model()
+for data in dataloader:
+    imgs, targets = data
+    outputs = model(imgs)
+    result_loss = loss(outputs, targets)
+    result_loss.backward() # 计算反向传播梯度
+```
+## 优化器（Optimizer）
++ 有了损失函数和反向传播梯度之后，我们还需要用优化器对神经网络里的参数进行更新。
++ 优化器的通用参数为：`params`（即需要更新的参数），`lr`（learning rate，即学习率）
++ `torch.optim`提供了多种优化器，包括：
+    |优化器（算法）|部分参数与解释|
+    |`torch.optim.SGD`|`momentum`：动量因子，`weight_decay`：权重衰减|
+    |`torch.optim.Adam`|`betas`：动量和梯度的惯性系数，`eps`：分母添加项（提高稳定性）|
+    |`torch.optim.RMSprop`|`alpha`：梯度惯性系数，`momentum`：动量因子|
++ 使用例（沿用上述例子）：
+    ```python
+    # ....（代码同上）
+    import torch
+    loss = nn.CrossEntropyLoss()
+    model = Model()
+    optim = torch.optim.SGD(model.parameters(), lr=0.01)
+    for data in dataloader:
+        imgs, targets = data
+        outputs = model(imgs) 
+        result_loss = loss(outputs, targets)
+        optim.zero_grad() # 优化器梯度初始化
+        result_loss.backward()
+        optim.step() # 优化器执行，参数更新
+    ```
++ 当然，上述训练只是一轮（epoch）数据的学习。为了更好地训练神经网络，我们需要进行多轮训练：
+    ```python
+    from torch.optim.lr_scheduler import StepLR
+    loss = nn.CrossEntropyLoss()
+    model = Model()
+    optim = torch.optim.SGD(model.parameters(), lr=0.01)
+    scheduler = StepLR(optim, step_size=5, gamma=0.1) # 学习率调度器，每隔step_size步将学习率乘上衰减系数
+    for epoch in range(20):
+        running_loss = 0.0
+        for data in dataloader:
+            imgs, targets = data
+            outputs = model(imgs)
+            result_loss = loss(outputs, targets)
+            optim.zero_grad() 
+            result_loss.backward() # 计算反向传播梯度
+            scheduler.step()
+            running_loss = running_loss + result_loss
+        print(running_loss) # 得到一轮训练的总损失（会随着epoch增大逐渐减小）
+    ```
+
+# 使用现有的模型
+## 模型的下载
++ 除了自主构建模型，PyTorch还提供了多种现有的神经网络模型以供使用。
++ 以`torchvision`为例，其模型库可参阅[官方文档](https://docs.pytorch.ac.cn/vision/stable/models.html#classification)。其通常包含以下参数：
+    + ~~`pretrained`：如果为`True`，会下载一个已经在ImageNet上预训练过的模型。~~（已弃用）
+    + `weight`：模型的权重，如果想要已经预训练的模型，可设置为`torchvision.models.***_Weights.IMAGENET1K_V1`
+    + `progress`：如果为`True`，会在 stderr 上显示下载进度条
++ 当然，我们也可以在已有网络模型上进行增加或修改。示例：
+```python
+import torchvision
+from torch import nn
+vgg16_true = torchvision.models.vgg16(
+    weights=torchvision.models.VGG16_Weights.IMAGENET1K_V1
+)
+print(vgg16_true)
+# VGG(
+#   (features): Sequential(
+#     (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+#     (1): ReLU(inplace=True)
+#     (2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+#     (3): ReLU(inplace=True)
+#     (4): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+
+#     (5): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+#     (6): ReLU(inplace=True)
+#     ...
+#     (30): MaxPool2d(...)
+#   )
+
+#   (avgpool): AdaptiveAvgPool2d(output_size=(7, 7))
+
+#   (classifier): Sequential(
+#     (0): Linear(in_features=25088, out_features=4096, bias=True)
+#     (1): ReLU(inplace=True)
+#     (2): Dropout(p=0.5, inplace=False)
+
+#     (3): Linear(in_features=4096, out_features=4096, bias=True)
+#     (4): ReLU(inplace=True)
+#     (5): Dropout(p=0.5, inplace=False)
+
+#     (6): Linear(in_features=4096, out_features=1000, bias=True)
+#   )
+# )
+vgg16_true.classifier.add_module('add_linear', nn.Linear(1000, 10)) # 增加一层
+vgg16_true.classifier[6] = nn.Linear(4096, 10) # 直接修改
+```
+## 模型的保存与加载
++ Pytorch中可使用以下方式保存模型：
+    ```python
+    import torch
+    import torchvision
+    from torch import nn
+    vgg16 = torchvision.models.vgg16(
+        weights=torchvision.models.VGG16_Weights.IMAGENET1K_V1
+    )
+    # 保存方式1：模型结构 + 模型参数
+    torch.save(vgg16, "vgg16_method1.pth")
+
+    # 保存方式2：模型参数保存为字典（官方推荐）
+    torch.save(vgg16.state_dict(), "vgg16_method2.pth")
+    ```
++ 而当之后需要加载保存的模型时，可如下操作：
+    ```python
+    import torch
+    # 方式1：对应保存方式1
+    import torchvision
+    from torch import nn
+
+    model = torch.load("vgg16_method1.pth")
+    # print(model)
+
+    # 方式2：对应保存方式2
+    vgg16 = torchvision.models.vgg16(pretrained=False)
+    vgg16.load_state_dict(torch.load("vgg16_method2.pth"))
+    # print(vgg16)
+    ```
++ 另外注意：如果是保存自己构建的模型，那么在加载时就不能只加载`.pth`文件，还需要将定义的`Model`类导入。例：
+    ```python
+    class Model(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.conv1 = nn.Conv2d(3, 64, kernel_size=3)
+
+        def forward(self, x):
+            x = self.conv1(x)
+            return x
+
+    model = Model()
+    torch.save(model, "model.pth")
+    ```
+    上面的代码保存为`model_save.py`，那么加载模型时就需要导入这个文件（同一文件夹下）：
+    ```python
+    from model_save import *
+    model = torch.load('model.pth')
+    print(model)
+    ```
+# 总结
+## 模型训练流程
++ 一个完整的神经网络训练流程如下：
+    1. 准备数据集（包括训练集和测试集）
+    2. 加载数据集
+    3. 构建神经网络模型（或使用现有模型+微调）
+    4. 确定损失函数
+    5. 确定优化器
+    6. 设置训练网络的参数（训练次数，训练轮数，测试轮数等）
+    7. epoch循环：
+        + 每个epoch里循环传入所有数据
+        + 得到输出，计算loss，优化器更新参数
+        + 每个epoch结束后，对模型进行测试（使用测试集数据）
+    8. 保存模型
+    + 6~8步示例：
+    ```python
+    # 记录训练的次数
+    total_train_step = 0
+    # 记录测试的次数
+    total_test_step = 0
+    # 训练的轮数
+    epoch = 10
+
+    # 添加tensorboard
+    # writer = SummaryWriter("../logs_train")
+
+    for i in range(epoch):
+        print("-------第 {} 轮训练开始-------".format(i+1))
+
+        # 训练步骤开始
+        model.train()
+        for data in train_dataloader:
+            imgs, targets = data
+            outputs = model(imgs)
+            loss = loss_fn(outputs, targets) # loss_fn = nn.CrossEntropyLoss()
+
+            # 优化器优化模型
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            total_train_step = total_train_step + 1
+            if total_train_step % 100 == 0:
+                print("训练次数：{}, Loss: {}".format(total_train_step, loss.item()))
+                # writer.add_scalar("train_loss", loss.item(), total_train_step)
+
+        # 测试步骤开始
+        model.eval()
+        total_test_loss = 0
+        total_accuracy = 0
+        with torch.no_grad(): # 不考虑梯度
+            for data in test_dataloader:
+                imgs, targets = data
+                outputs = model(imgs)
+                loss = loss_fn(outputs, targets)
+                total_test_loss = total_test_loss + loss.item()
+                accuracy = (outputs.argmax(1) == targets).sum() # outputs是每张图片属于每个类别的预测概率矩阵，argmax(1)表示按行取最大值索引
+                total_accuracy = total_accuracy + accuracy
+
+        print("整体测试集上的Loss: {}".format(total_test_loss))
+        print("整体测试集上的正确率: {}".format(total_accuracy/test_data_size))
+        # writer.add_scalar("test_loss", total_test_loss, total_test_step)
+        # writer.add_scalar("test_accuracy", total_accuracy/test_data_size, total_test_step)
+        total_test_step = total_test_step + 1
+
+        torch.save(tudui, "tudui_{}.pth".format(i))
+        print("模型已保存")
+    ```
+    + 注意到上面除了损失函数指标，还使用了准确率指标，这是分类问题特有的训练指标。
+    + 另外，上述代码中还用了`model.train()`和`model.eval()`这两个语句，它们的作用是设置模型的模式。虽然在这个程序中不写没有影响，但是如果神经网络中有`Dropout`，`BatchNorm`等特殊处理，那么就必须明确模型的模式。
+## 使用GPU训练
+> 笔者的电脑没有GPU，不过可以用[google colab](https://colab.research.google.com/)白嫖GPU算力（
++ 使用GPU训练可以加快模型训练速度。要让程序使用GPU训练，主要有以下两种方法：
+1. 在以下地方加上`.cuda()`：
+        + 模型本身（`model = model.cuda()`）
+        + 损失函数（`loss_fn = loss_fn.cuda()`）
+        + 训练与测试数据（`imgs = imgs.cuda()`，`targets = targets.cuda()`）
+    + 当然，为了兼容没有GPU的电脑，也可以改成条件判断：
+        ```python
+        if torch.cuda.is_available():
+            model = model.cuda()
+        ```
+2. 在上面提到的那些地方加上`.to(device)`，同时在程序开头设置`device`：【更常用】
+    + `device = torch.device("cpu")`【CPU训练】
+    + `device = torch.device("cuda")`【GPU训练】
+    + `device = torch.device("cuda:1")`【多张显卡】<Spoiler title="吐槽">富哥</Spoiler>
+
+    当然也可以用兼容性写法：`device = torch.device("cuda" if torch.cuda.is_available() else "cpu")`
++ 另外，如果要在没有CPU的设备上加载使用过GPU训练的模型，那么在加载时需要加上`map_location=torch.device('cpu')`。
+## 模型验证流程
++ 模型验证的流程与训练时的测试流程类似，就是先导入训练好的模型，再用一个新的数据集作为输入，检验其效果，故从略。
+
+___
+END
+
+终于把土堆的教程刷完了，已经在收藏夹里吃灰很久了（  
+虽然现在再看有种49入国军之感，但PyTorch本身应该还是业界常用的工具，DL和NN也尚未过时，所以还是有那么点用吧hh  
+之后可能会找一些实践项目进行记录，敬请赐候……
