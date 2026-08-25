@@ -145,9 +145,9 @@
     /* 防止动画导致CLS - 预留空间 */
     will-change: opacity, transform;
     contain-intrinsic-height: 14rem;
-    /* 防止封面图在初始渲染时撑破容器 */
-    overflow: hidden;
-    contain: layout paint size;
+    /* 保留布局/尺寸隔离，但允许背面阴影与丝带绘制到卡片边界之外 */
+    overflow: visible;
+    contain: layout size;
   }
 
   :global(.item.show) {

@@ -1,0 +1,54 @@
+---
+title: CS127 Chapter 10
+date: 2026-08-24 22:59:12
+categories: [计算机科学,CS127]
+tags:
+    - 优化模型
+    - 最优化理论
+# cover: ./EECS127.png
+draft: true
+---
+
+这一讲我们将介绍优化问题中的一种典型分类：数学规划（Programming）。
++ 实际上，我们遇到的大多数优化问题都可以被整理成规划问题的形式，而规划问题有多种高效的求解方法。
+# 规划问题（Programming）
+## 线性规划（Linear Programming）
+我们从最简单的规划问题，即线性规划开始。
++ 线性规划的目标函数与约束条件均为仿射函数，其标准形式如下（目标函数不考虑常数项）：
+    $$
+    \begin{aligned}
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad &\vec{c}^\top \vec{x} \\
+    \text{s.t.} \quad &A \vec{x} = \vec{y}, \\
+    & \vec{x} \geq \vec{0}.
+    \end{aligned}
+    $$
+    实际上，任意线性规划都可以转化为上述标准形式。具体而言，如果原始线性规划问题：
+    + 具有不等式约束，可以引入松弛变量转为等式约束 + 松弛变量非负约束；
+    + 存在没有非负约束的变量，可以引入两个非负约束松弛变量，分别表示该变量的正部与负部，这样就可以用这两个松弛变量之差代替。
++ 线性规划问题属于凸优化问题，且其可行域一定是凸集。
++ 上述线性规划问题标准形式的对偶问题形式如下：
+    $$
+    \begin{aligned}
+    d^* = \max_{\substack{\vec{\lambda} \in \mathbb{R}^n\\\vec{\nu} \in \mathbb{R}^m}} \ & -\vec{y}^\top \vec{\nu} \\
+    \text{s.t.} \quad & \vec{c} - \vec{\lambda} + A^\top \vec{\nu} = \vec{0}, \\
+    & \vec{\lambda} \geq \vec{0}.
+    \end{aligned}
+    $$
+    简单推导如下：原始问题的拉格朗日函数为
+    $$
+    L(\vec{x}, \vec{\lambda}, \vec{\nu}) = \vec{c}^\top \vec{x} - \vec{\lambda}^\top \vec{x} + \vec{\nu}^\top (A\vec{x} - \vec{y}) = (\vec{c} - \vec{\lambda} + A^\top \vec{\nu})^\top \vec{x} - \vec{\nu}^\top \vec{y}
+    $$
+    因此对偶函数为
+    $$
+    \begin{aligned}
+    g(\vec{\lambda}, \vec{\nu}) &= \min_{\vec{x} \in \mathbb{R}^n} \left\{ (\vec{c} - \vec{\lambda} + A^\top \vec{\nu})^\top \vec{x} - \vec{\nu}^\top \vec{y} \right\} \notag \\
+    &= \min_{\vec{x} \in \mathbb{R}^n} \left\{ (\vec{c} - \vec{\lambda} + A^\top \vec{\nu})^\top \vec{x} \right\} - \vec{\nu}^\top \vec{y} \notag \\
+    &= \begin{cases} 
+    -\vec{\nu}^\top \vec{y}, &  \vec{c} - \vec{\lambda} + A^\top \vec{\nu} = \vec{0}, \\
+    -\infty, & \text{otherwise}.
+    \end{cases}
+    \end{aligned}
+    $$
+    只考虑$\vec{c} - \vec{\lambda} + A^\top \vec{\nu} = \vec{0}$的情形（作为约束条件），就得到上述对偶问题。
++ 线性规划问题有多种方法进行求解。所有带约束的凸优化问题求解方法都可以用于线性规划，其中最常用的方法是内点法（interior method），这会在之后进行介绍。这里我们先介绍线性规划专用的方法：单纯形法。
++ 单纯形法（simplex algorithm）由George Dantzig与1947年提出。

@@ -5,7 +5,6 @@ categories: [计算机科学,机器学习方法]
 tags: 
     - 无监督学习
 cover: ./ml2.png
-draft: true
 ---
 
 前面介绍的聚类和话题分析方法都有具体的应用场景，而这一讲我们会转向更加基础的机器学习理论——含有隐变量的概率模型估计。
@@ -211,7 +210,7 @@ draft: true
 + 接下来我们将用EM算法估计模型的参数$\boldsymbol{\theta}$，包括$(\pi_j,\mu_j,\sigma_j^2)_{j=1}^k$。具体步骤如下：
     1. 求完全数据的对数似然函数  
         设$x_1,\cdots,x_n$为观测数据，引入隐变量$z_{ij}$，表示第$i$个观测值是否属于第$j$个高斯模型（如果属于取值$1$，否则取值$0$）。【满足$\displaystyle\sum_{j=1}^kz_{ij}=1$】
-        + 考虑完全数据$(x_i,z_{i1},\cdots,z_{ij}),\,i=1,2,\cdots,n$，可写出其似然函数
+        + 考虑完全数据$(x_i,z_{i1},\cdots,z_{ij}),i=1,2,\cdots,n$，可写出其似然函数
             $$
             \begin{aligned}
             p(\mathbf{x}, \mathbf{z}|\boldsymbol{\theta}) 
@@ -280,9 +279,9 @@ draft: true
         由于上述$Q$函数为凸函数，因此直接将其对各参数求偏导并使其为$0$即得参数新迭代值。具体结果如下：
         $$
         \begin{aligned}
-        \mu_j^{(t+1)} &= \frac{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)} \, \mathbf{x}_i}{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}}, 
+        \mu_j^{(t+1)} &= \frac{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}  \mathbf{x}_i}{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}}, 
         \quad j = 1, 2, \dots, k \\[8pt]
-        (\sigma_j^2)^{(t+1)} &= \frac{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)} \, (\mathbf{x}_i - \mu_j^{(t+1)})^2}{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}}, 
+        (\sigma_j^2)^{(t+1)} &= \frac{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}  (\mathbf{x}_i - \mu_j^{(t+1)})^2}{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}}, 
         \quad j = 1, 2, \dots, k \\[8pt]
         \pi_j^{(t+1)} &= \frac{\displaystyle\sum_{i=1}^n \gamma_{ij}^{(t)}}{n}, 
         \quad j = 1, 2, \dots, k
@@ -328,3 +327,172 @@ draft: true
 + 可以证明上述$L(q(\mathbf{z}), \boldsymbol{\theta}^{(t)})$序列一定单调递增且收敛。【但不保证收敛到全局最优解】
 + 变分EM算法与传统EM算法之间的区别可以理解为贝叶斯学派与频率学派对参数估计的不同理解。EM算法往往用于模型简单的情况，一般估计的准确率更高；而变分EM算法用于模型复杂的情况，近似更多。
 # 马尔可夫链蒙特卡罗法（MCMC）
+上述EM算法都是通过迭代的方式进行概率模型参数估计，而下面我们将介绍另一种估计方法——统计模拟。
++ 在[数理统计Cheat Sheet](https://souyerin.netlify.app/posts/mathematics/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1-cheat-sheet/#%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97%E5%88%86%E5%B8%83)中，我们提到蒙特卡罗分布通过随机抽样对参数进行近似估计；而在[随机过程Cheat Sheet](https://souyerin.netlify.app/posts/mathematics/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B-cheat-sheet/#%E5%88%86%E5%B8%83%E8%BF%91%E4%BC%BC)中，我们提到可以构造马尔科夫链使其平稳分布能够近似任意离散概率分布。【即Metropolis-Hastings算法，这也是最基本的马尔可夫链蒙特卡罗法】
++ 下面我们会对MCMC进行进一步阐述：
+## 蒙特卡罗法（Monte Carlo method）
+蒙特卡罗法是统计学与机器学习中广泛使用的估计方法，其核心是随机抽样（random sampling）。
++ 蒙特卡罗法除了直接抽样法之外，还包括接受-拒绝抽样法、重要性抽样法等，其适用于概率密度函数复杂、无法直接抽样的情形。
++ 以单变量接受-拒绝抽样法为例，其算法步骤如下：
+    1. 设随机变量$x$的概率密度函数为$p(x)$，另外找一个可以直接抽样的分布$q(x)$（也称为建议分布），要求存在$c>0$使$c\cdot q(x)\geq p(x)$在支撑集上总成立；
+    2. 按照建议分布$q(x)$随机抽样得到样本$x_i$，再按照均匀分布在$(0,1)$范围内抽样得到$u$；
+    3. 若$u\leq\dfrac{p(x_i)}{c\cdot q(x_i)}$，则将$x_i$作为抽样结果；否则回到上一步；
+    4. 重复上述步骤直到得到$n$个样本。
+
+    接受-拒绝法的优点是容易实现，缺点是效率可能不高。
++ 蒙特卡罗法也可以用于数学期望估计：设随机变量$x$的概率密度函数为$p(x)$，目标是求函数$f(x)$关于$p(x)$的数学期望$\mathbb{E}_{p(x)}[f(x)]$。
+    + 可以使用直接抽样法：按照概率分布$p(x)$独立抽取$n$个样本$x_1,\cdots,x_n$，分别计算其函数值$f(x_i)$，再求其平均。根据大数定律，
+        $$
+        \frac{1}{n}\sum_{i=1}^nf(x_i)\stackrel{p}{\longrightarrow}\mathbb{E}_{p(x)}[f(x)].
+        $$
+    + 当$p(x)$较复杂时，可采用重要性抽样法，其具体步骤如下（与接受-拒绝抽样法类似）：
+        1. 选择概率密度函数为$q(x)$的概率分布作为建议分布，保证$q(x)$与目标分布$p(x)$有相同支撑集；
+        2. 按照建议分布$q(x)$随机抽样$n$个样本$x_i, \quad i = 1, 2, \cdots, n$。
+        3. 对于每个样本计算其重要性：
+            $$
+            w_i = \frac{p(x_i)}{q(x_i)}
+            $$
+        4. 计算所有样本的函数值的加权平均，得到函数期望的估计：
+            $$
+            \hat{f}_n = \frac{1}{n} \sum_{i=1}^{n} w_i f(x_i)
+            $$
+
+        重要性抽样法的优点同样是容易实现，缺点是函数期望估计的方差可能很大。
++ 蒙特卡罗法还可以用于定积分的近似计算，称为蒙特卡罗积分。实际上，对于下述函数积分
+    $$
+    \int_{\mathcal{X}}h(x)\mathrm{d}x
+    $$
+    如果$h(x)$可分解为一个概率密度函数$p(x)$（支撑集为$\mathcal{X}$）与另一函数$f(x)$的乘积，那么有
+    $$
+    \int_{\mathcal{X}}h(x)\mathrm{d}x=\int_{\mathcal{X}}p(x)f(x)\mathrm{d}x=\mathbb{E}_{p(x)}[f(x)].
+    $$
+    这样我们就将函数的积分转换为另一个函数的数学期望的形式，然后就能套用上述蒙特卡罗估计方法。
++ 上述积分计算对于机器学习（尤其是贝叶斯学习）非常有用：假设观测数据由随机变量$d \in \mathcal{D}$表示，模型由随机变量$m \in \mathcal{M}$表示，贝叶斯学习通过贝叶斯定理计算给定数据条件下模型的后验概率，并选择后验概率最大的模型。后验概率为
+    $$
+    p(m|d) = \frac{p(m)p(d|m)}{\int_{\mathcal{M}} p(m')p(d|m')\mathrm{d}m'}
+    $$
+    计算中需要归一化计算：
+    $$
+    p(d) = \int_{\mathcal{M}} p(d|m')p(m')\mathrm{d}m'
+    $$
+    如果有隐变量$z \in \mathcal{Z}$，还需要边缘化计算：
+    $$
+    p(m|d) = \int_{\mathcal{Z}} p(m, z|d)\mathrm{d}z
+    $$
+    如果有一个函数$f(m)$，可以计算该函数关于后验概率分布的数学期望：
+    $$
+    \mathbb{E}_{p(m|d)}[f(m)] = \int_{\mathcal{M}} f(m)p(m|d)\mathrm{d}m
+    $$
+    当观测数据和模型都很复杂的时候，以上积分的计算都比较困难。使用蒙特卡洛法（一般为MCMC）可以有效解决这种复杂计算问题。
+## 马尔科夫链
+上述蒙特卡罗方法得到的抽样样本都是相互独立的，但往往无法解决处理复杂的概率分布（如随机变量是多元、密度函数是非标准形式、随机变量各分量不独立等）。对此，我们引入马尔科夫链，通过其平稳分布逼近实际概率分布。
++ 关于离散状态马尔科夫链的相关概念可参见[随机过程Cheat Sheet](https://souyerin.netlify.app/posts/mathematics/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B-cheat-sheet/#%E7%A6%BB%E6%95%A3%E7%8A%B6%E6%80%81%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE)，下面只简单说明连续状态马尔科夫链：
+    + 定义连续状态马尔科夫链$\mathbf{X}=X_0X_1\cdots X_t\cdots$，其中$X_t$定义在连续状态空间$\mathcal{S}$，其状态转移概率分布由概率转移核（transition kernel）表示。
+    + 对任意的$x\in\mathcal{S},A\subset\mathcal{S}$，转移核$P(x,A)=P(X_t\in A|X_{t-1}=x)$定义为
+        $$
+        P(x,A)=\int_Ap(x,y)\mathrm{d}y
+        $$
+        其中$p(x,\cdot)$为概率密度函数，满足$\displaystyle P(x,\mathcal{S})=\int_{\mathcal{S}}p(x,y)\mathrm{d}y=1$。【有时也称$p(x,\cdot)$为转移核】
+    + 连续状态马尔科夫链的平稳分布$\pi(x)$满足以下条件：
+        $$
+        \pi(y) = \int_{\mathcal{S}} p(x, y)\pi(x)\mathrm{d}x, \quad \forall y \in \mathcal{S} 
+        \quad\text{或}\quad\pi(A) = \int_{\mathcal{S}} P(x, A)\pi(x)\mathrm{d}x, \quad \forall A \subset \mathcal{S}
+        $$
+## 基本想法
+马尔科夫链蒙特卡罗法的基本想法如下：在随机变量$x$的状态空间$\mathcal{S}$上定义一个满足遍历性定理的马尔可夫链$\mathbf{X} = X_0 X_1 \cdots X_t \cdots$，使其平稳分布就是抽样的目标分布$p(x)$。然后在这个马尔可夫链上进行随机游走，每个时刻得到一个样本。
++ 根据遍历性定理，当时间趋于无穷时，样本状态的频率分布趋近平稳分布，样本的函数均值趋近函数的数学期望。
++ 所以，当时间足够长（设$n,m$为正整数且足够大）时，随机游走得到的样本集合$\{x_{m+1}, x_{m+2}, \cdots, x_n\}$就是目标概率分布的抽样结果，得到的函数均值（遍历均值）就是要计算的数学期望值：
+    $$
+    \hat{f}_{m,n} = \frac{1}{n - m} \sum_{t=m+1}^{n} f(x_t)
+    $$
+    时刻$m$之前的时间段称为燃烧期（burn-in），$m$称为收敛步数（决定抽样无偏性），$n$称为迭代步数（决定均值计算精度）。
++ MCMC收敛性的判断通常是经验性的，一般会每隔一段时间取一次样本，得到多个样本以后，计算遍历均值。当计算的均值稳定后，认为马尔可夫链已经收敛。也可以在马尔可夫链上并行进行多个随机游走，比较各个随机游走的遍历均值是否接近一致。
++ MCMC得到样本序列具有相关性。在需要独立样本时，可以对其再次进行随机抽样，比如每隔一段时间取一次样本，将这样得到的子样本集合作为独立样本集合。
++ MCMC比接受-拒绝法更容易实现，且其效率往往更高（样本拒绝率较低）。
+
+常用的马尔可夫链蒙特卡罗法有Metropolis-Hastings算法与吉布斯抽样。下面进行详细介绍：
+## Metropolis-Hastings算法
+Metropolis-Hastings算法已经在[随机过程Cheat Sheet](https://souyerin.netlify.app/posts/mathematics/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B-cheat-sheet/#%E5%88%86%E5%B8%83%E8%BF%91%E4%BC%BC)中简要提到过，下面我们对这一算法进行补充：
++ 随机过程Cheat Sheet中的预选矩阵$\mathbf{Q}$其实就是建议分布，而$\alpha$矩阵则称为接受分布。在实际的马尔科夫链随机游走中，如果在时刻$t-1$处于状态$x$（即$\mathbf{X}_{t-1}=x$），则先按建议分布抽样产生一个候选状态$x'$，然后按照接受分布抽样决定是否接受状态$x'$（接受概率为$\alpha_{x,x'}$）。若接受，则时刻$t$转移到状态$x'$，否则仍停留在状态$x$。
++ 对于建议分布的选择，主要有以下两种形式：
+    1. 假设建议分布是对称的，即$q_{ij}=q_{ji},\forall i,j\in\mathcal{S}$。这种形式的建议分布也被称为Metropolis选择，是算法最初采用的形式。此时接受分布可简化为
+        $$
+        \alpha_{x,x'}=\min\left\{1,\frac{\pi_{x'}}{\pi_x}\right\}
+        $$
+        Metropolis选择有两种常用特例：
+        + 第一种：建议分布取为条件分布$p(x'|x)$，其服从均值$x$，（协）方差为常数的（多元）正态分布；
+        + 第二种：建议分布$q_{x,x'}=q(|x-x'|)$，这也被称为随机游走Metropolis。
+
+        Metropolis选择的特点是当$x'$与$x$接近时，$q_{x,x'}$的概率值高，否则$q_{x,x'}$的概率值低。
+    2. 假设建议分布与当前状态$x$无关，即$q_{x,x'}=q_{x'}$，也称为独立抽样。此时接受分布可写为
+        $$
+        \alpha_{x,x'}=\min\left\{1,\frac{\pi_{x'}}{q_{x'}}\cdot\frac{q_{x}}{\pi_{x}}\right\}
+        $$
+        独立抽样的实现更简单，但可能收敛速度慢，通常选择接近目标分布$\pi_x$的分布作为建议分布$q_x$。
++ 当状态$x$为多元随机变量时，直接抽样往往比较困难，此时可以考虑对多元变量的每一分量的条件分布依次分别进行抽样，从而实现对整个多元变量的一次抽样，这种方法也被称作单分量Metropolis-Hastings算法。【具体略，可参见[博客文章](https://alex-mcavoy.github.io/mathematics/mathematical-statistics/f021daa8.html)】
+## 吉布斯抽样
+在阐述吉布斯抽样之前，先介绍满条件分布：
++ 设$\mathbf{x} = (x_1, x_2, \cdots, x_k)^\top$为$k$维随机变量，对应的马尔科夫链平稳分布$\pi_{\mathbf{x}} = \pi_{(x_1, x_2, \cdots, x_k)}$。如果条件概率分布$p(\mathbf{x}_I | \mathbf{x}_{-I})$中所有$k$个分量全部出现，其中
+    $$
+    \mathbf{x}_I = \{x_i, i \in I\},\,\mathbf{x}_{-I} = \{x_i, i \notin I\},\quad I \subseteq K = \{1, 2, \cdots, k\}
+    $$
+    那么称这种条件概率分布为满条件分布。
+    + 满条件分布有以下性质：对任意的$\mathbf{x} \in \mathcal{X}$和任意的$I \subseteq K$，有
+        $$
+        p(\mathbf{x}_I | \mathbf{x}_{-I}) = \frac{\pi_{\mathbf{x}}}{\displaystyle\int \pi_{\mathbf{x}} \, \mathrm{d}\mathbf{x}_I} \propto \pi_{\mathbf{x}}
+        $$
+        因此对任意的$\mathbf{x}, \mathbf{x}' \in \mathcal{X}$和任意的$I \subseteq K$，有
+        $$
+        \frac{p(\mathbf{x}'_I | \mathbf{x}'_{-I})}{p(\mathbf{x}_I | \mathbf{x}_{-I})} = \frac{\pi_{\mathbf{x}'}}{\pi_{\mathbf{x}}}
+        $$
+        这可以简化上述Metropolis-Hastings算法的运算。
++ 吉布斯抽样的基本想法是：从联合概率分布定义满条件概率分布，依次对满条件概率分布进行抽样，得到样本的序列。
+    + 具体而言，假设多元变量的联合概率分布为$p(\mathbf{x}) = p(x_1, x_2, \cdots, x_k)$。吉布斯抽样从一个初始样本$\mathbf{x}^{(0)} = (x_1^{(0)}, x_2^{(0)}, \cdots, x_k^{(0)})^\top$出发，不断进行迭代，每一次迭代得到联合分布的一个样本$\mathbf{x}^{(i)} = (x_1^{(i)}, x_2^{(i)}, \cdots, x_k^{(i)})^\top$。最终得到样本序列$\{\mathbf{x}^{(0)}, \mathbf{x}^{(1)}, \cdots, \mathbf{x}^{(n)}\}$。
+    + 在每次迭代中，依次对$k$个分量中的一个分量进行随机抽样。如果在第$i$次迭代中，对第$j$个分量进行随机抽样，那么抽样的分布是满条件概率分布$p(x_{j}|\mathbf{x}_{-j}^{(i)})$，这里$\mathbf{x}_{-j}^{(i)}$表示第$i$次迭代中分量$j$以外的其他分量。
++ 实际上，吉布斯抽样可以看作单分量Metropolis-Hastings算法的特殊情况。吉布斯抽样将建议分布取为满条件分布$q_{\mathbf{x},\mathbf{x}'}=p(x_j'|\mathbf{x}_{-j})$，而接受概率为
+    $$
+    \begin{aligned}
+    \alpha(\mathbf{x}, \mathbf{x}') &= \min\left\{1, \frac{\pi_{\mathbf{x}'} q_{\mathbf{x}', \mathbf{x}}}{\pi_{\mathbf{x}} q_{\mathbf{x}, \mathbf{x}'}}\right\}\\
+    &= \min\left\{1, \frac{p(x'_j | \mathbf{x}'_{-j}) p(x_j | \mathbf{x}'_{-j})}{p(x_j | \mathbf{x}_{-j}) p(x'_j | \mathbf{x}_{-j})}\right\} = 1
+    \end{aligned}
+    $$
+    其中利用了上述满条件分布的性质以及$\mathbf{x}_{-j}=\mathbf{x}'_{-j}$（每次只更新第$j$个分量）。所以其对应马尔科夫链的转移核就是满条件概率分布，吉布斯抽样对每次抽样的结果都接受，没有拒绝。
+    > 此处默认$q_{\mathbf{x},\mathbf{x}'}$不为$0$，即马尔科夫链不可约。
++ 下面给出吉布斯抽样的完整算法：
+    1. 初始化。给出初样本$\mathbf{x}^{(0)} = (x_1^{(0)}, x_2^{(0)}, \cdots, x_k^{(0)})^\top$。
+    2. 对$i$循环执行：  
+        设第$(i-1)$次迭代结束时的样本为$\mathbf{x}^{(i-1)} = (x_1^{(i-1)}, x_2^{(i-1)}, \cdots, x_k^{(i-1)})^\top$，则第$i$次迭代进行如下几步操作：
+        1. 由条件分布$p(x_1 | x_2^{(i-1)}, x_3^{(i-1)}, \cdots, x_k^{(i-1)})$抽取$x_1^{(i)}$；  
+            $\vdots$
+        2. 由条件分布$p(x_j | x_1^{(i)}, x_2^{(i)}, \cdots, x_{j-1}^{(i)}, x_{j+1}^{(i-1)}, \cdots, x_k^{(i-1)})$抽取$x_j^{(i)}$；  
+            $\vdots$
+        3. 由条件分布$p(x_k | x_1^{(i)}, x_2^{(i)}, \cdots, x_{k-1}^{(i)})$抽取$x_k^{(i)}$；得到第$i$次迭代值$\mathbf{x}^{(i)} = (x_1^{(i)}, x_2^{(i)}, \cdots, x_k^{(i)})^\top$。
+    3. 得到样本集合$\{\mathbf{x}^{(m+1)}, \mathbf{x}^{(m+2)}, \cdots, \mathbf{x}^{(n)}\}$。
+    4. 计算样本均值
+        $$
+        f_{mn} = \frac{1}{n-m} \sum_{i=m+1}^n f(\mathbf{x}^{(i)}).
+        $$
++ 吉布斯抽样适合于满条件概率分布容易抽样的情况，而单分量Metropolis-Hastings算法适合于满条件概率分布不容易抽样的情况，这时使用易于抽样的条件分布作为建议分布。
++ 另一方面，对于一些概率图模型，利用条件独立性，可以将联合概率分布的吉布斯采样分解为条件概率分布的乘积的抽样。这样可以大幅减少抽样的计算复杂度。
+
+___
+ok，这样我们终于把无监督学习的内容整理完了！最后用两个表格简单进行总结：
+
+| 方法 | 模型 | 策略 | 算法 |
+| :---: | :---: | :---: | :---: |
+| **聚类** | 层次聚类 | 类内样本距离最小 | 启发式算法 |
+| | k均值聚类 | 样本与类中心距离最小 | 迭代算法 |
+| | 高斯混合模型 | 似然函数最大 | EM 算法 |
+| **话题分析** | LSA | 平方损失最小 | SVD |
+| | NMF | 平方损失最小 | 非负矩阵分解 |
+| | PLSA | 似然函数最大 | EM 算法 |
+| | LDA | 后验概率估计 | 吉布斯抽样，变分推理 |
+
+| 算法 | 基本原理 | 收敛性 | 收敛速度 | 实现难易度 | 适合问题 |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| EM 算法 | 迭代计算、后验概率估计 | 收敛于局部最优 | 较快 | 容易 | 简单模型 |
+| 变分推理 | 迭代计算、后验概率近似估计 | 收敛于局部最优 | 较慢 | 较复杂 | 复杂模型 |
+| 吉布斯抽样 | 随机抽样、后验概率估计 | 依概率收敛于全局最优 | 较慢 | 容易 | 复杂模型 |
+
+___
+顺利在开学前整完！敬请期待《深度学习》篇！

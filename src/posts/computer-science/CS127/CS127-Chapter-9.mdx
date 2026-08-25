@@ -1,0 +1,376 @@
+---
+title: CS127 Chapter 9
+date: 2026-08-20 22:01:41
+categories: [计算机科学,CS127]
+tags:
+    - 优化模型
+    - 最优化理论
+cover: ./EECS127.png
+---
+
+本讲我们将介绍优化问题中的另一个重要概念——对偶性（duality）。利用对偶性可以将优化问题转化为对偶问题，不仅可以为原始问题的最优值提供下界，还能将非凸问题的求解转化为凸问题的求解。
+# 对偶性（Duality）
+## 拉格朗日函数（Lagrangian）
++ 在阐述对偶性理论之前，我们需要先定义拉格朗日函数。考虑下述原始优化问题：
+    $$
+    \begin{aligned}
+    \mathcal{P}:\quad \min_{\vec{x}\in\R^n}\quad &f_0(\vec{x})\\
+    \text{s.t.}\quad &f_i(\vec{x})\leq 0,\quad i=1,2,\cdots,m\\
+    &h_j(\vec{x})=0,\quad j=1,2,\cdots,p
+    \end{aligned} 
+    $$
+    我们希望将约束条件融入进目标函数中。对此，设约束条件对应的可行域为$\Omega$，我们考虑引入示性函数：
+    $$
+    \mathbf{1}_{\{C(\vec{x})\}}=\begin{cases}
+    0, &C(\vec{x})\text{为真}\\
+    +\infty,&C(\vec{x})\text{为假}
+    \end{cases}
+    $$
+    那么目标函数就可以转化为
+    $$
+    \begin{aligned}
+    \min_{\vec{x} \in \Omega} f_0(\vec{x})&= \min_{\vec{x} \in \mathbb{R}^n} \bigl\{ f_0(\vec{x}) + \mathbf{1}_{\{\vec{x} \in \Omega\}} \bigr\} \\
+    &= \min_{\vec{x} \in \mathbb{R}^n} \left\{ f_0(\vec{x}) + \sum_{i=1}^m \mathbf{1}_{\{f_i(\vec{x}) \le 0\}} + \sum_{j=1}^p \mathbf{1}_{\{h_j(\vec{x}) = 0\}}\right\}.
+    \end{aligned}
+    $$
+    将转化后的目标函数记作$F_0(\vec{x})$，那么当$\vec{x}\not\in\Omega$时，$F_0(\vec{x})=\infty$。
++ 这样我们就将约束优化问题转化为了无约束优化问题。然而，由于示性函数不可微，我们仍然无法直接使用无约束优化方法（如梯度下降）求解。于是我们考虑使用可微函数近似表示示性函数。具体而言，我们使用以下转换：
+    $$
+    \begin{aligned}
+    \mathbf{1}_{\{f_i(\vec{x}) \le 0\}}&=\max_{\lambda_i\in\R^+}\lambda_if_i(\vec{x})\\
+    \mathbf{1}_{\{h_j(\vec{x}) = 0\}}&=\max_{\nu_j\in\R}\nu_jh_j(\vec{x})
+    \end{aligned}
+    $$
+    为什么这个转换成立呢？以第一个式子为例：若$f_i(\vec{x})>0$，因为$\lambda_i f_i(\vec{x})$要尽量大，所以$\lambda_i$会趋向$+\infty$；若$f_i(\vec{x})\leq 0$，要让$\lambda_if_i(\vec{x})$尽量大，$\lambda_i$最终会取$0$。【第二个式子同理】
+    + 这样我们就可以将上述问题进一步转化为
+        $$
+        \begin{aligned}
+        \min_{\vec{x} \in \Omega} f_0(\vec{x})&= \min_{\vec{x} \in \mathbb{R}^n} \left\{ f_0(\vec{x}) + \sum_{i=1}^m \max_{\lambda_i \in \mathbb{R}_+} \lambda_i f_i(\vec{x}) + \sum_{j=1}^p \max_{\nu_j \in \mathbb{R}} \nu_j h_j(\vec{x}) \right\} \\
+        &= \min_{\vec{x} \in \mathbb{R}^n} \left\{ f_0(\vec{x}) + \max_{\vec{\lambda} \in \mathbb{R}_+^m} \sum_{i=1}^m \lambda_i f_i(\vec{x}) + \max_{\vec{\nu} \in \mathbb{R}^p} \sum_{j=1}^p \nu_j h_j(\vec{x}) \right\} \\
+        &= \min_{\vec{x} \in \mathbb{R}^n} \max_{\substack{\vec{\lambda} \in \mathbb{R}_+^m\\[3pt]\vec{\nu} \in \mathbb{R}^p}} \left\{ f_0(\vec{x}) + \sum_{i=1}^m \lambda_i f_i(\vec{x}) + \sum_{j=1}^p \nu_j h_j(\vec{x}) \right\}.\\
+        \end{aligned}
+        $$
+        这便得到了拉格朗日函数$L:\R^n\times\R^m\times\R^p\to\R$：
+        $$
+        L(\vec{x},\vec{\lambda},\vec{\nu})=f_0(\vec{x}) + \sum_{i=1}^m \lambda_i f_i(\vec{x}) + \sum_{j=1}^p \nu_j h_j(\vec{x}) 
+        $$
+        其中$\lambda_i,\nu_j$也称为拉格朗日乘子。  
+    + 拉格朗日函数相比原来带指示函数的目标函数更容易处理（虽然增加了两个优化参数，稍后我们会介绍如何处理）。实际上，拉格朗日乘子的引入相当于对超出约束的解进行惩罚，但相比示性函数这种“硬边界”更加柔和。
++ 拉格朗日函数具有下述性质：对任意给定$\vec{x}\in\R^n$，$(\vec{\lambda},\vec{\nu})$到$L(\vec{x},\vec{\lambda},\vec{\nu})$的函数是仿射函数，进而也是凹函数。【这会在后续对偶性理论中起到重要作用】
+> btw，关于拉格朗日函数，也可以参考国内《数学分析》或类似课程的多元微积分条件极值相关内容。
+## 弱对偶性（Weak Duality）
++ 我们对对偶性的讨论从下述拉格朗日函数优化问题开始：
+    $$
+    p^*=\min_{\vec{x} \in \mathbb{R}^n} \max_{\substack{\vec{\lambda} \in \mathbb{R}_+^m\\[3pt]\vec{\nu} \in \mathbb{R}^p}}L(\vec{x},\vec{\lambda},\vec{\nu})
+    $$
+    将上式中的$\min$和$\max$对调，就得到了对偶问题形式：
+    $$
+    d^*=\max_{\substack{\vec{\lambda} \in \mathbb{R}_+^m\\[3pt]\vec{\nu} \in \mathbb{R}^p}}\min_{\vec{x} \in \mathbb{R}^n}L(\vec{x},\vec{\lambda},\vec{\nu})   
+    $$
+    其正式定义如下：考虑上述原始优化问题$\mathcal{P}$，那么它的对偶问题$\mathcal{D}$定义为
+    $$
+    \begin{aligned}
+    \mathcal{D}:\quad d^*=\max_{\substack{\vec{\lambda} \in \mathbb{R}^m\\[3pt]\vec{\nu} \in \mathbb{R}^p}}\;&g(\vec{\lambda},\vec{\nu})\\
+    \text{s.t.}\quad &\lambda_i\geq 0,\quad i=1,2,\cdots,m
+    \end{aligned}
+    $$
+    其中$g:\R_+^m\times\R^p\to\R$为对偶函数，表达式为$g(\vec{\lambda},\vec{\nu})=\displaystyle\min_{\vec{x} \in \mathbb{R}^n}L(\vec{x},\vec{\lambda},\vec{\nu})$。
+    + 由此可知$g$函数的解可由一个无约束优化问题得到，且由上述拉格朗日函数性质可知，$g$函数一定是凹函数（$g$可看作一系列拉格朗日函数的逐点最小值）。
+    + 也就是说，无论原始问题$\mathcal{P}$的形式如何，对偶问题$\mathcal{D}$一定是一个凸优化问题。
++ 接下来我们将讨论对偶问题的解与原始问题解的关系，以说明将原始问题转化为对偶问题求解的策略是可行的。
+    + 具体而言，函数$f_0,g$与最优解$p^*,d^*$之间具有如下不等式关系：设$\vec{x}\in\Omega,\vec{\lambda}\in\R^m_+,\vec{\nu}\in\R^p$，那么有
+        $$
+        \begin{align}
+        &f_0(\vec{x}) \geq p^*,\; g(\vec{\lambda}, \vec{v}) \leq d^* \tag{a} \\
+        &f_0(\vec{x}) \geq L(\vec{x}, \vec{\lambda}, \vec{v}) \geq g(\vec{\lambda}, \vec{v}) \tag{b} \\
+        &f_0(\vec{x}) \geq d^*,\; g(\vec{\lambda}, \vec{v}) \leq p^* \tag{c}
+        \end{align}
+        $$
+        推导如下：
+        $$
+        \begin{align*}
+        p^* &= \min_{\vec{x}' \in \Omega} f_0(\vec{x}') \leq f_0(\vec{x}) \\
+        d^* &= \max_{\substack{\vec{\lambda}' \in \mathbb{R}^m_+\\[3pt]\vec{\nu}' \in \mathbb{R}^p}} g(\vec{\lambda}', \vec{\nu}') \geq g(\vec{\lambda}, \vec{\nu})
+        \tag{a}\\
+        g(\vec{\lambda}, \vec{v}) &= \min_{\vec{x}' \in \Omega} L(\vec{x}', \vec{\lambda}, \vec{v}) \leq L(\vec{x}, \vec{\lambda}, \vec{v})\leq \max_{\substack{\vec{\lambda}' \in \mathbb{R}^m_+\\[3pt]\vec{\nu}' \in \mathbb{R}^p}} L(\vec{x}, \vec{\lambda}', \vec{v}') =f_0(\vec{x})
+        \tag{b}\\
+        f_0(\vec{x}) &\geq g(\vec{\lambda}, \vec{\nu}) \quad \forall \vec{\lambda} \in \mathbb{R}_+^m,\; \forall \vec{\nu} \in \mathbb{R}^p \Longrightarrow f_0(\vec{x}) \geq \max_{\vec{\lambda}' \in \mathbb{R}_+^m} g(\vec{\lambda}', \vec{\nu}') = d^* \\
+        f_0(\vec{x}) &\geq g(\vec{\lambda}, \vec{\nu}) \quad \forall \vec{x} \in \Omega \Longrightarrow p^* = \min_{\vec{x}' \in \Omega} f_0(\vec{x}') \geq g(\vec{\lambda}, \vec{\nu}).
+        \tag{c}
+        \end{align*}
+        $$
++ 由上述关系可知，$g(\vec{\lambda}, \vec{\nu})\leq\{p^*,d^*\}\leq f_0(\vec{x})$，然而$p^*,d^*$之间的大小关系仍未确定。实际上，它们之间的关系与对偶性本身密切相关。具体而言：
+    1. 若上述问题中$p^*\geq d^*$，我们称其满足弱对偶性（weak duality）；
+    2. 若上述问题中$p^*= d^*$，我们称其满足强对偶性（strong duality）；
+    3. 定义$p^*-d^*$为对偶间隙（duality gap）。
++ 接下来我们给出一个重要命题：对于任意优化问题，弱对偶性总是成立，即对偶间隙一定非负。
+    + 实际上这一命题可看作下述极大极小不等式（minimax inequality）的一个推论：设$X$与$Y$为任意集合，$F:X\times Y\to\R$为任意函数，那么有
+        $$
+        \min_{x\in X}\max_{y\in Y}F(x,y)\geq \max_{y\in Y}\min_{x\in X}F(x,y)
+        $$
+        简单证明如下：因为
+        $$
+        F(x,y)\geq \min_{x'\in X}F(x',y)
+        $$
+        两边对$y$取最大值得
+        $$
+        \max_{y\in Y}F(x,y)\geq \max_{y\in Y}\min_{x\in X}F(x,y)
+        $$
+        由于上式右边为常数，故对左侧关于$x$取最小值不等号仍然成立，原命题得证。
+        > 注：上式两边对$y$取最大值时取的$y$可能不同，但不影响不等式结果。
+    + 那么如何理解这个不等式呢？可以用玩家博弈的先后手理解：
+        + 设玩家$X$希望对函数$F$最小化，而玩家$Y$希望对$F$最大化。
+        + 他们分别选择对变量$x$和$y$操作，而$\min$和$\max$的先后顺序对应了先后手（靠左侧为先手，靠右侧为后手，因为函数变量从左到右进行固定）。
+        + 对于玩家$X$，选择后手（先$\max$后$\min$）比先手（先$\min$后$\max$）得到的结果更好（即函数更小）。【玩家$Y$视角同理】
++ 那么如何利用弱对偶性呢？根据上述推导，我们可得对于任意$\vec{x}\in\Omega,(\vec{\lambda}, \vec{\nu})\in\R^m_+\times\R^p$，有
+    $$
+    f_0(\vec{x}) \geq p^* \geq d^* \geq g(\vec{\lambda}, \vec{\nu}) \implies f_0(\vec{x}) - g(\vec{\lambda}, \vec{\nu}) \geq f_0(\vec{x}) - p^*.
+    $$
+    于是，我们就能通过解函数与对偶函数之差得到解与最优解之间差距的上界。这可以作为优化算法迭代停止的依据。【这也被称作最优性证书（certificate of optimality）】
+## 强对偶性（Strong Duality）
++ 上面介绍的弱对偶性虽然具有普遍性，但只依赖弱对偶性无法精确计算最优解。此时我们就需要借助强对偶性，虽然它并不总是成立。
++ 强对偶性成立的条件有很多，下面我们介绍一种简单且广泛适用的条件：Slater条件。其具体表述如下：
+    + 设原始问题的可行域为$\Omega$，考虑原始问题约束条件中的函数$f_1,\cdots,f_m$（均为凸函数）和$h_1,\cdots,h_p$（均为仿射函数）。如果存在$\vec{x}\in\text{relint}(\Omega)$（即严格可行），使得对于任意$f_i,i\in\{1,2,\cdots,m\}$，当$f_i$为仿射函数时$f_i(\vec{x})\leq 0$，不是仿射函数时$f_i(\vec{x})< 0$，那么就称原始问题$\mathcal{P}$具有强对偶性，即对偶间隙为$0$。
+        > 注：这个条件实际上是精细Slater条件，与标准Slater条件的唯一区别在于后者对所有不等式约束函数都要求严格小于$0$。
+    + 关于Slater条件的证明在此作略，可参见Boyd的《凸优化》5.3.2节或[知乎文章](https://zhuanlan.zhihu.com/p/695039469)。【使用了分离超平面定理】
+    + 从直观上理解，Slater条件的本质是如果可行域的内部具有一个严格可行解，那么强对偶性就成立。
++ 下面我们给出两个用对偶问题求解原问题最优解的具体示例：
+    1. 最小范数问题（可参见[Chapter 1](/posts/computer-science/cs127/cs127-chapter-1/)）：原始问题形式为
+        $$
+        \begin{aligned}
+        \mathcal{P}:\quad p^*=\min_{\vec{x}\in\R^n}\|\vec{x}\|_2^2\\
+        \text{s.t.}\quad A\vec{x}=\vec{y}
+        \end{aligned}
+        $$
+        其中$A\in\R^{p\times n}$。由于问题只有等式约束，因此拉格朗日函数为
+        $$
+        L(\vec{x},\vec{\nu})=\|\vec{x}\|_2^2+\sum_{j=1}^p\nu_j(A\vec{x}-\vec{y})_j=\|\vec{x}\|_2^2+\vec{\nu}^\top(A\vec{x}-\vec{y}).
+        $$
+        从而得到对偶函数
+        $$
+        g(\vec{\nu})=\min_{\vec{x}\in\R^n}L(\vec{x},\vec{\nu})=\min_{\vec{x}\in\R^n}\left\{\|\vec{x}\|_2^2+\vec{\nu}^\top(A\vec{x}-\vec{y})\right\}
+        $$
+        因为拉格朗日函数为凸函数，所以直接将其对$\vec{x}$求偏导取零值：
+        $$
+        \nabla_{\vec{x}}L(\vec{x},\vec{\nu})=2\vec{x}+A^\top\vec{\nu}=\vec{0}\Longrightarrow \vec{x}^*=-\frac{1}{2}A^\top\vec{\nu}
+        $$
+        代回拉格朗日函数得到
+        $$
+        g(\nu)=\left(-\frac{1}{2}A^\top\vec{\nu}\right)^2-\frac{1}{2}\vec{\nu}^\top AA^\top\vec{\nu}-\vec{\nu}^\top\vec{y}=-\frac{1}{4}\vec{\nu}^\top AA^\top\vec{\nu}-\vec{\nu}^\top\vec{y}
+        $$
+        于是对偶问题即为
+        $$
+        d^*=\max_{\nu\in\R^p}\left\{-\frac{1}{4}\vec{\nu}^\top AA^\top\vec{\nu}-\vec{\nu}^\top\vec{y}\right\}=\min_{\nu\in\R^p}\left\{\frac{1}{4}\vec{\nu}^\top AA^\top\vec{\nu}+\vec{\nu}^\top\vec{y}\right\}
+        $$
+        这同样是一个凸优化问题，依旧使用求偏导取零点得到
+        $$
+        \nabla g(\vec{\nu})=\frac{1}{2}AA^\top\vec{\nu}+\vec{y}\Longrightarrow \vec{\nu}^*=-2(AA^\top)^{-1}\vec{y}
+        $$
+        由于原始问题是凸优化问题且约束函数是仿射函数，因此只要约束条件$A\vec{x}=\vec{y}$有解，问题就满足强对偶性。此时
+        $$
+        \vec{x}^*=-\frac{1}{2}A^\top\vec{\nu}^*=A(AA^\top)^{-1}\vec{y}
+        $$
+        便是原始问题的全局最优解。
+    2. 影子价格问题（拉格朗日乘子的经济学解释）：假设我们有两种原料$A$和$B$，分别有$200$千克和$300$千克，将它们混合制作成商品，有两种方案：
+        + 取$4$千克原料$A$和$1$千克原料$B$，加工成一份价值$20$的商品；
+        + 取$2$千克原料$A$和$3$千克原料$B$，加工成一份价值$15$的商品；
+
+        我们希望总销售额最大。具体而言，假设两种商品分别制作$q_1$份和$q_2$份，对应的优化问题即为
+        $$
+        \begin{aligned}
+        p^* = \max_{q_1, q_2 \in \mathbb{R}} \quad & 20q_1 + 15q_2 \\
+        \text{s.t.} \quad & 4q_1 + 2q_2 \leq 200 \\
+        & q_1 + 3q_2 \leq 300 \\
+        & q_1 \geq 0 \\
+        & q_2 \geq 0.
+        \end{aligned}
+        $$
+        这实际上可以看作一个线性规划（linear programming）问题（虽然最终参数解一般取整数）。我们考虑包含前两个约束条件的拉格朗日函数
+        $$
+        \begin{aligned}
+        \max_{q_1, q_2 \in \mathbb{R}_+} \bigl\{ 20q_1 + 15q_2 + \lambda_1 (200 - 4q_1 - 2q_2) + \lambda_2 (300 - q_1 - 3q_2) \bigr\} \\
+        = \max_{q_1, q_2 \in \mathbb{R}_+} \bigl\{ (20 - 4\lambda_1 - \lambda_2)q_1 + (15 - 2\lambda_1 - 3\lambda_2)q_2 + 200\lambda_1 + 300\lambda_2 \bigr\}.
+        \end{aligned}
+        $$
+        其中$\lambda_1$和$\lambda_2$可以理解为$1$千克原料$A$和$B$的“内部估值”。接着我们可以再考虑下述原料总估值的最小化问题：
+        $$
+        \begin{aligned}
+        \min_{\lambda_1,\lambda_2\in\R_+}&200\lambda_1+300\lambda_2\\
+        \text{s.t.}\quad &20 - 4\lambda_1 - \lambda_2\leq 0\\
+        &15 - 2\lambda_1 - 3\lambda_2\leq 0
+        \end{aligned}
+        $$
+        其中约束条件可以理解为每种商品的售价都不超过其所耗原料的内部估值。
+        + 实际上，这也是上述优化问题的对偶问题，且显然满足强对偶性条件。【给全部原料给出的最小总估值，恰好等于原问题能够达到的最大总销售额】
+        + $\lambda_i$也被称为影子价格（shadow prices），反映了我们愿意为违反约束条件付出的代价。
+## Karush-Kuhn-Tucker（KKT）条件
+下面我们再介绍另一个与强对偶性有关的重要条件，即KKT条件。其具体形式如下：
++ 设$(\vec{x}, \vec{\lambda}, \vec{v}) \in \mathbb{R}^n \times \mathbb{R}^m \times \mathbb{R}^p$为决策变量和拉格朗日乘子，目标函数$f_0$以及约束函数$f_1, \ldots, f_m, h_1, \ldots, h_p$均可微。若$(\vec{x}, \vec{\lambda}, \vec{v})$满足：
+    1. $\vec{x}$为原始问题$\mathcal{P}$的可行解，即
+        $$
+        \begin{aligned}
+        f_i(\vec{x}) \leq 0, \quad i=1,2,\cdots,m\\
+        h_j(\vec{x}) = 0, \quad j=1,2,\cdots,p
+        \end{aligned}
+        $$
+    2. $(\vec{\lambda}, \vec{v})$为对偶问题$\mathcal{D}$的可行解，即
+        $$
+        \vec{\lambda}_i \geq 0, \quad i=1,2,\cdots,m
+        $$
+    3. 互补松弛条件：【实际上，这个条件可理解为筛选出活跃约束（将非活跃约束乘子取$0$）】
+        $$
+        \vec{\lambda}_i f_i(\vec{x}) = 0, \quad i=1,2,\cdots,m
+        $$
+    4. 平稳性（也称一阶条件）：
+        $$
+        \vec{0} = \nabla_{\vec{x}} L(\vec{x}, \vec{\lambda}, \vec{v})
+        = \nabla f(\vec{x}) + \sum_{i=1}^m \vec{\lambda}_i \nabla f_i(\vec{x}) + \sum_{j=1}^p \vec{v}_j \nabla h_j(\vec{x})
+        $$
+    
+    则称其满足KKT条件。
++ 实际上，如果原始问题$\mathcal{P}$满足强对偶性，且对应的目标函数与约束函数可微，$(\vec{x}^*,\vec{\lambda}^*,\vec{\nu}^*)$为原始问题与对偶问题的最优解，那么它就满足KKT条件。【KKT条件是强对偶性的必要条件】
+    + 简单证明：由上述前提可知
+        $$
+        \begin{aligned}
+        \lambda_i^*f_i(\vec{x}^*)\leq 0,\quad i=1,2,\cdots,m\\
+        \nu_j^*h_j(\vec{x}^*)=0,\quad j=1,2,\cdots,p
+        \end{aligned}
+        $$
+        而根据之前对弱对偶性的推导可知：
+        $$
+        d^* = g(\vec{\lambda}^*, \vec{\nu}^*) = \min_{\vec{x} \in \mathbb{R}^n} L(\vec{x}, \vec{\lambda}^*, \vec{\nu}^*) \leq L(\vec{x}^*, \vec{\lambda}^*, \vec{\nu}^*) = f_0(\vec{x}^*) + \sum_{i=1}^m \lambda_i^* f_i(\vec{x}^*) + \sum_{j=1}^p \nu_j^* h_j(\vec{x}^*) \leq f_0(\vec{x}^*) = p^*
+        $$
+        又根据强对偶性，$d^*=p^*$，故中间所有不等号都可去等。于是：
+        + 第一个不等号取等：$\vec{x}^*$为拉格朗日函数关于$\vec{x}$的最小值点，故$\nabla_{\vec{x}} L(\vec{x}, \vec{\lambda}, \vec{v})=\vec{0}$；
+        + 第二个不等号去等：$\displaystyle\sum_{i=1}^m \lambda_i^* f_i(\vec{x}^*)$必须为$0$，因此$\lambda_i^* f_i(\vec{x}^*)$对任意$i$均成立（即互补松弛条件）。
+
+        而前两个条件显然成立，因此KKT条件成立。
++ 那么KKT条件能否推出强对偶性呢？在凸性条件下是可以的。具体而言，设原始问题$\mathcal{P}$中目标函数$f_0$与约束函数$f_1,\cdots,f_m,h_1,\cdots,h_p$均可微，$f_0,f_1,\cdots,f_m$为凸函数，$h_1,\cdots,h_p$为仿射函数，如果$(\tilde{\vec{x}},\tilde{\vec{\lambda}},\tilde{\vec{\nu}})$满足KKT条件，那么原始问题就是凸优化问题，满足强对偶性，且$(\tilde{\vec{x}},\tilde{\vec{\lambda}},\tilde{\vec{\nu}})$就是原始问题和对偶问题的最优解。
+    + 也就是说，对于凸优化问题，KKT条件与强对偶性是相互等价的。【同时满足KKT条件的解一定是最优解】
++ 综合上述推导，我们就能得到利用KKT条件解决凸优化问题的策略：
+    1. 设原始问题为$\mathcal{P}$，验证$\mathcal{P}$的目标函数与约束条件函数均满足凸性条件且可微；
+    2. 验证$\mathcal{P}$满足Slater条件或$\mathcal{P}$和$\mathcal{D}$满足强对偶性；
+    3. 计算$\mathcal{P}$和$\mathcal{D}$对应的KKT条件，由此得到最优解参数。
+
+    然而，由KKT条件构造方程组得到的解不一定就是全局最优解。此时可以考虑对原始问题进行简化（如引入松弛变量），或者生成多个候选解，再代回KKT条件进行验证。
+
+## 锥对偶性（Cone Duality）
+拉格朗日函数与对偶性还可以推广到约束条件为广义不等式的优化问题中。广义不等式的定义如下：
++ 设$K\subseteq\R^n$为一个正常锥，$\text{int}(K)$为$K$的内部。那么对于任意两个向量$\vec{u},\vec{v}\in\R^n$，它们之间的关系可以用$K$诱导出的不等关系$\succ_K$（$\succeq_K$）表示。具体而言，
+    + 若$\vec{u}-\vec{v}\in K$，则称$\vec{u}\succeq_K\vec{v}$或$\vec{v}\preceq_K\vec{u}$；
+    + 若$\vec{u}-\vec{v}\in \text{int}(K)$，则称$\vec{u}\succ_K\vec{v}$或$\vec{v}\prec_K\vec{u}$；
+
+    特别地，如果代入$\vec{0}$向量，可以得到：
+    $$
+    \begin{aligned}
+    \vec{u}\in K\Longrightarrow \vec{u}\succeq_K\vec{0}\\
+    -\vec{v}\in K\Longrightarrow \vec{v}\preceq_K\vec{0}\\
+    \vec{u}\in \text{int}(K)\Longrightarrow \vec{u}\succ_K\vec{0}\\
+    -\vec{v}\in \text{int}(K)\Longrightarrow \vec{v}\prec_K\vec{0}\\
+    \end{aligned}
+    $$
+    注：当$\vec{u}-\vec{v}\not\in K$时，$\vec{u},\vec{v}$之间就无法用$K$诱导的不等关系表述。
++ 实际上，之前我们已经接触过一些广义不等式。比如，在定义半正定矩阵的时候，使用$A\succeq 0$就是由正常锥$\mathbb{S}_+^n$诱导出的关系。
++ 对之前的优化问题，我们也可以用广义不等式简化表示。比如，对于下述优化问题
+    $$
+    \begin{aligned}
+    \min_{\vec{x} \in \mathbb{R}^n} \quad & f_0(\vec{x}) \\
+    \text{s.t.} \quad & f_i(\vec{x}) \leq 0, \quad i =1, \cdots, m.
+    \end{aligned}
+    $$
+    考虑正常锥$K=\R^m_+=\{\vec{x}\in\R^m\mid x_i\geq 0,i=1,\cdots,m\}$，定义函数$\vec{f}:\R^n\to\R^m$为
+    $$
+    \vec{f}(\vec{x})=\begin{bmatrix}f_1(\vec{x})\\\vdots\\f_m(\vec{x})\end{bmatrix}
+    $$
+    那么这个优化问题可以简写为
+    $$
+    \begin{aligned}
+    \min_{\vec{x} \in \mathbb{R}^n} \quad & f_0(\vec{x}) \\
+    \text{s.t.} \quad & \vec{f}(\vec{x}) \preceq_K \vec{0}, \quad i =1, \cdots, m.
+    \end{aligned}
+    $$
++ 广义不等式具有传递性：对于指定正常锥$K$，若$\vec{v}_1\succeq_K\vec{v}_2$，$\vec{v}_2\succeq_K\vec{v}_3$，那么有$\vec{v}_1\succeq_K\vec{v}_3$。（其他不等号同理）
++ 利用上述定义与推导，我们可以得到广义约束优化问题的形式：
+    + 设目标函数$f_0:\R^n\to\R$，$\vec{f}_i:\R^n\to\R^{d_i},i=1,2,\cdots,m$为向量值不等式约束函数，$K\subseteq\R^{d_i}$为正常锥（也被称为约束锥），记$\displaystyle d=\sum_{i=1}^md_i$。另设$h_j:\R^n\to\R,j=1,\cdots,p$为等式约束函数。那么我们就得到广义约束优化问题：
+        $$
+        \begin{aligned}
+        \mathcal{P}: \quad 
+        p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad & f_0(\vec{x}) \\
+        \text{s.t.} \quad & \vec{f}_i(\vec{x}) \preceq_{K_i} \vec{0}, \quad i=1,\cdots,m \\
+        & h_j(\vec{x}) = 0, \quad j =1,\cdots,p.
+        \end{aligned}
+        $$
++ 下面对这个优化问题的对偶问题进行推导。首先引入示性函数：
+    $$
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \left[ f_0(\vec{x}) + \sum_{i=1}^m \mathbf{1}_{\{\vec{f}_i(\vec{x}) \preceq_{K_i} \vec{0}\}} + \sum_{j=1}^p \mathbf{1}_{\{h_j(\vec{x}) = 0\}}\right].
+    $$
+    尝试将指示函数替换为拉格朗日乘子，我们得到
+    $$
+    \begin{aligned}
+    \mathbf{1}_{\{\vec{f}_i(\vec{x}) \preceq_{K_i} \vec{0} \}} &= \max_{\substack{\vec{\lambda}_i \in \mathbb{R}^{d_i} \\ \vec{\lambda}_i \succeq_{K_i^*}\vec{0}}} \vec{\lambda}_i^\top \vec{f}_i(\vec{x}),\\
+    \mathbf{1}_{\{h_j(\vec{x}) = 0\}}&=\max_{\nu_j\in\R}\nu_jh_j(\vec{x})
+    \end{aligned}
+    $$
+    其中$K_i^*$表示$K_i$在$\R^{d_i}$上的对偶锥。【可以通过定义证明】
+    > 注：这里的$\vec{\lambda}_i^\top \vec{f}_i(\vec{x})$可以替换为广义内积$\langle\vec{\lambda}_i,\vec{f}_i(\vec{x})\rangle$。
+
+    由此我们可以得到优化问题的拉格朗日函数形式：
+    $$
+    p^*= \min_{\vec{x} \in \mathbb{R}^n} \; 
+       \max_{\substack{
+           \vec{\lambda} \in \mathbb{R}^d \\ 
+           \vec{\nu} \in \mathbb{R}^p\\
+           \vec{\lambda}_i \succeq_{K_i^*} \vec{0},\;i=1,\cdots,m.
+       }} 
+       \left[ f_0(\vec{x}) + \sum_{i=1}^m \vec{\lambda}_i^\top \vec{f}_i(\vec{x}) + \sum_{j=1}^p \nu_j h_j(\vec{x}) \right]
+    $$
+    其中拉格朗日函数定义为
+    $$
+    L(\vec{x},\vec{\lambda},\vec{\nu})\coloneqq f_0(\vec{x}) + \sum_{i=1}^m \vec{\lambda}_i^\top \vec{f}_i(\vec{x}) + \sum_{j=1}^p \nu_j h_j(\vec{x})
+    $$
+    因此对偶函数定义为
+    $$
+    g(\vec{\lambda},\vec{\nu})\coloneqq\min_{\vec{x} \in \mathbb{R}^n}L(\vec{x},\vec{\lambda},\vec{\nu})
+    $$
+    从而对偶问题可表示为
+    $$
+    \begin{aligned}
+    \mathcal{D}:\quad d^*=\max_{\substack{\vec{\lambda} \in \mathbb{R}^m\\[3pt]\vec{\nu} \in \mathbb{R}^p}}\;&g(\vec{\lambda},\vec{\nu})\\
+    \text{s.t.}\quad &\vec{\lambda}_i\succeq_{K_i} \vec{0},\quad i=1,2,\cdots,m
+    \end{aligned}
+    $$
+    其弱对偶性仍然满足。
++ 那么广义不等式体系中是否仍然有Slater条件呢？有的，只需要引入广义凸性概念：设$\vec{f}: \mathbb{R}^n \to \mathbb{R}^d$，且$K \subseteq \mathbb{R}^d$为一个正常锥，
+    + 若对任意$\alpha \in [0, 1]$和$\vec{x}, \vec{y} \in \mathbb{R}^n$，有
+        $$
+        \vec{f}(\alpha \vec{x} + (1 - \alpha) \vec{y}) \preceq_K \alpha \vec{f}(\vec{x}) + (1 - \alpha) \vec{f}(\vec{y})
+        $$
+        则称$\vec{f}$为$K$-凸函数。
+    + 若对任意$\alpha \in (0, 1)$和$\vec{x}, \vec{y} \in \mathbb{R}^n$且$\vec{x} \neq \vec{y}$，有
+        $$
+        \vec{f}(\alpha \vec{x} + (1 - \alpha) \vec{y}) \prec_K \alpha \vec{f}(\vec{x}) + (1 - \alpha) \vec{f}(\vec{y})
+        $$
+        称$\vec{f}$为$K$-严格凸函数。
+    
+    这样我们就能得到广义Slater条件：对于下述优化问题
+    $$
+    \begin{aligned}
+    \mathcal{P}: \quad 
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad & f_0(\vec{x}) \\
+    \text{s.t.} \quad & \vec{f}_i(\vec{x}) \preceq_{K_i} \vec{0}, \quad i=1,\cdots,m \\
+    & h_j(\vec{x}) = 0, \quad j =1,\cdots,p.
+    \end{aligned}
+    $$
+    如果：
+    + $f_0 : \mathbb{R}^n \to \mathbb{R}$是凸函数；
+    + $\vec{f}_i : \mathbb{R}^n \to \mathbb{R}^{d_i},\;i =1, \cdots, m$是$K_i$-凸函数，其中$K_i \subseteq \mathbb{R}^{d_i}$是一个正常锥；
+    + $h_j : \mathbb{R}^n \to \mathbb{R},\;j=1,\cdots,p$是仿射函数；
+    + 存在某个点$\vec{x} \in \text{relint}(\Omega)$是严格可行的，即满足：
+        $$
+        \begin{aligned}
+        &\vec{f}_i(\vec{x}) \prec_{K_i} \vec{0},\quad i =1, \cdots, m\\
+        &h_j(\vec{x}) = 0,\quad j=1,\cdots,p
+        \end{aligned}
+        $$
+
+    那么原问题$\mathcal{P}$及其对偶问题$\mathcal{D}$满足强对偶性，即对偶间隙为$0$。
