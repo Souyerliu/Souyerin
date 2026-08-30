@@ -7,7 +7,7 @@ import sharp from "sharp";
 const dir = "public/images";
 
 // 首页分类卡片封面（与 src/theme.config.ts 的 home.selectedCategories 对应）
-const targets = ["NLP.png", "61B-header.png", "EECS127.png", "ml.png"];
+const targets = ["NLP.png", "61B-header.png", "ml.png"];
 
 for (const file of targets) {
   const input = join(dir, file);

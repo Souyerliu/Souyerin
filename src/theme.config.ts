@@ -194,10 +194,6 @@ export default defineConfig({
         cover: "/images/61B-header.webp",
       },
       {
-        name: "CS127",
-        cover: "/images/EECS127.webp",
-      },
-      {
         name: "机器学习方法",
         cover: "/images/ml.webp",
       },

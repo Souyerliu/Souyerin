@@ -8,7 +8,7 @@ cover: ./ml2.png
 ---
 
 + 从本讲开始，我们将踏入无监督学习方法的学习旅程中。在李航的《机器学习方法》里，无监督学习任务被分为聚类、降维、话题分析和概率模型估计。
-+ 其中，降维方法（主成分分析PCA，奇异值分解SVD）已经在[CS127](/posts/computer-science/cs127/cs127-chapter-4/)中有所涉及，故笔者考虑不再重复。
++ 其中，降维方法（主成分分析PCA，奇异值分解SVD）已经在[CS127](https://souyerin.netlify.app/posts/computer-science/cs127/cs127-chapter-4/)中有所涉及，故笔者考虑不再重复。
 
 本讲将介绍常用的聚类算法，包括层次聚类与k均值聚类。不过在此之前，笔者决定先将之前遗漏的k近邻算法补充在这里，正好可以作为对照。
 # k近邻法
@@ -38,7 +38,7 @@ k近邻法于1967年由Cover和Hart提出，其算法核心非常简单：
         d_{ij} = \left( \sum_{k=1}^D |x_{ki} - x_{kj}|^p \right)^{\frac{1}{p}}
         $$
         其中$p\geq 1$。
-    + 特别地，$p=2$时也称为欧氏距离，$p=1$时也称为曼哈顿距离，$p=\infty$时为各坐标距离最大值。【详细理论可见[CS127](/posts/computer-science/cs127/cs127-chapter-2/)相关内容】
+    + 特别地，$p=2$时也称为欧氏距离，$p=1$时也称为曼哈顿距离，$p=\infty$时为各坐标距离最大值。【详细理论可见[CS127](https://souyerin.netlify.app/posts/computer-science/cs127/cs127-chapter-2/)相关内容】
     + 由不同的距离度量所确定的最近邻点是不同的。
 ### k值选择
 $k$值的选择会对k近邻法的结果产生重大影响：

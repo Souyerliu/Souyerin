@@ -288,8 +288,8 @@
     position: fixed;
     width: 15rem;
     top: 0;
-    height: 100vh;
-    height: 100dvh;
+    height: calc(100vh - 3.5rem);
+    height: calc(100dvh - 3.5rem);
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;

@@ -56,7 +56,7 @@ cover: ./ml2.png
     $$
     因此可以得到$\mathbf{X}\approx\mathbf{T}\mathbf{Y}$。这便是潜在语义分析的核心模型。
 ## LSA算法
-+ 由上述分析可知，LSA算法的关键在于如何将矩阵$\mathbf{X}$分解为话题向量与文本在话题向量空间的表示。这里就需要用到奇异值分解与低秩近似的知识（可参见[CS 127笔记](/posts/computer-science/cs127/cs127-chapter-4/#奇异值分解singular-value-decompositionsvd)）。
++ 由上述分析可知，LSA算法的关键在于如何将矩阵$\mathbf{X}$分解为话题向量与文本在话题向量空间的表示。这里就需要用到奇异值分解与低秩近似的知识（可参见[CS 127笔记](https://souyerin.netlify.app/posts/computer-science/cs127/cs127-chapter-4/#奇异值分解singular-value-decompositionsvd)）。
 + 矩阵$\mathbf{X}$的截断奇异值分解如下：
     $$
     \mathbf{X} \approx \mathbf{U}_k \mathbf{\Sigma}_k \mathbf{V}_k^\top = 

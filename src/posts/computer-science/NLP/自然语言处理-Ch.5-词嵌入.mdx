@@ -47,7 +47,7 @@ cover: ./cover.png
         实际上，点互信息会倾向于不经常发生的事件。为此，我们可以考虑进行加权调节，或者使用加一平滑。
         > 更多关于点互信息的概念可参考[sci-kit learn文档](https://scikit-learn.cn/stable/modules/clustering.html#mutual-info-score)。
 + 那么如何通过词向量衡量两个词之间的相似度？我们可以使用余弦相似度进行度量（具体略）。
-+ 能否对稀疏共现矩阵进行数据压缩/降维？可以！使用奇异值分解即可。【参见[CS 127笔记](/posts/computer-science/cs127/cs127-chapter-4/#奇异值分解singular-value-decompositionsvd)】
++ 能否对稀疏共现矩阵进行数据压缩/降维？可以！使用奇异值分解即可。【参见[CS 127笔记](https://souyerin.netlify.app/posts/computer-science/cs127/cs127-chapter-4/#奇异值分解singular-value-decompositionsvd)】
 ## Word2Vec
 + 为解决传统词嵌入计算复杂度高的问题，2013年，Google的Mikolov等人提出了Word2Vec模型。它通过引入神经网络架构，可以将稀疏的向量转为稠密向量。
 + Word2Vec的核心理念是：不再统计每个词$w$在某个词附近出现的频率，而是训练一个分类器来执行一个二元预测任务：词$w$是否可能出现在某个词附近？实际上，我们并不关心这个预测任务本身，而是将分类器学习到的权重作为词的嵌入表示。
