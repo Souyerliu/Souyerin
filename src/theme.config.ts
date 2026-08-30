@@ -278,6 +278,14 @@ export default defineConfig({
         avatar: "https://wavedrom.com/images/favicon.ico",
         color: "#141414",
       },
+      {
+        url: "https://souyerliu.github.io/slp3_translation/",
+        title: "SLP3 中文翻译",
+        author: "Souyer",
+        desc: "笔者使用 AI 翻译的中文版 SLP3 教材。",
+        avatar: "https://web.stanford.edu/favicon.ico",
+        color: "#79e16f",
+      },
     ],
   },
   copyright: {

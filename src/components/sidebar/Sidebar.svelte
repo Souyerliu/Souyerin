@@ -288,10 +288,19 @@
     position: fixed;
     width: 15rem;
     top: 0;
+    height: 100vh;
+    height: 100dvh;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow: hidden;
   }
 
   #sidebar.affix .panels {
-    height: 100vh;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
   }
 
   /* Panels */

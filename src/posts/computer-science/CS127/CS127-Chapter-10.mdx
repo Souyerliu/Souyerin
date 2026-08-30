@@ -1,0 +1,474 @@
+---
+title: CS127 Chapter 10
+date: 2026-08-24 22:59:12
+categories: [计算机科学,CS127]
+tags:
+    - 优化模型
+    - 最优化理论
+cover: ./EECS127.png
+---
+
+这一讲我们将介绍优化问题中的一种典型分类：数学规划（Programming）。
++ 实际上，我们遇到的大多数优化问题都可以被整理成规划问题的形式，而规划问题有多种高效的求解方法。
+# 规划问题（Programming）
+## 线性规划（Linear Programms）
+我们从最简单的规划问题，即线性规划开始。
++ 线性规划的目标函数与约束条件均为仿射函数，其标准形式如下（目标函数不考虑常数项）：
+    $$
+    \begin{aligned}
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad &\vec{c}^\top \vec{x} \\
+    \text{s.t.} \quad &A \vec{x} = \vec{y}, \\
+    & \vec{x} \geq \vec{0}.
+    \end{aligned}
+    $$
+    实际上，任意线性规划都可以转化为上述标准形式。具体而言，如果原始线性规划问题：
+    + 具有不等式约束，可以引入松弛变量转为等式约束 + 松弛变量非负约束；
+    + 存在没有非负约束的变量，可以引入两个非负约束松弛变量，分别表示该变量的正部与负部，这样就可以用这两个松弛变量之差代替。
+        <Note type="primary" title="简单证明">
+        例：一种线性规划的常见形式如下：
+        $$
+        \begin{aligned}
+        p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad &\vec{c}^\top \vec{x} \\
+        \text{s.t.} \quad &A \vec{x} \leq \vec{y}
+        \end{aligned}
+        $$
+        可将其转化为标准形式：
+        $$
+        \begin{aligned}
+        \min_{\vec{z}} \quad &(\tilde{\vec{c}})^\top \vec{z} \\
+        \text{s.t.} \quad &A' \vec{z} = \vec{y}, \\
+        &\vec{z} \ge \vec{0}
+        \end{aligned}
+        $$
+        其中：
+        $$
+        \begin{aligned}
+        &\vec{x} = \vec{x}^+ - \vec{x}^-, \quad \vec{s} = \vec{y}-A\vec{x}\\
+        &\vec{z} = \begin{pmatrix} \vec{x}^+ \\ \vec{x}^- \\ \vec{s} \end{pmatrix},\quad\tilde{\vec{c}} = \begin{pmatrix} \vec{c} \\ -\vec{c} \\ \vec{0} \end{pmatrix},\quad A' = \begin{pmatrix} A & -A & I \end{pmatrix}
+        \end{aligned}
+        $$
+        </Note>
++ 线性规划问题属于凸优化问题，且其可行域一定是凸集。
++ 上述线性规划问题标准形式的对偶问题形式如下：
+    $$
+    \begin{aligned}
+    d^* = \max_{\substack{\vec{\lambda} \in \mathbb{R}^n\\\vec{\nu} \in \mathbb{R}^m}} \ & -\vec{y}^\top \vec{\nu} \\
+    \text{s.t.} \quad & \vec{c} - \vec{\lambda} + A^\top \vec{\nu} = \vec{0}, \\
+    & \vec{\lambda} \geq \vec{0}.
+    \end{aligned}
+    $$
+    简单推导如下：原始问题的拉格朗日函数为
+    $$
+    L(\vec{x}, \vec{\lambda}, \vec{\nu}) = \vec{c}^\top \vec{x} - \vec{\lambda}^\top \vec{x} + \vec{\nu}^\top (A\vec{x} - \vec{y}) = (\vec{c} - \vec{\lambda} + A^\top \vec{\nu})^\top \vec{x} - \vec{\nu}^\top \vec{y}
+    $$
+    因此对偶函数为
+    $$
+    \begin{aligned}
+    g(\vec{\lambda}, \vec{\nu}) &= \min_{\vec{x} \in \mathbb{R}^n} \left\{ (\vec{c} - \vec{\lambda} + A^\top \vec{\nu})^\top \vec{x} - \vec{\nu}^\top \vec{y} \right\} \\
+    &= \min_{\vec{x} \in \mathbb{R}^n} \left\{ (\vec{c} - \vec{\lambda} + A^\top \vec{\nu})^\top \vec{x} \right\} - \vec{\nu}^\top \vec{y} \\
+    &= \begin{cases} 
+    -\vec{\nu}^\top \vec{y}, &  \vec{c} - \vec{\lambda} + A^\top \vec{\nu} = \vec{0}, \\
+    -\infty, & \text{otherwise}.
+    \end{cases}
+    \end{aligned}
+    $$
+    只考虑$\vec{c} - \vec{\lambda} + A^\top \vec{\nu} = \vec{0}$的情形（作为约束条件），就得到上述对偶问题。
++ 线性规划问题有多种方法进行求解。所有带约束的凸优化问题求解方法都可以用于线性规划，其中最常用的方法是内点法（interior method），这会在之后进行介绍。这里我们先介绍线性规划专用的方法：单纯形法。
++ 单纯形法（simplex algorithm）由George Dantzig与1947年提出。其核心思想是：核心思想在于：如果线性规划问题的可行域是有界的，那么其至少存在一个最优解是其可行域的一个“顶点”。
+    + 要证明这一论断，我们需要先考察线性规划可行域的结构。定义以下概念：
+        + 多面体（polyhedron）：空间中有限个半平面的交集。
+        + 多边形（polygon）：有界的多面体。【也称为多胞形（polytope）】
+
+        由此可知线性规划的可行域属于多面体。以标准形式为例，其可行域可由如下半平面交集构成：
+        $$
+        \begin{aligned}
+        &\{\vec{x}\in\R^n\mid \vec{a}_i^\top\vec{x}\leq y_i\}\\
+        &\{\vec{x}\in\R^n\mid \vec{a}_i^\top\vec{x}\geq y_i\}\\
+        &\{\vec{x}\in\R^n\mid x_j\geq 0\}
+        \end{aligned}
+        $$
+        其中$\vec{a}_i^\top$为矩阵$A$的行向量，$y_i,x_j$分别为$\vec{y}$与$\vec{x}$的分量。
+    + 再定义极值点：设集合$K\subseteq\R^n$，那么如果对于$\vec{x}\in K$，不存在$\vec{y},\vec{z}\in K\setminus\{\vec{x}\}$，$\theta\in[0,1]$使得$\vec{x}=\theta\vec{y}+(1-\theta)\vec{z}$，那么就称$\vec{x}$为集合$K$的极限点。
+        + 特别地，当$K$为多面体，那么其极值点也被称为多面体的顶点。可以证明，有界多面体只有有限个顶点，且这些顶点构成这个有界多面体的凸包【可参见[知乎文章](https://zhuanlan.zhihu.com/p/641692282)】。
+    + 有了这些定义，我们可以得到线性规划的主定理：对于上述线性规划的标准形式，设可行域$\Omega=\{\vec{x}\in\R^n\mid A\vec{x}=\vec{y},\vec{x}\geq\vec{0}\}$有界（即可行域是有界多面体），那么线性规划的最优值可在其可行域的顶点取到。【注：这并不代表最优值点一定是顶点】
+        + 定理证明如下：由上述理论可知$\Omega$可表示为顶点（向量）的凸包。记其顶点向量为$\vec{v}_1,\cdots,\vec{v}_k$，那么对任意$\vec{x}\in\Omega$，其可表示为顶点向量的凸组合，即
+            $$
+            \vec{x}=\sum_{i=1}^k\alpha_i\vec{v}_i,\quad \alpha_i\geq 0,\sum_{i=1}^k\alpha_i=1
+            $$
+            那么线性规划问题就可以改写为
+            $$
+            \begin{aligned}
+            p^* =  \min_{\alpha_1, \dots, \alpha_k \in \mathbb{R}} \;&\sum_{i=1}^k \alpha_i (\vec{c}^\top \vec{v}_i) \\
+            \text{s.t. } \quad& \alpha_i \geq 0,i=1,\cdots,k,\\
+            & \sum_{i=1}^k \alpha_i = 1.
+            \end{aligned}
+            $$
+            而
+            $$
+            \begin{aligned}
+            \sum_{i=1}^k \alpha_i (\vec{c}^\top \vec{v}_i)
+            &\ge \sum_{i=1}^k \alpha_i \left( \min_{j \in \{1, \dots, k\}} \vec{c}^\top \vec{v}_j \right) \\
+            &= \left( \min_{j \in \{1, \dots, k\}} \vec{c}^\top \vec{v}_j \right) \underbrace{\left( \sum_{i=1}^k \alpha_i \right)}_{=1} \\
+            &= \min_{j \in \{1, \dots, k\}} \vec{c}^\top \vec{v}_j.
+            \end{aligned}
+            $$
+            因此线性规划问题目标函数的最小值一定能在$\vec{x}$为$\vec{v}_1,\cdots,\vec{v}_k$中的一个时取到。
+    + 根据这一主定理，我们就能得到单纯形法解决线性规划问题的通用步骤（前提是已经转化为标准形式）：
+        1. 以可行域$\Omega$的一个顶点$\vec{v}$作为初始解；
+        2. 如果其存在相邻顶点$\vec{w}$满足$\vec{c}^\top\vec{w}< \vec{c}^\top\vec{v}$，那么就将$\vec{v}$更新为$\vec{w}$；
+        3. 循环上述步骤，直到所有顶点都被搜索完，得到最终最优解$\vec{v}^*$。
+
+        当然，我们也可以将这种方法推广到无界可行域线性规划问题中，其核心仍然是局部搜索 + 贪心迭代。
+## 二次规划（Quadratic Programs）
+顾名思义，二次规划问题的目标函数为二次函数，但约束函数仍然为仿射函数。其标准形式如下：
+    $$
+    \begin{aligned}
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad & \frac{1}{2} \vec{x}^\top H \vec{x} + \vec{c}^\top \vec{x} \\
+    \text{s.t.} \quad & A \vec{x} \leq \vec{y} \\
+    & C \vec{x} = \vec{z},
+    \end{aligned}
+    $$
+    其中$H\in\mathbb{S}^n$。
+    + 当然，上述标准形式中$H$为非对称矩阵时也可以通过以下转换变为对称矩阵：
+        $$
+        \frac{1}{2} \vec{x}^\top H \vec{x}=\frac{1}{2} \vec{x}^\top\left(\frac{H+H^\top}{2}\right)\vec{x}
+        $$
++ 二次规划问题不一定是凸优化问题。实际上，二次规划问题称为凸优化问题的充要条件是$H\in\mathbb{S}_+^n$，即$H$为半正定矩阵。
+    + 这实际上很容易理解，因为目标函数的Hessian矩阵就是$H$本身，根据二阶凸性条件即得结论。
++ 求解二次规划问题时，方法会随着约束条件具体形式的变化有所不同。下面我们只考虑无约束条件和只有等式约束条件的情形（实际上后者可以通过一定方法转化为前者，可参见[知乎文章](https://zhuanlan.zhihu.com/p/376176490)）：
+    + 在进行求解之前，需要对$H$和$\vec{c}$进行分类讨论：$H\not\in\mathbb{S}_+^n$，$H\in\mathbb{S}_+^n,\vec{c}\in\mathcal{N}(H)\setminus\{\vec{0}\}$以及$H\in\mathbb{S}_+^n,\vec{c}\in\mathcal{N}(H)^\top=\mathcal{R}(H^\top)=\mathcal{R}(H)$。
+    1. $H\not\in\mathbb{S}_+^n$  
+        此时$H$存在负特征值$\lambda$，设对应的单位特征向量为$\vec{v}$。取$\vec{x}_t=t\vec{v}$，则有
+        $$
+        \begin{aligned}
+        p^*&\leq \frac{1}{2} \vec{x}_t^\top H \vec{x}_t + \vec{c}^\top \vec{x}_t=\frac{t^2}{2} \vec{v}^\top H \vec{v} + t\vec{c}^\top \vec{v}\\
+        &= \frac{t^2}{2} \vec{v}^\top\lambda \vec{v} + t\vec{c}^\top \vec{v}\leq \frac{\lambda t^2}{2}+t\|\vec{c}\|_2\|\vec{v}\|_2\\
+        &=\frac{\lambda t^2}{2}+t\|\vec{c}\|_2
+        \end{aligned}
+        $$
+        又因为$\lambda< 0$，令$t\to\infty$，则$p^*\leq-\infty$，故$p^*=-\infty$。
+    2. $H\in\mathbb{S}_+^n,\vec{c}\in\mathcal{N}(H)\setminus\{\vec{0}\}$   
+        由条件可知$H$存在零特征值，取其对应的一个特征向量$\vec{v}$，满足$\vec{c}^\top\vec{v}\neq 0$。取$\vec{x}_t=-t\cdot\text{sgn}(\vec{c}^\top\vec{v})\cdot\vec{v}$，则有
+        $$
+        \begin{aligned}
+        p^* &\le\frac{1}{2} \vec{x}_t^\top H \vec{x}_t + \vec{c}^\top \vec{x}_t =\frac{1}{2} t^2 \vec{v}^\top H \vec{v} - t \cdot \operatorname{sgn}(\vec{c}^\top \vec{v}) \cdot \vec{c}^\top \vec{v} \\
+        &=\frac{1}{2} t^2 \vec{v}^\top \vec{0} - t \cdot | \vec{c}^\top \vec{v} | =- t \cdot | \vec{c}^\top \vec{v} | .
+        \end{aligned}
+        $$
+        同样令$t\to\infty$，则$p^*\leq-\infty$，故$p^*=-\infty$。
+    3. $H\in\mathbb{S}_+^n,\vec{c}\in\mathcal{R}(H)$   
+        由条件可知存在$\vec{x}_0$使得$\vec{c}=-H\vec{x}_0$。那么目标函数可以作如下转换（可以看作配方）：
+        $$
+        \begin{aligned}
+        \frac{1}{2}\vec{x}^\top H\vec{x} + \vec{c}^\top \vec{x} &= \frac{1}{2}\vec{x}^\top H\vec{x} - \vec{x}_0^\top H\vec{x} \\
+        &= \frac{1}{2}\vec{x}^\top H\vec{x} - \vec{x}_0^\top H\vec{x} + \frac{1}{2}\vec{x}_0^\top H\vec{x}_0 - \frac{1}{2}\vec{x}_0^\top H\vec{x}_0 \\
+        &= \frac{1}{2}\left(\vec{x}^\top H\vec{x} - 2\vec{x}_0^\top H\vec{x} + \vec{x}_0^\top H\vec{x}_0\right) - \frac{1}{2}\vec{x}_0^\top H\vec{x}_0 \\
+        &= \frac{1}{2}\underbrace{(\vec{x} - \vec{x}_0)^\top H(\vec{x} - \vec{x}_0)}_{\geq 0} - \frac{1}{2}\vec{x}_0^\top H\vec{x}_0.
+        \end{aligned}
+        $$
+        由此可知要使目标函数取最小值，需要让$\vec{x}-\vec{x}_0\in\mathcal{N}(H)$，即$\vec{x}\in\vec{x}_0+\mathcal{N}(H)$。
+        + 满足这一条件的解不止一个，其中最典型的一种解是$\vec{x}=-H^\dag\vec{c}$，其中$H^\dag$表示$H$的M-P逆。【关于M-P逆的性质可见[知乎文章](https://zhuanlan.zhihu.com/p/32218147)<Spoiler title = "...">该补补高代了~</Spoiler>】
++ 二次规划对偶问题的分类讨论与上面类似，我们给出最终的对偶问题的形式（推导留给读者）：
+    $$
+    \begin{aligned}
+    d^* = \max_{\lambda,\mu} \quad 
+    & -\frac{1}{2} \bigl(c + A^\top \lambda + C^\top \mu\bigr)^\top H^\dagger \bigl(c + A^\top \lambda + C^\top \mu\bigr) - y^\top \lambda - z^\top \mu \\
+    \text{s.t.} \quad 
+    & \lambda \ge 0, \\
+    & c + A^\top \lambda + C^\top \mu \in \mathcal{R}(H).
+    \end{aligned}
+    $$
+### 二次约束二次规划（QCQP）
+同样顾名思义，QCQP问题的目标函数为二次函数，且约束条件也为二次不等式。其标准形式如下：
+    $$
+    \begin{aligned}
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad 
+    & \frac{1}{2} \vec{x}^\top H \vec{x} + c^\top \vec{x} \notag \\
+    \text{s.t.} \quad 
+    & \frac{1}{2} \vec{x}^\top P_i \vec{x} + b_i^\top \vec{x} + c_i \leq 0, \quad i=1,\cdots,m \\
+    & \frac{1}{2} \vec{x}^\top Q_i \vec{x} + d_i^\top \vec{x} + f_i = 0, \quad i=1,\cdots,p \\
+    \end{aligned}
+    $$
+    其中$H, P_1,\cdots,P_m, Q_1,\cdots,Q_p \in \mathbb{S}^n$。
++ 如果$H, P_1,\cdots,P_m\in\mathbb{S}_+^n$且$Q_1=\cdots=Q_p=\mathbf{0}$，那么这个问题就是凸优化问题。
+> QCQP的求解方法不详细展开，具体可参考[知乎文章](https://zhuanlan.zhihu.com/p/600350273)。<Spoiler title = "...">这次引用的知乎文章有点多ww~</Spoiler>
+## 二阶锥规划（SOCP）
+下面我们将介绍一类更广泛的规划问题：二阶锥规划（second-order cone programs）。事实上，上述线性规划与凸二次规划都可以看作二阶锥规划的特殊情况。
++ 二阶锥规划的目标函数为仿射函数，而约束是一个“二阶锥”条件，即决策变量的仿射函数约束在一个二阶锥中。其标准形式如下：
+    $$
+    \begin{aligned}
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad&\vec{c}^\top \vec{x}\\
+    \quad \text{s.t.} \quad &\| A_i \vec{x} - \vec{y}_i \|_2 \leq \vec{b}_i^\top \vec{x} + z_i,\quad i=1,\cdots,m.
+    \end{aligned}
+    $$
+    其中$A_i\in\R^{d_i\times n},\vec{y}_i\in\R^{d_i},\vec{b}_i\in\R^n,z_i\in\R$。
+    + 由此可见，二阶锥约束严格包含所有仿射约束。（只需要$A_i=\mathbf{0},\vec{y}_i=\vec{0}$或$\vec{b}_i=\vec{0},z_i=0$即可）
++ 二阶锥规划一定是凸优化问题。实际上，二阶锥规划的可行域可看作一个二阶锥的仿射变换，因而一定是凸集。
++ 下面我们尝试将凸QCQP问题转化为二阶锥规划问题（这样就能证明二阶锥规划问题包含凸QCQP，进而包含LP和凸QP）：考虑下述凸QCQP形式
+    $$
+    \begin{aligned}
+    p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad & \frac{1}{2} \vec{x}^\top H \vec{x} + \vec{c}^\top \vec{x} \\
+    \text{s.t.} \quad & \frac{1}{2} \vec{x}^\top P_i \vec{x} + b_i^\top \vec{x} + c_i \leq 0, \quad i=1,\cdots,m \\
+    & C \vec{x} = \vec{z}.
+    \end{aligned}
+    $$
+    其中$H, P_1,\cdots,P_m\in\mathbb{S}_+^n$。
+    + 首先使用上境图重述，将目标函数转为仿射函数：
+        $$
+        \begin{aligned}
+        p^* = \min_{\substack{\vec{x} \in \mathbb{R}^n\\ t \in \mathbb{R}}} \quad & t + \vec{c}^\top \vec{x} \\
+        \text{s.t.} \quad & \frac{1}{2} \vec{x}^\top P_i \vec{x} + b_i^\top \vec{x} + c_i \leq 0,\quad i=1,\cdots,m\\
+        & \frac{1}{2} \vec{x}^\top H \vec{x} \leq t, \\
+        & C \vec{x} = \vec{z}.
+        \end{aligned}
+        $$
+    + 然后将第一个约束条件转为二阶锥条件：
+        $$
+        \begin{aligned}
+        &\frac{1}{2} \vec{x}^\top P_i \vec{x} + b_i^\top \vec{x} + c_i \leq 0\\
+        \Longrightarrow &\vec{x}^\top P_i \vec{x}+2(b_i^\top \vec{x} + c_i)\leq 0\\
+        \Longrightarrow&\left\| P_i^{1/2} \vec{x} \right\|_2^2 + \left( \frac{1}{2} + \vec{b}_i^\top \vec{x} + c_i \right)^2 - \left( \frac{1}{2} - \vec{b}_i^\top \vec{x} - c_i \right)^2 \leq 0\\
+        \Longrightarrow&\left\| P_i^{1/2} \vec{x} \right\|_2^2 + \left( \frac{1}{2} + \vec{b}_i^\top \vec{x} + c_i \right)^2 \leq \left( \frac{1}{2} - \vec{b}_i^\top \vec{x} - c_i \right)^2\\
+        \Longrightarrow&\left\| 
+        \begin{bmatrix} 
+        P_i^{1/2} \vec{x} \\ 
+        \frac{1}{2} + \vec{b}_i^\top \vec{x} + c_i 
+        \end{bmatrix} 
+        \right\|_2 \leq \frac{1}{2} - \vec{b}_i^\top \vec{x} - c_i.
+        \end{aligned}
+        $$
+        其中最后一次转换右式大于$0$的推导：
+        $$
+        b_i^\top \vec{x} + c_i\leq-\frac{1}{2} \vec{x}^\top P_i \vec{x}\leq\frac{1}{2}\Longrightarrow \frac{1}{2} - \vec{b}_i^\top \vec{x} - c_i\geq 0.
+        $$
+    + 第二个约束条件转换类似，最终得到转换后的SOCP问题：
+        $$
+        \begin{aligned}
+        p^* = \min_{\vec{x} \in \mathbb{R}^n} \quad & t + \vec{c}^\top \vec{x} \\
+        \text{s.t.} \quad & \left\| \begin{bmatrix} P_i^{1/2} \vec{x} \\ \frac{1}{2} + b_i^\top \vec{x} + c_i \end{bmatrix} \right\|_2 \leq \frac{1}{2} - \vec{b}_i^\top \vec{x} - c_i, \quad i=1,\cdots,m \\
+        & \left\| \begin{bmatrix} H^{1/2} \vec{x} \\ \frac{1}{2} - t \end{bmatrix} \right\|_2 \leq \frac{1}{2} + t \\
+        & \| C \vec{x} - \vec{z} \|_2 \leq 0.
+        \end{aligned}
+        $$
++ 二阶锥规划还有一个重要的定理：SOCP的对偶问题仍然是SOCP。以上述SOCP标准形式为例，我们尝试将其对偶问题转化为SOCP标准形式。
+    + 这里我们使用锥对偶性进行推导：设$K_i\coloneqq\{(\vec{u},r)\in\R^{d_i}\times\R\mid\|\vec{u}\|_2\leq r\}$为$\R^{d_i+1}$中的一个二阶锥，并记$\displaystyle d=\sum_{i=1}^md_i$，那么上述SOCP标准形式可以转化为
+        $$
+        \begin{aligned}
+        \min_{\vec{x} \in \mathbb{R}^n} \quad & \vec{c}^\top \vec{x} \\
+        \text{s.t.} \quad & -(A_i \vec{x} - \vec{y}_i,\; \vec{b}_i^\top \vec{x} + z_i) \preceq_{K_i} \vec{0}, \quad i=1,\cdots,m.
+        \end{aligned}
+        $$
+        由此我们可以得到拉格朗日函数
+        $$
+        \begin{aligned}
+        L(\vec{x}, \vec{\lambda}, \vec{\mu}) 
+        &= \vec{c}^\top \vec{x} - \sum_{i=1}^m \left[ \vec{\lambda}_i^\top (A_i \vec{x} - \vec{y}_i) + \mu_i (\vec{b}_i^\top \vec{x} + z_i) \right] \\
+        &= \left( \vec{c} - \sum_{i=1}^m (A_i^\top \vec{\lambda}_i + \mu_i \vec{b}_i) \right)^\top \vec{x} + \sum_{i=1}^m (\vec{\lambda}_i^\top \vec{y}_i - \mu_i z_i).
+        \end{aligned}
+        $$
+        其中$\vec{\lambda}=(\vec{\lambda}_1,\cdots,\vec{\lambda}_m)\in\R^d,\vec{\lambda}_i\in\R^{d_i},\vec{\mu}\in\R^m$。然后我们就能得到对偶函数
+        $$
+        \begin{aligned}
+        g(\vec{\lambda}, \vec{\mu}) 
+        &= \min_{\vec{x} \in \mathbb{R}^n} L(\vec{x}, \vec{\lambda}, \vec{\mu}) \\
+        &=
+        \begin{cases} 
+        \displaystyle\sum_{i=1}^m (\vec{\lambda}_i^\top \vec{y}_i - \mu_i z_i), & \text{if } \displaystyle\sum_{i=1}^m (A_i^\top \vec{\lambda}_i + \mu_i \vec{b}_i) = \vec{c}, \\ 
+        -\infty, & \text{otherwise}.
+        \end{cases}
+        \end{aligned}
+        $$
+        进而得到对偶问题
+        $$
+        \begin{aligned}
+        \max_{\substack{\vec{\lambda} \in \mathbb{R}^d\\ \vec{\mu} \in \mathbb{R}^m}} \quad & \sum_{i=1}^m (\vec{\lambda}_i^\top \vec{y}_i - \mu_i z_i) \\
+        \text{s.t.} \quad & \sum_{i=1}^m (A_i^\top \vec{\lambda}_i + \mu_i \vec{b}_i) = \vec{c}, \\
+        & (\vec{\lambda}_i, \mu_i) \succeq_{K_i} 0, \quad i=1,\cdots,m.
+        \end{aligned}
+        $$
+        其中最后一个约束条件利用了$K_i$的对偶锥为其自身的性质。将其改写为SOCP标准形式可得：
+        $$
+        \begin{aligned}
+        \max_{\substack{\vec{\lambda} \in \mathbb{R}^d\\\vec{\mu} \in \mathbb{R}^m}} \quad & \sum_{i=1}^m (\vec{\lambda}_i^\top \vec{y}_i - \mu_i z_i) \\
+        \text{s.t.} \quad & \left\| \sum_{i=1}^m (A_i^\top \vec{\lambda}_i + \mu_i \vec{b}_i) - \vec{c} \right\|_2 \leq 0, \\
+        & \left\| \vec{\lambda}_i \right\|_2 \leq \mu_i, \quad i=1,\cdots,m.
+        \end{aligned}
+        $$
+    > 当然也可以不使用锥对偶直接进行推导，但这样比较复杂，这里就不赘述了。
++ SOCP问题一般使用内点法进行求解，这在之后会进行详细阐述。
+## 半正定规划（SDP）
+接下来我们在二阶锥的基础上进一步推广，得到本讲所讨论的最广义的规划问题：半正定规划（Semidefinite Programming）。
+> 注：在下面的表述中，我们将沿用之前二阶凸性条件中使用的$\succeq$与$\preceq$表示半正（负）定矩阵。
++ 半正定规划的不等式形式如下：
+    $$
+    \begin{aligned}
+    \min_{\vec{x} \in \mathbb{R}^n} \quad & \vec{c}^\top \vec{x} \\
+    \text{s.t.} \quad & F_0 + \sum_{i=1}^n x_i F_i \preceq 0.
+    \end{aligned}
+    $$
+    其中$\vec{c} \in \mathbb{R}^n,\,F_0, F_1, \dots, F_n \in\mathbb{S}^d$。这一约束条件也被称为线性矩阵不等式，而对应的可行域也被称为谱多面体（spectrahedron）。
+    + 实际上，如果半正定规划有多条线性矩阵不等式约束，它们可以合并为一个约束条件。【只需要将各个对应$F$矩阵合并为一个准对角矩阵即可】
++ 半正定规划还有如下标准形式：
+    $$
+    \begin{aligned}
+    \min_{X \in \mathbb{S}^n} \quad & \operatorname{tr}(CX) \\
+    \text{s.t.} \quad & \operatorname{tr}(A_k X) = b_k, \quad k=1,\cdots,m \\
+    & X \succeq 0.
+    \end{aligned}
+    $$
+    其中$C, A_1, \ldots, A_m \in \mathbb{S}^n$，且$b_1, \ldots, b_m \in \mathbb{R}$。
++ 下面我们证明这两种形式之间可以相互转化：
+    1. 不等式形式$\Longrightarrow$标准形式  
+        首先我们引入一个“松弛”矩阵$Y\in\mathbb{S}^d$，将不等式形式转换为
+        $$
+        \begin{aligned}
+        \min_{\substack{\vec{x} \in \mathbb{R}^n \\ Y \in \mathbb{S}^d}} \quad & \vec{c}^\top \vec{x} \\
+        \text{s.t.} \quad& Y + F_0 + \sum_{i=1}^n x_i F_i = 0, \\
+        & Y \succeq 0.
+        \end{aligned}
+        $$
+        将第一个约束条件中的矩阵分解为单个元素，得到
+        $$
+        Y_{jk} + (F_0)_{jk} + \sum_{i=1}^n x_i (F_i)_{jk} = 0, \quad  j, k = 1, \cdots, d
+        $$
+        一个直接的想法是将$\vec{x}$元素直接转化为对角矩阵，但这无法得到的矩阵是正定的。因此我们考虑引入$\vec{x}$的正部$\vec{x}^+$与负部$\vec{x}^-$，其分量定义如下：
+        $$
+        x_i^+=\begin{cases}
+        x_i,&x_i>0\\
+        0,&x_i\leq 0
+        \end{cases},\quad
+        x_i^-=\begin{cases}
+        0,&x_i>0\\
+        -x_i,&x_i\leq 0
+        \end{cases},\quad i=1,\cdots,n
+        $$
+        那么上述形式可进一步转换为
+        $$
+        \begin{aligned}
+        \min_{\vec{x}^+ \in \mathbb{R}^n} \quad & \vec{c}^\top (\vec{x}^+ - \vec{x}^-) \\
+        \text{s.t.} \quad & Y_{jk} + (F_0)_{jk} + \sum_{i=1}^n (x_i^+ - x_i^-)(F_i)_{jk} = 0, \qquad j,k=1,\cdots,d, \\
+        & x_i^+ \geq 0, \qquad i=1,\cdots,n, \\
+        & x_i^- \geq 0, \qquad i=1,\cdots,n, \\
+        & Y \succeq 0.
+        \end{aligned}
+        $$
+        这样我们就可以构造正定准对角矩阵：
+        $$
+        Z \coloneqq 
+        \begin{bmatrix}
+        \text{diag}(\vec{x}^+) &  &  \\
+         & \text{diag}(\vec{x}^-) &  \\
+         &  & Y
+        \end{bmatrix} \in\mathbb{S}^{2n+d}.
+        $$
+        其中$\text{diag}(\cdot)$表示将向量元素作为对角线元素的对角矩阵。以$Z$作为决策变量（矩阵），那么原形式可表示为
+        $$
+        \begin{aligned}
+        \min_{Z \in \mathbb{S}^{2n+d}} \quad & \sum_{i=1}^n c_i (Z^{1,i} - Z^{2,i}) \\
+        \text{s.t.} \quad & Z^{3,jk} + (F_0)_{jk} + \sum_{i=1}^n (Z^{1,i} - Z^{2,i})(F_i)_{jk} = 0, \\
+        & Z_{i,j} = 0, \quad \forall (i,j) \in \mathcal{O}, \\
+        & Z \succeq 0.
+        \end{aligned}
+        $$
+        其中$Z^{1,i}$和$Z^{2,i}$分别表示$\vec{x}^+$和$\vec{x}^-$的第$i$个元素，$Z^{3,jk}$表示$Y$的$(i,j)$位置元素，$\mathcal{O}$表示除左上$2n\times 2n$对角线元素和右下$d\times d$元素之外的其他指标。  
+        由此可知，目标函数可用$\text{tr}(CZ)$表示，而又因为前两个约束条件都是仿射函数，所以可以用$\text{tr}(A_kZ)=b_k$表示（$k=1,\cdots,d^2+|\mathcal{O}|$）
+        > 注：这里的$A_k$在原始的仿射函数定义中不一定是对称矩阵，但因为
+        >    $$
+        >    \text{tr}(A_kZ)=\text{tr}(Z^\top A_k^\top)=\text{tr}(A_k^\top Z)=\text{tr}\left(\dfrac{(A_k+A_k^\top)Z}{2}\right)
+        >    $$
+        >    我们可以将其转换为对称矩阵$\dfrac{A_k+A_k^\top}{2}$。
+    2. 标准形式$\Longrightarrow$不等式形式   
+        这里我们需要引入一个从矩阵展平到向量的函数$\text{vec}:\R^{m\times n}\to\R^{mn}$。基于这个函数，我们有
+        $$
+        \text{tr}(CX)=\text{vec}(C)^\top\text{vec}(X),\quad \text{tr}(A_kX)=\text{vec}(A_k)^\top\text{vec}(X)
+        $$
+        那么目标函数就可以转化为$\vec{c}^\top\vec{x}$，其中$\vec{c}=\text{vec}(C),\vec{x}=\text{vec}(X)$；第一个约束条件则可以转化为$\vec{a_k}^\top\vec{x}=b_k$，其中$\vec{a_k}=\text{vec}(A_k)$。  
+        下面我们需要再将约束条件转化为线性矩阵不等式。对于前$m$个约束条件，其转换相对容易：
+        $$
+        \begin{aligned}
+        \vec{a}_k^\top \vec{x} = b_k &\iff \sum_{i=1}^m x_i (\vec{a}_k)_i = b_k \\
+        &\iff -b_k + \sum_{i=1}^m x_i (\vec{a}_k)_i = 0 \\
+        &\iff -b_k + \sum_{i=1}^m x_i (\vec{\alpha}_k)_i \preceq 0 \quad\text{且}\quad-\left( -b_k + \sum_{i=1}^m x_i (\vec{\alpha}_k)_i \right) \preceq 0,
+        \end{aligned}
+        $$
+        其中$(\vec{a}_k)_i$可看作一个$1\times 1$矩阵。  
+        对于最后一个约束条件$X\succeq 0$，它的转换就麻烦一些。我们直接给出最后的结果：
+        $$
+        X \succeq 0 \iff -\left( \sum_{i=1}^n x_{i,i} E_{ii} + \frac{1}{2} \sum_{i=1}^n \sum_{\substack{j=1 \\ j \neq i}}^n x_{i,j} (E_{ij} + E_{ji}) \right) \preceq 0
+        $$
+        其中$E_{ij}$表示只有$(i,j)$元素为$1$，其余位置元素均为$0$的矩阵，$x_{i,j}$表示矩阵$X$的$(i,j)$位置对应元素。  
+        综上，我们只需要将所有线性矩阵不等式合并为一个，就得到最终的SDP不等式形式。
++ 与二阶锥规划一样，半正定规划的对偶问题也是其自身。【证明略，留给读者】
++ 下面我们再尝试将二阶锥规划问题转化为半正定规划问题：
+    + 在推导之前，我们先给出如下引理：设$(\vec{x},t)\in\R^{m+1}$，则有
+        $$
+        \|\vec{x}\|_2 \leq t \iff 
+        \begin{bmatrix}
+        tI & \vec{x} \\
+        \vec{x}^\top & t
+        \end{bmatrix} \succeq 0. 
+        $$
+        其证明如下：
+        $$
+        \begin{aligned}
+        \begin{bmatrix}
+        tI & \vec{x} \\
+        \vec{x}^\top & t
+        \end{bmatrix} \succeq 0 
+        &\iff 
+        \begin{bmatrix}
+        \vec{a} \\
+        b
+        \end{bmatrix}^\top \begin{bmatrix}
+        tI & \vec{x} \\
+        \vec{x}^\top & t
+        \end{bmatrix} \begin{bmatrix}
+        \vec{a} \\
+        b
+        \end{bmatrix} =t \left( \|\vec{a}\|_2^2 + b^2 \right) + 2b\vec{a}^\top \vec{x} \geq 0, \quad \forall (\vec{a}, b) \in \mathbb{R}^{m+1}. 
+        \end{aligned}
+        $$
+        又由柯西-施瓦茨不等式与均值不等式：
+        $$
+        t\left(\|\vec{a}\|_2^2 + b^2\right) + 2b\vec{a}^\top \vec{x}\ge t\left(\|\vec{a}\|_2^2 + b^2\right) - 2|b|\,\|\vec{a}\|_2\,\|\vec{x}\|_2\ge 2|b|\,\|\vec{a}\|_2 \left(t - \|\vec{x}\|_2\right) 
+        $$
+        其中第一个不等号在$\vec{a}=-K\vec{x}$（$K>0$）时取等，第二个不等号在$\|\vec{a}\|_2=b$时取等。又因为$\vec{a},b$的任意性，可得
+        $$
+        \begin{aligned}
+        \begin{bmatrix}
+        tI & \vec{x} \\
+        \vec{x}^\top & t
+        \end{bmatrix} \succeq 0 &\iff 
+        2|b|\,\|\vec{a}\|_2 \left(t - \|\vec{x}\|_2\right)\ge 0\quad \forall (\vec{a}, b) \in \mathbb{R}^{m+1}\\
+        &\iff t - \|\vec{x}\|_2\ge 0.
+        \end{aligned}
+        $$
+        从而引理得证。
+    + 现在考虑SOCP问题的标准形式（见上），设$K^d$为$\R^d$里的一个二阶锥。那么约束条件可以作如下转换：
+        $$
+        \begin{aligned}
+        \|A_i \vec{x} - \vec{y}_i\|_2 \leq b_i^\top \vec{x} + z_i
+        &\iff (A_i \vec{x} - \vec{y}_i,\; b_i^\top \vec{x} + z_i) \in K^{d_i+1}\\
+        &\iff 
+        \begin{bmatrix}
+        (b_i^\top \vec{x} + z_i)I & A_i \vec{x} - \vec{y}_i \\
+        (A_i \vec{x} - \vec{y}_i)^\top & b_i^\top \vec{x} + z_i
+        \end{bmatrix} \succeq 0 \\
+        &\iff 
+        \begin{bmatrix}
+        z_i I & -\vec{y}_i \\
+        -\vec{y}_i^\top & z_i
+        \end{bmatrix}
+        + \sum_{j=1}^n x_j
+        \begin{bmatrix}
+        (b_i)_j I & (A_i)_j \\
+        (A_i)_j^\top & (b_i)_j
+        \end{bmatrix} \succeq 0
+        \end{aligned}
+        $$
+        这样我们就能将约束条件转换为线性矩阵不等式。
+> 注：半正定规划计算复杂度往往较高，一般难以用于解决大规模问题。
++ 最后，我们将上述讨论的所有规划问题之间的包含关系梳理如下，作为本讲的结尾：
+    $$
+    \text{线性规划} \subset \text{凸二次规划} \subset \text{凸QCQP} \subset \text{二阶锥规划} \subset \text{半正定规划} \subset \text{凸优化问题}
+    $$

@@ -94,6 +94,7 @@
     display: none;
     align-items: center;
     flex-wrap: wrap;
+    flex: 0 0 auto;
     width: 100%;
     margin: 0;
     padding: 0;
