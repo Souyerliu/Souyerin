@@ -42,7 +42,10 @@ const toMetingSong = (song: NeteaseSong) => {
     id,
     name: getString(song.name),
     artist: Array.isArray(song.ar)
-      ? song.ar.map((artist) => getString(artist?.name)).filter(Boolean).join(" / ")
+      ? song.ar
+          .map((artist) => getString(artist?.name))
+          .filter(Boolean)
+          .join(" / ")
       : "",
     pic_url: getString(song.al?.picUrl),
   };
@@ -129,9 +132,10 @@ const fetchNeteasePlaylistFallback = async (playlistId: string) => {
     if (id) songsById.set(id, song);
   }
 
+  const missingIds = ids.filter((id) => !songsById.has(id));
   const batches = [];
-  for (let index = 0; index < ids.length; index += FALLBACK_BATCH_SIZE) {
-    batches.push(ids.slice(index, index + FALLBACK_BATCH_SIZE));
+  for (let index = 0; index < missingIds.length; index += FALLBACK_BATCH_SIZE) {
+    batches.push(missingIds.slice(index, index + FALLBACK_BATCH_SIZE));
   }
 
   const batchResults = await Promise.all(
@@ -175,6 +179,31 @@ const fetchNeteasePlaylistFallback = async (playlistId: string) => {
   };
 };
 
+const getNeteasePlaylistId = (upstreamPath: string, requestURL: URL) => {
+  const playlistMatch = NETEASE_PLAYLIST_PATH.exec(upstreamPath);
+  const platform = requestURL.searchParams.get("platform");
+
+  return playlistMatch && (platform === "netease" || !platform) ? playlistMatch[1] : null;
+};
+
+const createFallbackResponse = async (playlistId: string | null) => {
+  if (!playlistId) return null;
+
+  try {
+    const fallback = await fetchNeteasePlaylistFallback(playlistId);
+    if (!fallback) return null;
+
+    return Response.json(fallback, {
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        "X-Music-Source": "netease-v6-fallback",
+      },
+    });
+  } catch {
+    return null;
+  }
+};
+
 /** 代理播放器使用的歌单和歌词接口，避免第三方 API 按站点来源限制跨域。 */
 export const onRequest = async ({ request }: PagesFunctionContext) => {
   if (request.method !== "GET" && request.method !== "HEAD") {
@@ -193,6 +222,7 @@ export const onRequest = async ({ request }: PagesFunctionContext) => {
 
   const upstreamURL = new URL(upstreamPath, METING_API_ORIGIN);
   upstreamURL.search = requestURL.search;
+  const playlistId = getNeteasePlaylistId(upstreamPath, requestURL);
 
   let upstreamResponse: Response;
   try {
@@ -209,7 +239,16 @@ export const onRequest = async ({ request }: PagesFunctionContext) => {
       signal: AbortSignal.timeout(10_000),
     });
   } catch {
+    const fallbackResponse =
+      request.method === "GET" ? await createFallbackResponse(playlistId) : null;
+    if (fallbackResponse) return fallbackResponse;
+
     return Response.json({ error: "Music service is temporarily unavailable" }, { status: 502 });
+  }
+
+  if (!upstreamResponse.ok && request.method === "GET") {
+    const fallbackResponse = await createFallbackResponse(playlistId);
+    if (fallbackResponse) return fallbackResponse;
   }
 
   const headers = new Headers();
@@ -217,29 +256,25 @@ export const onRequest = async ({ request }: PagesFunctionContext) => {
   if (contentType) headers.set("Content-Type", contentType);
 
   let responseBody: BodyInit | null = request.method === "HEAD" ? null : upstreamResponse.body;
+  let shouldCache = upstreamResponse.ok && responseBody !== null;
 
   if (upstreamResponse.ok && request.method !== "HEAD") {
     const body = await upstreamResponse.text();
     responseBody = body;
 
-    const playlistMatch = NETEASE_PLAYLIST_PATH.exec(upstreamPath);
-    const platform = requestURL.searchParams.get("platform");
-    if (playlistMatch && (platform === "netease" || !platform) && getUpstreamSongs(body)?.length === 0) {
-      try {
-        const fallback = await fetchNeteasePlaylistFallback(playlistMatch[1]);
-        if (fallback) {
-          responseBody = JSON.stringify(fallback);
-          headers.set("Content-Type", "application/json; charset=utf-8");
-          headers.set("X-Music-Source", "netease-v6-fallback");
-        }
-      } catch {
-        // 备用接口异常时保留上游响应，避免 Function 产生未处理异常。
-      }
+    if (playlistId && getUpstreamSongs(body)?.length === 0) {
+      const fallbackResponse = await createFallbackResponse(playlistId);
+      if (fallbackResponse) return fallbackResponse;
+
+      // 不缓存空歌单，让播放器刷新后可以重新请求上游。
+      shouldCache = false;
     }
   }
 
-  if (upstreamResponse.ok && responseBody !== null) {
+  if (shouldCache) {
     headers.set("Cache-Control", "public, max-age=300");
+  } else if (responseBody !== null) {
+    headers.set("Cache-Control", "no-store");
   }
 
   return new Response(responseBody, {
