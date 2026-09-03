@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import { getT } from "@/i18n";
 import themeConfig from "@/theme.config";
 import { sanitizeThemeColor, type ThemeColorValue } from "@/toolkit/themeColor";
+import HyacineOutlet from "@hyacine/plugin-astro/components/HyacineOutlet.astro";
 import "./footer.css";
 
 interface Props {
@@ -38,8 +39,8 @@ const posts = allPosts.filter((post) => !post.data.draft);
 const wordCounts = posts.map((post) => {
   const content = post.body || "";
   // Simple word count: Chinese characters + English words
-  const chineseCount = (content.match(/[\u4e00-\u9fff]/g) || []).length;
-  const englishText = content.replace(/[\u4e00-\u9fff]/g, "");
+  const chineseCount = (content.match(/[\u4E00-\u9FFF]/g) || []).length;
+  const englishText = content.replaceAll(/[\u4E00-\u9FFF]/g, "");
   const englishCount = englishText
     .trim()
     .split(/\s+/)
@@ -60,7 +61,6 @@ if (hours > 0) {
 if (minutes > 0) {
   readingTimeStr += `${hours > 0 ? " " : ""}${minutes} ${t("post.minutes")}`;
 }
-// 如果刚好是 0 分钟（极端情况）
 if (hours === 0 && minutes === 0) {
   readingTimeStr = `1 ${t("post.minutes")}`;
 }
@@ -103,14 +103,14 @@ const iconColor = sanitizeThemeColor(
             <span class="post-meta-item-icon mr-0 inline">
               <div class="i-ri-line-chart-fill inline-block align-text-bottom text-1rem" />
             </span>
-            <span title="Total words">
+            <span title={t("footer.totalWordsTitle")}>
               {totalWords} {t("post.words")}
             </span>
             <span class="post-meta-divider mx-2"> | </span>
             <span class="post-meta-item-icon mr-0 inline">
               <div class="i-ri-cup-fill inline-block align-text-bottom text-1rem" />
             </span>
-            <span title="Estimated reading time">{readingTimeStr}</span>
+            <span title={t("footer.estimatedReadingTimeTitle")}>{readingTimeStr}</span>
           </div>
         )
       }
@@ -123,6 +123,7 @@ const iconColor = sanitizeThemeColor(
             <a
               href="https://astro.build"
               target="_blank"
+              rel="noopener noreferrer"
               class="hover:opacity-80 border-b border-dashed"
             >
               Astro
@@ -131,6 +132,8 @@ const iconColor = sanitizeThemeColor(
             <a
               href="https://github.com/theme-shoka-x/astro-blog-shokax"
               target="_blank"
+              rel="noopener noreferrer"
+              aria-label="ShokaX GitHub 项目"
               class="hover:opacity-80 border-b border-dashed"
             >
               ShokaX
@@ -147,6 +150,7 @@ const iconColor = sanitizeThemeColor(
             <a
               href={config.icp.icpurl || "https://beian.miit.gov.cn/"}
               target="_blank"
+              rel="noopener noreferrer"
               class="text-grey-7 hover:opacity-80 border-b border-dashed"
             >
               {config.icp.icpnumber}
@@ -157,6 +161,7 @@ const iconColor = sanitizeThemeColor(
                 <a
                   target="_blank"
                   href={`https://beian.mps.gov.cn/#/query/webSearch?code=${config.icp.recordcode}`}
+                  rel="noopener noreferrer"
                   class="inline-block text-grey-7 hover:opacity-80 border-b border-dashed"
                 >
                   {config.icp.icon && (
@@ -173,6 +178,9 @@ const iconColor = sanitizeThemeColor(
           </div>
         )
       }
+
+      <!-- Hyacine Plugin Outlet: Footer Status -->
+      <HyacineOutlet name="footer-status" />
     </div>
   </div>
 </footer>

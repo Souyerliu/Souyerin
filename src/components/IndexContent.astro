@@ -1,11 +1,14 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import PostSegments from "./postSegments/PostSegments.astro";
-import CategoryCards from "./categoryCard/CategoryCards.svelte";
+import CategoryCards from "./categoryCard/CategoryCards";
 import Divider from "./Divider.astro";
-import { countWords } from "@/toolkit/posts/calculateStats";
-import { getPostCover } from "./Images.astro";
+import { transformIndexPosts } from "@/toolkit/posts/transformIndexPosts";
+import { covers, getPostCover } from "./Images.astro";
+import { resolveHeaderCovers } from "@/toolkit/headerCover";
 import { t } from "@/i18n";
+import themeConfig from "@/theme.config";
+import { readLocalAiSummary } from "@/toolkit/aiSummaryDb";
 
 interface CategoryItem {
   name: string;
@@ -34,50 +37,45 @@ const {
   isFirstPage = true,
 } = Astro.props;
 
-// Helper function to calculate read time (assuming 300 words per minute)
-function calculateReadTime(wordCount: number): number {
-  const wordsPerMinute = 300;
-  return Math.ceil(wordCount / wordsPerMinute);
+const coverConfig = themeConfig.cover || {};
+const advancedCarousel = coverConfig.advancedCarousel === true;
+const headerCovers = advancedCarousel
+  ? await resolveHeaderCovers({
+      coverUrls: coverConfig.coverUrls,
+      fallbackCovers: covers,
+    })
+  : [];
+
+const excerptSource = themeConfig.home?.excerptSource ?? "default";
+
+// 提取列表文章的物化 AI 摘要（仅读物化值：SDK D1 注入或 frontmatter 字段）
+const aiSummaries = new Map<string, string>();
+const candidates = [...stickyPosts, ...posts].filter(
+  (post) => !post.data.encrypted,
+);
+for (const post of candidates) {
+  const sdkSummary = post.data.ai?.summary?.summary?.trim();
+  const fmSummary =
+    post.data.ai_summary?.trim() || post.data.summary?.trim();
+  const localSummary =
+    excerptSource === "ai"
+      ? readLocalAiSummary(post.id, post.data.title)?.content ?? ""
+      : "";
+  const content = sdkSummary || fmSummary || localSummary;
+  if (content) {
+    aiSummaries.set(post.id, content);
+  }
 }
 
-function getExcerpt(post: CollectionEntry<"posts">): string {
-  if (post.data.encrypted) {
-    return t("post.encryptedExcerpt");
-  }
+const transformOptions = {
+  encryptedExcerpt: t("post.encryptedExcerpt"),
+  resolveCover: (post: CollectionEntry<"posts">) => getPostCover(post, headerCovers),
+  excerptSource,
+  aiSummaries,
+};
 
-  if (post.data.description) {
-    return post.data.description;
-  }
-  if (post.body) {
-    return post.body.substring(0, 300);
-  }
-  return "";
-}
-
-// Helper function to transform posts
-function transformPosts(postList: CollectionEntry<"posts">[]) {
-  return postList.map((post) => {
-    const wordCount = countWords(post.body || "");
-    const readTime = calculateReadTime(wordCount);
-    const lastCategory =
-      post.data.categories?.[post.data.categories.length - 1];
-
-    return {
-      title: post.data.title,
-      url: `/posts/${post.id}/`,
-      date: post.data.date,
-      excerpt: getExcerpt(post),
-      cover: getPostCover(post),
-      category: lastCategory,
-      categoryUrl: lastCategory ? `/categories/${lastCategory}/` : undefined,
-      wordCount,
-      readTime,
-    };
-  });
-}
-
-const transformedStickyPosts = transformPosts(stickyPosts);
-const transformedPosts = transformPosts(posts);
+const transformedStickyPosts = transformIndexPosts(stickyPosts, transformOptions);
+const transformedPosts = transformIndexPosts(posts, transformOptions);
 ---
 
 <div class="index wrap">

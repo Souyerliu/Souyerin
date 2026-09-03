@@ -1,29 +1,12 @@
 ---
-import { Code } from "astro:components";
 import Layout from "../../layouts/Layout.astro";
 import FriendLinks from "@/components/friends/FriendLinks.astro";
-import FriendRules from "@/content/friends-rules.md";
 import themeConfig from "@/theme.config";
-import astroConfig from "../../../astro.config.mjs";
 
 const friendsConfig = themeConfig.friends;
-const personalLinks = friendsConfig?.personal ?? [];
+const personalLinks = friendsConfig?.personal ?? friendsConfig?.links ?? [];
 const toolLinks = friendsConfig?.tools ?? [];
 const pageTitle = friendsConfig?.title ?? "友链";
-const pageDescription =
-  friendsConfig?.description ?? "卡片式展示，支持站点预览与主题色点缀。";
-const siteUrl = Astro.site?.toString() ?? "";
-const codeThemes = astroConfig.markdown?.shikiConfig?.themes;
-const friendsSnippet = {
-  url: siteUrl,
-  title: themeConfig.brand?.title ?? themeConfig.siteName,
-  desc: themeConfig.sidebar?.description ?? "",
-  author: themeConfig.sidebar?.author ?? "",
-  ...(friendsConfig?.avatar ? { avatar: friendsConfig.avatar } : {}),
-  ...(friendsConfig?.color ? { color: friendsConfig.color } : {}),
-  ...(friendsConfig?.siteImage ? { siteImage: friendsConfig.siteImage } : {}),
-};
-const friendsJson = JSON.stringify(friendsSnippet, null, 2);
 ---
 
 <Layout pageTitle={pageTitle}>
@@ -63,65 +46,6 @@ const friendsJson = JSON.stringify(friendsSnippet, null, 2);
     color: var(--grey-7);
   }
 
-  .friend-header p {
-    margin: 0;
-    color: var(--grey-6);
-  }
-
-  .friend-rules h3 {
-    margin: 0 0 0.75rem;
-    color: var(--grey-7);
-  }
-
-  .friend-rules-content {
-    padding: 1rem 1.1rem;
-    border-radius: 0.75rem;
-    background: linear-gradient(135deg, var(--grey-0), var(--grey-1));
-    border: 1px solid var(--grey-2);
-    color: var(--grey-7);
-    box-shadow: 0 0.6rem 1.2rem var(--box-bg-shadow);
-  }
-
-  .friend-rules-content :global(p) {
-    margin: 0 0 0.75rem;
-    color: var(--grey-6);
-    line-height: 1.7;
-  }
-
-  .friend-rules-content :global(ul) {
-    margin: 0;
-    padding-left: 1.2rem;
-    color: var(--grey-6);
-  }
-
-  .friend-rules-content :global(li) {
-    margin: 0.4rem 0;
-    line-height: 1.7;
-  }
-
-  .friend-rules-content :global(li::marker) {
-    color: var(--color-blue);
-  }
-
-  .friend-rules-content :global(strong) {
-    color: var(--grey-7);
-  }
-
-  .friend-snippet h3 {
-    margin: 0 0 0.5rem;
-    color: var(--grey-7);
-  }
-
-  .friend-links-section h3 {
-    margin: 0 0 0.75rem;
-    color: var(--grey-7);
-  }
-
-  .friend-tools-section h3 {
-    margin: 0 0 0.75rem;
-    color: var(--grey-7);
-  }
-
   .friend-divider {
     margin: 2.5rem 0;
     height: 1px;
@@ -133,22 +57,10 @@ const friendsJson = JSON.stringify(friendsSnippet, null, 2);
     );
   }
 
-  .friend-snippet p {
-    margin: 0 0 1rem;
-    color: var(--grey-6);
-  }
-
-  .friend-code :global(pre) {
-    margin: 0;
-    padding: 1rem 1.1rem;
-    border-radius: 0.75rem;
-    background: var(--grey-2);
-    border: 1px solid var(--grey-3);
+  .friend-tools-section h3,
+  .friend-links-section h3 {
+    margin: 0 0 0.75rem;
     color: var(--grey-7);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    overflow-x: auto;
-    white-space: pre;
   }
 
   @media (max-width: 768px) {

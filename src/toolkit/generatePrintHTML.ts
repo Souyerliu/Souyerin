@@ -60,8 +60,7 @@ export async function fetchAllStylesheets(): Promise<string> {
 /** 将克隆 DOM 中 <img> 的相对路径和站点绝对路径转为完整 URL（blob 协议下也能加载） */
 export function resolveImageUrls(clone: HTMLElement): void {
   const origin = window.location.origin;
-  clone.querySelectorAll("img").forEach((img) => {
-    const el = img as HTMLImageElement;
+  clone.querySelectorAll("img").forEach((el) => {
     const raw = el.getAttribute("src");
     if (!raw || raw.startsWith("data:") || raw.startsWith("http")) return;
     try {
@@ -91,8 +90,9 @@ export function inlineEssentialStyles(original: HTMLElement, clone: HTMLElement)
   ];
 
   while (ow.nextNode() && cw.nextNode()) {
-    const origEl = ow.currentNode as HTMLElement;
-    const cloneEl = cw.currentNode as HTMLElement;
+    const origEl = ow.currentNode;
+    const cloneEl = cw.currentNode;
+    if (!(origEl instanceof HTMLElement) || !(cloneEl instanceof HTMLElement)) continue;
 
     // 不碰 KaTeX 内部元素，避免破坏符号渲染
     if (origEl.closest(".katex")) continue;
@@ -102,8 +102,7 @@ export function inlineEssentialStyles(original: HTMLElement, clone: HTMLElement)
     for (const { name, skip } of props) {
       const val = cs.getPropertyValue(name);
       if (!val || val === "transparent" || val === skip) continue;
-      const camel = name.replace(/-([a-z])/g, (_s: string, c: string) => c.toUpperCase());
-      (cloneEl.style as Record<string, string>)[camel] = val;
+      cloneEl.style.setProperty(name, val);
     }
   }
 }

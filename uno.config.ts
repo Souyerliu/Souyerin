@@ -1,7 +1,55 @@
-import { defineConfig, presetAttributify, presetIcons, presetWind4 } from "unocss";
-import themeConfig from "./src/theme.config";
-import extractorSvelte from "@unocss/extractor-svelte";
-import { transformerDirectives } from "unocss";
+import {
+  defineConfig,
+  presetAttributify,
+  presetIcons,
+  presetWind4,
+  transformerDirectives,
+} from "unocss";
+import { createRequire } from "node:module";
+import { readdirSync, readFileSync } from "node:fs";
+import { extname, join } from "node:path";
+import themeConfig from "./src/theme.config.ts";
+
+// pnpm + Windows 下 preset-icons 的自动 Node loader 可能无法解析本地集合。
+// 显式加载 Remix Icon JSON，确保构建时一定能生成 SVG mask 规则。
+const require = createRequire(import.meta.url);
+const remixIconSet = require("@iconify-json/ri/icons.json");
+
+const SOURCE_EXTENSIONS = new Set([
+  ".astro",
+  ".css",
+  ".js",
+  ".jsx",
+  ".json",
+  ".md",
+  ".mdx",
+  ".svelte",
+  ".ts",
+  ".tsx",
+]);
+const ICON_PATTERN = /\bi-ri-[\w-]+\b/g;
+
+function collectSourceIcons() {
+  const icons = new Set<string>();
+  const sourceRoot = join(process.cwd(), "src");
+
+  const walk = (directory: string) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        walk(path);
+        continue;
+      }
+      if (!SOURCE_EXTENSIONS.has(extname(entry.name))) continue;
+
+      const source = readFileSync(path, "utf8");
+      for (const icon of source.matchAll(ICON_PATTERN)) icons.add(icon[0]);
+    }
+  };
+
+  walk(sourceRoot);
+  return [...icons];
+}
 
 function normalizeIconName(icon: string): string {
   return icon.startsWith("i-") ? icon : `i-ri-${icon}`;
@@ -34,15 +82,10 @@ function collectConfigIcons() {
     });
   }
 
-  // 预留：若未来在 friends 中引入 icon 字段，这里会自动纳入。
-  if (themeConfig.friends?.personal) {
-    themeConfig.friends.personal.forEach((link) => {
-      const icon = (link as { icon?: string }).icon;
-      pushNormalizedIcon(icons, icon);
-    });
-  }
-  if (themeConfig.friends?.tools) {
-    themeConfig.friends.tools.forEach((link) => {
+  // 预留：若未来在 friends.links 中引入 icon 字段，这里会自动纳入。
+  if (themeConfig.friends?.links) {
+    themeConfig.friends.links.forEach((link) => {
+      // eslint-disable-next-line no-unsafe-type-assertion
       const icon = (link as { icon?: string }).icon;
       pushNormalizedIcon(icons, icon);
     });
@@ -52,16 +95,26 @@ function collectConfigIcons() {
 }
 
 const iconSafeList = [
+  ...collectSourceIcons(),
   ...collectConfigIcons(),
   // 页面内固定使用的图标（避免后续模板改造期间被裁剪）
   "i-ri-flag-line",
   "i-ri-file-line",
-  "i-ri-calendar-check-line",
+  // 外链标识图标：由 wrapExternalLinks 在构建时动态注入 HTML，
+  // UnoCSS 静态扫描源文件无法发现，需显式 safelist
+  "i-ri-external-link-line",
 ].map(normalizeIconName);
 
 export default defineConfig({
-  presets: [presetWind4(), presetIcons(), presetAttributify()],
-  extractors: [extractorSvelte()],
+  presets: [
+    presetWind4(),
+    presetIcons({
+      collections: {
+        ri: () => remixIconSet,
+      },
+    }),
+    presetAttributify(),
+  ],
   transformers: [transformerDirectives()],
   theme: {
     colors: {

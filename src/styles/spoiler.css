@@ -1,5 +1,5 @@
 /* Inline spoiler span */
-.md .spoiler {
+.md .spoiler:not(.bulr) {
   background: var(--grey-4);
   color: transparent;
   border-radius: 0.125rem;
@@ -9,7 +9,7 @@
   user-select: none;
 }
 
-.md .spoiler:hover {
-  /*background: transparent;*/
+.md .spoiler:not(.bulr):hover {
+  background: transparent;
   color: var(--text-color);
 }

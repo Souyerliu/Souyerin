@@ -1,10 +1,10 @@
 ---
-/* 
-本文件是针对 Astro 内容合集图像默认值问题的一个 hack 
+/*
+本文件是针对 Astro 内容合集图像默认值问题的一个 hack
 在当前版本中，Astro 内容合集事实上无法正确指定 default 值
-当为 string时 Image 组件无法接受，为 object 时无法通过 Zod 校验
-如果后续版本修复了此问题，可以将本函数安全地替换为post.data.cover
-图库加载由 imageLibrary.ts 统一处理，本文件继续提供原有导出接口。
+当为 string 时 Image 组件无法接受，为 object 时无法通过 Zod 校验
+如果后续版本修复了此问题，可以将此函数安全地替换为 post.data.cover
+同时部分平台无法正确识别 ts 中导入的 avif，所以使用 astro 文件导出
 */
 
 import { sample, shuffle } from "es-toolkit";
@@ -16,11 +16,9 @@ import { covers, coverPresets } from "./imageLibrary";
 
 export { covers, coverPresets };
 
-// 首页轮播（从全部数字文件名图片中随机选 6 张）
+// 保留参考项目的构建期随机选择接口；首页实际会在浏览器刷新时再次随机选择。
 export const carouselCovers = shuffle(covers).slice(0, 6);
 
-// 统一的封面预设表：用于 fixedCover（固定封面）等需要从配置字符串解析成 ImageMetadata 的场景
-// 说明：Astro 的 <Image /> 更适合接收 ImageMetadata（静态导入结果），而不是任意字符串。
 /**
  * 将 theme.config.ts 中的 fixedCover 字符串解析为可渲染的图片源。
  * - 如果是预设 key（如 "cover-1"），返回静态导入的 ImageMetadata（走 Astro 资源管线）。
@@ -33,12 +31,16 @@ export function resolveFixedCover(
   return coverPresets[fixedCover] ?? fixedCover;
 }
 
-export function getPostCover(post: Partial<Post>): ImageMetadata {
+export function getPostCover(
+  post: Partial<Post>,
+  Covers?: Array<ImageMetadata | string>,
+): ImageMetadata | string {
   if (post?.data?.cover) {
     return post.data.cover;
   }
 
-  return sample(covers ?? []);
+  const defaultCovers = Covers?.length ? Covers : covers;
+  return sample(defaultCovers)!;
 }
 
 export const avatar = avatarImg;

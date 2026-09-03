@@ -10,9 +10,7 @@ const numericCoverEntries = Object.entries(coverModules)
     const stem = path.match(/\/(\d+)\.[^/]+$/)?.[1];
     return stem ? [{ path, stem, image: module.default }] : [];
   })
-  .sort((a, b) =>
-    a.path.localeCompare(b.path, undefined, { numeric: true }),
-  );
+  .sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
 
 export const covers = numericCoverEntries.map(({ image }) => image);
 

@@ -1,0 +1,120 @@
+---
+const cdnBase = "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist";
+const widgetConfig = {
+  waifuPath: "/live2d-models/waifu-tips.json",
+  cdnPath: "/live2d-models/",
+  cubism2Path: `${cdnBase}/live2d.min.js`,
+  cubism5Path: "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js",
+  modelId: 1,
+  drag: true,
+  showToggleAfterQuit: true,
+  tools: [
+    "hitokoto",
+    "asteroids",
+    "switch-model",
+    "switch-texture",
+    "photo",
+    "info",
+    "quit",
+  ],
+};
+
+const initScript = `{
+  const base = ${JSON.stringify(cdnBase)};
+  const config = ${JSON.stringify(widgetConfig)};
+  const stateKey = "__souyerLive2dState";
+
+  const getRightOffset = () => {
+    const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return window.innerWidth >= 1440 ? 16 * rootSize : rootSize;
+  };
+
+  const positionWidget = () => {
+    const widget = document.getElementById("waifu");
+    const toggle = document.getElementById("waifu-toggle");
+    const toolbar = document.getElementById("waifu-tool");
+    const hidden = window.innerWidth < 1024;
+
+    if (widget) {
+      widget.style.display = hidden ? "none" : "";
+      widget.style.right = getRightOffset() + "px";
+      widget.style.left = "auto";
+      widget.style.zIndex = "10";
+    }
+    if (toggle) {
+      toggle.style.display = hidden ? "none" : "";
+      toggle.style.zIndex = "10";
+    }
+    if (toolbar) {
+      toolbar.style.left = "-28px";
+      toolbar.style.right = "auto";
+    }
+  };
+
+  const initialize = () => {
+    if (window[stateKey]?.initialized) {
+      positionWidget();
+      return;
+    }
+
+    localStorage.removeItem("waifu-disabled");
+    localStorage.removeItem("waifu-display");
+    for (const id of ["waifu", "waifu-toggle"]) {
+      document.getElementById(id)?.remove();
+    }
+
+    const state = (window[stateKey] = window[stateKey] || {});
+    state.initialized = true;
+
+    const observer = new MutationObserver(() => {
+      if (document.getElementById("waifu")) positionWidget();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(positionWidget, 100);
+    });
+
+    const run = () => {
+      if (typeof window.initWidget === "function") {
+        window.initWidget(config);
+        positionWidget();
+      }
+    };
+
+    if (typeof window.initWidget === "function") {
+      run();
+      return;
+    }
+
+    if (!document.querySelector('link[data-souyer-live2d="styles"]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = base + "/waifu.css";
+      link.dataset.souyerLive2d = "styles";
+      document.head.appendChild(link);
+    }
+
+    const existingScript = document.querySelector('script[data-souyer-live2d="runtime"]');
+    if (existingScript) {
+      existingScript.addEventListener("load", run, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = base + "/waifu-tips.js";
+    script.dataset.souyerLive2d = "runtime";
+    script.addEventListener("load", run, { once: true });
+    document.head.appendChild(script);
+  };
+
+  initialize();
+  document.addEventListener("astro:page-load", positionWidget);
+}`;
+---
+
+<script is:inline set:html={initScript}></script>
+

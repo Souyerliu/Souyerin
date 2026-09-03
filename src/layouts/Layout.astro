@@ -1,9 +1,10 @@
 ---
-import NavBar from "@/components/navbar/NavBar.svelte";
+import NavBar from "@/components/navbar/NavBar";
 import Brand from "@/components/Brand.astro";
 import HeaderCover from "@/components/HeaderCover.astro";
 import Waves from "@/components/Waves.astro";
 import { getCollection } from "astro:content";
+import { ClientRouter } from "astro:transitions";
 import type {
   TocItem,
   RelatedPost,
@@ -17,21 +18,31 @@ import themeConfig from "@/theme.config.ts";
 import "@/styles/palette.css";
 import "@/styles/fonts.css";
 import "@/styles/style.css";
+import "@/styles/navbar.css";
+import "@/styles/sidebar.css";
+import "@/styles/widgets.css";
+import "@/styles/category-card.css";
+import "@/styles/floating-toolbar.css";
+import "@/styles/about-dialog.css";
+import "@/styles/search-page.css";
+import "@/styles/articles-charts.css";
+import "@/styles/image-zoom.css";
 import "@/styles/header-cover.css";
+import "@/styles/code-block-light.css";
 import "@/styles/mdx-components.css";
 
 import Loading from "@/components/Loading.astro";
-import {
-  carouselCovers,
-  covers,
-  resolveFixedCover,
-  getPostCover,
-} from "@/components/Images.astro";
-import FloatingToolbar from "@/components/FloatingToolbar.svelte";
+import { covers, resolveFixedCover } from "@/components/Images.astro";
+import FloatingToolbar from "@/components/FloatingToolbar";
 import TwoColumnLayout from "@/layouts/TwoColumnLayout.astro";
 import ThreeColumnLayout from "@/layouts/ThreeColumnLayout.astro";
 import { generateTagCloud } from "@/toolkit/posts/generateTagCloud";
+import { createWidgetPosts } from "@/toolkit/posts/createWidgetPosts";
+import { toTagHref } from "@/toolkit/posts/url";
+import { resolveHeaderCovers } from "@/toolkit/headerCover";
 import Footer from "@/components/footer/Footer.astro";
+import type { ImageMetadata } from "astro";
+import { currentLocale } from "@/i18n";
 
 // Accept sidebar props from child pages
 interface PostMeta {
@@ -48,6 +59,7 @@ interface Props {
   pageTitle?: string;
   postMeta?: PostMeta;
   indexPage?: boolean;
+  pageCover?: ImageMetadata | string;
 }
 
 const {
@@ -58,6 +70,7 @@ const {
   pageTitle = "",
   postMeta,
   indexPage = false,
+  pageCover,
 } = Astro.props;
 
 const navLinks = themeConfig.nav;
@@ -68,216 +81,13 @@ const coverConfig = themeConfig.cover || {};
 const footerConfig = themeConfig.footer || {};
 const widgetsConfig = themeConfig.widgets || {};
 const commentsConfig = themeConfig.comments || {};
-const commentsEnabled = Boolean(themeConfig.comments?.enable);
+const commentsEnabled = commentsConfig.enable === true;
 const walineConfig = commentsConfig.waline || {};
 const tagCloudConfig = themeConfig.tagCloud || {};
-const visibilityTitleConfig = themeConfig.visibilityTitle || {};
 const layoutConfig = themeConfig.layout || {};
 const rightSidebarConfig = layoutConfig.rightSidebar || {};
 const layoutMode = layoutConfig.mode || "two-column";
 const enableThirdColumn = layoutMode === "three-column";
-const live2dConfig = themeConfig.live2d;
-const live2dEnabled = live2dConfig?.enable ?? false;
-
-// 预计算 Live2D 初始化脚本（不依赖 autoload.js，手动加载 waifu.css + waifu-tips.js 后自行初始化）
-const LIVE2D_CDN_BASE = "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist";
-const live2dInitScript = live2dEnabled
-  ? `{
-    const base = "${LIVE2D_CDN_BASE}";
-    const cfg = ${JSON.stringify({
-      waifuPath: live2dConfig?.waifuTipsPath ?? "/live2d-models/waifu-tips.json",
-      cdnPath: live2dConfig?.cdnPath ?? "/live2d-models/",
-      cubism2Path: LIVE2D_CDN_BASE + "/live2d.min.js",
-      cubism5Path:
-        "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js",
-      modelId: live2dConfig?.modelId ?? 0,
-      drag: live2dConfig?.drag ?? true,
-      showToggleAfterQuit: live2dConfig?.showToggleAfterQuit ?? true,
-      tools: live2dConfig?.tools ?? [
-        "hitokoto",
-        "asteroids",
-        "switch-model",
-        "switch-texture",
-        "photo",
-        "info",
-        "quit",
-      ],
-    })};
-
-    // 清理上次的残留 DOM，清除 localStorage 脏状态
-    localStorage.removeItem("waifu-disabled");
-    localStorage.removeItem("waifu-display");
-    for (const id of ["waifu", "waifu-toggle"]) {
-      const el = document.getElementById(id);
-      if (el) el.remove();
-    }
-
-    /** 根据屏幕宽度计算 Live2D 靠右侧的 right 值（rem → px） */
-    function getWaifuRightPx() {
-      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-      // >=1440px: 避开右边栏 (15rem + 1rem gap)；否则: 距右边缘 1rem
-      return window.innerWidth >= 1440 ? 16 * rem : 1 * rem;
-    }
-
-    /** 将 Live2D 模型移到右侧 + 工具栏移到左侧 + 控制 z-index
-     *  注意：#waifu-toggle（黄色开关按钮）保持原始位置（左边缘），不跟随模型
-     *  宽度 < 1024px 时隐藏看板娘（与 FloatingToolbar 侧边栏按钮断点一致） */
-    function positionWaifu() {
-      const w = document.getElementById("waifu");
-      const toggle = document.getElementById("waifu-toggle");
-      const tool = document.getElementById("waifu-tool");
-      const isNarrow = window.innerWidth < 1024;
-      if (w) {
-        w.style.display = isNarrow ? "none" : "";
-        w.style.right = getWaifuRightPx() + "px";
-        w.style.left = "auto";
-        w.style.zIndex = "10";
-      }
-      if (toggle) {
-        toggle.style.display = isNarrow ? "none" : "";
-        toggle.style.zIndex = "10";
-      }
-      if (tool) {
-        tool.style.left = "-28px";
-        tool.style.right = "auto";
-      }
-    }
-
-    // 监听窗口 resize 更新位置（三栏/两栏切换时 right 值不同）
-    let resizeTimer;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(positionWaifu, 100);
-    });
-
-    // MutationObserver：等 initWidget 创建 #waifu 后立即定位
-    const observer = new MutationObserver(() => {
-      if (document.getElementById("waifu")) {
-        positionWaifu();
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // 根据当前 Live2D 角色动态切换台词（Proxy 拦截 waifu-tips.json 的 fetch）
-    const _waifuOrigFetch = window.fetch;
-    // 追踪 message.default 数组，用于模型切换时原地更新
-    window.__waifuMsgState = window.__waifuMsgState || { defaultArr: null, seasonal: [], globalDefaults: [], lastModelId: "0" };
-    const _msgState = window.__waifuMsgState;
-    // 拦截 localStorage.setItem 以检测模型切换（仅 patch 一次，避免 view transitions 重复执行时递归）
-    if (!Storage.prototype.__waifuStoragePatched) {
-      Storage.prototype.__waifuStoragePatched = true;
-      const _origStorageSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = function (key, value) {
-        _origStorageSetItem.call(this, key, value);
-        if (key === "modelId" && _msgState.defaultArr && value !== _msgState.lastModelId) {
-          _msgState.lastModelId = value;
-          // 原地重建 default 数组：全局默认 + 角色默认 + 季节性消息
-          _msgState.defaultArr.length = 0;
-          const _push = Array.prototype.push;
-          _push.apply(_msgState.defaultArr, _msgState.globalDefaults);
-          const allTips = _msgState._allTips;
-          if (allTips) {
-            const ct = allTips.characterTips && allTips.characterTips[value];
-            const charDefaults = (ct && ct.message && ct.message.default) || [];
-            _push.apply(_msgState.defaultArr, charDefaults);
-          }
-          _push.apply(_msgState.defaultArr, _msgState.seasonal);
-        }
-      };
-    }
-    window.fetch = function (url, ...args) {
-      const urlStr = typeof url === "string" ? url : url.url || "";
-      if (urlStr === cfg.waifuPath || urlStr.endsWith("/waifu-tips.json")) {
-        return _waifuOrigFetch.call(window, url, ...args).then((resp) =>
-          resp.json().then((allTips) => ({
-            ok: true,
-            status: 200,
-            json: () =>
-              Promise.resolve(
-                new Proxy(allTips, {
-                  get(target, prop) {
-                    const modelId =
-                      localStorage.getItem("modelId") || "0";
-                    const charTips =
-                      target.characterTips &&
-                      target.characterTips[modelId];
-                    if (prop === "models") return target.models;
-                    if (!charTips) return target[prop];
-                    if (prop === "mouseover") {
-                      // 角色专属项优先，解决相同 selector 被全局项抢先匹配的问题
-                      return [
-                        ...(charTips.mouseover || []),
-                        ...(target.mouseover || []),
-                      ];
-                    }
-                    if (prop === "click") {
-                      return [
-                        ...(charTips.click || []),
-                        ...(target.click || []),
-                      ];
-                    }
-                    if (prop === "message") {
-                      const merged = Object.assign({}, target.message);
-                      const cm = charTips.message || {};
-                      for (const k of Object.keys(cm)) {
-                        if (k === "default") {
-                          // 创建"活的" default 数组：被库捕获后，仍可在模型切换时原地更新
-                          const arr = [
-                            ...(target.message.default || []),
-                            ...(cm.default || []),
-                          ];
-                          // 拦截 push 以追踪季节性消息（库会在初始化后 push 节日/时间段消息）
-                          const origPush = arr.push;
-                          arr.push = function (...items) {
-                            _msgState.seasonal.push(...items);
-                            return origPush.apply(this, items);
-                          };
-                          // 保存状态引用，供 localStorage hook 原地更新
-                          _msgState.defaultArr = arr;
-                          _msgState.globalDefaults = [...(target.message.default || [])];
-                          _msgState.lastModelId = modelId;
-                          _msgState._allTips = target;
-                          merged[k] = arr;
-                        } else {
-                          merged[k] = cm[k];
-                        }
-                      }
-                      return merged;
-                    }
-                    return target[prop];
-                  },
-                }),
-              ),
-          })),
-        );
-      }
-      return _waifuOrigFetch.call(window, url, ...args);
-    };
-
-    const doInit = () => {
-      if (typeof initWidget !== "undefined") {
-        initWidget(cfg);
-      }
-    };
-
-    // waifu-tips.js 是 ES module，浏览器会缓存，只需加载一次
-    if (typeof initWidget !== "undefined") {
-      doInit();
-    } else {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = base + "/waifu.css";
-      document.head.appendChild(link);
-
-      const script = document.createElement("script");
-      script.type = "module";
-      script.src = base + "/waifu-tips.js";
-      script.onload = doInit;
-      document.head.appendChild(script);
-    }
-  }`
-  : "";
-
 const shouldComputeRightSidebarRandomPosts =
   enableThirdColumn && rightSidebarConfig.randomPosts === true;
 const shouldComputeRightSidebarRecentMoments =
@@ -286,40 +96,30 @@ const shouldComputeRightSidebarTagCloud =
   enableThirdColumn && rightSidebarConfig.tagCloud === true;
 const ActiveLayout = enableThirdColumn ? ThreeColumnLayout : TwoColumnLayout;
 
-// Get all posts for widgets
-const allPosts = await getCollection("posts");
-const posts = allPosts.filter((post) => !post.data.draft);
-const isPostPage = Boolean(currentSlug && postMeta);
-
-let postCover;
-
-if (isPostPage) {
-  const postData = posts.find((p) => p.id === currentSlug);
-  if (postData) {
-    postCover = getPostCover(postData);
-  }
-}
-
 // fixedCover：通过 Images.astro 统一解析（静态导入走 <Image />，字符串走 <img> 兜底）
 const fixedCover = coverConfig.fixedCover?.enable
   ? resolveFixedCover(coverConfig.fixedCover.url)
   : undefined;
+const advancedCarousel = coverConfig.advancedCarousel === true;
+const headerCovers = advancedCarousel
+  ? await resolveHeaderCovers({
+      coverUrls: coverConfig.coverUrls,
+      fallbackCovers: covers,
+    })
+  : [];
+const resolvedHeaderCover = pageCover ?? fixedCover;
 
-const headerFixedCover = isPostPage ? postCover : fixedCover;
-const headerCovers = isPostPage
-  ? postCover
-    ? [postCover]
-    : covers
-  : carouselCovers;
-
+// Get all posts for widgets
+const allPosts = await getCollection("posts");
+const posts = allPosts.filter((post) => !post.data.draft);
 const moments = shouldComputeRightSidebarRecentMoments
-  ? (await getCollection("moments")).sort(
+  ? (await getCollection("moments")).toSorted(
       (a, b) =>
         new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
     )
   : [];
 const rightSidebarPosts = shouldComputeRightSidebarRandomPosts
-  ? posts.filter((post) => !post.data.encrypted && !post.data.link)
+  ? posts.filter((post) => !post.data.encrypted)
   : [];
 const rightSidebarTagCloud = shouldComputeRightSidebarTagCloud
   ? (() => {
@@ -344,8 +144,11 @@ const rightSidebarTagCloud = shouldComputeRightSidebarTagCloud
           limit: 16,
         },
       ).map((tag) => ({
-        ...tag,
-        href: `/tags/${encodeURIComponent(tag.name.toLowerCase().replace(/\s+/g, "-"))}/`,
+        name: tag.name,
+        count: tag.count,
+        fontSize: tag.fontSize,
+        color: tag.color,
+        href: toTagHref(tag.name),
       }));
     })()
   : [];
@@ -362,38 +165,38 @@ const siteState = {
   }, new Set()).size,
 };
 
-// Import CodeBlock to define custom element
-import CodeBlock from "@/components/CodeBlock.svelte";
-import ImageZoom from "@/components/ImageZoom.svelte";
-import SearchPage from "@/components/search/SearchPage.svelte";
+const widgetPosts = createWidgetPosts(posts);
+
+// Import custom elements definitions
+import CodeBlock from "@/components/CodeBlock";
+import ImageZoom from "@/components/ImageZoom";
+import SearchPage from "@/components/search/SearchPage";
+import HyacineOutlet from "@hyacine/plugin-astro/components/HyacineOutlet.astro";
+import Live2DWidget from "@/components/Live2DWidget.astro";
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={currentLocale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <!-- 预连接外部 CDN，减少 DNS/TCP/TLS 握手延迟 -->
+    <ClientRouter />
     <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
     <link rel="dns-prefetch" href="https://cubism.live2d.com" />
-    <link id="favicon" rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
+
+    <script>
+      import "virtual:hyacine/runtime";
+    </script>
 
     <slot name="head" />
 
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
     <title>{pageTitle}</title>
-
   </head>
-  <body
-    data-visibility-title-config={JSON.stringify(visibilityTitleConfig)}
-    data-layout-mode={layoutMode}
-  >
-    <!-- 跳过导航链接，方便键盘用户直达主内容 -->
-    <a href="#main-content" class="skip-link">跳到主要内容</a>
-    <!-- 全局 aria-live 区域，供动态内容向屏幕阅读器播报 -->
-    <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <body data-layout-mode={layoutMode}>
     <NavBar
       client:load
       name={siteName}
@@ -406,9 +209,10 @@ import SearchPage from "@/components/search/SearchPage.svelte";
       <HeaderCover
         enable={coverConfig.enable}
         preload={coverConfig.preload}
-        fixedCover={headerFixedCover}
+        fixedCover={resolvedHeaderCover}
         gradient={coverConfig.gradient}
-        covers={headerCovers}
+        covers={advancedCarousel ? headerCovers : covers}
+        advancedCarousel={advancedCarousel}
         title={brandConfig.title}
       />
       <Brand
@@ -419,9 +223,9 @@ import SearchPage from "@/components/search/SearchPage.svelte";
         postMeta={postMeta}
       />
       <Waves />
-      <main id="main-content">
+      <main>
         <ActiveLayout
-          posts={posts}
+          widgetPosts={widgetPosts}
           widgetsConfig={widgetsConfig}
           commentsEnabled={commentsEnabled}
           walineServerURL={walineConfig.serverURL || ""}
@@ -445,98 +249,15 @@ import SearchPage from "@/components/search/SearchPage.svelte";
     <script>
       import "@/toolkit/initMdxComponents";
     </script>
-    <script>
-      type VisibilityTitleScriptConfig = {
-        enable: boolean;
-        leaveTitle: string;
-        returnTitle: string;
-        restoreDelay: number;
-      };
-
-      const parseVisibilityTitleConfig = () => {
-        const raw = document.body.dataset.visibilityTitleConfig;
-        if (!raw) {
-          return {} as Partial<VisibilityTitleScriptConfig>;
-        }
-
-        try {
-          const parsed = JSON.parse(raw) as unknown;
-          if (typeof parsed === "object" && parsed !== null) {
-            return parsed as Partial<VisibilityTitleScriptConfig>;
-          }
-        } catch {
-          // ignore malformed JSON and fallback to defaults
-        }
-
-        return {} as Partial<VisibilityTitleScriptConfig>;
-      };
-
-      const visibilityTitleConfigData = parseVisibilityTitleConfig();
-      const config = {
-        enable: visibilityTitleConfigData.enable ?? true,
-        leaveTitle:
-          visibilityTitleConfigData.leaveTitle ?? "(╥﹏╥) 不要走嘛...",
-        returnTitle:
-          visibilityTitleConfigData.returnTitle ?? "(๑•̀ㅂ•́)و✧ 欢迎回来！",
-        restoreDelay: visibilityTitleConfigData.restoreDelay ?? 3000,
-      };
-
-      const favicon = document.getElementById("favicon");
-
-      if (config.enable) {
-        let originalTitle = document.title;
-        let restoreTimer: number | undefined;
-
-        const clearRestoreTimer = () => {
-          if (restoreTimer !== undefined) {
-            window.clearTimeout(restoreTimer);
-            restoreTimer = undefined;
-          }
-        };
-
-        const onVisibilityChange = () => {
-          clearRestoreTimer();
-
-          if (document.hidden) {
-            originalTitle = document.title;
-            document.title = config.leaveTitle;
-
-            if (favicon) favicon.setAttribute("href", "/failure.ico");
-            const delay =
-              Number.isFinite(config.restoreDelay) && config.restoreDelay >= 0
-                ? config.restoreDelay
-                : 3000;
-
-            restoreTimer = window.setTimeout(() => {
-              document.title = originalTitle;
-            }, delay);
-            return;
-          }
-
-          document.title = config.returnTitle;
-
-          if (favicon) favicon.setAttribute("href", "/favicon.ico");
-          const delay =
-            Number.isFinite(config.restoreDelay) && config.restoreDelay >= 0
-              ? config.restoreDelay
-              : 3000;
-
-          restoreTimer = window.setTimeout(() => {
-            document.title = originalTitle;
-          }, delay);
-        };
-
-        document.addEventListener("visibilitychange", onVisibilityChange);
-      }
-    </script>
     <div class="hidden">
       <CodeBlock client:idle />
       <ImageZoom client:idle />
     </div>
-    <FloatingToolbar client:idle nyxPlayer={themeConfig.nyxPlayer} />
-
-    <!-- Live2D 看板娘：放在 body 尾部以适配 Astro View Transitions -->
-    {live2dEnabled && <script is:inline set:html={live2dInitScript}></script>}
+    <FloatingToolbar client:idle transition:persist="floating-toolbar" />
+    <div id="nyx-player-host" transition:persist="nyx-player">
+      <HyacineOutlet name="layout-bottom" />
+    </div>
+    <Live2DWidget />
   </body>
 </html>
 

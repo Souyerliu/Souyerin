@@ -5,6 +5,7 @@ import {
   formatCategories,
   type Category,
 } from "@/toolkit/posts/formatCategories";
+import { toCategoryHref } from "@/toolkit/posts/url";
 import { t } from "@/i18n";
 import "../../styles/collapse.css";
 
@@ -21,7 +22,7 @@ publishedPosts.forEach((post) => {
 
   // Build hierarchy from category array
   categories.forEach((cat, index) => {
-    const catId = cat.toLowerCase().replace(/\s+/g, "-");
+    const catId = cat.toLowerCase().replaceAll(/\s+/g, "-");
 
     if (!categoryMap.has(catId)) {
       categoryMap.set(catId, {
@@ -35,7 +36,7 @@ publishedPosts.forEach((post) => {
     // Set parent relationship (previous category in array is parent)
     if (index > 0) {
       const parentCat = categories[index - 1];
-      const parentId = parentCat.toLowerCase().replace(/\s+/g, "-");
+      const parentId = parentCat.toLowerCase().replaceAll(/\s+/g, "-");
       categoryMap.get(catId)!.parent = parentId;
     }
 
@@ -62,11 +63,6 @@ categoryMap.forEach((cat) => {
 const categoriesArray = Array.from(categoryMap.values());
 const hierarchicalCategories = formatCategories(categoriesArray, { depth: 3 });
 
-// Helper to render category item based on level
-function getCategoryUrl(name: string): string {
-  return `/categories/${encodeURIComponent(name)}`;
-}
-
 type CategoryWithChildren = Category & { children?: CategoryWithChildren[] };
 ---
 
@@ -77,7 +73,7 @@ type CategoryWithChildren = Category & { children?: CategoryWithChildren[] };
         hierarchicalCategories.map((cat: CategoryWithChildren) => (
           <div>
             <h2 class="item header">
-              <a href={getCategoryUrl(cat.name)} itemprop="url">
+              <a href={toCategoryHref(cat.name)} itemprop="url">
                 {cat.name}
               </a>
               <small>( {cat.length} )</small>
@@ -87,7 +83,7 @@ type CategoryWithChildren = Category & { children?: CategoryWithChildren[] };
               cat.children.map((child: CategoryWithChildren) => (
                 <>
                   <h3 class="item section">
-                    <a href={getCategoryUrl(child.name)} itemprop="url">
+                    <a href={toCategoryHref(child.name)} itemprop="url">
                       {child.name}
                     </a>
                     <small>( {child.length} )</small>
@@ -98,7 +94,7 @@ type CategoryWithChildren = Category & { children?: CategoryWithChildren[] };
                       <div class="item normal">
                         <div class="title">
                           <a
-                            href={getCategoryUrl(grandchild.name)}
+                            href={toCategoryHref(grandchild.name)}
                             itemprop="url"
                           >
                             {grandchild.name}

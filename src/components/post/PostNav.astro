@@ -1,6 +1,5 @@
 ---
-import { getT } from "@/i18n";
-import themeConfig from "@/theme.config";
+import { currentLocale, getT } from "@/i18n";
 import { generateRandomBrightColor } from "@/toolkit/tools/generateRandomBrightColor";
 import { covers } from "../Images.astro";
 import { sample } from "es-toolkit";
@@ -19,28 +18,10 @@ interface Props {
 }
 
 const { prevPost, nextPost, nextGradientCover = false } = Astro.props;
-const t = getT((themeConfig.locale as "zh-CN" | "en") || "zh-CN");
-
-function resolveCover(post?: NavPost) {
-  if (!post || !post.cover) {
-    return sample(covers ?? []).src;
-  }
-
-  const cover = post.cover;
-
-  if (typeof cover === "string") {
-    return cover;
-  }
-
-  if (typeof cover === "object" && "src" in cover) {
-    return cover.src;
-  }
-
-  return sample(covers ?? []).src;
-}
+const t = getT(currentLocale);
 ---
 
-<nav class="post-nav" aria-label={t("post.previousPost") + " / " + t("post.nextPost")}>
+<div class="post-nav">
   <div class="item left">
     {
       prevPost && (
@@ -52,7 +33,7 @@ function resolveCover(post?: NavPost) {
           style={
             nextGradientCover
               ? `background-image: linear-gradient(to bottom right, ${generateRandomBrightColor()}, ${generateRandomBrightColor()});`
-              : `background-image: url(${resolveCover(prevPost)});`
+              : `background-image: url(${prevPost.cover || sample(covers ?? []).src});`
           }
         >
           <span class="type">{t("post.previousPost")}</span>
@@ -62,7 +43,7 @@ function resolveCover(post?: NavPost) {
               {prevPost.category}
             </span>
           )}
-          <h3>{prevPost.title}</h3>
+          <span class="post-nav-title">{prevPost.title}</span>
         </a>
       )
     }
@@ -79,7 +60,7 @@ function resolveCover(post?: NavPost) {
           style={
             nextGradientCover
               ? `background-image: linear-gradient(to bottom right, ${generateRandomBrightColor()}, ${generateRandomBrightColor()});`
-              : `background-image: url(${resolveCover(nextPost)});`
+              : `background-image: url(${nextPost.cover || sample(covers ?? []).src});`
           }
         >
           <span class="type">{t("post.nextPost")}</span>
@@ -89,9 +70,9 @@ function resolveCover(post?: NavPost) {
               {nextPost.category}
             </span>
           )}
-          <h3>{nextPost.title}</h3>
+          <span class="post-nav-title">{nextPost.title}</span>
         </a>
       )
     }
   </div>
-</nav>
+</div>

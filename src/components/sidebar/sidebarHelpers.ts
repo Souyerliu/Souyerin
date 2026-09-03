@@ -3,6 +3,7 @@
  */
 
 import type { TocItem } from "./SidebarTypes";
+import { isSidebarMenuItemActive } from "@/toolkit/ui/sidebar";
 
 /**
  * Activate menu items based on current page URL
@@ -11,18 +12,16 @@ export function initMenuActive() {
   if (typeof document === "undefined") return;
 
   document.querySelectorAll(".menu .item:not(.title)").forEach((element) => {
-    const target = element.querySelector("a[href]") as HTMLAnchorElement | null;
-    const parentItem = element.parentNode?.parentNode as HTMLElement | null;
+    const target = element.querySelector("a[href]");
+    if (!(target instanceof HTMLAnchorElement)) return;
+    const parentItem = element.closest(".dropdown");
 
-    if (!target) return;
-
-    const isSamePath =
-      target.pathname === location.pathname ||
-      target.pathname === location.pathname.replace("index.html", "");
-
-    const isSubPath = location.pathname.startsWith(target.pathname) && target.pathname !== "/";
-
-    const isActive = target.hostname === location.hostname && (isSamePath || isSubPath);
+    const isActive = isSidebarMenuItemActive({
+      targetPathname: target.pathname,
+      currentPathname: location.pathname,
+      targetHostname: target.hostname,
+      currentHostname: location.hostname,
+    });
 
     element.classList.toggle("active", isActive);
 
@@ -65,8 +64,9 @@ export function extractTocFromContent(content: string): TocItem[] {
     const text = match[2].trim();
     const id = text
       .toLowerCase()
-      .replace(/[^\w\u4E00-\u9FA5]+/g, "-")
-      .replace(/^-+|-+$/g, "");
+      .replaceAll(/[^\w\u4E00-\u9FA5]+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
 
     toc.push({
       id,
@@ -90,16 +90,18 @@ export function buildTocTree(items: TocItem[]): TocItem[] {
   items.forEach((item) => {
     const newItem: TocItem = { ...item, children: [] };
 
-    while (stack.length > 0 && stack[stack.length - 1].level >= item.level) {
+    while (stack.length > 0 && (stack.at(-1)?.level ?? 0) >= item.level) {
       stack.pop();
     }
 
     if (stack.length === 0) {
       result.push(newItem);
     } else {
-      const parent = stack[stack.length - 1];
-      if (!parent.children) parent.children = [];
-      parent.children.push(newItem);
+      const parent = stack.at(-1);
+      if (parent) {
+        parent.children ??= [];
+        parent.children.push(newItem);
+      }
     }
 
     stack.push(newItem);

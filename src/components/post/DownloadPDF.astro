@@ -1,0 +1,169 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div
+  class="pdf-download-area"
+  data-pdf-download
+  data-title={title}
+  style="display:flex;flex-direction:column;align-items:center;margin-top:2rem;padding-top:1.5rem"
+>
+  <button
+    type="button"
+    data-pdf-button
+    style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.625rem 1.5rem;border:1px solid;border-color:var(--primary-color);color:var(--primary-color);border-radius:0.5rem;background:transparent;cursor:pointer"
+    title="下载文章为 PDF 文件"
+  >
+    <span class="i-ri-file-download-line" data-pdf-icon></span>
+    <span data-pdf-label>下载 PDF</span>
+  </button>
+
+  <p
+    data-pdf-error
+    hidden
+    style="display:flex;align-items:center;gap:0.375rem;color:var(--color-red-a11);margin-top:0.625rem"
+  >
+    <span class="i-ri-error-warning-line"></span>
+    <span data-pdf-error-message></span>
+  </p>
+</div>
+
+<script>
+  import {
+    buildPrintHTML,
+    fetchAllStylesheets,
+    inlineEssentialStyles,
+    resolveImageUrls,
+  } from "@/toolkit/generatePrintHTML";
+
+  function initializePdfDownloads(): void {
+    document.querySelectorAll<HTMLElement>("[data-pdf-download]").forEach((root) => {
+      if (root.dataset.pdfBound === "true") return;
+      root.dataset.pdfBound = "true";
+
+      const button = root.querySelector<HTMLButtonElement>("[data-pdf-button]");
+      const icon = root.querySelector<HTMLElement>("[data-pdf-icon]");
+      const label = root.querySelector<HTMLElement>("[data-pdf-label]");
+      const errorBox = root.querySelector<HTMLElement>("[data-pdf-error]");
+      const errorMessage = root.querySelector<HTMLElement>("[data-pdf-error-message]");
+      if (!button || !icon || !label || !errorBox || !errorMessage) return;
+
+      let generating = false;
+
+      const setGenerating = (value: boolean): void => {
+        generating = value;
+        button.disabled = value;
+        icon.className = value
+          ? "i-ri-loader-4-line animate-spin"
+          : "i-ri-file-download-line";
+        label.textContent = value ? "正在准备打印..." : "下载 PDF";
+      };
+
+      const setError = (message?: string): void => {
+        errorBox.hidden = !message;
+        errorBox.style.display = message ? "flex" : "none";
+        errorMessage.textContent = message ?? "";
+      };
+
+      button.addEventListener("click", async () => {
+        if (generating) return;
+        setGenerating(true);
+        setError();
+
+        let printWindow: Window | null = null;
+        let timeoutId: number | undefined;
+
+        try {
+          const article = document.querySelector<HTMLElement>("article.post.block");
+          if (!article) throw new Error("未找到文章内容");
+
+          const allCss = await fetchAllStylesheets();
+          const clone = article.cloneNode(true) as HTMLElement;
+          inlineEssentialStyles(article, clone);
+          resolveImageUrls(clone);
+
+          for (const selector of [
+            ".pdf-download-area",
+            "ai-similar-posts",
+            ".ai-summary-card",
+          ]) {
+            clone.querySelectorAll(selector).forEach((element) => element.remove());
+          }
+
+          const html = buildPrintHTML(root.dataset.title ?? document.title, clone, allCss);
+          printWindow = window.open("about:blank", `print-${Date.now()}`);
+          if (!printWindow) {
+            throw new Error("弹窗被浏览器拦截，请允许本站弹出窗口后重试");
+          }
+
+          const parsedDocument = new DOMParser().parseFromString(html, "text/html");
+          printWindow.document.documentElement.innerHTML = parsedDocument.documentElement.innerHTML;
+          printWindow.document.documentElement.lang = parsedDocument.documentElement.lang;
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (!printWindow) return;
+              const body = printWindow.document.body;
+              const computedStyle = getComputedStyle(body);
+              const baseFont = Number.parseFloat(computedStyle.fontSize);
+              const maxWidth =
+                body.clientWidth -
+                (Number.parseFloat(computedStyle.paddingLeft) || 0) -
+                (Number.parseFloat(computedStyle.paddingRight) || 0);
+
+              printWindow.document
+                .querySelectorAll<HTMLElement>(".katex-display")
+                .forEach((element) => {
+                  const katex = element.querySelector<HTMLElement>(":scope > .katex");
+                  if (!katex) return;
+                  const realWidth = Math.max(katex.scrollWidth, katex.offsetWidth);
+                  if (realWidth <= maxWidth) return;
+                  const scale = Math.max(0.4, Math.min(1, (maxWidth / realWidth) * 0.9));
+                  element.style.fontSize = `${(scale * baseFont).toFixed(1)}px`;
+                  katex.style.fontSize = "inherit";
+                });
+            });
+          });
+
+          await new Promise<void>((resolve) => {
+            const tryPrint = (): void => {
+              if (!printWindow) return resolve();
+              const images = Array.from(printWindow.document.images);
+              if (images.every((image) => image.complete)) {
+                if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+                printWindow.print();
+                resolve();
+                return;
+              }
+              window.setTimeout(tryPrint, 200);
+            };
+
+            timeoutId = window.setTimeout(() => {
+              printWindow?.print();
+              resolve();
+            }, 8000);
+            window.setTimeout(tryPrint, 400);
+          });
+
+          window.setTimeout(() => {
+            printWindow?.close();
+            setGenerating(false);
+          }, 800);
+        } catch (error) {
+          setError(error instanceof Error ? error.message : "PDF 生成失败，请稍后重试");
+          console.error("[DownloadPDF] 生成失败:", error);
+          if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+          printWindow?.close();
+          setGenerating(false);
+        }
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initializePdfDownloads);
+  initializePdfDownloads();
+</script>

@@ -1,0 +1,29 @@
+---
+import katex from "katex";
+
+interface Props {
+  value: string;
+  displayMode?: boolean;
+  throwOnError?: boolean;
+}
+
+const { value, displayMode = false, throwOnError = false } = Astro.props;
+
+let html: string;
+try {
+  html = katex.renderToString(value, {
+    displayMode,
+    throwOnError,
+  });
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  const escapedMessage = message
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+  html = `<span class="katex-error">${escapedMessage}</span>`;
+}
+---
+
+<Fragment set:html={html} />

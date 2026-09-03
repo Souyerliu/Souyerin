@@ -4,12 +4,13 @@
     "posts": "文章",
     "categories": "分类",
     "tags": "标签",
-    "archives": "归档"
+    "archives": "归档",
+    "statistics": "统计"
   },
   "post": {
     "wordCount": "字数统计",
     "readingTime": "阅读时长",
-    "hours": "小时",
+    "hours": "\u5c0f\u65f6",
     "minutes": "分钟",
     "words": "字",
     "author": "文章作者",
@@ -20,8 +21,12 @@
     "noContent": "暂无文章",
     "publishedAt": "发布于",
     "createdAt": "创建于",
+    "updatedAt": "更新于",
     "previousPost": "上一篇",
     "nextPost": "下一篇",
+    "rewardSupport": "赞赏支持",
+    "rewardDescription": "您的支持是我继续创作的动力",
+    "readingNeed": "需要",
     "license": {
       "text": "本文采用",
       "suffix": "许可协议，转载请注明出处",
@@ -37,16 +42,19 @@
   },
   "category": {
     "title": "分类",
+    "all": "全部",
     "subcategories": "个子分类",
     "posts": "篇文章",
     "label": "分类",
-    "noContent": "该分类下暂无文章"
+    "noContent": "该分类下暂无文章",
+    "untitled": "无标题"
   },
   "tag": {
     "title": "标签"
   },
   "archive": {
     "title": "归档",
+    "all": "全部",
     "year": "年",
     "month": "月",
     "excellent": "太棒了",
@@ -56,6 +64,18 @@
     "ok": "还行",
     "emh": "嗯..",
     "keepTrying": "继续努力"
+  },
+  "statistics": {
+    "title": "文章统计",
+    "totalPosts": "文章总数",
+    "totalCategories": "分类总数",
+    "totalTags": "标签总数",
+    "topCategory": "最常用分类",
+    "postCount": "文章数",
+    "monthlyPosts": "每月发布趋势",
+    "categoryDistribution": "分类文章分布（Top 10）",
+    "tagDistribution": "Tag 文章分布（Top 16）",
+    "latestMonthSummary": "最近统计月份 {{month}} 共发布 {{count}} 篇文章。"
   },
   "sidebar": {
     "toc": "目录",
@@ -115,6 +135,8 @@
     "poweredBy": "由",
     "and": "和",
     "poweredSuffix": "主题强力驱动",
+    "totalWordsTitle": "总字数",
+    "estimatedReadingTimeTitle": "预计阅读时间",
     "randomPosts": "随机文章",
     "recentComments": "最新评论",
     "noRecentComments": "暂无评论，来抢个沙发吧～",
@@ -158,7 +180,14 @@
   "moments": {
     "title": "动态",
     "noContent": "暂无动态",
-    "publishedAt": "发布于"
+    "publishedAt": "发布于",
+    "imageAlt": "动态图片 {{index}}"
+  },
+  "imageZoom": {
+    "dialog": "图片预览",
+    "close": "关闭图片预览",
+    "previous": "查看上一张图片",
+    "next": "查看下一张图片"
   },
   "random": {
     "title": "随机文章",
@@ -166,5 +195,51 @@
     "noPost": "暂无可跳转的文章",
     "retry": "重新随机",
     "noScript": "当前浏览器未启用 JavaScript，请先返回首页手动挑选文章。"
+  },
+  "aboutDialog": {
+    "defaults": {
+      "title": "快速对话",
+      "intro": "选择一个回复选项继续对话。你可以在组件里预先定义分支与回复。",
+      "authorName": "作者",
+      "authorInitial": "作",
+      "endHint": "这段对话已经结束。你可以点击“重新开始”再聊一次。"
+    },
+    "defaultNodes": {
+      "intro": {
+        "text": "你好，这里是可配置对话组件示例。请选择一个回复继续。",
+        "optionA": {
+          "label": "示例问题 A",
+          "reply": "我想看示例问题 A 的回复。"
+        },
+        "optionB": {
+          "label": "示例问题 B",
+          "reply": "我想看示例问题 B 的回复。"
+        }
+      },
+      "answerA": {
+        "text": "这是示例回答 A。你可以把节点文本和选项替换成自己的内容。"
+      },
+      "answerB": {
+        "text": "这是示例回答 B。你也可以通过 nodes 属性在页面里覆盖默认对话。"
+      },
+      "backToMenu": {
+        "label": "返回菜单",
+        "reply": "回到菜单。"
+      }
+    },
+    "runtime": {
+      "noNodesConfigured": "还没有配置对话节点。",
+      "branchNotConfigured": "这个分支还没配置完成，请先选择其它选项。",
+      "noDialogContent": "暂无对话内容，请先配置节点。"
+    },
+    "typing": {
+      "ariaLabel": "正在输入",
+      "peerTyping": "对方正在输入…",
+      "inputPlaceholder": "在这里输入消息（演示输入框）"
+    },
+    "actions": {
+      "send": "发送",
+      "restart": "重新开始"
+    }
   }
 }

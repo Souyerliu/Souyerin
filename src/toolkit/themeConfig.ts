@@ -1,7 +1,9 @@
 import type { NavItemType } from "@/components/navbar/NavTypes";
 import type { SidebarConfig } from "@/components/sidebar/SidebarTypes";
 import type { Locale } from "@/i18n";
-import { sanitizeThemeColor, type ThemeColorValue } from "./themeColor";
+import type { WalineInitOptions } from "@waline/client";
+import { sanitizeThemeColor, type ThemeColorValue } from "./themeColor.ts";
+import { DEFAULT_THEME_CONFIG } from "./themeConfig.defaults.ts";
 
 interface BrandConfig {
   /**
@@ -61,6 +63,21 @@ interface CoverConfig {
      */
     url?: string;
   };
+
+  /**
+   * 启用高级轮播模式。
+   * - true：使用 PR #36 的新行为（支持远程 URL、covers.config.ts、任意 ≥2 张图即可轮播）
+   * - false（默认）：使用旧行为（仅本地图片、必须恰好 6 张才启动轮播）
+   */
+  advancedCarousel?: boolean;
+
+  /**
+   * 远端/字符串轮播图列表。
+   * - 仅在 fixedCover 未启用且 gradient 为 false 时参与轮播
+   * - 适用于直接在配置中填写一组 URL
+   * - 當 advancedCarousel 为 true 且 coverUrls 非空时，优先使用 coverUrls，否则利用 covers.config.ts 中的 defineCovers 定义的 URL 列表
+   */
+  coverUrls?: string[];
 
   /**
    * 是否使用渐变背景封面。
@@ -179,94 +196,31 @@ interface WidgetsConfig {
    * - 默认建议 5~10 条，避免页脚过长
    */
   recentCommentsLimit?: number;
-}
 
-interface WalineEmojiInfo {
-  /** 选项卡上的 Emoji 名称 */
-  name: string;
-  /** Emoji 通用路径前缀 */
-  prefix?: string;
-  /** Emoji 图片的类型，会作为文件扩展名使用 */
-  type?: string;
-  /** 选项卡显示的 Emoji 图标 */
-  icon: string;
-  /** Emoji 图片列表 */
-  items: string[];
+  /**
+   * 最新评论服务端数据源（可选，用于 Widgets 最新评论拉取）。
+   */
+  recentCommentsServerURL?: string;
 }
 
 interface WalineClientConfig {
-  /**
-   * Waline 服务端地址。
-   * - 例如: https://comments.example.com
-   */
+  /** Waline 服务端地址 */
   serverURL?: string;
-
-  /**
-   * 评论语言。
-   * - 留空时由 Waline 根据浏览器语言决定
-   */
+  /** Waline 界面语言 */
   lang?: string;
-
-  /**
-   * 评论路径。
-   * - 默认为当前 pathname
-   * - 可用于多语言/去尾斜杠等场景统一路径
-   */
-  path?: string;
-
-  /**
-   * 暗黑模式配置。
-   * - false: 关闭
-   * - true: 强制开启
-   * - "auto": 跟随系统
-   * - CSS 选择器: 当选择器命中时启用暗黑模式
-   */
+  /** 深色模式：布尔值、auto 或 CSS 选择器 */
   dark?: boolean | string;
-
-  /**
-   * 自定义表情包列表。
-   * - 支持 Waline 表情预设 URL 或 EmojiInfo 对象
-   */
-  emoji?: (string | WalineEmojiInfo)[];
-
-  /**
-   * 每页评论数量。
-   */
-  pageSize?: number;
+  /** 覆盖 Waline 使用的文章路径 */
+  path?: string;
+  /** Waline 表情包地址 */
+  emoji?: WalineInitOptions["emoji"];
 }
 
 interface CommentsConfig {
-  /**
-   * 是否启用评论模块。
-   * - false 时文章页不挂载评论组件
-   */
+  /** 是否在文章页启用评论区 */
   enable?: boolean;
-
-  /**
-   * Waline 客户端配置。
-   */
+  /** Waline 客户端配置 */
   waline?: WalineClientConfig;
-}
-
-interface NyxPlayerPlaylist {
-  /** 歌单名称 */
-  name: string;
-  /** 歌单链接（网易云 / QQ 音乐） */
-  url: string;
-}
-
-interface NyxPlayerConfig {
-  /** 是否启用播放器 */
-  enable?: boolean;
-
-  /** 歌单配置 */
-  urls?: NyxPlayerPlaylist[];
-
-  /** 预设主题 */
-  preset?: "nyx" | "shokax";
-
-  /** 暗色模式选择器 */
-  darkModeTarget?: string;
 }
 
 interface HomeConfig {
@@ -296,6 +250,13 @@ interface HomeConfig {
    * - 置顶文章始终显示在首页第一页顶部，不占用分页配额
    */
   pageSize?: number;
+
+  /**
+   * 首页及分页文章卡片的摘要来源。
+   * - "default"：使用 description 或正文截取
+   * - "ai"：优先使用本地数据库/物化的 AI 摘要，缺失时回退到默认摘要
+   */
+  excerptSource?: "default" | "ai";
 
   /**
    * 控制首页标题显示行为
@@ -396,6 +357,13 @@ interface FriendsConfig {
   title?: string;
   /** 友链页面描述 */
   description?: string;
+  /**
+   * 是否在友链页面开启评论区。
+   * - true：在友链列表下方挂载 Waline 评论组件
+   * - false（默认）：不显示评论区
+   * - 需要同时配置全局 comments.enable 与 comments.waline.serverURL 才会真正渲染
+   */
+  comments?: boolean;
   /** 友链配置示例使用的头像（可选） */
   avatar?: string;
   /** 友链配置示例使用的主题色（可选） */
@@ -403,9 +371,11 @@ interface FriendsConfig {
   /** 友链配置示例使用的站点预览图（可选） */
   siteImage?: string;
   /** 个人友链列表 */
-  personal: FriendLinkConfig[];
-  /** 工具箱列表 */
-  tools: FriendLinkConfig[];
+  personal?: FriendLinkConfig[];
+  /** 工具类站点列表 */
+  tools?: FriendLinkConfig[];
+  /** 旧版单列表配置，保留用于兼容已有主题配置 */
+  links?: FriendLinkConfig[];
 }
 
 interface TagCloudConfig {
@@ -426,91 +396,6 @@ interface TagCloudConfig {
   endColor?: ThemeColorValue;
 }
 
-interface VisibilityTitleConfig {
-  /**
-   * 是否启用页面可视度标题切换。
-   */
-  enable?: boolean;
-
-  /**
-   * 切换到其他标签页时显示的标题。
-   */
-  leaveTitle?: string;
-
-  /**
-   * 返回当前标签页时显示的标题。
-   */
-  returnTitle?: string;
-
-  /**
-   * 返回后恢复原始标题的延迟（毫秒）。
-   * - 默认 3000
-   */
-  restoreDelay?: number;
-}
-
-interface HycAiRecommendConfig {
-  /**
-   * 是否启用 AI 相近文章推荐。
-   * - false：关闭该功能
-   * - true/未设置：允许在文章页尝试展示
-   */
-  enable?: boolean;
-
-  /**
-   * 最多展示推荐条数。
-   * - 默认 3
-   */
-  limit?: number;
-
-  /**
-   * 最低相似度阈值。
-   * - 取值范围建议 0~1
-   * - 默认 0.4（40%）
-   */
-  minSimilarity?: number;
-}
-
-interface HycAiSummaryConfig {
-  /**
-   * 是否启用 AI 摘要卡片展示。
-   * - false：关闭该功能
-   * - true/未设置：允许在文章页展示（需有可用摘要）
-   */
-  enable?: boolean;
-
-  /**
-   * 摘要卡片标题。
-   * - 默认值："AI 摘要"
-   */
-  title?: string;
-
-  /**
-   * 是否显示摘要模型信息。
-   * - 默认 false
-   */
-  showModel?: boolean;
-}
-
-interface HycConfig {
-  /**
-   * 是否启用 HYC 扩展功能总开关。
-   * - false：禁用全部 HYC 扩展能力
-   * - true：允许各子功能按自身开关生效
-   */
-  enable?: boolean;
-
-  /**
-   * AI 相近文章推荐配置。
-   */
-  aiRecommend?: HycAiRecommendConfig;
-
-  /**
-   * AI 摘要配置。
-   */
-  aiSummary?: HycAiSummaryConfig;
-}
-
 interface DiagnosticsConfig {
   /**
    * 是否屏蔽开发/构建/检查期间由 FSWatcher 触发的
@@ -519,65 +404,6 @@ interface DiagnosticsConfig {
    * - false：保留原始 warning 输出
    */
   suppressFsWatcherMaxListenersWarning?: boolean;
-}
-
-/**
- * Live2D 看板娘配置。
- * 使用 CDN 加载 live2d-widget 外壳，模型文件本地托管。
- *
- * @see {@link https://github.com/stevenjoezhang/live2d-widget}
- */
-interface Live2dConfig {
-  /**
-   * 是否启用 Live2D 看板娘。
-   * - true：在页面中加载看板娘
-   * - false/未设置：不加载
-   */
-  enable?: boolean;
-
-  /**
-   * 模型资源路径（相对于站点根目录）。
-   * - 默认为 "/live2d-models/"
-   * - 路径末尾需带 /
-   */
-  cdnPath?: string;
-
-  /**
-   * 默认显示的模型索引（0-based）。
-   * - 对应 model_list.json 中 models 数组的索引
-   * - 默认为 0
-   */
-  modelId?: number;
-
-  /**
-   * 是否允许拖动看板娘。
-   * - 默认为 true
-   */
-  drag?: boolean;
-
-  /**
-   * 点击关闭后是否显示重新唤起按钮。
-   * - true：关闭后显示小按钮可重新打开
-   * - false：永久关闭（直到清除 localStorage）
-   * - 默认为 true
-   */
-  showToggleAfterQuit?: boolean;
-
-  /**
-   * 工具栏按钮列表。
-   * - 默认：["hitokoto", "asteroids", "switch-texture", "photo", "info", "quit"]
-   * - 可选值：hitokoto | asteroids | switch-model | switch-texture | photo | info | quit
-   * - 如果只有单一角色，建议移除 switch-model，只保留 switch-texture 用于换装
-   */
-  tools?: string[];
-
-  /**
-   * waifu-tips.json 路径（相对于站点根目录）。
-   * - 默认为 "/live2d-models/waifu-tips.json"
-   * - 用于自定义看板娘的鼠标悬停/点击提示文案
-   * - 也可填写远程 CDN 地址使用默认文案
-   */
-  waifuTipsPath?: string;
 }
 
 /**
@@ -612,6 +438,8 @@ export interface ShokaXThemeConfig {
   /**
    * 网站语言设置。
    * - "zh-CN"：简体中文
+   * - "zh-TW"：繁体中文
+   * - "ja"：日语
    * - "en"：英文
    * - 默认为 "zh-CN"
    */
@@ -654,6 +482,9 @@ export interface ShokaXThemeConfig {
    */
   widgets?: WidgetsConfig;
 
+  /** 评论区配置 */
+  comments?: CommentsConfig;
+
   /**
    * 首页配置。
    * - 包含精选分类、分页设置等首页特定配置
@@ -665,17 +496,6 @@ export interface ShokaXThemeConfig {
    * - 控制当前主题使用双栏或三栏布局
    */
   layout?: LayoutConfig;
-
-  /**
-   * 评论配置。
-   * - 当前用于 Waline 评论系统
-   */
-  comments?: CommentsConfig;
-
-  /**
-   * nyx-player 音乐播放器配置。
-   */
-  nyxPlayer?: NyxPlayerConfig;
 
   /**
    * 版权配置。
@@ -696,29 +516,22 @@ export interface ShokaXThemeConfig {
   tagCloud?: TagCloudConfig;
 
   /**
-   * 页面可视度标题切换配置。
-   * - 失焦：显示 leaveTitle
-   * - 聚焦：显示 returnTitle，延迟 restoreDelay 后恢复原始标题
-   */
-  visibilityTitle?: VisibilityTitleConfig;
-
-  /**
-   * HYC 扩展功能配置。
-   * - enable 为总开关，关闭后所有 HYC 子功能不可用
-   */
-  hyc?: HycConfig;
-
-  /**
    * 诊断与命令行输出配置。
    */
   diagnostics?: DiagnosticsConfig;
-
-  /**
-   * Live2D 看板娘配置。
-   * - enable 为总开关，关闭后不加载任何看板娘资源
-   */
-  live2d?: Live2dConfig;
 }
+
+type Primitive = string | number | boolean | bigint | symbol | null | undefined;
+
+export type ThemeUserConfig<T> = T extends Primitive
+  ? T
+  : T extends readonly unknown[]
+    ? T
+    : T extends object
+      ? { [K in keyof T]?: ThemeUserConfig<T[K]> }
+      : T;
+
+export type ShokaXThemeUserConfig = ThemeUserConfig<ShokaXThemeConfig>;
 
 const DEFAULT_THEME_COLORS = {
   footerIcon: "var(--color-pink)",
@@ -769,31 +582,90 @@ function normalizeThemeConfigColors(config: ShokaXThemeConfig): ShokaXThemeConfi
     );
   }
 
-  if (config.friends?.personal) {
-    config.friends.personal.forEach((link, index) => {
-      if (!link.color) return;
-      link.color = sanitizeThemeColor(
-        link.color,
-        DEFAULT_THEME_COLORS.friend,
-        `friends.personal[${index}].color`,
-      );
-    });
-  }
-
-  if (config.friends?.tools) {
-    config.friends.tools.forEach((link, index) => {
-      if (!link.color) return;
-      link.color = sanitizeThemeColor(
-        link.color,
-        DEFAULT_THEME_COLORS.friend,
-        `friends.tools[${index}].color`,
-      );
-    });
-  }
+  const friendLinkGroups = [
+    config.friends?.links ?? [],
+    config.friends?.personal ?? [],
+    config.friends?.tools ?? [],
+  ];
+  friendLinkGroups.flat().forEach((link, index) => {
+    if (!link.color) return;
+    link.color = sanitizeThemeColor(
+      link.color,
+      DEFAULT_THEME_COLORS.friend,
+      `friends.link[${index}].color`,
+    );
+  });
 
   return config;
 }
 
-export function defineConfig(config: ShokaXThemeConfig) {
-  return normalizeThemeConfigColors(config);
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function cloneConfigValue<T>(value: T): T {
+  if (Array.isArray(value)) {
+    // eslint-disable-next-line no-unsafe-type-assertion
+    return value.map((item) => cloneConfigValue(item)) as T;
+  }
+
+  if (isPlainObject(value)) {
+    // eslint-disable-next-line no-unsafe-type-assertion
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entryValue]) => [key, cloneConfigValue(entryValue)]),
+    ) as T;
+  }
+
+  return value;
+}
+
+/**
+ * 递归合并主题配置对象。
+ * - 对于对象类型，进行深度合并，覆盖默认值的同时保留未覆盖的默认配置项
+ * - 对于数组类型，直接使用覆盖值，不进行合并
+ * - 对于原始值，直接使用覆盖值
+ */
+function mergeThemeConfig<T>(defaults: T, overrides?: ThemeUserConfig<T>): T {
+  if (overrides === undefined) {
+    return cloneConfigValue(defaults);
+  }
+
+  if (Array.isArray(defaults) || Array.isArray(overrides)) {
+    // eslint-disable-next-line no-unsafe-type-assertion
+    return cloneConfigValue(overrides as T);
+  }
+
+  if (isPlainObject(defaults) && isPlainObject(overrides)) {
+    const mergedEntries = new Map<string, unknown>();
+
+    Object.keys(defaults).forEach((key) => {
+      mergedEntries.set(
+        key,
+        mergeThemeConfig(defaults[key as keyof typeof defaults], overrides[key]),
+      );
+    });
+
+    Object.keys(overrides).forEach((key) => {
+      if (mergedEntries.has(key)) {
+        return;
+      }
+
+      const overrideValue = overrides[key];
+      if (overrideValue !== undefined) {
+        mergedEntries.set(key, cloneConfigValue(overrideValue));
+      }
+    });
+
+    // eslint-disable-next-line no-unsafe-type-assertion
+    return Object.fromEntries(mergedEntries) as T;
+  }
+
+  // eslint-disable-next-line no-unsafe-type-assertion
+  return cloneConfigValue(overrides as T);
+}
+
+export function defineConfig(config: ShokaXThemeUserConfig = {}): ShokaXThemeConfig {
+  return normalizeThemeConfigColors(
+    mergeThemeConfig<ShokaXThemeConfig>(DEFAULT_THEME_CONFIG, config),
+  );
 }

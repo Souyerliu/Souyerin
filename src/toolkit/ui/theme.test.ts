@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { initTheme, toggleTheme, toggleThemeWithTransition } from "./theme";
 
 type StorageData = Map<string, string>;
@@ -20,13 +20,22 @@ function createStorage(initial: Record<string, string> = {}) {
 function createDocumentMock() {
   const attrs = new Map<string, string>();
 
-  const doc = {
-    documentElement: {
-      setAttribute(name: string, value: string) {
-        attrs.set(name, value);
+  const dataset = new Proxy(
+    {},
+    {
+      set(_target, prop: string, value: string) {
+        attrs.set(`data-${prop}`, value);
+        return true;
       },
     },
-  } as unknown as Document;
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  const doc = {
+    documentElement: {
+      dataset,
+    },
+  } as any;
 
   return {
     doc,
@@ -41,21 +50,28 @@ function createWindowMock(options: {
 }) {
   const { storage, prefersDark = false, prefersReducedMotion = false } = options;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return {
     localStorage: {
       getItem: (key: string) => storage.getItem(key),
-      setItem: (key: string, value: string) => storage.setItem(key, value),
+      setItem: (key: string, value: string) => {
+        storage.setItem(key, value);
+      },
     },
     matchMedia(query: string) {
       if (query === "(prefers-color-scheme: dark)") {
-        return { matches: prefersDark } as MediaQueryList;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return { matches: prefersDark } as any;
       }
       if (query === "(prefers-reduced-motion: reduce)") {
-        return { matches: prefersReducedMotion } as MediaQueryList;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return { matches: prefersReducedMotion } as any;
       }
-      return { matches: false } as MediaQueryList;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      return { matches: false } as any;
     },
-  } as unknown as Window;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  } as any;
 }
 
 describe("theme helpers", () => {
@@ -72,6 +88,7 @@ describe("theme helpers", () => {
 
   it("falls back to system preference when storage is unavailable", () => {
     const { doc, attrs } = createDocumentMock();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const win = {
       localStorage: {
         getItem() {
@@ -83,11 +100,14 @@ describe("theme helpers", () => {
       },
       matchMedia(query: string) {
         if (query === "(prefers-color-scheme: dark)") {
-          return { matches: true } as MediaQueryList;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          return { matches: true } as any;
         }
-        return { matches: false } as MediaQueryList;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return { matches: false } as any;
       },
-    } as unknown as Window;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    } as any;
 
     const theme = initTheme(doc, win);
 
@@ -121,20 +141,20 @@ describe("theme helpers", () => {
     const { doc, attrs } = createDocumentMock();
 
     let transitionCalled = false;
-    (
-      doc as Document & { startViewTransition: NonNullable<Document["startViewTransition"]> }
-    ).startViewTransition = ((
-      callbackOrOptions?: Parameters<NonNullable<Document["startViewTransition"]>>[0],
-    ) => {
-      transitionCalled = true;
-      if (typeof callbackOrOptions === "function") {
-        callbackOrOptions();
-      }
+    Object.assign(doc, {
+      startViewTransition: (
+        callbackOrOptions?: Parameters<NonNullable<Document["startViewTransition"]>>[0],
+      ) => {
+        transitionCalled = true;
+        if (typeof callbackOrOptions === "function") {
+          callbackOrOptions();
+        }
 
-      return {
-        finished: Promise.resolve(),
-      } as unknown as ViewTransition;
-    }) as NonNullable<Document["startViewTransition"]>;
+        return {
+          finished: Promise.resolve(),
+        };
+      },
+    });
 
     const next = toggleThemeWithTransition(doc, win, "light");
     await Promise.resolve();

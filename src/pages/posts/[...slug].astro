@@ -3,14 +3,11 @@ import Layout from "@/layouts/Layout.astro";
 import Breadcrumb from "@/components/post/Breadcrumb.astro";
 import PostHeader from "@/components/post/PostHeader.astro";
 import PostFooter from "@/components/post/PostFooter.astro";
+import HyacineOutlet from "@hyacine/plugin-astro/components/HyacineOutlet.astro";
 import PostNav from "@/components/post/PostNav.astro";
-import AiSimilarPosts from "@/components/post/AiSimilarPosts.astro";
-import AiSummaryCard from "@/components/post/AiSummaryCard.astro";
-import WalineComments from "@/components/post/WalineComments.svelte";
-import DownloadPDF from "@/components/post/DownloadPDF.svelte";
+import { currentLocale, t } from "@/i18n";
 import { getCollection, render } from "astro:content";
 import themeConfig from "@/theme.config";
-import { getLastModified } from "@/toolkit/posts/getLastModified";
 import type {
   TocItem,
   QuickNavigation,
@@ -18,8 +15,14 @@ import type {
 import type { EncryptedData } from "@/toolkit/encryption/types";
 import { encryptContent } from "@/toolkit/encryption/crypto";
 import { createPostContentContainer } from "@/toolkit/posts/createPostContentContainer";
+import { toPostHref, toTagHref } from "@/toolkit/posts/url";
 import { wrapRenderedCodeBlocks } from "@/toolkit/wrapRenderedCodeBlocks";
 import { wrapRenderedImages } from "@/toolkit/wrapRenderedImages";
+import { wrapRenderedTables } from "@/toolkit/wrapRenderedTables";
+import { wrapCodeGroups } from "@/toolkit/wrapCodeGroups";
+import { wrapExternalLinks } from "@/toolkit/wrapExternalLinks";
+import { normalizeRenderedMath } from "@/toolkit/normalizeRenderedMath";
+import { getLastModified } from "@/toolkit/posts/getLastModified";
 
 import "@/styles/post.css";
 
@@ -29,73 +32,93 @@ import { avatar } from "@/components/Images.astro";
 import "@/styles/spoiler.css";
 
 // 加密文章内容组件
-import EncryptedPostContent from "@/components/encrypted/EncryptedPost.svelte";
+import EncryptedPostContent from "@/components/encrypted/EncryptedPost";
+import WalineComments from "@/components/post/WalineComments";
+import DistributionCalculator from "@/components/mdx/DistributionCalculator.astro";
+import DownloadPDF from "@/components/post/DownloadPDF.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   const sortedPosts = posts
     .filter((post) => !post.data.draft)
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    .toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
   const container = await createPostContentContainer();
 
   return Promise.all(
     sortedPosts.map(async (post, index) => {
-      // 获取文件的最后修改时间：优先从 hyc sync 数据库读取，回退到 fs.statSync
-      const fileUpdatedAt = await getLastModified(post.id, post.data.date);
-
       const prevPost = index > 0 ? sortedPosts[index - 1] : undefined;
       const nextPost =
         index < sortedPosts.length - 1 ? sortedPosts[index + 1] : undefined;
+      const fileUpdatedAt = getLastModified(
+        post.id,
+        post.data.date,
+        post.data.title,
+      );
 
       // Get related posts from the same category
-      // 按分类层级从内向外匹配：最内层相同分类优先，然后逐级向上
       const categories = post.data.categories || [];
       const MAX_RELATED = 10;
 
+      // 按分类层级从内向外匹配：最内层相同分类优先，然后逐级向上
       let relatedCollectionPosts: typeof sortedPosts = [];
 
       if (categories.length > 0) {
-        // 从最内层分类开始逐级向外匹配
         for (let level = categories.length - 1; level >= 0; level--) {
           const targetCategory = categories[level];
 
-          // 取当前层级分类相同的文章，排除自身和已加入的文章
+          // 排除当前文章和已加入的文章，避免跨层级重复
           const newPosts = sortedPosts.filter(
             (p) =>
               p.id !== post.id &&
               !relatedCollectionPosts.some((rp) => rp.id === p.id) &&
-              (p.data.categories || []).at(level) === targetCategory
+              (p.data.categories || []).at(level) === targetCategory,
           );
 
           relatedCollectionPosts = [...relatedCollectionPosts, ...newPosts];
         }
       }
 
-      const relatedPosts = relatedCollectionPosts.slice(0, MAX_RELATED).map((p) => ({
-        slug: p.id,
-        title: p.data.title,
-        date: p.data.date,
-        category: p.data.categories?.[0],
-      })) satisfies Props["relatedPosts"];
+      const relatedPosts = relatedCollectionPosts
+        .slice(0, MAX_RELATED)
+        .map((p) => ({
+          slug: p.id,
+          title: p.data.title,
+          date: p.data.date,
+          category: p.data.categories?.[0],
+        }));
 
       // 处理加密文章
       let encryptedContent: EncryptedData | undefined;
       let encryptedToc: EncryptedData | undefined;
+      let renderedContentHtml: string | undefined;
       let isEncrypted = false;
 
       const { Content, headings } = await render(post);
 
+      const renderedContent = normalizeRenderedMath(
+        await container.renderToString(Content),
+      );
+
+      const renderedHtml = wrapExternalLinks(
+        wrapRenderedImages(
+          wrapRenderedTables(
+            wrapCodeGroups(
+              wrapRenderedCodeBlocks(renderedContent),
+            ),
+          ),
+        ),
+        { siteUrl: import.meta.env.SITE },
+      );
+
       if (post.data.encrypted && post.data.password) {
         isEncrypted = true;
 
-        // 使用 renderToString 渲染文章内容为 HTML
-        const html = wrapRenderedImages(
-          wrapRenderedCodeBlocks(await container.renderToString(Content)),
-        );
-        
         // 加密内容
-        encryptedContent = await encryptContent(html, post.data.password);
+        encryptedContent = await encryptContent(
+          renderedHtml,
+          post.data.password,
+        );
 
         // 加密 TOC
         const tocData = headings.map((h) => ({
@@ -109,19 +132,23 @@ export async function getStaticPaths() {
             post.data.password,
           );
         }
+      } else {
+        renderedContentHtml = renderedHtml;
       }
 
       return {
         params: { slug: post.id },
         props: {
           post,
-          fileUpdatedAt,
           prevPost: prevPost
             ? {
                 title: prevPost.data.title,
                 slug: prevPost.id,
                 category: prevPost.data.categories?.[0],
-                cover: prevPost.data.cover,
+                cover:
+                  typeof prevPost.data.cover === "string"
+                    ? prevPost.data.cover
+                    : prevPost.data.cover?.src,
               }
             : undefined,
           nextPost: nextPost
@@ -129,14 +156,19 @@ export async function getStaticPaths() {
                 title: nextPost.data.title,
                 slug: nextPost.id,
                 category: nextPost.data.categories?.[0],
-                cover: nextPost.data.cover,
+                cover:
+                  typeof nextPost.data.cover === "string"
+                    ? nextPost.data.cover
+                    : nextPost.data.cover?.src,
               }
             : undefined,
           relatedPosts,
           isEncrypted,
+          renderedContentHtml,
           encryptedContent,
           encryptedToc,
           headings,
+          fileUpdatedAt,
         },
       };
     }),
@@ -145,7 +177,6 @@ export async function getStaticPaths() {
 
 interface Props {
   post: import("astro:content").CollectionEntry<"posts">;
-  fileUpdatedAt: Date;
   prevPost?: {
     title: string;
     slug: string;
@@ -165,28 +196,25 @@ interface Props {
     category?: string;
   }[];
   isEncrypted: boolean;
+  renderedContentHtml?: string;
   encryptedContent?: EncryptedData;
   encryptedToc?: EncryptedData;
   headings: import("astro:content").RenderResult["headings"];
+  fileUpdatedAt: Date;
 }
 
 const {
   post,
-  fileUpdatedAt,
   prevPost,
   nextPost,
   relatedPosts,
   isEncrypted,
+  renderedContentHtml,
   encryptedContent,
   encryptedToc,
   headings,
+  fileUpdatedAt,
 } = Astro.props as Props;
-
-const { Content } = await render(post);
-const contentContainer = await createPostContentContainer();
-const renderedPostHtml = wrapRenderedCodeBlocks(
-  await contentContainer.renderToString(Content),
-);
 
 // Build TOC from headings (加密文章的 TOC 在前端解密后更新)
 const toc: TocItem[] = isEncrypted
@@ -199,16 +227,16 @@ const toc: TocItem[] = isEncrypted
 
 // Build quick navigation
 const navigation: QuickNavigation = {
-  prevUrl: prevPost ? `/posts/${prevPost.slug}/` : undefined,
+  prevUrl: prevPost ? toPostHref(prevPost.slug) : undefined,
   prevTitle: prevPost?.title,
-  nextUrl: nextPost ? `/posts/${nextPost.slug}/` : undefined,
+  nextUrl: nextPost ? toPostHref(nextPost.slug) : undefined,
   nextTitle: nextPost?.title,
 };
 
 // Calculate word count from content
 const plainText = (post.body || "")
-  .replace(/[#*`_[\]()]/g, "")
-  .replace(/\s+/g, " ");
+  .replaceAll(/[#*`_[\]()]/g, "")
+  .replaceAll(/\s+/g, " ");
 const wordCount = plainText.length;
 
 // Calculate read time (assume 300 words per minute)
@@ -221,110 +249,12 @@ const siteName = themeConfig.siteName || "Site";
 const commentsConfig = themeConfig.comments || {};
 const walineConfig = commentsConfig.waline || {};
 
-const hycConfig = themeConfig.hyc || {};
-const aiRecommendConfig = hycConfig.aiRecommend || {};
-const aiSummaryConfig = hycConfig.aiSummary || {};
-const hycEnable = hycConfig.enable === true;
-const aiRecommendEnable = aiRecommendConfig.enable !== false;
-const aiSummaryEnable = aiSummaryConfig.enable !== false;
-const aiSummaryTitle = aiSummaryConfig.title || "AI 摘要";
-const aiSummaryShowModel = aiSummaryConfig.showModel === true;
-const aiRecommendLimit = Math.max(
-  1,
-  Math.min(10, aiRecommendConfig.limit ?? 3),
-);
-const aiRecommendMinSimilarityRaw = aiRecommendConfig.minSimilarity ?? 0.4;
-const aiRecommendMinSimilarity = Math.min(
-  1,
-  Math.max(
-    0,
-    aiRecommendMinSimilarityRaw > 1
-      ? aiRecommendMinSimilarityRaw / 100
-      : aiRecommendMinSimilarityRaw,
-  ),
-);
-
-interface AiRecommendPost {
-  slug: string;
-  title: string;
-  score: number;
-}
-
-interface PostAiSummary {
-  content: string | null;
-  model: string | null;
-}
-
-let aiRecommendPosts: AiRecommendPost[] = [];
-let aiSummary: PostAiSummary | null = null;
-
-// 加密文章不获取 AI 摘要和推荐
-if (!isEncrypted && hycEnable && aiSummaryEnable) {
-  try {
-    const { getPostSummary } = await import("@hyacine/cli/api");
-
-    if (typeof getPostSummary !== "function") {
-      throw new Error(
-        "getPostSummary is not available in current @hyacine/cli",
-      );
-    }
-
-    const hyacineSearchKey = post.data.title;
-
-    const summaryResult = (await getPostSummary(hyacineSearchKey)) as {
-      summary?: {
-        content?: string | null;
-        model?: string | null;
-      };
-    } | null;
-
-    if (summaryResult?.summary?.content) {
-      aiSummary = {
-        content: summaryResult.summary.content,
-        model: summaryResult.summary.model ?? null,
-      };
-    }
-  } catch (e) {
-    console.warn("[AI Summary] Failed to fetch summary for", post.id, ":", e instanceof Error ? e.message : String(e));
-    aiSummary = null;
-  }
-}
-
-if (!isEncrypted && hycEnable && aiRecommendEnable) {
-  try {
-    const { findSimilarPosts } = await import("@hyacine/cli/api");
-    const hyacineSearchKey = post.data.title;
-    const similarResult = await findSimilarPosts({
-      query: hyacineSearchKey,
-      limit: aiRecommendLimit,
-    });
-
-    aiRecommendPosts = (similarResult.items || [])
-      .filter((item) => item.slug && item.slug !== post.id)
-      .filter(
-        (item) =>
-          typeof item.score === "number" &&
-          item.score >= aiRecommendMinSimilarity,
-      )
-      .sort((a, b) => b.score - a.score)
-      .slice(0, aiRecommendLimit)
-      .map((item) => ({
-        slug: item.slug,
-        title: item.title,
-        score: item.score,
-      }));
-  } catch (e) {
-    console.warn("[AI Recommend] Failed to fetch similar posts for", post.id, ":", e instanceof Error ? e.message : String(e));
-    aiRecommendPosts = [];
-  }
-}
-
 // Current post path (trailing slash required by project routing)
-const postPath = `/posts/${post.id}/`;
+const postPath = toPostHref(post.id);
 
 // Build permalink
-const permalink = Astro.site
-  ? new URL(postPath, Astro.site).toString()
+const permalink = import.meta.env.SITE
+  ? new URL(postPath, import.meta.env.SITE).toString()
   : postPath;
 
 // Build postMeta for Brand component
@@ -342,6 +272,7 @@ const postMeta = {
   navigation={navigation}
   pageTitle={post.data.title}
   postMeta={postMeta}
+  pageCover={post.data.cover}
 >
   <Fragment slot="head">
     <meta
@@ -365,7 +296,7 @@ const postMeta = {
         itemtype="http://schema.org/Article"
         class="post block"
         data-pagefind-body={!isEncrypted}
-        lang="zh-CN"
+        lang={currentLocale}
       >
         <link itemprop="mainEntityOfPage" href={permalink} />
 
@@ -391,22 +322,24 @@ const postMeta = {
 
         <PostHeader
           title={post.data.title}
-          link={post.data.link}
           date={post.data.date}
           updated={post.data.updated}
           wordCount={wordCount}
         />
 
-        {
-          !isEncrypted && (
-            <AiSummaryCard
-              summary={aiSummary?.content}
-              model={aiSummary?.model}
-              title={aiSummaryTitle}
-              showModel={aiSummaryShowModel}
-            />
-          )
-        }
+        {/* Hyacine Plugin Outlet: Post Header */}
+        <HyacineOutlet name="post-header" context={post} />
+
+        {/* Hyacine Plugin Outlet: AI 摘要（encrypted 时插件内部自动短路） */}
+        <HyacineOutlet
+          name="post-summary"
+          context={post}
+          extraProps={{
+            postId: post.id,
+            postTitle: post.data.title,
+            postBody: post.body,
+          }}
+        />
 
         <div class="body md" itemprop="articleBody">
           {
@@ -418,18 +351,20 @@ const postMeta = {
                 title={post.data.title}
               />
             ) : (
-              <Fragment set:html={renderedPostHtml} />
+              <>
+                <div class="post-content" set:html={renderedContentHtml ?? ""} />
+                {post.id.endsWith("数理统计-代码合集") && <DistributionCalculator />}
+              </>
             )
           }
+
+          {!isEncrypted && <DownloadPDF title={post.data.title} />}
 
           {
             !isEncrypted && post.data.tags && post.data.tags.length > 0 && (
               <div class="tags">
                 {post.data.tags.map((tag) => (
-                  <a
-                    href={`/tags/${tag.toLowerCase().replace(/\s+/g, "-")}/`}
-                    rel="tag"
-                  >
+                  <a href={toTagHref(tag)} rel="tag">
                     <i class="icon i-ri-price-tag-3-line" />
                     {tag}
                   </a>
@@ -443,28 +378,23 @@ const postMeta = {
               <div class="post-meta file-updated">
                 <span class="item">
                   <div class="icon i-ri-calendar-check-line" />
-                  <span class="text">更新于 </span>
+                  <span class="text">{t("post.updatedAt")} </span>
                   <time
-                    title={`修改时间：${fileUpdatedAt.toLocaleString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" })}`}
+                    title={`${t("post.updatedAt")}: ${fileUpdatedAt.toLocaleString(currentLocale)}`}
                     itemprop="dateModified"
                     datetime={fileUpdatedAt.toISOString()}
                   >
-                    {fileUpdatedAt.toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })}
+                    {fileUpdatedAt.toLocaleDateString(currentLocale, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
                   </time>
                 </span>
               </div>
             )
           }
         </div>
-
-        {
-          !isEncrypted && (
-            <AiSimilarPosts
-              posts={aiRecommendPosts}
-              minSimilarity={aiRecommendMinSimilarity}
-            />
-          )
-        }
 
         <PostFooter
           date={post.data.date}
@@ -477,14 +407,14 @@ const postMeta = {
           showReward={false}
           license={post.data.license}
         />
-      </article>
 
-      {
-        /* PDF 下载按钮（加密文章不显示） */
-        !isEncrypted && (
-          <DownloadPDF client:load title={post.data.title} />
-        )
-      }
+        {/* Hyacine Plugin Outlet: Post Footer */}
+        <HyacineOutlet
+          name="post-footer"
+          context={post}
+          extraProps={{ postId: post.id }}
+        />
+      </article>
     </div>
 
     <PostNav
@@ -496,6 +426,7 @@ const postMeta = {
     {
       !isEncrypted && commentsConfig.enable !== false && (
         <div id="comments" class="comment">
+          {/* Hyacine Plugin Outlet: Waline 评论 */}
           <WalineComments
             client:visible
             serverURL={walineConfig.serverURL}

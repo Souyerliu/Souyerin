@@ -2,6 +2,7 @@
 import Layout from "../../../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { structurePostsByDate } from "@/toolkit/posts/structurePostsByDate";
+import { toCategoryHref, toPostHref } from "@/toolkit/posts/url";
 import { fmtNum } from "@/toolkit/tools/fmtNum";
 import { t } from "@/i18n";
 import "../../../../styles/collapse.css";
@@ -10,7 +11,7 @@ export async function getStaticPaths() {
   const allPosts = await getCollection("posts");
   const publishedPosts = allPosts
     .filter((post) => !post.data.draft)
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    .toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
   const structuredPosts = structurePostsByDate(publishedPosts, {
     daily: false,
@@ -23,7 +24,8 @@ export async function getStaticPaths() {
 
     // Get all months that have posts in this year
     for (let month = 1; month <= 12; month++) {
-      if (yearData[month] && yearData[month].length > 0) {
+      const monthPosts = yearData.monthlyData[month]?.posts;
+      if (monthPosts && monthPosts.length > 0) {
         paths.push({
           params: {
             year: String(year),
@@ -32,7 +34,7 @@ export async function getStaticPaths() {
           props: {
             year,
             month,
-            posts: yearData[month],
+            posts: monthPosts,
           },
         });
       }
@@ -50,11 +52,6 @@ const { year, month, posts } = Astro.props as {
   posts: CollectionEntry<"posts">[];
 };
 
-// Helper to get category URL
-function getCategoryUrl(category: string): string {
-  return `/categories/${encodeURIComponent(category)}`;
-}
-
 // Helper to format date
 function formatDate(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -67,7 +64,7 @@ function formatDate(date: Date): string {
   <div class="wrap">
     <div class="timeline">
       <h2 class="item header">
-        <a href="/archives/">全部</a>
+        <a href="/archives/">{t("archive.all")}</a>
         <small>/</small>
         <a href={`/archives/${year}/`}>
           {year} 年
@@ -99,7 +96,7 @@ function formatDate(date: Date): string {
                     <>
                       {catIndex === post.data.categories!.length - 1 && (
                         <span>
-                          <a href={getCategoryUrl(cat)}>{cat}</a>
+                          <a href={toCategoryHref(cat)}>{cat}</a>
                         </span>
                       )}
                     </>
@@ -108,26 +105,11 @@ function formatDate(date: Date): string {
               )}
 
               <div class="title">
-                {post.data.link ? (
-                  <a
-                    href={post.data.link}
-                    class="external"
-                    itemprop="url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span itemprop="name">
-                      {post.data.title || post.data.link}
-                    </span>
-                    <i class="i-ri-external-link-line" />
-                  </a>
-                ) : (
-                  <a href={`/posts/${post.id}/`} itemprop="url">
-                    <span itemprop="name">
-                      {post.data.title || t("post.noContent")}
-                    </span>
-                  </a>
-                )}
+                <a href={toPostHref(post.id)} itemprop="url">
+                  <span itemprop="name">
+                    {post.data.title || t("post.noContent")}
+                  </span>
+                </a>
               </div>
             </article>
           );

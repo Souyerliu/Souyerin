@@ -1,6 +1,6 @@
 ---
-import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 
 interface Props {
   src: ImageMetadata | string;
@@ -13,37 +13,12 @@ const { src, alt, index, isListItem = false } = Astro.props as Props;
 
 // 动画延迟(仅多图轮播)
 const animationDelay = isListItem ? `${index * 6}s` : "0s";
+const isPrimaryCarouselImage = !isListItem || index === 0;
 
+// Astro 的 <Image /> 需要 ImageMetadata；字符串（public 路径/远程 URL）用 <img> 兜底
 const isStringSrc = typeof src === "string";
-
-// ---- 图片优化管线（国内访问加速）----
-// 本地静态图片（ImageMetadata）走 Astro 图片管线：输出 AVIF/WebP/JPG 三种格式、
-// 640~1920 多档宽度，浏览器按视口宽度与格式支持自动选择，首屏传输体积大幅下降。
-// 字符串（public 路径/远程 URL）无法静态优化，保持原 <img> 兜底。
-const WIDTHS = [640, 960, 1280, 1920];
-const SIZES = "100vw";
-
-let imgUrl = "";
-let imgSrcset = "";
-let avifSrcset: string | undefined;
-let webpSrcset: string | undefined;
-
-if (isStringSrc) {
-  imgUrl = src as string;
-} else {
-  const image = src as ImageMetadata;
-  const avif = await getImage({ src: image, widths: WIDTHS, format: "avif" });
-  const webp = await getImage({ src: image, widths: WIDTHS, format: "webp" });
-  const jpg = await getImage({ src: image, widths: WIDTHS, format: "jpg" });
-  avifSrcset = avif.srcSet.attribute;
-  webpSrcset = webp.srcSet.attribute;
-  imgUrl = jpg.src;
-  imgSrcset = jpg.srcSet.attribute;
-}
-
-// 只有第一张图（index=0）eager 加载，其余 lazy；单图模式维持 eager
-const loading = isListItem && index !== 0 ? "lazy" : "eager";
-const fetchpriority = isListItem && index !== 0 ? "low" : "high";
+const imgSrc = isStringSrc ? (src as string) : undefined;
+const assetSrc = !isStringSrc ? (src as ImageMetadata) : undefined;
 ---
 
 {
@@ -56,61 +31,46 @@ const fetchpriority = isListItem && index !== 0 ? "low" : "high";
       ontouchstart="this.classList.add('stop-animation')"
       ontouchend="this.classList.remove('stop-animation')"
     >
-      {
-        avifSrcset ? (
-          <picture class="cover-picture">
-            <source type="image/avif" srcset={avifSrcset} sizes={SIZES} />
-            <source type="image/webp" srcset={webpSrcset} sizes={SIZES} />
-            <img
-              src={imgUrl}
-              srcset={imgSrcset}
-              sizes={SIZES}
-              alt={alt}
-              class="cover-image"
-              loading={loading}
-              decoding="async"
-              fetchpriority={fetchpriority}
-              width="1920"
-              height="1080"
-            />
-          </picture>
-        ) : (
-          <img
-            src={imgUrl}
-            alt={alt}
-            class="cover-image"
-            loading={loading}
-            decoding="async"
-            fetchpriority={fetchpriority}
-            width="1920"
-            height="1080"
-          />
-        )
-      }
+      {imgSrc ? (
+        <img
+          src={imgSrc}
+          alt={alt}
+          class="cover-image"
+          loading={isPrimaryCarouselImage ? "eager" : "lazy"}
+          decoding="async"
+          fetchpriority={isPrimaryCarouselImage ? "high" : "auto"}
+        />
+      ) : (
+        <Image
+          src={assetSrc!}
+          alt={alt}
+          layout="constrained"
+          format="avif"
+          priority={isPrimaryCarouselImage}
+          quality={65}
+          decoding={isPrimaryCarouselImage ? "sync" : "async"}
+          class="cover-image"
+        />
+      )}
     </li>
-  ) : avifSrcset ? (
-    <picture class="cover-picture">
-      <source type="image/avif" srcset={avifSrcset} sizes={SIZES} />
-      <source type="image/webp" srcset={webpSrcset} sizes={SIZES} />
-      <img
-        src={imgUrl}
-        srcset={imgSrcset}
-        sizes={SIZES}
-        alt={alt}
-        class="single-image"
-        loading="eager"
-        decoding="sync"
-        fetchpriority="high"
-      />
-    </picture>
-  ) : (
+  ) : imgSrc ? (
     <img
-      src={imgUrl}
+      src={imgSrc}
       alt={alt}
       class="single-image"
       loading="eager"
       decoding="sync"
       fetchpriority="high"
+    />
+  ) : (
+    <Image
+      src={assetSrc!}
+      alt={alt}
+      layout="constrained"
+      format="avif"
+      class="single-image"
+      priority={true}
+      decoding="sync"
     />
   )
 }
@@ -138,13 +98,6 @@ const fetchpriority = isListItem && index !== 0 ? "low" : "high";
     height: 100%;
     width: 100%;
     object-fit: cover;
-  }
-
-  /* 响应式 picture 需要撑满容器，否则 img 无法继承 100% 尺寸 */
-  .cover-picture {
-    display: block;
-    height: 100%;
-    width: 100%;
   }
 
   .single-image {

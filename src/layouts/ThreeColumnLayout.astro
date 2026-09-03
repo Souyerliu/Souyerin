@@ -3,24 +3,27 @@ import "@/styles/layout-common.css";
 import "@/styles/layout-three-column.css";
 import type { CollectionEntry } from "astro:content";
 import type { NavItemType } from "@/components/navbar/NavTypes";
+import type { WidgetPost } from "@/toolkit/posts/createWidgetPosts";
 import type {
   TocItem,
   RelatedPost,
   QuickNavigation,
   SidebarConfig,
 } from "@/components/sidebar/SidebarTypes";
-import RightSidebar from "@/components/sidebar/RightSidebar.astro";
+import { RightSidebar } from "@/components/sidebar/RightSidebar";
 import LayoutMainColumn from "./shared/LayoutMainColumn.astro";
 import LayoutPrimarySidebar from "./shared/LayoutPrimarySidebar.astro";
+import AnnouncementContent from "@/content/announcement.md";
 
 interface WidgetsConfig {
   randomPosts?: boolean;
   recentComments?: boolean;
   recentCommentsLimit?: number;
+  recentCommentsServerURL?: string;
 }
 
 interface Props {
-  posts: CollectionEntry<"posts">[];
+  widgetPosts: WidgetPost[];
   widgetsConfig?: WidgetsConfig;
   commentsEnabled?: boolean;
   walineServerURL?: string;
@@ -63,7 +66,7 @@ interface Props {
 }
 
 const {
-  posts,
+  widgetPosts,
   widgetsConfig = {},
   commentsEnabled = false,
   walineServerURL = "",
@@ -91,7 +94,12 @@ const {
     {navigation}
     {siteState}
   />
-  <LayoutMainColumn {posts} {widgetsConfig} {commentsEnabled} {walineServerURL}>
+  <LayoutMainColumn
+    posts={widgetPosts}
+    {widgetsConfig}
+    {commentsEnabled}
+    {walineServerURL}
+  >
     <slot />
   </LayoutMainColumn>
   <RightSidebar
@@ -99,5 +107,8 @@ const {
     posts={rightSidebarPosts}
     moments={rightSidebarMoments}
     tagCloudItems={rightSidebarTagCloud}
-  />
+    client:visible
+  >
+    <AnnouncementContent slot="announcement" />
+  </RightSidebar>
 </div>

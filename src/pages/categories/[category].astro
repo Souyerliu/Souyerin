@@ -1,8 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { getT } from "@/i18n";
-import themeConfig from "@/theme.config";
+import { currentLocale, getT } from "@/i18n";
+import { toCategoryHref, toPostHref } from "@/toolkit/posts/url";
 import "../../styles/collapse.css";
 
 export async function getStaticPaths() {
@@ -24,7 +24,7 @@ export async function getStaticPaths() {
 }
 
 const { category } = Astro.props as { category: string };
-const t = getT((themeConfig.locale as "zh-CN" | "en") || "zh-CN");
+const t = getT(currentLocale);
 
 // Get all published posts
 const allPosts = await getCollection("posts");
@@ -37,7 +37,7 @@ const postsInCategory = publishedPosts.filter((post) => {
 });
 
 // Sort posts by date ascending (older first, matching old project)
-const sortedPosts = postsInCategory.sort(
+const sortedPosts = postsInCategory.toSorted(
   (a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime(),
 );
 
@@ -78,7 +78,7 @@ sortedPosts.forEach((post) => {
     // Build subcategory path (categories after current one)
     const subcategoryPath = categories.slice(currentIndex + 1);
     const subcategorySlug = subcategoryPath
-      .map((c) => c.toLowerCase().replace(/\s+/g, "-"))
+      .map((c) => c.toLowerCase().replaceAll(/\s+/g, "-"))
       .join("-");
 
     postDisplays.push({
@@ -95,10 +95,6 @@ function formatDate(date: Date): string {
   return `${month}-${day}`;
 }
 
-function getCategoryUrl(name: string): string {
-  return `/categories/${encodeURIComponent(name)}/`;
-}
-
 // Track current subcategory slug to insert section headers
 let currentSlug = "c";
 ---
@@ -107,12 +103,12 @@ let currentSlug = "c";
   <div class="wrap">
     <div class="timeline">
       <h2 class="item header">
-        <a href="/categories/">全部</a>
+        <a href="/categories/">{t("category.all")}</a>
         {
           parentCategories.map((parent) => (
             <>
               <small>/</small>
-              <a href={getCategoryUrl(parent)}>{parent}</a>
+              <a href={toCategoryHref(parent)}>{parent}</a>
             </>
           ))
         }
@@ -137,7 +133,7 @@ let currentSlug = "c";
                 <h3 class="item section">
                   {subcategoryPath.map((cat, index) => (
                     <>
-                      <a href={getCategoryUrl(cat)}>{cat}</a>
+                      <a href={toCategoryHref(cat)}>{cat}</a>
                       {index < subcategoryPath.length - 1 && <small>/</small>}
                     </>
                   ))}
@@ -158,22 +154,9 @@ let currentSlug = "c";
                   </time>
                 </div>
                 <div class="title">
-                  {post.data.link ? (
-                    <a
-                      href={post.data.link}
-                      class="external"
-                      itemprop="url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {post.data.title || post.data.link}
-                      <span class="i-ri-external-link-line" />
-                    </a>
-                  ) : (
-                    <a href={`/posts/${post.id}/`} itemprop="url">
-                      <span itemprop="name">{post.data.title || "无标题"}</span>
-                    </a>
-                  )}
+                  <a href={toPostHref(post.id)} itemprop="url">
+                    <span itemprop="name">{post.data.title || t("category.untitled")}</span>
+                  </a>
                 </div>
               </article>
             </>

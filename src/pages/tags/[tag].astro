@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import { toCategoryHref, toPostHref, toTagSlug } from "@/toolkit/posts/url";
 import { t } from "@/i18n";
 import "../../styles/collapse.css";
 
@@ -17,7 +18,7 @@ export async function getStaticPaths() {
 
   // Generate paths for each tag
   return Array.from(tagSet).map((tag) => ({
-    params: { tag: tag.toLowerCase().replace(/\s+/g, "-") },
+    params: { tag: toTagSlug(tag) },
     props: { tag },
   }));
 }
@@ -39,7 +40,7 @@ const postsWithTag = publishedPosts.filter((post) => {
 });
 
 // Sort posts by date descending (newest first)
-const sortedPosts = postsWithTag.sort(
+const sortedPosts = postsWithTag.toSorted(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 
@@ -51,14 +52,9 @@ function formatDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-// Helper to get category URL
-function getCategoryUrl(category: string): string {
-  return `/categories/${encodeURIComponent(category)}/`;
-}
-
 // Get last category name for display
 function getLastCategory(categories: string[]): string | undefined {
-  return categories.length > 0 ? categories[categories.length - 1] : undefined;
+  return categories.length > 0 ? categories.at(-1) : undefined;
 }
 ---
 
@@ -94,35 +90,20 @@ function getLastCategory(categories: string[]): string | undefined {
               {lastCategory && (
                 <div class="meta">
                   <span>
-                    <a href={getCategoryUrl(lastCategory)}>{lastCategory}</a>
+                    <a href={toCategoryHref(lastCategory)}>{lastCategory}</a>
                   </span>
                 </div>
               )}
 
               <div class="title">
-                {post.data.link ? (
-                  <a
-                    href={post.data.link}
-                    class="external"
-                    itemprop="url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span itemprop="name">
-                      {post.data.title || post.data.link}
-                    </span>
-                    <i class="i-ri-external-link-line" />
-                  </a>
-                ) : (
-                  <a
-                    href={`/posts/${post.id.replace(/\.md$/, "")}/`}
-                    itemprop="url"
-                  >
-                    <span itemprop="name">
-                      {post.data.title || t("post.noContent")}
-                    </span>
-                  </a>
-                )}
+                <a
+                  href={toPostHref(post.id)}
+                  itemprop="url"
+                >
+                  <span itemprop="name">
+                    {post.data.title || t("post.noContent")}
+                  </span>
+                </a>
               </div>
             </article>
           );

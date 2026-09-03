@@ -1,8 +1,8 @@
 ---
 import "@/styles/layout-common.css";
 import "@/styles/layout-two-column.css";
-import type { CollectionEntry } from "astro:content";
 import type { NavItemType } from "@/components/navbar/NavTypes";
+import type { WidgetPost } from "@/toolkit/posts/createWidgetPosts";
 import type {
   TocItem,
   RelatedPost,
@@ -16,10 +16,11 @@ interface WidgetsConfig {
   randomPosts?: boolean;
   recentComments?: boolean;
   recentCommentsLimit?: number;
+  recentCommentsServerURL?: string;
 }
 
 interface Props {
-  posts: CollectionEntry<"posts">[];
+  widgetPosts: WidgetPost[];
   widgetsConfig?: WidgetsConfig;
   commentsEnabled?: boolean;
   walineServerURL?: string;
@@ -37,7 +38,7 @@ interface Props {
 }
 
 const {
-  posts,
+  widgetPosts,
   widgetsConfig = {},
   commentsEnabled = false,
   walineServerURL = "",
@@ -61,7 +62,12 @@ const {
     {navigation}
     {siteState}
   />
-  <LayoutMainColumn {posts} {widgetsConfig} {commentsEnabled} {walineServerURL}>
+  <LayoutMainColumn
+    posts={widgetPosts}
+    {widgetsConfig}
+    {commentsEnabled}
+    {walineServerURL}
+  >
     <slot />
   </LayoutMainColumn>
 </div>

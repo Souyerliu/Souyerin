@@ -1,4 +1,5 @@
-import katex from "katex";
+import { langBadgeColor } from "./langBadge";
+
 const QUIZ_DATA_BOUND_KEY = "quizBound";
 const TABS_DATA_BOUND_KEY = "tabsBound";
 
@@ -7,11 +8,10 @@ type QuizItem = HTMLElement;
 type TabsRoot = HTMLElement;
 type TabItem = HTMLElement;
 
-declare global {
-  interface Window {
-    __hyacineMdxInitBound?: boolean;
-  }
-}
+let mdxInitBound = false;
+
+const isValidQuizType = (v: string): v is QuizType =>
+  ["true", "false", "single", "multi", "fill"].includes(v);
 
 const getQuizTypeLabel = (quizType: QuizType) => {
   switch (quizType) {
@@ -59,19 +59,9 @@ const bindQuizItem = (quizItem: QuizItem) => {
     return;
   }
 
-  const quizType = (quizItem.dataset.quizType || "single") as QuizType;
+  const rawType = quizItem.dataset.quizType || "single";
+  const quizType: QuizType = isValidQuizType(rawType) ? rawType : "single";
   const question = quizItem.querySelector<HTMLElement>(":scope > .quiz-question");
-  const resetQuiz = () => {
-    // ❗ 清除 show（隐藏解析）
-    quizItem.classList.remove("show");
-
-    // ❗ 清除所有选项状态
-    const options = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-options > .quiz-option");
-
-    options.forEach((opt) => {
-      opt.classList.remove("selected", "right", "wrong");
-    });
-  };
   const firstQuestionParagraph =
     question?.querySelector<HTMLParagraphElement>(":scope > p:first-child");
 
@@ -82,18 +72,14 @@ const bindQuizItem = (quizItem: QuizItem) => {
   if (quizType === "true" || quizType === "false" || quizType === "fill") {
     if (quizType === "true" || quizType === "false") {
       let stateIcon = quizItem.querySelector(":scope > .quiz-state-icon");
-
       if (!stateIcon) {
         stateIcon = document.createElement("span");
-        stateIcon.className = "quiz-state-icon";
-        stateIcon.textContent = quizType === "true" ? "✔" : "✖";
+        stateIcon.className = `quiz-state-icon ${
+          quizType === "true" ? "i-ri-check-fill" : "i-ri-close-fill"
+        }`;
         stateIcon.setAttribute("aria-hidden", "true");
         quizItem.append(stateIcon);
       }
-
-      question?.addEventListener("click", () => {
-        quizItem.classList.toggle("show");
-      });
     }
 
     if (quizType === "fill") {
@@ -103,19 +89,17 @@ const bindQuizItem = (quizItem: QuizItem) => {
 
         if (willShow) {
           const gaps = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-gap");
-
           gaps.forEach((gap) => {
-            const latex = gap.dataset.answer || "";
-
-            // 去掉 \( \)
-            const cleaned = latex.replace(/^\\\(|\\\)$/g, "");
-
-            // ✅ 用 KaTeX 渲染
-            katex.render(cleaned, gap, {
-              throwOnError: false,
-            });
+            gap.textContent = gap.dataset.answer || "";
           });
         }
+      });
+    }
+
+    if (quizType !== "fill") {
+      firstQuestionParagraph?.addEventListener("click", () => {
+        const willShow = !quizItem.classList.contains("show");
+        quizItem.classList.toggle("show", willShow);
       });
     }
   }
@@ -130,7 +114,7 @@ const bindQuizItem = (quizItem: QuizItem) => {
       actionButton = document.createElement("button");
       actionButton.type = "button";
       actionButton.className = "quiz-check-btn";
-      actionButton.textContent = "隐藏解析";
+      actionButton.textContent = "隐藏答案";
       actionButton.hidden = true;
       quizItem.append(actionButton);
     }
@@ -141,105 +125,46 @@ const bindQuizItem = (quizItem: QuizItem) => {
         markSingleOrMulti(quizItem);
         if (actionButton) {
           actionButton.hidden = false;
-          actionButton.textContent = "隐藏解析";
+          actionButton.textContent = "隐藏答案";
         }
       });
     });
 
     actionButton?.addEventListener("click", () => {
       const willShow = !quizItem.classList.contains("show");
-
-      if (!willShow) {
-        // ❗ 隐藏时彻底重置
-        resetQuiz();
-        actionButton.textContent = "显示解析";
-        actionButton.hidden = true;
-        return;
-      }
-
-      quizItem.classList.add("show");
-      actionButton.textContent = "隐藏解析";
+      quizItem.classList.toggle("show", willShow);
+      actionButton.textContent = willShow ? "隐藏答案" : "显示答案";
     });
   }
 
   if (quizType === "multi") {
     const options = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-options > .quiz-option");
-
-    // ✅ 获取正确选项
-    const getCorrectOptions = () =>
-      Array.from(options).filter((opt) => opt.dataset.correct === "true");
-
-    // ✅ 判断是否“刚好选中所有正确选项”
-    const isAllCorrectSelected = () => {
-      const correct = getCorrectOptions();
-
-      return (
-        correct.every((opt) => opt.classList.contains("selected")) &&
-        Array.from(options).every(
-          (opt) => opt.dataset.correct === "true" || !opt.classList.contains("selected"),
-        )
-      );
-    };
-
-    // ✅ 清除所有状态（用于隐藏解析）
-    const resetOptions = () => {
-      options.forEach((opt) => {
-        opt.classList.remove("right", "wrong");
-      });
-    };
-
-    // ✅ 按钮（默认不存在）
-    let actionButton = quizItem.querySelector<HTMLButtonElement>(":scope > .quiz-check-btn");
-
-    // ❗ 初始隐藏
-    if (actionButton) {
-      actionButton.remove();
-      actionButton = null;
-    }
-
     options.forEach((option) => {
       option.addEventListener("click", () => {
         option.classList.toggle("selected");
-
-        // ❗ 每次点击先清状态（防止残留）
-        resetOptions();
-
-        // ❗ 判断是否全选正确
-        if (isAllCorrectSelected()) {
-          // ✅ 标记正确/错误
-          markSingleOrMulti(quizItem);
-
-          // ✅ 显示解析
-          revealAnswer(quizItem);
-
-          // ✅ 创建按钮（如果不存在）
-          if (!actionButton) {
-            actionButton = document.createElement("button");
-            actionButton.type = "button";
-            actionButton.className = "quiz-check-btn";
-            actionButton.textContent = "隐藏解析";
-            quizItem.append(actionButton);
-
-            // ✅ 绑定按钮行为
-            actionButton.addEventListener("click", () => {
-              const willShow = !quizItem.classList.contains("show");
-
-              if (willShow) {
-                // ✅ 显示解析时 → 标注所有选项（红/绿）
-                markSingleOrMulti(quizItem);
-                revealAnswer(quizItem);
-                actionButton!.textContent = "隐藏解析";
-              } else {
-                // ✅ 隐藏解析 → 完全重置
-                resetQuiz();
-                actionButton!.textContent = "显示解析";
-              }
-            });
-          } else {
-            actionButton.textContent = "隐藏解析";
-          }
-        }
       });
+    });
+
+    let actionButton = quizItem.querySelector<HTMLButtonElement>(":scope > .quiz-check-btn");
+
+    if (!actionButton) {
+      actionButton = document.createElement("button");
+      actionButton.type = "button";
+      actionButton.className = "quiz-check-btn";
+      actionButton.textContent = "查看答案";
+      quizItem.append(actionButton);
+    }
+
+    actionButton.addEventListener("click", () => {
+      const shouldHide = quizItem.classList.contains("show");
+      if (shouldHide) {
+        quizItem.classList.remove("show");
+        actionButton.textContent = "查看答案";
+        return;
+      }
+
+      markSingleOrMulti(quizItem);
+      actionButton.textContent = "隐藏答案";
     });
   }
 
@@ -263,6 +188,8 @@ const initTabs = (root: TabsRoot) => {
   if (!navList || tabItems.length === 0) {
     return;
   }
+
+  root.dataset.tabCount = String(tabItems.length);
 
   const defaultValue = (root.dataset.defaultValue || "").trim();
   let activeIndex = 0;
@@ -312,7 +239,20 @@ const initTabs = (root: TabsRoot) => {
     button.id = buttonId;
     button.setAttribute("role", "tab");
     button.setAttribute("aria-controls", panelId);
-    button.textContent = tabLabel;
+
+    // 读取该 tab 内 code-block 的语言，注入语言徽标
+    const pre = item.querySelector("code-block pre[data-language]");
+    const lang = pre instanceof HTMLElement ? pre.dataset.language || "" : "";
+    const badge = document.createElement("span");
+    badge.className = "lang-badge";
+    badge.setAttribute("aria-hidden", "true");
+    if (lang) {
+      badge.style.setProperty("--lang-color", langBadgeColor(lang));
+    }
+    button.append(badge);
+    const labelNode = document.createTextNode(tabLabel);
+    button.append(labelNode);
+
     button.addEventListener("click", () => {
       activate(index);
     });
@@ -326,6 +266,21 @@ const initTabs = (root: TabsRoot) => {
     nav?.setAttribute("hidden", "true");
   }
 
+  // 横向滚动阴影状态
+  const updateScrollState = () => {
+    const el = navList;
+    const atStart = el.scrollLeft <= 1;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+    nav?.setAttribute("data-at-start", String(atStart));
+    nav?.setAttribute("data-at-end", String(atEnd));
+  };
+  nav?.setAttribute("data-at-start", "true");
+  nav?.setAttribute("data-at-end", "false");
+  updateScrollState();
+  navList.addEventListener("scroll", updateScrollState, { passive: true });
+  const ro = new ResizeObserver(updateScrollState);
+  ro.observe(navList);
+
   activate(activeIndex);
   root.dataset[TABS_DATA_BOUND_KEY] = "true";
 };
@@ -337,28 +292,13 @@ const initAllTabs = () => {
   });
 };
 
-const wrapImages = () => {
-  const images = document.querySelectorAll<HTMLImageElement>(".md img");
-
-  images.forEach((imageElement) => {
-    if (imageElement.closest("image-zoom")) {
-      return;
-    }
-
-    const imageZoomElement = document.createElement("image-zoom");
-    imageElement.replaceWith(imageZoomElement);
-    imageZoomElement.append(imageElement);
-  });
-};
-
 const initMdxComponents = () => {
-  wrapImages();
   initQuiz();
   initAllTabs();
 };
 
 const setupMdxComponents = () => {
-  if (window.__hyacineMdxInitBound === true) {
+  if (mdxInitBound) {
     return;
   }
 
@@ -373,9 +313,7 @@ const setupMdxComponents = () => {
   }
 
   document.addEventListener("astro:page-load", onReady);
-  window.__hyacineMdxInitBound = true;
+  mdxInitBound = true;
 };
 
 setupMdxComponents();
-
-export {};

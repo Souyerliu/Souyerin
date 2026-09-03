@@ -16,13 +16,11 @@ function getStoredTheme(win: Window): ThemeMode | null {
 }
 
 function getPreferredTheme(win: Window): ThemeMode {
-  return win.matchMedia && win.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return win.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "dark" : "light";
 }
 
 export function applyTheme(doc: Document, theme: ThemeMode) {
-  doc.documentElement.setAttribute("data-theme", theme);
+  doc.documentElement.dataset.theme = theme;
 }
 
 export function initTheme(doc: Document, win: Window): ThemeMode {

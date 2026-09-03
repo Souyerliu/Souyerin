@@ -1,15 +1,16 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import Widgets from "@/components/footer/Widgets.svelte";
+import type { WidgetPost } from "@/toolkit/posts/createWidgetPosts";
+import Widgets from "@/components/footer/Widgets";
 
 interface WidgetsConfig {
   randomPosts?: boolean;
   recentComments?: boolean;
   recentCommentsLimit?: number;
+  recentCommentsServerURL?: string;
 }
 
 interface Props {
-  posts: CollectionEntry<"posts">[];
+  posts: WidgetPost[];
   widgetsConfig?: WidgetsConfig;
   commentsEnabled?: boolean;
   walineServerURL?: string;
@@ -25,14 +26,16 @@ const {
 
 <div id="main" class="pjax layout-main-column">
   <slot />
+</div>
+<div class="layout-main-widgets">
   <div class="widgets">
     <Widgets
       client:idle
       posts={posts}
       enableRandomPosts={widgetsConfig.randomPosts !== false}
-      enableRecentComments={widgetsConfig.recentComments && commentsEnabled}
+      enableRecentComments={widgetsConfig.recentComments === true && commentsEnabled}
       recentCommentsLimit={widgetsConfig.recentCommentsLimit || 6}
-      walineServerURL={walineServerURL}
+      walineServerURL={walineServerURL || widgetsConfig.recentCommentsServerURL || ""}
     />
   </div>
 </div>

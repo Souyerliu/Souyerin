@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { render } from "astro:content";
+import { currentLocale, t } from "@/i18n";
 
 interface Props {
   moment: CollectionEntry<"moments">;
@@ -10,8 +10,7 @@ const { moment } = Astro.props;
 
 // 格式化日期
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("zh-CN", {
-    timeZone: "Asia/Shanghai",
+  return date.toLocaleDateString(currentLocale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -36,9 +35,7 @@ const images =
   moment.data.images
     ?.map(resolveImageSrc)
     .filter((src): src is string => Boolean(src)) || [];
-
-// 使用 render() 将 Markdown 编译为 HTML 组件
-const { Content: MomentBody } = await render(moment);
+const content = moment.body || "";
 ---
 
 <article class="moment-card bg-grey-0">
@@ -52,9 +49,7 @@ const { Content: MomentBody } = await render(moment);
   </div>
 
   <div class="moment-content text-color">
-    <div class="moment-text">
-      <MomentBody />
-    </div>
+    {content && <div class="moment-text" set:html={content} />}
 
     {
       images.length > 0 && (
@@ -64,7 +59,7 @@ const { Content: MomentBody } = await render(moment);
               <image-zoom>
                 <img
                   src={src}
-                  alt={`图片 ${index + 1}`}
+                  alt={t("moments.imageAlt", { index: index + 1 })}
                   loading="lazy"
                   decoding="async"
                   class="moment-image"
@@ -138,6 +133,7 @@ const { Content: MomentBody } = await render(moment);
     font-size: 1rem;
     line-height: 1.75;
     word-break: break-word;
+    white-space: pre-wrap;
   }
 
   .moment-text :global(p) {
@@ -155,31 +151,6 @@ const { Content: MomentBody } = await render(moment);
 
   .moment-text :global(a:hover) {
     text-decoration: underline;
-  }
-
-  /* 分节符/分隔线 */
-  .moment-text :global(hr) {
-    border: none;
-    border-top: 2px dashed var(--grey-3);
-    margin: 1.25rem 0;
-  }
-
-  /* 行内代码 */
-  .moment-text :global(code) {
-    background: var(--grey-2);
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.875em;
-    font-family: var(--font-mono, "JetBrains Mono", "Fira Code", monospace);
-  }
-
-  /* 加粗/斜体 */
-  .moment-text :global(strong) {
-    font-weight: 600;
-  }
-
-  .moment-text :global(em) {
-    font-style: italic;
   }
 
   .moment-images {
@@ -246,6 +217,7 @@ const { Content: MomentBody } = await render(moment);
   .moment-image {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
     transition: transform 0.3s ease;
   }

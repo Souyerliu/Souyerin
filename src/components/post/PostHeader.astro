@@ -1,20 +1,19 @@
 ---
-import { t } from "@/i18n";
+import { currentLocale, t } from "@/i18n";
 
 interface Props {
   title: string;
-  link?: string;
   date: Date;
   updated?: Date;
   wordCount?: number;
   readingTime?: number;
 }
 
-const { title, link, date, wordCount, readingTime } = Astro.props;
+const { title, date, wordCount, readingTime } = Astro.props;
 
 // Format date helper
 function formatDate(d: Date): string {
-  return d.toLocaleDateString("zh-CN", {
+  return d.toLocaleDateString(currentLocale, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -23,7 +22,7 @@ function formatDate(d: Date): string {
 
 // Format full date helper
 function formatFullDate(d: Date): string {
-  return d.toLocaleString("zh-CN", {
+  return d.toLocaleString(currentLocale, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -40,18 +39,7 @@ const estimatedReadingTime = wordCount
 ---
 
 <header>
-  <h1 class="title" itemprop="name headline">
-    {
-      link ? (
-        <a href={link} class="link external" itemprop="url">
-          {title}
-          <i class="ic i-ri-link" />
-        </a>
-      ) : (
-        title
-      )
-    }
-  </h1>
+  <h1 class="title" itemprop="name headline">{title}</h1>
 
   <div class="meta">
     <span

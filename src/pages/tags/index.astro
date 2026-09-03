@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { generateTagCloud } from "@/toolkit/posts/generateTagCloud";
+import { toTagHref } from "@/toolkit/posts/url";
 import { t } from "@/i18n";
 import themeConfig from "@/theme.config";
 import "../../styles/tags.css";
@@ -41,17 +42,13 @@ const tagCloud = generateTagCloud(tags, {
 });
 
 // Sort tag cloud alphabetically for display
-const sortedTagCloud = [...tagCloud].sort((a, b) =>
+const sortedTagCloud = [...tagCloud].toSorted((a, b) =>
   a.name.localeCompare(b.name),
 );
 
 // Total tag count
 const totalTags = tags.length;
 
-// Helper to get tag URL
-function getTagUrl(tagName: string): string {
-  return `/tags/${encodeURIComponent(tagName.toLowerCase().replace(/\s+/g, "-"))}`;
-}
 ---
 
 <Layout pageTitle={t("tag.title")}>
@@ -69,7 +66,8 @@ function getTagUrl(tagName: string): string {
         {
           sortedTagCloud.map((tag) => (
             <a
-              href={getTagUrl(tag.name)}
+              href={toTagHref(tag.name)}
+              aria-label={`${tag.name} 标签`}
               class="tag-cloud-item"
               style={`font-size: ${tag.fontSize}px; color: ${tag.color};`}
               title={`${tag.name} (${tag.count})`}

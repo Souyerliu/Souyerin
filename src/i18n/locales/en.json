@@ -4,7 +4,8 @@
     "posts": "Posts",
     "categories": "Categories",
     "tags": "Tags",
-    "archives": "Archives"
+    "archives": "Archives",
+    "statistics": "Statistics"
   },
   "post": {
     "wordCount": "Word Count",
@@ -20,8 +21,12 @@
     "noContent": "No posts available",
     "publishedAt": "Published on",
     "createdAt": "Created at",
+    "updatedAt": "Updated on",
     "previousPost": "Previous Post",
     "nextPost": "Next Post",
+    "rewardSupport": "Support",
+    "rewardDescription": "Your support keeps my writing going",
+    "readingNeed": "Takes",
     "license": {
       "text": "This article is licensed under",
       "suffix": "license. Please indicate the source for reprints",
@@ -37,16 +42,19 @@
   },
   "category": {
     "title": "Categories",
+    "all": "All",
     "subcategories": "subcategories",
     "posts": "posts",
     "label": "Category",
-    "noContent": "No posts in this category"
+    "noContent": "No posts in this category",
+    "untitled": "Untitled"
   },
   "tag": {
     "title": "Tags"
   },
   "archive": {
     "title": "Archives",
+    "all": "All",
     "year": "Year",
     "month": "Month",
     "excellent": "Excellent",
@@ -56,6 +64,18 @@
     "ok": "OK",
     "emh": "Hmm..",
     "keepTrying": "Keep it up"
+  },
+  "statistics": {
+    "title": "Article Statistics",
+    "totalPosts": "Total Posts",
+    "totalCategories": "Total Categories",
+    "totalTags": "Total Tags",
+    "topCategory": "Most Used Category",
+    "postCount": "Posts",
+    "monthlyPosts": "Monthly Publishing Trend",
+    "categoryDistribution": "Category Distribution (Top 10)",
+    "tagDistribution": "Tag Distribution (Top 16)",
+    "latestMonthSummary": "In {{month}}, {{count}} posts were published."
   },
   "sidebar": {
     "toc": "Table of Contents",
@@ -115,6 +135,8 @@
     "poweredBy": "Powered by",
     "and": "&",
     "poweredSuffix": "Theme",
+    "totalWordsTitle": "Total words",
+    "estimatedReadingTimeTitle": "Estimated reading time",
     "randomPosts": "Random Posts",
     "recentComments": "Recent Comments",
     "noRecentComments": "No comments yet. Start a conversation!",
@@ -158,7 +180,14 @@
   "moments": {
     "title": "Moments",
     "noContent": "No moments available",
-    "publishedAt": "Published on"
+    "publishedAt": "Published on",
+    "imageAlt": "Moment image {{index}}"
+  },
+  "imageZoom": {
+    "dialog": "Image preview",
+    "close": "Close image preview",
+    "previous": "View previous image",
+    "next": "View next image"
   },
   "random": {
     "title": "Random Post",
@@ -166,5 +195,51 @@
     "noPost": "No posts available",
     "retry": "Try Again",
     "noScript": "JavaScript is disabled in this browser. Please go back home and pick a post manually."
+  },
+  "aboutDialog": {
+    "defaults": {
+      "title": "Quick Chat",
+      "intro": "Choose an option to continue the conversation. You can predefine branches and replies in the component.",
+      "authorName": "Author",
+      "authorInitial": "A",
+      "endHint": "This conversation has ended. Click \"Restart\" to chat again."
+    },
+    "defaultNodes": {
+      "intro": {
+        "text": "Hi, this is a configurable chat component example. Please choose a reply to continue.",
+        "optionA": {
+          "label": "Sample Question A",
+          "reply": "I want to see the reply for sample question A."
+        },
+        "optionB": {
+          "label": "Sample Question B",
+          "reply": "I want to see the reply for sample question B."
+        }
+      },
+      "answerA": {
+        "text": "This is sample answer A. You can replace node texts and options with your own content."
+      },
+      "answerB": {
+        "text": "This is sample answer B. You can also override the default dialogue through the nodes prop."
+      },
+      "backToMenu": {
+        "label": "Back to Menu",
+        "reply": "Back to menu."
+      }
+    },
+    "runtime": {
+      "noNodesConfigured": "No dialogue nodes are configured yet.",
+      "branchNotConfigured": "This branch is not configured yet. Please choose another option.",
+      "noDialogContent": "No dialogue content available. Please configure nodes first."
+    },
+    "typing": {
+      "ariaLabel": "Typing",
+      "peerTyping": "The other side is typing…",
+      "inputPlaceholder": "Type a message here (demo input)"
+    },
+    "actions": {
+      "send": "Send",
+      "restart": "Restart"
+    }
   }
 }

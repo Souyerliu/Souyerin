@@ -1,5 +1,5 @@
 ---
-import { t } from "@/i18n";
+import { currentLocale, t } from "@/i18n";
 import type { LicenseType } from "@/toolkit/themeConfig";
 import themeConfig from "@/theme.config";
 
@@ -33,7 +33,7 @@ const {
 } = Astro.props;
 
 function formatDate(d: Date): string {
-  return d.toLocaleDateString("zh-CN", {
+  return d.toLocaleDateString(currentLocale, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -97,9 +97,9 @@ const isNoReprint = license === "NOREPRINT";
           <span class="icon">
             <i class="ic i-ri-calendar-check-line" />
           </span>
-          <span class="text">编辑于 </span>
+          <span class="text">{t("post.updatedAt")} </span>
           <time
-            title={`修改于: ${updated.toLocaleString("zh-CN")}`}
+            title={`${t("post.updatedAt")}: ${updated.toLocaleString(currentLocale)}`}
             itemprop="dateModified"
             datetime={updated.toISOString()}
           >
@@ -115,9 +115,9 @@ const isNoReprint = license === "NOREPRINT";
       <div class="reward">
         <button type="button">
           <i class="ic i-ri-heart-pulse-line" />
-          赞赏支持
+          {t("post.rewardSupport")}
         </button>
-        <p>您的支持是我继续创作的动力</p>
+        <p>{t("post.rewardDescription")}</p>
         <div id="qr">
           {rewardConfig.accounts &&
             Object.entries(rewardConfig.accounts).map(([name, image]) => (

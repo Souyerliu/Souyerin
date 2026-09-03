@@ -203,16 +203,16 @@ Transformer中的层归一化可以类比神经网络中的批量归一化（Bat
 + 当然，实际使用中还有另一种归一化方法：RMSNorm。其与层归一化的区别在于RMSNorm不考虑均值中心化，直接让向量除以分量平方和均值的平方根。在训练中，RMSNorm的参数更少，计算效率更高。
 ### 组合
 最后，我们将上述Transformer块中的所有组件进行组合，得到整个输入到输出的流程如下：
-    $$
-    \begin{aligned}
-    \mathbf{t}_{i}^{1} &= \text{LayerNorm}(\mathbf{x}_{i}) \\
-    \mathbf{t}_{i}^{2} &= \text{MultiHeadAttention}\left(\mathbf{t}_{i}^{1},\ [\mathbf{t}_{1}^{1}, \ldots, \mathbf{t}_{i-1}^{1}]\right) \\
-    \mathbf{t}_{i}^{3} &= \mathbf{t}_{i}^{2} + \mathbf{x}_{i} \\
-    \mathbf{t}_{i}^{4} &= \text{LayerNorm}(\mathbf{t}_{i}^{3}) \\
-    \mathbf{t}_{i}^{5} &= \text{FFN}(\mathbf{t}_{i}^{4}) \\
-    \mathbf{h}_{i} &= \mathbf{t}_{i}^{5} + \mathbf{t}_{i}^{3}
-    \end{aligned}
-    $$
+$$
+\begin{aligned}
+\mathbf{t}_{i}^{1} &= \text{LayerNorm}(\mathbf{x}_{i}) \\
+\mathbf{t}_{i}^{2} &= \text{MultiHeadAttention}\left(\mathbf{t}_{i}^{1},\ [\mathbf{t}_{1}^{1}, \ldots, \mathbf{t}_{i-1}^{1}]\right) \\
+\mathbf{t}_{i}^{3} &= \mathbf{t}_{i}^{2} + \mathbf{x}_{i} \\
+\mathbf{t}_{i}^{4} &= \text{LayerNorm}(\mathbf{t}_{i}^{3}) \\
+\mathbf{t}_{i}^{5} &= \text{FFN}(\mathbf{t}_{i}^{4}) \\
+\mathbf{h}_{i} &= \mathbf{t}_{i}^{5} + \mathbf{t}_{i}^{3}
+\end{aligned}
+$$
     其中只有多头注意力层会使用之前词元的归一化输出作为输入之一，这相当于将其他词元的残差流信息汇入当前词元的残差流。
 + 由于Transformer块的输出$\mathbf{h}_i$的维度与$\mathbf{x}_i$一致，因此可以进行堆叠。在GPT-3中，解码器堆叠了96层Transformer块（之后的LLM甚至会堆叠更多！）。
     + 在堆叠的Transformer块的残差流中，输入词元$x_i$的信息逐渐转变为下一个预测词元的概率信息。

@@ -1,5 +1,4 @@
 ---
-import { getImage } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
 import CoverImage from './CoverImage.astro'
 
@@ -8,64 +7,31 @@ interface Props {
   preload?: boolean
   fixedCover?: ImageMetadata | string
   gradient?: boolean
-  covers?: ImageMetadata[]
+  covers?: Array<ImageMetadata | string>
   title?: string
+  advancedCarousel?: boolean
 }
 
 const {
   enable = false,
-  preload = false,
   fixedCover,
   gradient = false,
   covers = [],
   title = '',
+  advancedCarousel = false,
 } = Astro.props as Props
 
 // 是否显示多图轮播
+// 新版行为（advancedCarousel）：≥2 张即可
+// 旧版行为：必须恰好 6 张
+const minCoversForCarousel = advancedCarousel ? 2 : 6
 const isMultipleImages =
-  !fixedCover && !gradient && covers.length >1
+  !fixedCover && !gradient && covers.length >= minCoversForCarousel
 
 // 单图模式图片来源
 const singleImage =
   fixedCover || (gradient ? 'https://7ed.net/bing/api' : covers[0])
-
-// 首屏图片 preload（国内访问加速）
-// - 本地图片：预加载 AVIF 响应式版本（imagesrcset + imagesizes），
-//   与 <picture> 的实际选择一致，且与 CoverImage 内的 getImage 参数相同可复用产物。
-// - 字符串（public 路径/远程 URL）：简单 href preload。
-let preloadHref: string | undefined
-let preloadSrcset: string | undefined
-
-if (enable && preload) {
-  const target = isMultipleImages ? covers[0] : singleImage
-  if (target && typeof target !== 'string') {
-    const avif = await getImage({
-      src: target as ImageMetadata,
-      widths: [640, 960, 1280, 1920],
-      format: 'avif',
-    })
-    preloadHref = avif.src
-    preloadSrcset = avif.srcSet.attribute
-  } else if (target && typeof target === 'string') {
-    preloadHref = target
-  }
-}
 ---
-{enable && preloadHref && (
-  <link
-    rel="preload"
-    as="image"
-    href={preloadHref}
-    {...(preloadSrcset
-      ? {
-          imagesrcset: preloadSrcset,
-          imagesizes: '100vw',
-          type: 'image/avif',
-        }
-      : {})}
-  />
-)}
-
 {enable && (
     <div class="spacer"></div>
 
@@ -74,7 +40,6 @@ if (enable && preload) {
       class="imgs-container"
     >
       {isMultipleImages ? (
-        <!-- 多图轮播模式 -->
         <ul class="image-list">
           {covers.map((cover, index) => (
             <CoverImage
@@ -86,7 +51,6 @@ if (enable && preload) {
           ))}
         </ul>
       ) : (
-        <!-- 单图模式 -->
         <CoverImage
           src={singleImage}
           alt={title}
@@ -100,23 +64,18 @@ if (enable && preload) {
 )}
 
 <script>
-  const imgs = document.getElementById('imgs')
-  const imageList = imgs?.querySelector(".image-list");
+  const imgs = document.querySelector('#imgs')
+  const imageList = imgs?.querySelector('.image-list')
 
   if (imageList) {
-    const items = Array.from(imageList.children) as HTMLElement[];
+    const items = Array.from(imageList.children) as HTMLElement[]
+    const shuffle = (arr: HTMLElement[]) => [...arr].sort(() => Math.random() - 0.5)
+    const selected = shuffle(items).slice(0, 6)
 
-    const shuffle = (arr: HTMLElement[]) => [...arr].sort(() => Math.random() - 0.5);
-
-    // 随机选6张
-    const selected = shuffle(items).slice(0, 6);
-
-    imageList.innerHTML = "";
-
-    selected.forEach((el, i) => {
-      el.style.animationDelay = `${i * 6}s`;
-      imageList.appendChild(el);
-    });
+    imageList.replaceChildren(...selected)
+    selected.forEach((element, index) => {
+      element.style.animationDelay = `${index * 6}s`
+    })
   }
 
   if (imgs) {

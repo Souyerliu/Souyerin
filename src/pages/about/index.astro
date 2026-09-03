@@ -1,6 +1,5 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import themeConfig from "@/theme.config";
 import { getCollection } from "astro:content";
 
 const pageTitle = "关于";
@@ -8,14 +7,25 @@ const pageTitle = "关于";
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 
 // ✅ 根据分类统计文章数量
-function countByCategory(category) {
+function countByCategory(category: string) {
   return posts.filter(p =>
     p.data.categories?.includes(category)
   ).length;
 }
 
 // ✅ 你的学习计划（只需要维护 total）
-const plans = [
+interface PlanItem {
+  name: string;
+  category: string;
+  total: number;
+}
+
+interface PlanGroup {
+  name: string;
+  children: PlanItem[];
+}
+
+const plans: Array<PlanItem | PlanGroup> = [
   //{ name: "人工智能导论", category: "人工智能导论", total: 11 },
 
   {
@@ -37,23 +47,12 @@ const plans = [
 ];
 
 // ✅ 计算单个进度
-function calc(plan) {
+function calc(plan: PlanItem) {
   const done = countByCategory(plan.category);
   const progress = plan.total > 0 ? done / plan.total : 0;
   return { done, progress };
 }
 
-// ✅ 总进度
-let totalDone = 0;
-let totalCount = 0;
-
-plans.forEach(plan => {
-  const done = countByCategory(plan.category);
-  totalDone += done;
-  totalCount += plan.total;
-});
-
-const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
 ---
 
 <Layout pageTitle={pageTitle}>
@@ -70,8 +69,8 @@ const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
       <section class="about-card">
         <h3>关于Souyer</h3>
         <ul>
-          <li>我是一名ECNU的统计学-计算机本科生，目前大三。 </li>  
-          <li>正在学习概率统计，数据分析，机器学习，以及AI。</del>
+          <li>我是一名ECNU的统计学-计算机本科生，目前大三。</li>
+          <li>正在学习概率统计、数据分析、机器学习以及 AI。</li>
         </ul>
       </section>
 
@@ -81,7 +80,7 @@ const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
         <ul>
           <li>喜欢电子音乐（主推trance，bass music和日式电子）以及ACG Music</li>
           <li>F1（入坑第三年，无主推）</li>
-          <li>lovelive，邦多利，少女歌剧等<del>木柜子企划</del>
+          <li>lovelive，邦多利，少女歌剧等<del>木柜子企划</del></li>
           <li>sakanaction</li>
           <li>……</li>
         </ul>
@@ -109,7 +108,7 @@ const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
         {plans.map(plan => {
 
           // 👉 普通项
-          if (!plan.children) {
+          if (!("children" in plan)) {
             const { done, progress } = calc(plan);
             const percent = Math.round(progress * 100);
 
@@ -293,7 +292,6 @@ const totalProgress = totalCount > 0 ? totalDone / totalCount : 0;
     color: var(--grey-7);
   }
 
-  
   @media (max-width: 768px) {
     .about-page {
       padding: 1.25rem 1rem 2rem;

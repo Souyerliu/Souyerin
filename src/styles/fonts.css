@@ -1,4 +1,7 @@
-/* 正文字体：LXGW WenKai 霞鹜文楷 — woff2 子集约 320KB */
+/*
+ * The source CJK fonts are kept for regenerating subsets. Browsers load the
+ * much smaller WOFF2 files first and only use TTF as a legacy fallback.
+ */
 @font-face {
   font-family: "LXGW WenKai Local";
   src:
@@ -7,18 +10,9 @@
   font-display: swap;
 }
 
-/* 代码字体：Maple Mono — woff2 子集约 360KB */
-@font-face {
-  font-family: "Maple Mono Local";
-  src:
-    url("../assets/fonts/MapleMono-CN-Regular-subset.woff2") format("woff2"),
-    url("../assets/fonts/MapleMono-CN-Regular.ttf") format("truetype");
-  font-display: swap;
-}
-
 :root {
   --font-body: "LXGW WenKai Local", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-code: "Maple Mono Local", "Maple Mono", "Courier New", Courier, monospace;
+  --font-code: "Courier New", Courier, monospace;
   --pf-font: var(--font-body);
 }
 

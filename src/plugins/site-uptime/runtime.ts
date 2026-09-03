@@ -1,56 +1,45 @@
-import type { PluginInitFunction } from "@hyacine/helper/runtime";
-import { getInjectPointSelector } from "@hyacine/helper/runtime";
-
-interface SiteUptimeRuntimeOptions {
+export interface SiteUptimeRuntimeOptions {
   siteCreatedAt: string;
-  prefixText: string;
+  prefixText?: string;
 }
 
-function calculateUptime(createdAt: Date, prefixText: string): string {
-  const diff = Date.now() - createdAt.getTime();
+const FOOTER_STATUS_SELECTOR = "#footer .status";
 
-  if (diff < 0) {
-    return `${prefixText} 0秒`;
-  }
+function formatUptime(createdAt: Date, prefixText: string): string {
+  const diff = Math.max(0, Date.now() - createdAt.getTime());
+  const totalSeconds = Math.floor(diff / 1000);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalDays = Math.floor(totalHours / 24);
 
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(months / 12);
+  // 与参考项目保持一致：按 30 天折算一个月，并保留后续的日、时、分、秒。
+  const months = Math.floor(totalDays / 30);
+  const days = totalDays % 30;
+  const hours = totalHours % 24;
+  const minutes = totalMinutes % 60;
+  const seconds = totalSeconds % 60;
 
-  const remainingMonths = months % 12;
-  const remainingDays = days % 30;
-  const remainingHours = hours % 24;
-  const remainingMinutes = minutes % 60;
-  const remainingSeconds = seconds % 60;
-  const parts: string[] = [];
-
-  if (years > 0) parts.push(`${years}年`);
-  if (remainingMonths > 0) parts.push(`${remainingMonths}个月`);
-  if (remainingDays > 0) parts.push(`${remainingDays}天`);
-  if (remainingHours > 0) parts.push(`${remainingHours}小时`);
-  if (remainingMinutes > 0) parts.push(`${remainingMinutes}分钟`);
-  if (remainingSeconds > 0 || parts.length === 0) {
-    parts.push(`${remainingSeconds}秒`);
-  }
-
-  return `${prefixText} ${parts.join("")}`;
+  return `${prefixText}${months}个月${days}天${hours}小时${minutes}分钟${seconds}秒`;
 }
 
-function createUptimeElement(options: SiteUptimeRuntimeOptions): HTMLElement {
+function mountUptime(options: SiteUptimeRuntimeOptions): void {
+  const target = document.querySelector(FOOTER_STATUS_SELECTOR);
+  if (!target || target.querySelector(":scope > .site-uptime")) {
+    return;
+  }
+
   const container = document.createElement("div");
   container.className = "site-uptime";
-  container.style.cssText = "margin: 0.5rem 0; font-size: 0.9em;";
+  container.style.cssText = "margin: 1rem 0 0.5rem; font-size: 0.9em;";
 
   const createdAt = new Date(options.siteCreatedAt);
-  const updateUptime = () => {
-    container.textContent = calculateUptime(createdAt, options.prefixText);
+  const prefixText = options.prefixText ?? "本站点已经存在了";
+  const update = () => {
+    container.textContent = formatUptime(createdAt, prefixText);
   };
 
-  updateUptime();
-  const intervalId = window.setInterval(updateUptime, 1000);
+  update();
+  const intervalId = window.setInterval(update, 1000);
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
@@ -58,6 +47,7 @@ function createUptimeElement(options: SiteUptimeRuntimeOptions): HTMLElement {
         if (node === container) {
           window.clearInterval(intervalId);
           observer.disconnect();
+          return;
         }
       }
     }
@@ -69,27 +59,18 @@ function createUptimeElement(options: SiteUptimeRuntimeOptions): HTMLElement {
     }
   });
 
-  return container;
+  target.appendChild(container);
 }
 
-function mountUptime(options: SiteUptimeRuntimeOptions): void {
-  const selector = getInjectPointSelector("footer-status");
-  const targetElement = document.querySelector(selector);
-  if (!targetElement || targetElement.querySelector(":scope > .site-uptime")) {
+export function init(options: SiteUptimeRuntimeOptions): void {
+  if (typeof window === "undefined" || typeof document === "undefined") {
     return;
   }
 
-  const element = createUptimeElement(options);
-  targetElement.appendChild(element);
-}
-
-export const init: PluginInitFunction<SiteUptimeRuntimeOptions> = (options) => {
+  const start = () => mountUptime(options);
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => mountUptime(options), {
-      once: true,
-    });
-    return;
+    document.addEventListener("DOMContentLoaded", start, { once: true });
+  } else {
+    start();
   }
-
-  mountUptime(options);
-};
+}

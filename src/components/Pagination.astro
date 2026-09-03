@@ -1,5 +1,6 @@
 ---
 import { getT } from "@/i18n";
+import { buildPaginationItems } from "@/toolkit/posts/buildPaginationItems";
 
 interface Props {
   currentPage: number;
@@ -32,32 +33,7 @@ const getHref = (n: number) => {
 const prevHref = safeCurrent > 1 ? getHref(safeCurrent - 1) : undefined;
 const nextHref = safeCurrent < safeLast ? getHref(safeCurrent + 1) : undefined;
 
-function buildPageItems(current: number, last: number): Array<number | "…"> {
-  if (last <= 1) return [1];
-
-  // 小页数：全部展示
-  if (last <= 4) {
-    return Array.from({ length: last }, (_, i) => i + 1);
-  }
-
-  const items: Array<number | "…"> = [];
-  const add = (v: number | "…") => {
-    if (items.length === 0 || items[items.length - 1] !== v) items.push(v);
-  };
-
-  const windowStart = Math.max(2, current - 1);
-  const windowEnd = Math.min(last - 1, current + 1);
-
-  add(1);
-  if (windowStart > 2) add("…");
-  for (let p = windowStart; p <= windowEnd; p++) add(p);
-  if (windowEnd < last - 1) add("…");
-  add(last);
-
-  return items;
-}
-
-const items = buildPageItems(safeCurrent, safeLast);
+const items = buildPaginationItems(safeCurrent, safeLast);
 const t = getT();
 ---
 

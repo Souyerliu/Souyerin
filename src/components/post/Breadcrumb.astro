@@ -1,6 +1,5 @@
 ---
-import { getT } from "@/i18n";
-import themeConfig from "@/theme.config";
+import { currentLocale, getT } from "@/i18n";
 
 interface Props {
   categories?: string[];
@@ -8,7 +7,7 @@ interface Props {
 }
 
 const { categories = [], isHome = true } = Astro.props;
-const t = getT((themeConfig.locale as "zh-CN" | "en") || "zh-CN");
+const t = getT(currentLocale);
 ---
 
 <div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">

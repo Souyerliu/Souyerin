@@ -1,124 +1,129 @@
 /**
- * 获取文章文件的最后修改时间
- * 优先从 hyc sync 数据库读取，回退到文件系统 mtime
+ * 获取文章源文件的最后修改时间。
+ * 优先读取本地 Hyacine Post.lastModified，缺失时回退到文件系统 mtime。
  */
 import fs from "node:fs";
 import path from "node:path";
+import { DatabaseSync } from "node:sqlite";
 
-// 向上查找项目根目录（通过 astro.config.mjs 标记）
 function findProjectRoot(): string {
-  let dir = process.cwd();
-  for (let i = 0; i < 10; i++) {
-    if (fs.existsSync(path.join(dir, "astro.config.mjs"))) return dir;
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
+  let directory = process.cwd();
+  for (let index = 0; index < 10; index += 1) {
+    if (fs.existsSync(path.join(directory, "astro.config.mjs"))) return directory;
+    const parent = path.dirname(directory);
+    if (parent === directory) break;
+    directory = parent;
   }
   return process.cwd();
 }
 
 const PROJECT_ROOT = findProjectRoot();
 const POSTS_BASE = path.resolve(PROJECT_ROOT, "src/posts");
-const DB_PATH = path.resolve(PROJECT_ROOT, ".hyacine/data.db");
 
-/** 将文件路径转为 Astro 内容集合的 ID（slug） */
-function toAstroId(relativePath: string): string {
-  // 去掉扩展名 → 小写 → 反斜杠转正斜杠 → 去掉点号 → strip 全角标点（Astro 行为）→ 非字母数字中文转连字符 → 合并连续连字符
-  const noExt = relativePath.replace(/\.(mdx|md)$/, "");
+function databasePath(): string {
   return (
-    noExt
-      .toLowerCase()
-      .replace(/\\/g, "/")
-      .replace(/\./g, "")
-      // 全角括号等标点 Astro 直接删除，不替换为连字符
-      .replace(/[\uff08\uff09\u3000-\u303f\ufe30-\ufe4f]/g, "")
-      .replace(/[^a-z0-9/\u4e00-\u9fff\u3400-\u4dbf]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "")
+    process.env.AI_SUMMARY_DB_PATH?.trim() ||
+    path.resolve(PROJECT_ROOT, ".hyacine/data.db")
   );
 }
 
-/** 递归扫描 posts 目录，构建 Astro ID → 绝对路径 的映射 */
+/** 将文件路径转换为 Astro 内容集合使用的 ID。 */
+function toAstroId(relativePath: string): string {
+  const withoutExtension = relativePath.replace(/\.(mdx|md)$/i, "");
+  return withoutExtension
+    .toLowerCase()
+    .replace(/\\/g, "/")
+    .replace(/\./g, "")
+    .replace(/[\uff08\uff09\u3000-\u303f\ufe30-\ufe4f]/g, "")
+    .replace(/[^a-z0-9/\u4e00-\u9fff\u3400-\u4dbf]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function buildSlugMap(): Map<string, string> {
   const map = new Map<string, string>();
-  const dirs = [POSTS_BASE];
-  while (dirs.length > 0) {
-    const dir = dirs.pop()!;
+  const pending = [POSTS_BASE];
+
+  while (pending.length > 0) {
+    const directory = pending.pop();
+    if (!directory) continue;
+
     let entries: fs.Dirent[];
     try {
-      entries = fs.readdirSync(dir, { withFileTypes: true });
+      entries = fs.readdirSync(directory, { withFileTypes: true });
     } catch {
       continue;
     }
+
     for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
+      const absolutePath = path.join(directory, entry.name);
       if (entry.isDirectory()) {
-        dirs.push(fullPath);
-      } else if (/\.(md|mdx)$/i.test(entry.name)) {
-        const relativePath = path.relative(POSTS_BASE, fullPath);
-        map.set(toAstroId(relativePath), fullPath);
+        pending.push(absolutePath);
+      } else if (/\.(?:md|mdx)$/i.test(entry.name)) {
+        const relativePath = path.relative(POSTS_BASE, absolutePath);
+        map.set(toAstroId(relativePath), absolutePath);
       }
     }
   }
+
   return map;
 }
 
 const SLUG_MAP = buildSlugMap();
-// 同时保留一个反向映射：绝对路径 → 相对路径（用于 DB LIKE 查询，正斜杠）
-const PATH_TO_RELATIVE = new Map<string, string>();
-for (const [, absPath] of SLUG_MAP) {
-  PATH_TO_RELATIVE.set(absPath, path.relative(POSTS_BASE, absPath).replace(/\\/g, "/"));
+
+function parseDate(value: unknown): Date | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
-let _dbPromise: Promise<any | null> | null = null;
+function readDatabaseLastModified(postId: string, postTitle?: string): Date | null {
+  const dbPath = databasePath();
+  if (!fs.existsSync(dbPath)) return null;
 
-function getDatabase(): Promise<any | null> {
-  if (_dbPromise) return _dbPromise;
-  _dbPromise = (async () => {
-    try {
-      if (!fs.existsSync(DB_PATH)) return null;
-      const { Database } = await import("bun:sqlite");
-      return new Database(DB_PATH);
-    } catch {
-      return null;
-    }
-  })();
-  return _dbPromise;
-}
+  const normalized = postId.replaceAll("\\", "/").replace(/^\/+/, "");
+  const basePaths = [normalized, `src/posts/${normalized}`, `@/src/posts/${normalized}`];
+  const paths = [
+    ...basePaths,
+    ...basePaths.flatMap((candidate) => [`${candidate}.md`, `${candidate}.mdx`]),
+  ].map((candidate) => candidate.toLowerCase());
+  const placeholders = paths.map(() => "?").join(", ");
+  const title = postTitle?.trim() || "";
 
-export async function getLastModified(postId: string, fallbackDate: Date): Promise<Date> {
-  // 1. 通过 slug 映射找到实际文件路径
-  const realPath = SLUG_MAP.get(postId);
-
-  if (realPath) {
-    // 1a. 优先从 hyc sync 数据库读取
-    const db = await getDatabase();
-    if (db) {
-      try {
-        const relativePath = PATH_TO_RELATIVE.get(realPath);
-        if (relativePath) {
-          const pattern = `%/src/posts/${relativePath}`;
-          const row = db
-            .prepare("SELECT lastModified FROM Post WHERE path LIKE ?")
-            .get(pattern) as { lastModified: string } | null;
-          if (row?.lastModified) {
-            const d = new Date(row.lastModified);
-            if (!isNaN(d.getTime())) return d;
-          }
-        }
-      } catch {
-        /* 回退 */
-      }
-    }
-
-    // 1b. 回退：直接读取文件系统 mtime
-    try {
-      return fs.statSync(realPath).mtime;
-    } catch {
-      /* 回退 */
-    }
+  let database: DatabaseSync | undefined;
+  try {
+    database = new DatabaseSync(dbPath, { readOnly: true });
+    const row = database
+      .prepare(
+        `SELECT lastModified
+         FROM Post
+         WHERE lower(path) IN (${placeholders})${title ? " OR title = ?" : ""}
+         LIMIT 1`,
+      )
+      .get(...paths, ...(title ? [title] : [])) as { lastModified?: unknown } | undefined;
+    return parseDate(row?.lastModified);
+  } catch {
+    return null;
+  } finally {
+    database?.close();
   }
+}
 
-  // 2. 最终回退到 frontmatter date
-  return fallbackDate;
+export function getLastModified(
+  postId: string,
+  fallbackDate: Date,
+  postTitle?: string,
+): Date {
+  return (
+    readDatabaseLastModified(postId, postTitle) ||
+    (() => {
+      const realPath = SLUG_MAP.get(postId) || SLUG_MAP.get(toAstroId(postId));
+      if (!realPath) return fallbackDate;
+      try {
+        return fs.statSync(realPath).mtime;
+      } catch {
+        return fallbackDate;
+      }
+    })()
+  );
 }

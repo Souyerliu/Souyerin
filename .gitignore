@@ -31,9 +31,10 @@ old_project
 .env*.local
 hyacine.code-workspace
 generated/
+.hyacine
+.claude
 
-# hyacine 配置文件（含 API Key，仅保留本地）
-hyacine.yml
-
-src/posts/.vscode
-.vscode
+test-results/
+playwright-report/
+.playwright-mcp
+.lycheecache

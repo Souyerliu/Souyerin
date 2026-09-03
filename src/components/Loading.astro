@@ -1,4 +1,4 @@
-<div id="loading">
+<div id="loading" transition:persist="loading">
   <div class="cat">
     <div class="body"></div>
     <div class="head">
@@ -397,18 +397,33 @@
 
 <script>
   const MINIMUM_LOADING_TIME = 500;
+  let hideTimer: ReturnType<typeof setTimeout> | undefined;
 
-  // TODO: 仅在第一次访问时显示加载动画
-  window.addEventListener("DOMContentLoaded", () => {
+  function showLoading() {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = undefined;
+    }
+
+    document.querySelector("#loading")?.classList.remove("hidden");
+  }
+
+  function hideLoading() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const loading = document.getElementById("loading");
+        const loading = document.querySelector("#loading");
         if (!loading) return;
 
-        setTimeout(() => {
+        hideTimer = setTimeout(() => {
           loading.classList.add("hidden");
+          hideTimer = undefined;
         }, MINIMUM_LOADING_TIME);
       });
     });
-  });
+  }
+
+  // TODO: 仅在第一次访问时显示加载动画
+  window.addEventListener("DOMContentLoaded", hideLoading, { once: true });
+  document.addEventListener("astro:before-preparation", showLoading);
+  document.addEventListener("astro:page-load", hideLoading);
 </script>
