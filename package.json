@@ -24,8 +24,9 @@
     "changelog": "git-cliff -o CHANGELOG.md",
     "config:deploy": "node scripts/generate-deploy-configs.mjs",
     "config:deploy:check": "node scripts/generate-deploy-configs.mjs --check",
-    "ai:summary": "node scripts/generate-ai-summaries.mjs",
-    "ai:summary:force": "node scripts/generate-ai-summaries.mjs --force",
+    "ai:summary": "node scripts/generate-ai-summaries.mjs && node scripts/export-ai-summaries.mjs",
+    "ai:summary:force": "node scripts/generate-ai-summaries.mjs --force && node scripts/export-ai-summaries.mjs",
+    "ai:summary:export": "node scripts/export-ai-summaries.mjs",
     "hyc": "node node_modules/@hyacine/cli/dist/index.mjs",
     "hyc:collections": "node node_modules/@hyacine/cli/dist/index.mjs collections"
   },

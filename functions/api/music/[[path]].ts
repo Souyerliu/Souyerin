@@ -1,4 +1,6 @@
 const METING_API_ORIGIN = "https://meting.api.zkz098.cn";
+const UPSTREAM_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 
 const ALLOWED_PATH = /^\/v1\/(?:playlists|songs|albums|artists)\/[A-Za-z0-9_-]+(?:\/lyric)?\/?$/;
 
@@ -32,9 +34,9 @@ export const onRequest = async ({ request }: PagesFunctionContext) => {
   let upstreamResponse: Response;
   try {
     const upstreamHeaders = new Headers({
-      Accept: request.headers.get("Accept") || "application/json",
-      // 上游 API 的 Cloudflare 防护会拦截无 User-Agent 的边缘请求。
-      "User-Agent": request.headers.get("User-Agent") || "Mozilla/5.0 (compatible; MusicProxy/1.0)",
+      Accept: "application/json",
+      // 上游 API 会拦截 curl 等非浏览器 User-Agent，统一使用浏览器标识。
+      "User-Agent": UPSTREAM_USER_AGENT,
     });
     const acceptLanguage = request.headers.get("Accept-Language");
     if (acceptLanguage) {

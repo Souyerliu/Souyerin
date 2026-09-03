@@ -2,6 +2,8 @@ import { existsSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { join } from "node:path";
 
+import summaryArtifact from "../data/ai-summaries.json";
+
 export interface LocalAiSummary {
   content: string;
   model: string | null;
@@ -25,9 +27,27 @@ function projectPathCandidates(postId: string): string[] {
   ];
 }
 
-/** 从本地摘要数据库读取一篇文章的摘要。数据库不存在或结构不匹配时安全返回 null。 */
+/** 读取随源码部署的摘要构建产物，供 Cloudflare Pages 等无本地数据库环境使用。 */
+function readSummaryArtifact(postId: string, postTitle?: string): LocalAiSummary | null {
+  const candidates = new Set(projectPathCandidates(postId).map((path) => path.toLowerCase()));
+  const title = postTitle?.trim() || "";
+  const entry = summaryArtifact.entries.find(
+    (candidate) =>
+      candidates.has(candidate.path.toLowerCase()) || (title !== "" && candidate.title === title),
+  );
+  const content = entry?.content.trim() || "";
+  if (!content) return null;
+  return {
+    content,
+    model: entry?.model?.trim() || null,
+    sourceHash: null,
+  };
+}
+
+/** 从本地摘要数据库或静态构建产物读取一篇文章的摘要。数据缺失时安全返回 null。 */
 export function readLocalAiSummary(postId: string, postTitle?: string): LocalAiSummary | null {
-  if (!postId || !existsSync(databasePath())) return null;
+  if (!postId) return null;
+  if (!existsSync(databasePath())) return readSummaryArtifact(postId, postTitle);
 
   let database: DatabaseSync | undefined;
   try {
@@ -50,7 +70,7 @@ export function readLocalAiSummary(postId: string, postTitle?: string): LocalAiS
       | { summary?: unknown; summaryModel?: unknown; summarySourceHash?: unknown }
       | undefined;
     const content = typeof row?.summary === "string" ? row.summary.trim() : "";
-    if (!content) return null;
+    if (!content) return readSummaryArtifact(postId, postTitle);
     return {
       content,
       model:
@@ -75,14 +95,14 @@ export function readLocalAiSummary(postId: string, postTitle?: string): LocalAiS
         | { summary?: unknown; model?: unknown; sourceHash?: unknown }
         | undefined;
       const content = typeof row?.summary === "string" ? row.summary.trim() : "";
-      if (!content) return null;
+      if (!content) return readSummaryArtifact(postId, postTitle);
       return {
         content,
         model: typeof row?.model === "string" && row.model.trim() ? row.model.trim() : null,
         sourceHash: typeof row?.sourceHash === "string" ? row.sourceHash : null,
       };
     } catch {
-      return null;
+      return readSummaryArtifact(postId, postTitle);
     }
   } finally {
     database?.close();
