@@ -98,7 +98,7 @@
     "vitest": "^4.1.11"
   },
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=24.20.0"
   },
   "packageManager": "pnpm@11.22.0"
 }

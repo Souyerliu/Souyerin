@@ -4,7 +4,7 @@
 
 ## 运行环境与总原则
 
-- 运行时与包管理器：**Node.js ≥ 22.13 + pnpm**（`packageManager: pnpm@11.22.0`）
+- 运行时与包管理器：**Node.js ≥ 24.20 + pnpm**（`packageManager: pnpm@11.22.0`）
 - 默认沟通语言：**中文**（输出与代码注释优先中文）
 - 优先使用仓库脚本，不要自创命令
 - 路由要求：`trailingSlash: "always"`（内部链接保留尾 `/`）

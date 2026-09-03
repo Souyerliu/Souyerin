@@ -107,7 +107,8 @@ if (themeConfig.diagnostics?.suppressFsWatcherMaxListenersWarning !== false) {
 // https://astro.build/config
 export default defineConfig({
   site: "https://souyerin.top",
-  trailingSlash: "always",
+  // 生产环境保持尾斜杠规范；本地开发需允许 Vite 代理处理播放器 API 的无尾斜杠请求。
+  trailingSlash: process.env.NODE_ENV === "production" ? "always" : "ignore",
   build: {
     format: "directory",
   },
@@ -142,6 +143,17 @@ export default defineConfig({
   ],
 
   vite: {
+    // 本地 astro dev 不会执行 Cloudflare Pages Functions，使用 Vite 代理保持
+    // 播放器请求地址与生产环境一致，避免浏览器直接跨域请求 Meting API。
+    server: {
+      proxy: {
+        "^/api/music(?:/|$)": {
+          target: "https://meting.api.zkz098.cn",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/music/, ""),
+        },
+      },
+    },
     ssr: {
       // AstroContainer 场景：阻止 astro/container 与 @astrojs/mdx 被打入 client bundle。
       // 否则构建期会求值 CLIENT_ENTRY（require.resolve('vite/dist/client/client.mjs')），

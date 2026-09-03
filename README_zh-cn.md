@@ -36,7 +36,7 @@
 
 ## 📦 安装
 
-本项目建议使用 [Node.js](https://nodejs.org/)（v22.13 及以上）与 [pnpm](https://pnpm.io/) 运行。
+本项目建议使用 [Node.js](https://nodejs.org/)（v24.20 及以上）与 [pnpm](https://pnpm.io/) 运行。
 
 你可以直接将本仓库 Clone 到本地（并为我们点一个 Star 😜），来开始使用。也可使用[由 Hyc 提供的交互式安装支持](https://docs.astro.kaitaku.xyz/start/guides/)
 
