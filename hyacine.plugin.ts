@@ -93,8 +93,8 @@ export default defineConfig({
       ],
       preset: "shokax",
       darkModeTarget: ":root[data-theme=dark]",
-      // 通过 Cloudflare Pages Function 同源代理，避免自定义域名触发第三方 CORS 限制。
-      metingBaseURL: "/api/music",
+      // 与上游 ShokaX 保持一致，直接使用支持 CORS 的 Meting API。
+      metingBaseURL: "https://meting.api.zkz098.cn/",
       metingUrlSource: "outer",
     }),
     articleStatistics(),

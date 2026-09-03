@@ -4,7 +4,7 @@ test("@regression 跨页导航后音乐播放器仍可反复显示和隐藏", as
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
-  await page.route("**/api/music/v1/playlists/**", async (route) => {
+  await page.route("https://meting.api.zkz098.cn/v1/playlists/**", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
@@ -21,6 +21,9 @@ test("@regression 跨页导航后音乐播放器仍可反复显示和隐藏", as
         },
       }),
     });
+  });
+  await page.route("https://meting.api.zkz098.cn/v1/songs/**/lyric**", async (route) => {
+    await route.fulfill({ contentType: "text/plain", body: "[00:00.00]" });
   });
 
   await page.goto("/");

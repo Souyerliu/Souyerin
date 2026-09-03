@@ -143,17 +143,6 @@ export default defineConfig({
   ],
 
   vite: {
-    // 本地 astro dev 不会执行 Cloudflare Pages Functions，使用 Vite 代理保持
-    // 播放器请求地址与生产环境一致，避免浏览器直接跨域请求 Meting API。
-    server: {
-      proxy: {
-        "^/api/music(?:/|$)": {
-          target: "https://meting.api.zkz098.cn",
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/music/, ""),
-        },
-      },
-    },
     ssr: {
       // AstroContainer 场景：阻止 astro/container 与 @astrojs/mdx 被打入 client bundle。
       // 否则构建期会求值 CLIENT_ENTRY（require.resolve('vite/dist/client/client.mjs')），
