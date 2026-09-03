@@ -266,19 +266,24 @@ import Live2DWidget from "@/components/Live2DWidget.astro";
     </div>
     <script>
       const host = document.getElementById("nyx-player-host");
-      const moveNyxPlayerIntoPersistentHost = () => {
+      const moveNyxPlayerPortalsIntoPersistentHost = () => {
         if (!host) return;
+
         for (const player of document.querySelectorAll(".nyx-player, .nyx-minibar")) {
-          if (player.parentElement !== host) host.append(player);
+          const portalRoot = player.parentElement;
+          if (!portalRoot) continue;
+
+          // Solid Portal 在 body 下维护自己的容器与插入锚点，必须持久化整个容器。
+          if (portalRoot.parentElement !== host) host.append(portalRoot);
         }
       };
 
-      moveNyxPlayerIntoPersistentHost();
-      new MutationObserver(moveNyxPlayerIntoPersistentHost).observe(document.body, {
+      moveNyxPlayerPortalsIntoPersistentHost();
+      new MutationObserver(moveNyxPlayerPortalsIntoPersistentHost).observe(document.body, {
         childList: true,
         subtree: true,
       });
-      document.addEventListener("astro:after-swap", moveNyxPlayerIntoPersistentHost);
+      document.addEventListener("astro:after-swap", moveNyxPlayerPortalsIntoPersistentHost);
     </script>
     <Live2DWidget />
   </body>
