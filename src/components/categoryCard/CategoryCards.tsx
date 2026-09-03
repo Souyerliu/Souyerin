@@ -28,7 +28,9 @@ function CategoryCards(props: CategoryCardsProps) {
   const [activeIndex, setActiveIndex] = createSignal<number | null>(null);
   // show 集合同样由 Solid 状态驱动：避免 IO 直接改 DOM class 与 Solid 渲染
   // 的 class 拼接冲突（曾导致悬停激活时 .show 被覆盖、卡片 opacity:0 消失）
-  const [visibleIndexes, setVisibleIndexes] = createSignal<Set<number>>(new Set());
+  // 分类卡片内容已由 Astro SSR 输出，首屏直接可见，避免等待水合/IO 后才显示。
+  const initialVisibleIndexes = new Set((props.categories ?? []).map((_, index) => index));
+  const [visibleIndexes, setVisibleIndexes] = createSignal<Set<number>>(initialVisibleIndexes);
   let container: HTMLDivElement | null = null;
   let io: IntersectionObserver | null = null;
 
@@ -78,7 +80,7 @@ function CategoryCards(props: CategoryCardsProps) {
       io?.observe(item);
     });
     // 前两张卡片首屏直接展开
-    setVisibleIndexes(new Set([0, 1]));
+    setVisibleIndexes(initialVisibleIndexes);
   });
 
   onCleanup(() => {

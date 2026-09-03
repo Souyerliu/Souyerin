@@ -32,7 +32,11 @@ import "@/styles/code-block-light.css";
 import "@/styles/mdx-components.css";
 
 import Loading from "@/components/Loading.astro";
-import { covers, resolveFixedCover } from "@/components/Images.astro";
+import {
+  carouselCovers,
+  covers,
+  resolveFixedCover,
+} from "@/components/Images.astro";
 import FloatingToolbar from "@/components/FloatingToolbar";
 import TwoColumnLayout from "@/layouts/TwoColumnLayout.astro";
 import ThreeColumnLayout from "@/layouts/ThreeColumnLayout.astro";
@@ -167,6 +171,8 @@ const siteState = {
 
 const widgetPosts = createWidgetPosts(posts);
 
+// 默认轮播只输出 6 张图，避免浏览器先请求全部素材再由脚本删除。
+
 // Import custom elements definitions
 import CodeBlock from "@/components/CodeBlock";
 import ImageZoom from "@/components/ImageZoom";
@@ -211,7 +217,7 @@ import Live2DWidget from "@/components/Live2DWidget.astro";
         preload={coverConfig.preload}
         fixedCover={resolvedHeaderCover}
         gradient={coverConfig.gradient}
-        covers={advancedCarousel ? headerCovers : covers}
+        covers={advancedCarousel ? headerCovers : carouselCovers}
         advancedCarousel={advancedCarousel}
         title={brandConfig.title}
       />

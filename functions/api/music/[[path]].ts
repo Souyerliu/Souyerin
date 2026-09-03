@@ -31,11 +31,19 @@ export const onRequest = async ({ request }: PagesFunctionContext) => {
 
   let upstreamResponse: Response;
   try {
+    const upstreamHeaders = new Headers({
+      Accept: request.headers.get("Accept") || "application/json",
+      // 上游 API 的 Cloudflare 防护会拦截无 User-Agent 的边缘请求。
+      "User-Agent": request.headers.get("User-Agent") || "Mozilla/5.0 (compatible; MusicProxy/1.0)",
+    });
+    const acceptLanguage = request.headers.get("Accept-Language");
+    if (acceptLanguage) {
+      upstreamHeaders.set("Accept-Language", acceptLanguage);
+    }
+
     upstreamResponse = await fetch(upstreamURL, {
       method: request.method,
-      headers: {
-        Accept: request.headers.get("Accept") || "application/json",
-      },
+      headers: upstreamHeaders,
       signal: AbortSignal.timeout(10_000),
     });
   } catch {

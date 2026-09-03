@@ -74,14 +74,14 @@ describe("CategoryCards 分类卡片墙", () => {
     expect(links[0]?.textContent).toBe("前端");
   });
 
-  it("挂载后前两张卡片直接 show，其余由 IntersectionObserver 观察", () => {
+  it("挂载后所有卡片直接 show，IntersectionObserver 继续监测", () => {
     const io = stubIntersectionObserver();
     const { container } = render(() => <CategoryCards categories={CATEGORIES} />);
 
     const items = container.querySelectorAll("section.item");
     expect(items[0]?.classList.contains("show")).toBe(true);
     expect(items[1]?.classList.contains("show")).toBe(true);
-    expect(items[2]?.classList.contains("show")).toBe(false);
+    expect(items[2]?.classList.contains("show")).toBe(true);
 
     const instance = io.instance();
     expect(instance?.observe).toHaveBeenCalledTimes(3);
