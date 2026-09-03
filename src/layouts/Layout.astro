@@ -30,6 +30,7 @@ import "@/styles/image-zoom.css";
 import "@/styles/header-cover.css";
 import "@/styles/code-block-light.css";
 import "@/styles/mdx-components.css";
+import "@/styles/nyx-player.css";
 
 import Loading from "@/components/Loading.astro";
 import {
@@ -263,6 +264,22 @@ import Live2DWidget from "@/components/Live2DWidget.astro";
     <div id="nyx-player-host" transition:persist="nyx-player">
       <HyacineOutlet name="layout-bottom" />
     </div>
+    <script>
+      const host = document.getElementById("nyx-player-host");
+      const moveNyxPlayerIntoPersistentHost = () => {
+        if (!host) return;
+        for (const player of document.querySelectorAll(".nyx-player, .nyx-minibar")) {
+          if (player.parentElement !== host) host.append(player);
+        }
+      };
+
+      moveNyxPlayerIntoPersistentHost();
+      new MutationObserver(moveNyxPlayerIntoPersistentHost).observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+      document.addEventListener("astro:after-swap", moveNyxPlayerIntoPersistentHost);
+    </script>
     <Live2DWidget />
   </body>
 </html>

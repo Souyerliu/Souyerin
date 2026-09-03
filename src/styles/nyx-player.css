@@ -1,0 +1,17 @@
+/*
+ * NyxPlayer 的面板会通过 Portal 挂到 body。
+ * 这里给窄视口设置明确的宽度和高度边界，避免 50vw 让内容挤窄后把面板顶出视口。
+ */
+html body .nyx-player.panel {
+  width: min(25rem, calc(100vw - 4.5rem));
+  max-width: 25rem;
+  min-height: 0;
+  max-height: min(42rem, calc(100vh - 2rem));
+  max-height: min(42rem, calc(100dvh - 2rem));
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+html body .nyx-player .nyx-visualizer {
+  max-width: 100%;
+}
