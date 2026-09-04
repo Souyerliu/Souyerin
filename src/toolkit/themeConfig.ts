@@ -201,6 +201,14 @@ interface WidgetsConfig {
    * 最新评论服务端数据源（可选，用于 Widgets 最新评论拉取）。
    */
   recentCommentsServerURL?: string;
+
+  /**
+   * 当前站点在“主站/副站”中的身份，用于在“最新评论”列表中标注评论来源。
+   * - "main"：主站
+   * - "archive"：副站
+   * - 缺省按 "main" 处理
+   */
+  recentCommentsSiteRole?: "main" | "archive";
 }
 
 interface WalineClientConfig {

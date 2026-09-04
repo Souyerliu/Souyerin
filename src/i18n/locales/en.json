@@ -142,6 +142,8 @@
     "noRecentComments": "No comments yet. Start a conversation!",
     "recentCommentsLoadFailed": "Failed to load recent comments. Please try again later.",
     "commentAnonymous": "Anonymous",
+    "commentSiteMain": "Blog",
+    "commentSiteArchive": "Archive",
     "walineNotConfigured": "Waline server URL is not configured"
   },
   "pagination": {

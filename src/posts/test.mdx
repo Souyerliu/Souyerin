@@ -283,15 +283,29 @@ Quiz测试：
   </div>
 </div>
 
-代码块：
-<div className="code-compare">
+代码块（Tabs 切换）：
+<Tabs class="code-group" defaultValue="python">
+  <Tab label="Python" value="python">
 
-```python
-def add(a, b):
-    return a + b
-```
+  ```python
+  def add(a, b):
+      return a + b
 
-```r
-a <- 1
-```
-</div>
+  result = add(1, 2)
+  print(result)
+  ```
+
+  </Tab>
+  <Tab label="R" value="r">
+
+  ```r
+  add <- function(a, b) {
+    a + b
+  }
+
+  result <- add(1, 2)
+  print(result)
+  ```
+
+  </Tab>
+</Tabs>

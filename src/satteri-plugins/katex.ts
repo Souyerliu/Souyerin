@@ -1,8 +1,4 @@
-import {
-  defineMdastPlugin,
-  type MdastPluginDefinition,
-  type MdxJsxAttributeNode,
-} from "satteri";
+import { defineMdastPlugin, type MdastPluginDefinition, type MdxJsxAttributeNode } from "satteri";
 
 /**
  * katex（satteri 版）：

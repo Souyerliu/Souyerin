@@ -98,6 +98,7 @@ export const DEFAULT_THEME_CONFIG: ShokaXThemeConfig = {
     randomPosts: true,
     recentComments: true,
     recentCommentsLimit: 10,
+    recentCommentsSiteRole: "main",
   },
   diagnostics: {
     suppressFsWatcherMaxListenersWarning: true,

@@ -1,9 +1,50 @@
 ---
 title: CS61B CHAPTER 7
-date: 2026-08-07 14:19:20
-categories:
+date: 2026-09-03 14:19:20
+categories: [计算机科学, CS61B]
 tags:
-# cover:
+  - JAVA
+  - 数据结构
+# cover: ./61B-header.png
 draft: true
 ---
 
+> 又小鸽了一个多月，趁开学前再推一点进度……
+
+在[CS61A](https://souyerin.netlify.app/posts/computer-science/cs61a/cs61a-chapter-9/#%E7%BB%A7%E6%89%BFinheritance)中，我们已经初步了解了面向对象编程中的继承关系，这里我们将进一步深化理解这一概念。
+# 继承（Inheritance）
+我们先从一个简单的例子看起：假设我们有一个字符串列表（`SLList`类型），我们需要计算这个列表中最长的字符串元素，其方法实现如下：
+```java
+public static String longest(SLList<String> list) {
+    int maxDex = 0;
+    for (int i = 0; i < list.size(); i += 1) {
+        String longestString = list.get(maxDex);
+        String thisString = list.get(i);
+        if (thisString.length() > longestString.length()) {
+            maxDex = i;
+        }
+    }
+    return list.get(maxDex);
+}
+```
+现在我们尝试将这个方法套用到字符串数组（`AList`）上。一种直接的方法是利用方法重载（之前我们简单提到过Java的这一特性），复制这一方法，并修改参数类型即可：
+```java
+public static String longest(AList<String> list) {
+    //同上（使用的方法名称都一样）
+}
+```
+这样，在调用方法时，Java会自动根据调用对象的类型选择对应的方法。然而，这种重载的缺点也很明显：代码重复性高，不易维护。因此我们需要引入继承进行优化。
++ 在CS61A中，我们已经知道了超类与子类这两个概念，下面我们来介绍它们在Java中的实现。以`SLList`与`AList`为例，记它们共同的超类为`List61B`【在Java中，它也被称为一种接口（interface）】，那么我们可以对这个超类作如下定义：
+    ```java
+    public interface List61B<Item> { 
+        public void addFirst(Item x);//省略方法的具体实现，下同
+        public void add Last(Item y);
+        public Item getFirst();
+        public Item getLast();
+        public Item removeLast();
+        public Item get(int i);
+        public void insert(Item x, int position);
+        public int size();
+    }
+    ```
+    

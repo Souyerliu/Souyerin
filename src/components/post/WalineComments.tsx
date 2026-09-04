@@ -1,9 +1,5 @@
 import { onCleanup, onMount } from "solid-js";
-import {
-  init,
-  type WalineInitOptions,
-  type WalineInstance,
-} from "@waline/client";
+import { init, type WalineInitOptions, type WalineInstance } from "@waline/client";
 import "@waline/client/style";
 
 import { t } from "@/i18n";

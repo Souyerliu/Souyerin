@@ -7,6 +7,7 @@ interface WidgetsConfig {
   recentComments?: boolean;
   recentCommentsLimit?: number;
   recentCommentsServerURL?: string;
+  recentCommentsSiteRole?: "main" | "archive";
 }
 
 interface Props {
@@ -36,6 +37,7 @@ const {
       enableRecentComments={widgetsConfig.recentComments === true && commentsEnabled}
       recentCommentsLimit={widgetsConfig.recentCommentsLimit || 6}
       walineServerURL={walineServerURL || widgetsConfig.recentCommentsServerURL || ""}
+      recentCommentsSiteRole={widgetsConfig.recentCommentsSiteRole ?? "main"}
     />
   </div>
 </div>

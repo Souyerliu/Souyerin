@@ -7,14 +7,10 @@ export interface SiteUptimeOptions {
   prefixText?: string;
 }
 
-export default function siteUptime(
-  options: SiteUptimeOptions,
-): PluginManifest {
+export default function siteUptime(options: SiteUptimeOptions): PluginManifest {
   const createdDate = new Date(options.siteCreatedAt);
   if (Number.isNaN(createdDate.getTime())) {
-    throw new Error(
-      `[site-uptime] Invalid siteCreatedAt: "${options.siteCreatedAt}"`,
-    );
+    throw new Error(`[site-uptime] Invalid siteCreatedAt: "${options.siteCreatedAt}"`);
   }
 
   return definePlugin({

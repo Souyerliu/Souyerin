@@ -21,10 +21,7 @@ const PROJECT_ROOT = findProjectRoot();
 const POSTS_BASE = path.resolve(PROJECT_ROOT, "src/posts");
 
 function databasePath(): string {
-  return (
-    process.env.AI_SUMMARY_DB_PATH?.trim() ||
-    path.resolve(PROJECT_ROOT, ".hyacine/data.db")
-  );
+  return process.env.AI_SUMMARY_DB_PATH?.trim() || path.resolve(PROJECT_ROOT, ".hyacine/data.db");
 }
 
 /** 将文件路径转换为 Astro 内容集合使用的 ID。 */
@@ -109,11 +106,7 @@ function readDatabaseLastModified(postId: string, postTitle?: string): Date | nu
   }
 }
 
-export function getLastModified(
-  postId: string,
-  fallbackDate: Date,
-  postTitle?: string,
-): Date {
+export function getLastModified(postId: string, fallbackDate: Date, postTitle?: string): Date {
   return (
     readDatabaseLastModified(postId, postTitle) ||
     (() => {

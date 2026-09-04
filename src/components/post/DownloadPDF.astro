@@ -36,6 +36,7 @@ const { title } = Astro.props;
   import {
     buildPrintHTML,
     fetchAllStylesheets,
+    fitDisplayMath,
     inlineEssentialStyles,
     resolveImageUrls,
   } from "@/toolkit/generatePrintHTML";
@@ -107,25 +108,7 @@ const { title } = Astro.props;
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               if (!printWindow) return;
-              const body = printWindow.document.body;
-              const computedStyle = getComputedStyle(body);
-              const baseFont = Number.parseFloat(computedStyle.fontSize);
-              const maxWidth =
-                body.clientWidth -
-                (Number.parseFloat(computedStyle.paddingLeft) || 0) -
-                (Number.parseFloat(computedStyle.paddingRight) || 0);
-
-              printWindow.document
-                .querySelectorAll<HTMLElement>(".katex-display")
-                .forEach((element) => {
-                  const katex = element.querySelector<HTMLElement>(":scope > .katex");
-                  if (!katex) return;
-                  const realWidth = Math.max(katex.scrollWidth, katex.offsetWidth);
-                  if (realWidth <= maxWidth) return;
-                  const scale = Math.max(0.4, Math.min(1, (maxWidth / realWidth) * 0.9));
-                  element.style.fontSize = `${(scale * baseFont).toFixed(1)}px`;
-                  katex.style.fontSize = "inherit";
-                });
+              fitDisplayMath(printWindow.document);
             });
           });
 

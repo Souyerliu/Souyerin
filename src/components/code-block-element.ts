@@ -46,7 +46,7 @@ class CodeBlockElement extends ShadowSlotElement {
           </div>
         </div>
         <div class="content-container">
-          <div class="content-wrapper" style="font-family: 'Courier New', Courier, monospace;"><slot></slot></div>
+          <div class="content-wrapper" style="font-family: var(--font-code);"><slot></slot></div>
           <button class="collapse-btn" style="display:none;" aria-label="Expand code"></button>
         </div>
       </div>
@@ -272,7 +272,7 @@ const CODEBLOCK_CSS = `
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: var(--codeblock-shadow);
-    font-family: "Courier New", Courier, monospace;
+    font-family: var(--font-code);
   }
   .dark.codeblock { box-shadow: none; }
   .codeblock.in-group { margin: 0; border-radius: 0; box-shadow: none; }
@@ -336,7 +336,7 @@ const CODEBLOCK_CSS = `
     50% { transform: translateX(-50%) translateY(-6px); }
   }
   .content-wrapper {
-    font-family: "Courier New", Courier, monospace;
+    font-family: var(--font-code);
   }
   .fullscreen {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;

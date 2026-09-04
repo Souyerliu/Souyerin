@@ -1,9 +1,8 @@
 """Generate the checked-in WOFF2 subsets used by the Astro site.
 
-The subset is built from all text-bearing source files, so post content and
-runtime labels that are part of this repository remain renderable. Add a
-scripts/used-chars.txt file for characters supplied by an external data source,
-then run: python scripts/subset_fonts.py
+The subset combines all text-bearing source files with the shared dictionary
+used by the original Astro project. An optional scripts/used-chars.txt file
+can still provide characters from other external data sources.
 """
 
 from pathlib import Path
@@ -14,6 +13,13 @@ from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parents[1]
 FONTS_DIR = ROOT / "src" / "assets" / "fonts"
+SHARED_DICTIONARY_FILE = (
+    ROOT.parent
+    / "Souyersblog_astro"
+    / "astro-blog-shokax-main"
+    / "scripts"
+    / "dictionary.txt"
+)
 EXTRA_CHARS_FILE = Path(__file__).with_name("used-chars.txt")
 SOURCE_EXTENSIONS = {
     ".astro",
@@ -38,6 +44,12 @@ def add_text(chars: set[str], text: str) -> None:
 
 def collect_source_chars() -> set[str]:
     chars: set[str] = set(chr(codepoint) for codepoint in range(32, 127))
+
+    if not SHARED_DICTIONARY_FILE.is_file():
+        raise FileNotFoundError(
+            f"Shared font dictionary not found: {SHARED_DICTIONARY_FILE}"
+        )
+    add_text(chars, SHARED_DICTIONARY_FILE.read_text(encoding="utf-8"))
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in SOURCE_EXTENSIONS:
@@ -78,6 +90,7 @@ def subset_font(source_name: str, output_name: str, unicodes: list[int]) -> None
 def main() -> None:
     chars = collect_source_chars()
     unicodes = sorted(ord(char) for char in chars)
+    print(f"Using shared dictionary: {SHARED_DICTIONARY_FILE}")
     print(f"Keeping {len(unicodes)} unique characters")
     subset_font("LXGWWenKai-Regular.ttf", "LXGWWenKai-Regular-subset.woff2", unicodes)
     subset_font("MapleMono-CN-Regular.ttf", "MapleMono-CN-Regular-subset.woff2", unicodes)

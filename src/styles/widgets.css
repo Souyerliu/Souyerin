@@ -101,3 +101,31 @@
   text-align: center;
   font-size: 0.875rem;
 }
+
+/* 最新评论来源标签（主站 / 副站） */
+.post-list .item span.site-tag {
+  display: inline-block;
+  max-height: none;
+  margin-right: 0.4em;
+  padding: 0 0.35em;
+  border-radius: 0.3em;
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: 0.1em;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.post-list .item span.site-tag.site-tag-main {
+  color: var(--color-blue);
+  border: 1px solid color-mix(in oklch, var(--color-blue) 55%, transparent);
+  background-color: color-mix(in oklch, var(--color-blue) 14%, transparent);
+}
+
+.post-list .item span.site-tag.site-tag-archive {
+  color: var(--color-purple);
+  border: 1px solid color-mix(in oklch, var(--color-purple) 55%, transparent);
+  background-color: color-mix(in oklch, var(--color-purple) 14%, transparent);
+}

@@ -7,7 +7,7 @@
    ============================================================ */
 
 code-block pre * {
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-code);
   font-size: 0.925rem;
   line-height: 1.25rem;
   line-break: anywhere;

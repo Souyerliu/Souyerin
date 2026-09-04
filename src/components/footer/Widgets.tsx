@@ -18,6 +18,12 @@ interface RecentCommentItem {
   time: string;
   text: string;
   href: string;
+  /** 评论所属页面路径（来源判定的依据） */
+  path: string;
+}
+
+interface RecentCommentItemWithSite extends RecentCommentItem {
+  site: "main" | "archive";
 }
 
 interface WidgetsProps {
@@ -26,6 +32,13 @@ interface WidgetsProps {
   enableRecentComments?: boolean;
   recentCommentsLimit?: number;
   walineServerURL?: string;
+  /**
+   * 当前站点在“主站/副站”中的身份，用于标注“最新评论”的来源。
+   * - "main"：主站
+   * - "archive"：副站
+   * - 未配置时按 "main" 处理
+   */
+  recentCommentsSiteRole?: "main" | "archive";
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -103,6 +116,39 @@ function normalizePath(path: string): string {
   return path.endsWith("/") ? path : `${path}/`;
 }
 
+/** 解码路径（Waline 记录的是浏览器 location.pathname，可能为百分号编码） */
+function decodePath(input: string): string {
+  try {
+    return decodeURI(input);
+  } catch {
+    return input;
+  }
+}
+
+/** 本站全部文章的页面路径集合（评论只产生于 /posts/... 文章页） */
+function createOwnPostPaths(posts?: Post[]): Set<string> {
+  return new Set(
+    (posts ?? [])
+      .map((post) => decodePath(toPostHref(post.slug || post.id)))
+      .filter((path) => path.length > 0),
+  );
+}
+
+/**
+ * 判定评论来源（主站/副站）。
+ * 两站共用同一 Waline 库，评论只记录文章路径、不含域名；
+ * 不在本站文章路径集合里的评论即视为来自对站（两站文章路径基本互不重叠）。
+ */
+function resolveCommentSite(
+  path: string,
+  role: WidgetsProps["recentCommentsSiteRole"],
+  ownPaths: Set<string>,
+): "main" | "archive" {
+  const isOwn = ownPaths.has(decodePath(path));
+  const isMainSite = role !== "archive";
+  return isOwn === isMainSite ? "main" : "archive";
+}
+
 function mapRecentComment(comment: unknown): RecentCommentItem {
   const value = isRecord(comment) ? comment : {};
 
@@ -117,6 +163,7 @@ function mapRecentComment(comment: unknown): RecentCommentItem {
     time,
     text,
     href: id ? `${basePath}#waline-comment-${id}` : basePath,
+    path: basePath,
   };
 }
 
@@ -129,7 +176,8 @@ function truncateText(text: string, maxLength: number = 50): string {
 
 function Widgets(props: WidgetsProps) {
   const [randomPosts, setRandomPosts] = createSignal<Post[]>([]);
-  const [recentComments, setRecentComments] = createSignal<RecentCommentItem[]>([]);
+  const [recentComments, setRecentComments] =
+    createSignal<RecentCommentItemWithSite[]>([]);
   const [loadFailed, setLoadFailed] = createSignal(false);
 
   const hasWaline = () => Boolean(props.walineServerURL);
@@ -142,9 +190,10 @@ function Widgets(props: WidgetsProps) {
       setRandomPosts(shuffle([...props.posts!]).slice(0, 10));
     }
 
-    // 从 Waline 拉取近期评论
+    // 从 Waline 拉取近期评论（用本站文章路径集合判定每条评论的来源）
     if (props.enableRecentComments !== false && hasWaline()) {
       const walineServerURL = props.walineServerURL ?? "";
+      const ownPostPaths = createOwnPostPaths(props.posts);
       const loadRecentComments = async () => {
         const { RecentComments } = await import("@waline/client");
         try {
@@ -158,7 +207,19 @@ function Widgets(props: WidgetsProps) {
             isRecord(result.comments) && Array.isArray(result.comments.data)
               ? result.comments.data
               : [];
-          setRecentComments(data.map((comment) => mapRecentComment(comment)));
+          setRecentComments(
+            data.map((comment) => {
+              const item = mapRecentComment(comment);
+              return {
+                ...item,
+                site: resolveCommentSite(
+                  item.path,
+                  props.recentCommentsSiteRole,
+                  ownPostPaths,
+                ),
+              };
+            }),
+          );
         } catch {
           setLoadFailed(true);
           setRecentComments([]);
@@ -213,6 +274,11 @@ function Widgets(props: WidgetsProps) {
                       class="hover:text-color-link text-inherit no-underline flex flex-col transition-colors"
                     >
                       <span class="widget-title text-sm font-semibold m-0 max-h-6">
+                        <span class={`site-tag site-tag-${comment.site}`}>
+                          {comment.site === "main"
+                            ? t("footer.commentSiteMain")
+                            : t("footer.commentSiteArchive")}
+                        </span>
                         {comment.nick} @ {comment.time}
                       </span>
                       <span class="text-grey-5 text-xs mt-1 max-h-8">
