@@ -54,6 +54,14 @@ const markSingleOrMulti = (quizItem: QuizItem) => {
   revealAnswer(quizItem);
 };
 
+const clearSingleOrMultiMarks = (quizItem: QuizItem) => {
+  const options = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-options > .quiz-option");
+  options.forEach((option) => {
+    option.classList.remove("right", "wrong");
+    option.querySelector<HTMLSpanElement>(":scope > .quiz-result-icon")?.remove();
+  });
+};
+
 const bindQuizItem = (quizItem: QuizItem) => {
   if (quizItem.dataset[QUIZ_DATA_BOUND_KEY] === "true") {
     return;
@@ -90,7 +98,11 @@ const bindQuizItem = (quizItem: QuizItem) => {
         if (willShow) {
           const gaps = quizItem.querySelectorAll<HTMLElement>(":scope .quiz-gap");
           gaps.forEach((gap) => {
-            gap.textContent = gap.dataset.answer || "";
+            // 数学公式已经由 satteri/KaTeX 在服务端渲染，不能用 textContent 覆盖它。
+            // 仅在占位符没有内容时回退到 data-answer，兼容纯客户端生成的题目。
+            if (!gap.querySelector(".katex") && !gap.textContent?.trim()) {
+              gap.textContent = gap.dataset.answer || "";
+            }
           });
         }
       });
@@ -133,6 +145,9 @@ const bindQuizItem = (quizItem: QuizItem) => {
     actionButton?.addEventListener("click", () => {
       const willShow = !quizItem.classList.contains("show");
       quizItem.classList.toggle("show", willShow);
+      if (!willShow) {
+        clearSingleOrMultiMarks(quizItem);
+      }
       actionButton.textContent = willShow ? "隐藏答案" : "显示答案";
     });
   }
@@ -159,6 +174,7 @@ const bindQuizItem = (quizItem: QuizItem) => {
       const shouldHide = quizItem.classList.contains("show");
       if (shouldHide) {
         quizItem.classList.remove("show");
+        clearSingleOrMultiMarks(quizItem);
         actionButton.textContent = "查看答案";
         return;
       }

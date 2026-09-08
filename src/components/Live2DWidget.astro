@@ -1,9 +1,13 @@
 ---
-const cdnBase = "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist";
+const cdnBases = [
+  "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist",
+  "https://cdn.jsdelivr.net/npm/live2d-widgets@1.0.1/dist",
+  "https://unpkg.com/live2d-widgets@1.0.1/dist",
+];
 const widgetConfig = {
   waifuPath: "/live2d-models/waifu-tips.json",
   cdnPath: "/live2d-models/",
-  cubism2Path: `${cdnBase}/live2d.min.js`,
+  cubism2Path: `${cdnBases[0]}/live2d.min.js`,
   cubism5Path: "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js",
   modelId: 1,
   drag: true,
@@ -20,9 +24,10 @@ const widgetConfig = {
 };
 
 const initScript = `{
-  const base = ${JSON.stringify(cdnBase)};
+  const bases = ${JSON.stringify(cdnBases)};
   const config = ${JSON.stringify(widgetConfig)};
   const stateKey = "__souyerLive2dState";
+  const hostId = "live2d-persist-host";
 
   const getRightOffset = () => {
     const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -51,68 +56,254 @@ const initScript = `{
     }
   };
 
+  // 把看板娘放进 transition:persist 宿主：Astro ClientRouter 换页时会整棵搬移
+  // 该元素，避免 #waifu 被新页面覆盖销毁（原问题：切文章后 live2d 消失，
+  // 且旧实例定时器对已删除节点写 innerHTML 抛 TypeError）。
+  const moveIntoHost = () => {
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    for (const id of ["waifu", "waifu-toggle"]) {
+      const el = document.getElementById(id);
+      if (el && el.parentElement !== host) host.append(el);
+    }
+  };
+
+  const ensureLayout = () => {
+    moveIntoHost();
+    positionWidget();
+  };
+
+  // 欢迎气泡：waifu-tips.js 只在 initWidget 首次挂载时弹一次"欢迎阅读「标题」"。
+  // ClientRouter 切页时看板娘被 persist 保留、不会重新 initWidget，因此这里在每次
+  // 切页后按当前角色（characterTips）的 welcome 模板 + document.title 复刻一次气泡，
+  // 沿用库的优先级(11)/7s 自动隐藏规则，效果与整页加载一致。
+  const resolvedModelId = () => {
+    const stored = Number.parseInt(localStorage.getItem("modelId") || "", 10);
+    return Number.isNaN(stored) ? config.modelId : stored;
+  };
+
+  let tipsRequest = null;
+  const loadTips = () => {
+    if (!tipsRequest) {
+      tipsRequest = fetch(config.waifuPath)
+        .then((res) => {
+          if (!res.ok) throw new Error("waifu-tips.json HTTP " + res.status);
+          return res.json();
+        })
+        .catch((err) => {
+          tipsRequest = null;
+          throw err;
+        });
+    }
+    return tipsRequest;
+  };
+
+  // 欢迎气泡显示时长（含上升动画约 3s + 足够阅读时间）
+  const WELCOME_MS = 12000;
+
+  const showWelcome = async () => {
+    const state = window[stateKey] || {};
+    if (location.pathname === "/") return;
+    // 挂载瞬间(<1s)忽略，避免与库自身的初始欢迎语抢跑
+    if (Date.now() - (state.mountedAt || 0) < 1000) return;
+    const waifu = document.getElementById("waifu");
+    const tipsEl = document.getElementById("waifu-tips");
+    if (!waifu || !tipsEl || getComputedStyle(waifu).display === "none") return;
+
+    let tips;
+    try {
+      tips = await loadTips();
+    } catch {
+      return; // 取不到文案就不打扰
+    }
+
+    const charId = String(resolvedModelId());
+    const charTips = tips.characterTips?.[charId];
+    const welcome =
+      charTips?.message?.welcome || tips.message?.welcome;
+    if (!welcome) return;
+
+    // 与库一致：i(text, 7e3, 11) —— 优先级 11 最高，可压过悬停/点击气泡
+    const storedPrio = Number.parseInt(
+      sessionStorage.getItem("waifu-message-priority") || "",
+      10,
+    );
+    if (!Number.isNaN(storedPrio) && storedPrio > 11) return;
+
+    // 占位符替换：split/join 避免在模板字面量里书写正则转义
+    const text = welcome.split("$1").join(document.title);
+
+    const clearWelcome = () => {
+      if (state.welcomeGuard) {
+        clearInterval(state.welcomeGuard);
+        state.welcomeGuard = null;
+      }
+      sessionStorage.removeItem("waifu-message-priority");
+      tipsEl.classList.remove("waifu-tips-active");
+    };
+
+    if (state.welcomeGuard) clearWelcome();
+    const deadline = Date.now() + WELCOME_MS;
+    sessionStorage.setItem("waifu-message-priority", "11");
+    tipsEl.innerHTML = text;
+    tipsEl.classList.add("waifu-tips-active");
+
+    // 续期守卫：waifu-tips.js 内部有自己的消息 timer（如首次挂载的欢迎语），
+    // 到期时会无差别移除 .waifu-tips-active，可能把我们的气泡提前关掉。
+    // 这里在到期前每 200ms 检查一次：class 被库偷删就立刻补回（淡出 <0.2 不可见）；
+    // 期间若用户主动退出/隐藏看板娘则停止守卫。
+    state.welcomeGuard = setInterval(() => {
+      if (Date.now() >= deadline) {
+        clearWelcome();
+        return;
+      }
+      if (
+        !document.getElementById("waifu") ||
+        waifu.classList.contains("waifu-hidden") ||
+        getComputedStyle(waifu).display === "none"
+      ) {
+        clearWelcome();
+        return;
+      }
+      if (!tipsEl.classList.contains("waifu-tips-active")) {
+        sessionStorage.setItem("waifu-message-priority", "11");
+        tipsEl.classList.add("waifu-tips-active");
+      }
+    }, 200);
+  };
+
+  // 入场上升动画复刻：库只在 initWidget 末尾加一次 .waifu-active，让 #waifu 靠
+  // waifu.css 的 bottom:-500px → 0（transition 3s）从屏下缓缓升起。
+  // SPA 切页时看板娘被 persist 保留、不会重新 initWidget，动画因此不再播放；
+  // 这里在每次切页时把元素瞬移到屏下再补回 .waifu-active，重放一次上升效果。
+  const replayRise = () => {
+    const widget = document.getElementById("waifu");
+    if (!widget) return;
+    // 用户已退出/隐藏看板娘（.waifu-hidden 或内联 none）时不强弹
+    if (widget.classList.contains("waifu-hidden")) return;
+    if (getComputedStyle(widget).display === "none") return;
+    if (window.innerWidth < 1024) return;
+
+    widget.style.transition = "none";
+    widget.classList.remove("waifu-active");
+    widget.style.bottom = "-500px";
+    void widget.offsetWidth; // 强制回流，先瞬时落到屏下
+    widget.style.transition = "";
+    widget.style.bottom = "";
+    widget.classList.add("waifu-active"); // 触发 bottom 3s 过渡：从屏下升起
+  };
+
+  const mount = () => {
+    const state = window[stateKey] || {};
+    if (typeof window.initWidget !== "function") return false;
+    // Cubism2 运行时与 waifu-tips 取自同一成功的 CDN
+    config.cubism2Path = state.loadedBase + "/live2d.min.js";
+    window.initWidget(config);
+    state.mountedAt = Date.now();
+    ensureLayout();
+    return true;
+  };
+
+  // 注：waifu.css 已由项目静态引入（src/styles/live2d-widget.css，见 Layout.astro），
+  // 随页面全局 CSS 加载并在 ClientRouter 换页时随 <head> 同 href 保留，无需再动态注入。
+  const loadRuntime = (attempt) => {
+    const state = window[stateKey];
+    const base = bases[attempt];
+    if (!base) {
+      state.failed = true;
+      console.warn("[Live2D] all CDN sources failed to load");
+      return;
+    }
+    state.loadedBase = base;
+
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = base + "/waifu-tips.js";
+    script.addEventListener(
+      "load",
+      () => {
+        state.loadedBase = base;
+        mount();
+      },
+      { once: true },
+    );
+    script.addEventListener(
+      "error",
+      () => {
+        script.remove();
+        loadRuntime(attempt + 1);
+      },
+      { once: true },
+    );
+    document.head.appendChild(script);
+  };
+
   const initialize = () => {
-    if (window[stateKey]?.initialized) {
-      positionWidget();
+    const state = (window[stateKey] = window[stateKey] || {});
+
+    // ClientRouter 换页时新文档里的本脚本会再次执行：
+    // 若已初始化且 #waifu 仍在（persist 宿主搬移成功），只纠正位置即可。
+    if (state.initialized && document.getElementById("waifu")) {
+      ensureLayout();
       return;
     }
 
+    // 全新加载，或换页后 DOM 意外丢失（persist 不可用等兜底）→ 重新初始化
     localStorage.removeItem("waifu-disabled");
     localStorage.removeItem("waifu-display");
     for (const id of ["waifu", "waifu-toggle"]) {
       document.getElementById(id)?.remove();
     }
 
-    const state = (window[stateKey] = window[stateKey] || {});
     state.initialized = true;
+    state.failed = false;
+    state.loadedBase = bases[0];
 
-    const observer = new MutationObserver(() => {
-      if (document.getElementById("waifu")) positionWidget();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    if (!state.bound) {
+      state.bound = true;
+      const observer = new MutationObserver(() => {
+        if (document.getElementById("waifu") || document.getElementById("waifu-toggle")) {
+          ensureLayout();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
 
-    let resizeTimer;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(positionWidget, 100);
-    });
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(positionWidget, 100);
+      });
 
-    const run = () => {
-      if (typeof window.initWidget === "function") {
-        window.initWidget(config);
-        positionWidget();
-      }
-    };
+      document.addEventListener("astro:page-load", ensureLayout);
+      document.addEventListener("astro:after-swap", ensureLayout);
 
+      // 欢迎气泡/上升动画复刻：不依赖 Astro 事件时序，改为轮询 document.title ——
+      // SPA 切页必然换标题，标题变化时补弹一次欢迎气泡并重放看板娘上升入场动画
+      // （持久化后 initWidget 不会重新执行，库自带的欢迎语/入场动画只出现在首次挂载）。
+      state.lastWelcomeTitle = document.title;
+      window.setInterval(() => {
+        if (!state.initialized || !document.getElementById("waifu")) return;
+        const title = document.title;
+        if (state.lastWelcomeTitle !== title) {
+          state.lastWelcomeTitle = title;
+          if (location.pathname !== "/") {
+            replayRise();
+            showWelcome();
+          }
+        }
+      }, 500);
+    }
+
+    // 运行时已在本窗口加载过（脚本按 URL 缓存），直接挂载即可
     if (typeof window.initWidget === "function") {
-      run();
+      mount();
       return;
     }
 
-    if (!document.querySelector('link[data-souyer-live2d="styles"]')) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = base + "/waifu.css";
-      link.dataset.souyerLive2d = "styles";
-      document.head.appendChild(link);
-    }
-
-    const existingScript = document.querySelector('script[data-souyer-live2d="runtime"]');
-    if (existingScript) {
-      existingScript.addEventListener("load", run, { once: true });
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = base + "/waifu-tips.js";
-    script.dataset.souyerLive2d = "runtime";
-    script.addEventListener("load", run, { once: true });
-    document.head.appendChild(script);
+    loadRuntime(0);
   };
 
   initialize();
-  document.addEventListener("astro:page-load", positionWidget);
 }`;
 ---
 

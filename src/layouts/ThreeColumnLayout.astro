@@ -1,7 +1,6 @@
 ---
 import "@/styles/layout-common.css";
 import "@/styles/layout-three-column.css";
-import type { CollectionEntry } from "astro:content";
 import type { NavItemType } from "@/components/navbar/NavTypes";
 import type { WidgetPost } from "@/toolkit/posts/createWidgetPosts";
 import type {
@@ -20,6 +19,24 @@ interface WidgetsConfig {
   recentComments?: boolean;
   recentCommentsLimit?: number;
   recentCommentsServerURL?: string;
+}
+
+/** 右栏"随机文章"数据：只有 id/标题/摘要，绝不含整篇 body（防序列化膨胀） */
+interface RightSidebarPostSummary {
+  id: string;
+  data: {
+    title: string;
+    description?: string;
+  };
+}
+
+/** 右栏"最新说说"数据：只需首条的纯文本摘要与日期 */
+interface RightSidebarMomentSummary {
+  id: string;
+  data: {
+    date: Date;
+  };
+  body?: string;
 }
 
 interface Props {
@@ -44,8 +61,8 @@ interface Props {
     tagCloud?: boolean;
     announcement?: boolean;
   };
-  rightSidebarPosts?: CollectionEntry<"posts">[];
-  rightSidebarMoments?: CollectionEntry<"moments">[];
+  rightSidebarPosts?: RightSidebarPostSummary[];
+  rightSidebarMoments?: RightSidebarMomentSummary[];
   rightSidebarTagCloud?: Array<{
     name: string;
     count: number;

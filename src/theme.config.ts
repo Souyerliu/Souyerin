@@ -180,6 +180,22 @@ export default defineConfig({
         avatar: "https://web.stanford.edu/favicon.ico",
         color: "#79e16f",
       },
+      {
+        url: "https://souyerliu.github.io/Flowchart-to-Tikz/",
+        title: "流程图绘制工具",
+        author: "Souyer",
+        desc: "流程图绘制 & 转 LaTeX Tikz 代码工具",
+        avatar: "https://souyerliu.github.io/Flowchart-to-Tikz/favicon.svg",
+        color: "#2563EB",
+      },
+      {
+        url: "https://souyerliu.github.io/Pesudocode-editor/",
+        title: "伪代码编写工具",
+        author: "Souyer",
+        desc: "Latex algorithm 伪代码编写工具",
+        avatar: "https://souyerliu.github.io/Pesudocode-editor/favicon.svg",
+        color: "#336EE7",
+      },
     ],
   },
   copyright: {

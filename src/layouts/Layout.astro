@@ -31,6 +31,7 @@ import "@/styles/header-cover.css";
 import "@/styles/code-block-light.css";
 import "@/styles/mdx-components.css";
 import "@/styles/nyx-player.css";
+import "@/styles/live2d-widget.css";
 
 import Loading from "@/components/Loading.astro";
 import {
@@ -43,6 +44,7 @@ import TwoColumnLayout from "@/layouts/TwoColumnLayout.astro";
 import ThreeColumnLayout from "@/layouts/ThreeColumnLayout.astro";
 import { generateTagCloud } from "@/toolkit/posts/generateTagCloud";
 import { createWidgetPosts } from "@/toolkit/posts/createWidgetPosts";
+import { resolveExcerpt } from "@/toolkit/posts/excerpt";
 import { toTagHref } from "@/toolkit/posts/url";
 import { resolveHeaderCovers } from "@/toolkit/headerCover";
 import Footer from "@/components/footer/Footer.astro";
@@ -117,14 +119,39 @@ const resolvedHeaderCover = pageCover ?? fixedCover;
 // Get all posts for widgets
 const allPosts = await getCollection("posts");
 const posts = allPosts.filter((post) => !post.data.draft);
-const moments = shouldComputeRightSidebarRecentMoments
+
+// 右栏卡片的随机文章/最新说说仅做轻量展示。
+// 曾经直接把 CollectionEntry（含整篇 MDX body）序列化进 client island props，
+// 单篇文章 HTML 因此膨胀到 >1MB，拖慢首屏与客户端切文。这里只给摘要文本。
+const SIDEBAR_EXCERPT_LENGTH = 64;
+const toPlainSnippet = (input: string | undefined, maxLength = 120): string =>
+  (input || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().slice(0, maxLength);
+
+const latestMoments = shouldComputeRightSidebarRecentMoments
   ? (await getCollection("moments")).toSorted(
       (a, b) =>
         new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
     )
   : [];
 const rightSidebarPosts = shouldComputeRightSidebarRandomPosts
-  ? posts.filter((post) => !post.data.encrypted)
+  ? posts
+      .filter((post) => !post.data.encrypted)
+      .map((post) => ({
+        id: post.id,
+        data: {
+          title: post.data.title,
+          description:
+            post.data.description ??
+            resolveExcerpt(post, { length: SIDEBAR_EXCERPT_LENGTH }),
+        },
+      }))
+  : [];
+const rightSidebarMoments = shouldComputeRightSidebarRecentMoments
+  ? latestMoments.slice(0, 1).map((moment) => ({
+      id: moment.id,
+      data: { date: moment.data.date },
+      body: toPlainSnippet(moment.body, 120),
+    }))
   : [];
 const rightSidebarTagCloud = shouldComputeRightSidebarTagCloud
   ? (() => {
@@ -189,6 +216,8 @@ import Live2DWidget from "@/components/Live2DWidget.astro";
     <meta name="viewport" content="width=device-width" />
     <ClientRouter />
     <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://unpkg.com" />
     <link rel="dns-prefetch" href="https://cubism.live2d.com" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
@@ -239,7 +268,7 @@ import Live2DWidget from "@/components/Live2DWidget.astro";
           sidebarConfig={sidebarConfig}
           rightSidebarConfig={rightSidebarConfig}
           rightSidebarPosts={rightSidebarPosts}
-          rightSidebarMoments={moments}
+          rightSidebarMoments={rightSidebarMoments}
           rightSidebarTagCloud={rightSidebarTagCloud}
           navLinks={navLinks}
           toc={toc}
@@ -285,6 +314,9 @@ import Live2DWidget from "@/components/Live2DWidget.astro";
       });
       document.addEventListener("astro:after-swap", moveNyxPlayerPortalsIntoPersistentHost);
     </script>
+    <!-- live2d 挂载宿主：Astro ClientRouter 切页时会整体搬移 transition:persist 元素，
+         让 #waifu 及其画布在 SPA 切换间不销毁，避免“切文章后看板娘消失/报错”。 -->
+    <div id="live2d-persist-host" transition:persist="live2d" aria-hidden="true"></div>
     <Live2DWidget />
   </body>
 </html>
