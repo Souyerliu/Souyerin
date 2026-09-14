@@ -5,8 +5,7 @@ categories: [计算机科学, CS61B]
 tags:
   - JAVA
   - 数据结构
-# cover: ./61B-header.png
-draft: true
+cover: ./61B-header.png
 ---
 
 > 又小鸽了一个多月，趁开学前再推一点进度……
@@ -94,7 +93,7 @@ public static String longest(AList<String> list) {
     3. 集合（Set）
     4. 映射（Map）
 
-    而上述ADT在java中又是一个更通用的接口的实现，这个接口就是`Collections`。使用ADT可以让我们我们能够更加高效且优雅地进行面向对象编程。
+    而上述ADT（除了映射）在java中又是一个更通用的接口的实现，这个接口就是`Collections`。使用ADT可以让我们我们能够更加高效且优雅地进行面向对象编程。
 + 下面我们详细介绍一下Java中的集合类型`Set`。作为接口，其有若干实现子类，如`HashSet`等。其使用示例如下：
     ```java
     import java.util.Set;
@@ -110,7 +109,7 @@ public static String longest(AList<String> list) {
     + 接下来我们尝试自己实现这一数据类型。具体而言，我们会基于数组实现集合（称为`ArraySet`），初版代码如下：
         ```java
         public class ArraySet<T> {
-            private t[] items;
+            private T[] items;
             private int size;
             public ArraySet() {
                 items = (T[]) new Object[100];
@@ -362,3 +361,211 @@ public boolean equals(Object o) {
     1. `equals()`必须是等价关系，即满足自反性、对称性与传递性；
     2. `equals()`方法必须接受一个对象参数以覆盖原始方法；
     3. 任何对象都不可能与`null`相等，即`x.equals(null)`一定为`False`。
+
+## 多态性与比较器
+在Python中，我们对复杂对象进行比较/排序时，可以使用函数传递（Function Passing）。比如：
+```python
+class Dog:
+    def __init__(self, name, size):
+        self.name = name
+        self.size = size
+
+def name_len(dog): # 注意这个函数定义在Dog类之外
+    return len(dog.name)
+
+def get_the_max(x, key):
+    max_value = x[0]
+    for item in x:
+        if key(item) > key(max_value):
+            max_value = item
+    return max_value
+
+max_dog = get_the_max(doglist, name_len) # 假设doglist已定义
+```
+这里`name_len`函数就作为参数传递到`get_the_max`。当然还有另一种比较的方法：运算符重载（operator overloading）。其示例如下：
+```python
+class Dog:
+   def __init__(self, name, size):
+       self.name = name
+       self.size = size
+  
+   def __gt__(self, other):
+       return self.size > other.size
+
+def get_the_max(x):
+   max_value = x[0]
+   for item in x:
+       if item > max_value:
+           max_value = item
+   return max_value
+
+max_dog = get_the_max(doglist)
+```
+实际上，运算符`>`（可以看作一个接口）可以被任意对象的`__gt__`方法覆盖。我们称这种性质为多态性（polymorphism）。【多态性的定义（来自百度百科）：为不同数据类型的实体提供统一接口，使相同操作在不同对象上引发差异化行为】
++ 接下来我们继续在Java中研究这种多态性。考虑下述代码：
+    ```java
+    List<Dog> dogs = new ArrayList<>();
+    dogs.add(new Dog("Uika", 200));
+    dogs.add(new Dog("Miyako", 5));
+    dogs.add(new Dog("Blues", 9000));
+    Dog maxDog = Collections.max(dogs);
+    ```
+    这段代码的问题在于Java无法直接比较两个`Dog`对象，所以会报错。在Java中，我们无法使用运算符重载，但我们可以采用继承方法实现。具体而言，我们需要对下述接口进行实现：
+    ```java
+    public interface Comparable<T> {
+        int compareTo(T o);
+    }
+    ```
+    这是Java的内置接口，其中`compareTo`函数会在大于、等于和小于情况下分别返回正值、零和负值。和上述实现方法类似，我们使用`implements`和`@Override`进行覆写：
+    ```java
+    public class Dog implements Comparable<Dog> {
+        ...
+        @Override
+        public int compareTo(Dog uddaDog) {
+            if (size > uddaDog.size) {
+                return 1;
+            }
+            if (size < uddaDog.size) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+    ```
+    当然，我们也可以将这个方法简化如下：
+    ```java   
+    public class Dog implements Comparable<Dog> {
+        ...
+        @Override
+        public int compareTo(Dog uddaDog) {
+            return this.size - uddaDog.size;
+        }
+    }
+    ```
+    事实上，这种类型的多态性也被称为子类多态性（subtype polymorphism），因为它的多态是由子类型（如上面的`Dog`）实现的。
++ 当然，在Java中同样可以实现类似Python函数传递的方法，同样用接口实现。具体而言，我们基于下述接口（同样是Java内置接口）：
+    ```java
+    public interface Comparator<T> {
+        int compare(T o1, T o2);
+    }
+    ```
+    定义一个比较器实现（沿用上述`Dog`对象，以`name`为比较指标）：
+    ```java
+    public static class NameComparator implements Comparator<Dog> {
+        @Override
+        public int compare(Dog a, Dog b) {
+            return a.name.compareTo(b.name);
+        }
+    }
+    ```
+    然后我们就能在比较函数（如`max`）中使用这个比较器：
+    ```java
+    List<Dog> dogs = new ArrayList<>();
+    dogs.add(new Dog("Leo", 200));
+    dogs.add(new Dog("Coco", 5));
+    dogs.add(new Dog("Roscoe", 9000));
+    Dog maxNameDog = Collections.max(dogs, new Dog.NameComparator());
+    ```
+    当然，这种代码形式不太美观（需要在`max`函数里实例化一个对象），我们实际上可以将实例化对象放进类本身中：
+    ```java
+    public class Dog {
+        ...
+        public static final Comparator<Dog> NAME_COMPARATOR = new NameComparator();
+    }
+    ```
+    然后我们就能直接用下面这句代码替换上面的最后一行：
+    ```java
+    Dog maxNameDog = Collections.max(dogs, Dog.NAME_COMPARATOR);
+    ```
+    <Note type="primary" title="补充">
+    当然这种比较器还可以用类似Python的Lambda表达式形式表示：
+    ```java
+    List<Dog> dogs = new ArrayList<>();
+    dogs.add(new Dog("Grigometh", 200));
+    dogs.add(new Dog("Pelusa", 5));
+    dogs.add(new Dog("Clifford", 9000));
+    Comparator<Dog> dc = (a, b) -> a.name.compareTo(b.name);
+    Dog maxNameDog = Collections.max(dogs, dc);
+    ```
+    不过具体细节不在这里展开。
+    </Note>
++ 使用`Comparable`与`Comparator`之间最大的区别在于：对于每一个类而言前者是唯一的，而后者可以构建多个（灵活性更强）。
+## 泛化函数（Generic Functions）
+在上述代码中，我们使用了`Collections.max()`这一函数。实际上，它的参数可以是任意类型，我们称这类函数为通用函数。下面我们就来尝试自己构建泛化函数。
++ 以下面这个随机采样函数为例：
+    ```java
+    public class RandomPickerDemo {
+        public static void main(String[] args) {
+            String[] x = {"hi", "little", "cat"};
+            System.out.println(RandomPicker.pickRandom(x)); //pickRandom函数的具体实现待定
+        }
+    }
+    ```
+    我们希望将这个`pickRandom`函数适用于任意数据类型的数组。一种直接的想法是使用泛化类型：
+    ```java
+    public class RandomPicker {
+        public static <T> T pickRandom(T[] items) {
+            Random random = new Random();
+            int randomIndex = random.nextInt(x.length);
+            return x[randomIndex];
+        }
+    }
+    ```
+    但是这会产生一个问题：由于函数需要`T`的具体类型，因此只能先实例化`RandomPicker`对象后再调用函数：
+    ```java
+    String[] x = {"hi", "little", "cat"};
+    RandomPicker<String> stringPicker = new RandomPicker<>();
+    System.out.println(stringPicker.pickRandom(x));
+    ```
+    同时还需要将上述`pickRandom`改为非静态函数。总体而言比较麻烦。  
+    下面给出真正的泛化（静态）函数形式：
+    ```java
+    public class RandomPicker {
+        public static <T> T pickRandom(T[] x) {
+            Random random = new Random();
+            int randomIndex = random.nextInt(x.length);
+            return x[randomIndex];
+        }
+    }
+    ```
+    其中声明行的三个`T`含义分别为：
+    + `<T>`：函数适用于任意数据类型数组；
+    + `T`：函数返回类型为`T`；
+    + `T[] x`：参数数组类型为`T`
+
+    后两个`T`都是对第一个`T`的引用。这种方案可以不需要实例化对象就能调用`pickRandom`函数。在调用时，不需要显式声明数组类型，函数会自动推断出数据类型。
+    > 注意：上述`pickRandom`函数只能处理引用数据类型，而不能处理原始数据类型（如`int[]`，`string[]`等）。~这是Java语言本身的缺陷~
++ 类似地，我们也可以写出`max`函数的泛化版本：
+    ```java
+    public class Maximizer {
+        public static <T> T max(T[] items) {
+            T maxItem = items[0];
+            for (int i = 0; i < items.length; i += 1) {
+                int cmp = items[i].compareTo(maxItem);
+                if (cmp > 0) {
+                    maxItem = items[i];
+                }
+            }
+            return maxItem;
+        }
+    }
+    ```
+    当然，因为其中使用了`compareTo`函数，因此需要从`Comparable`接口进行继承：
+    ```java
+    public class Maximizer {
+        public static <T extends Comparable<T>> T max(T[] items) {
+            //同上
+        }
+    }
+    ```
+    因此传入的数组类型`T`必须为可比较类型，否则会导致编译错误。
+    <Note type="primary" title="补充">
+    Java中实际使用的`Maximizer`类似下述形式（可参见[官方文档](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#max-java.util.Collection-java.util.Comparator-)）：
+    ```java
+    public class Maximizer {
+        public static <T extends Comparable<? super T>> T max(T[] items) {
+                ...
+        }
+    }
+    ```
+    </Note>

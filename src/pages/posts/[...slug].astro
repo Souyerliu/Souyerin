@@ -23,6 +23,10 @@ import { wrapCodeGroups } from "@/toolkit/wrapCodeGroups";
 import { wrapExternalLinks } from "@/toolkit/wrapExternalLinks";
 import { normalizeRenderedMath } from "@/toolkit/normalizeRenderedMath";
 import { getLastModified } from "@/toolkit/posts/getLastModified";
+import {
+  haveSameCategories,
+  selectSurroundingPosts,
+} from "@/toolkit/posts/selectSurroundingPosts";
 
 import "@/styles/post.css";
 
@@ -76,6 +80,18 @@ export async function getStaticPaths() {
           );
 
           relatedCollectionPosts = [...relatedCollectionPosts, ...newPosts];
+        }
+
+        const sameSeriesPosts = sortedPosts.filter((candidate) =>
+          haveSameCategories(candidate.data.categories || [], categories),
+        );
+
+        if (sameSeriesPosts.length > MAX_RELATED) {
+          relatedCollectionPosts = selectSurroundingPosts(
+            sameSeriesPosts,
+            post.id,
+            MAX_RELATED,
+          );
         }
       }
 

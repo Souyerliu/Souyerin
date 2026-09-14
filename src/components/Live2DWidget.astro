@@ -101,6 +101,16 @@ const initScript = `{
   // 欢迎气泡显示时长（含上升动画约 3s + 足够阅读时间）
   const WELCOME_MS = 12000;
 
+  // 结束我们自己弹出的欢迎气泡（含续期守卫）。仅在守卫存在时清理，避免误伤
+  // waifu-tips 库自带的其它气泡（例如切回标签页时的"哇，你终于回来了～"）。
+  const dismissWelcome = (state) => {
+    if (!state?.welcomeGuard) return;
+    clearInterval(state.welcomeGuard);
+    state.welcomeGuard = null;
+    sessionStorage.removeItem("waifu-message-priority");
+    document.getElementById("waifu-tips")?.classList.remove("waifu-tips-active");
+  };
+
   const showWelcome = async () => {
     const state = window[stateKey] || {};
     if (location.pathname === "/") return;
@@ -133,14 +143,7 @@ const initScript = `{
     // 占位符替换：split/join 避免在模板字面量里书写正则转义
     const text = welcome.split("$1").join(document.title);
 
-    const clearWelcome = () => {
-      if (state.welcomeGuard) {
-        clearInterval(state.welcomeGuard);
-        state.welcomeGuard = null;
-      }
-      sessionStorage.removeItem("waifu-message-priority");
-      tipsEl.classList.remove("waifu-tips-active");
-    };
+    const clearWelcome = () => dismissWelcome(state);
 
     if (state.welcomeGuard) clearWelcome();
     const deadline = Date.now() + WELCOME_MS;
@@ -277,15 +280,23 @@ const initScript = `{
       document.addEventListener("astro:page-load", ensureLayout);
       document.addEventListener("astro:after-swap", ensureLayout);
 
-      // 欢迎气泡/上升动画复刻：不依赖 Astro 事件时序，改为轮询 document.title ——
-      // SPA 切页必然换标题，标题变化时补弹一次欢迎气泡并重放看板娘上升入场动画
+      // 欢迎气泡/上升动画复刻：轮询 location.pathname（含 query），路径变了才视为切页 ——
+      // SPA 切页必然换路径，换路径时补弹一次欢迎气泡并重放看板娘上升入场动画
       // （持久化后 initWidget 不会重新执行，库自带的欢迎语/入场动画只出现在首次挂载）。
-      state.lastWelcomeTitle = document.title;
+      // 不能监听 document.title：@hyacine/plugin-visibility-title 在切回标签页时会把
+      // 标题临时改成 returnTitle（如"祝你幸福。"）约 3s 后再还原；若按标题变化判断切页，
+      // 每次返回文章页都会误弹"欢迎阅读「祝你幸福。」…"并反复触发上升动画（多次上移）。
+      // 路径没变就保持安静，让库自带的 visibilitychange 文案（与首页一致）正常出现。
+      state.lastWelcomePath = location.pathname + location.search;
+      document.addEventListener("visibilitychange", () => {
+        // 离开页面时撤掉残留的自定义气泡与守卫，切回标签页交给库的欢迎语处理
+        if (document.hidden) dismissWelcome(state);
+      });
       window.setInterval(() => {
         if (!state.initialized || !document.getElementById("waifu")) return;
-        const title = document.title;
-        if (state.lastWelcomeTitle !== title) {
-          state.lastWelcomeTitle = title;
+        const path = location.pathname + location.search;
+        if (state.lastWelcomePath !== path) {
+          state.lastWelcomePath = path;
           if (location.pathname !== "/") {
             replayRise();
             showWelcome();
