@@ -44,7 +44,7 @@ export default defineConfig({
     author: "Souyer",
     description: "日日进化中！",
     social: {
-      github: { url: "https://github.com/Souyerliu", icon: "i-ri-github-fill" },
+      github: { url: "https://github.com/souyerz1440", icon: "i-ri-github-fill" },
       bilibili: {
         url: "https://space.bilibili.com/474896469",
         icon: "i-ri-bilibili-fill",
@@ -173,7 +173,7 @@ export default defineConfig({
         color: "#141414",
       },
       {
-        url: "https://souyerliu.github.io/slp3_translation/",
+        url: "https://souyerz1440.github.io/slp3_translation/",
         title: "SLP3 中文翻译",
         author: "Souyer",
         desc: "笔者使用 AI 翻译的中文版 SLP3 教材。",
@@ -181,19 +181,19 @@ export default defineConfig({
         color: "#79e16f",
       },
       {
-        url: "https://souyerliu.github.io/Flowchart-to-Tikz/",
+        url: "https://souyerz1440.github.io/Flowchart-to-Tikz/",
         title: "流程图绘制工具",
         author: "Souyer",
         desc: "流程图绘制 & 转 LaTeX Tikz 代码工具",
-        avatar: "https://souyerliu.github.io/Flowchart-to-Tikz/favicon.svg",
+        avatar: "https://souyerz1440.github.io/Flowchart-to-Tikz/favicon.svg",
         color: "#2563EB",
       },
       {
-        url: "https://souyerliu.github.io/Pesudocode-editor/",
+        url: "https://souyerz1440.github.io/Pesudocode-editor/",
         title: "伪代码编写工具",
         author: "Souyer",
         desc: "Latex algorithm 伪代码编写工具",
-        avatar: "https://souyerliu.github.io/Pesudocode-editor/favicon.svg",
+        avatar: "https://souyerz1440.github.io/Pesudocode-editor/favicon.svg",
         color: "#336EE7",
       },
     ],
