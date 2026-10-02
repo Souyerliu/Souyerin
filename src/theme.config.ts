@@ -98,6 +98,7 @@ export default defineConfig({
       { name: "自然语言处理", cover: "/images/NLP.webp" },
       { name: "CS61B", cover: "/images/61B-header.webp" },
       { name: "机器学习方法", cover: "/images/ml.webp" },
+      { name: "数学", cover: "/images/mathchalkboard.webp" },
     ],
     pageSize: 10,
     // 首页及分页文章卡片优先显示本地数据库中的 AI 摘要

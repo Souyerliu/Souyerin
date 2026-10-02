@@ -1,0 +1,133 @@
+---
+title: 多元统计分析 Cheat Sheet
+date: 2026-09-17 22:12:14
+categories: [数学,统计学]
+tags:
+    - 多元统计
+    - 数理统计
+cover: ./多元统计分析-Cheat-Sheet/cover.png
+draft: true
+---
+
+一些基本的概念界定：
++ 多元数据：从对象/观测中测量得到的若干独立变量
++ 多元分析：从多元数据中提取信息
++ 总体使用多元分布表示（需考虑多个变量间的交互关系）
++ 对多元数据进行推断（参数估计/假设检验）时，一般假设其服从多元正态分布
++ 多元分析一般要求样本量（记作$n$）多于变量个数（$p$）
+
+多元统计方法主要包括数据可视化/独立性调查/假设检验/数据约减/预测/排序分组等。
+
+一些符号约定：
++ 多元数据采用矩阵$X=\begin{pmatrix}x_{11}&x_{12}&\cdots&x_{1p}\\x_{21}&x_{22}&\cdots&x_{2p}\\\vdots&\vdots&\ddots&\vdots\\x_{n1}&x_{n2}&\cdots&x_{np}\end{pmatrix}$表示；【一行对应一个样本，一列对应一个变量（属性）】
++ 用$A,B,C,\cdots$表示常数矩阵，$X,Y,Z$表示随机变量矩阵（或观测数据），$\mathbf{a},\mathbf{b},\mathbf{c},\cdots$表示常数向量，$\mathbf{x},\mathbf{y},\mathbf{z}$表示随机向量，$x,y,z$表示随机变量。
++ 样本均值向量$\bar{x}=\begin{pmatrix}\bar{x}_1\\\bar{x}_2\\\vdots\\\bar{x}_p\end{pmatrix}$，样本（协）方差矩阵$S=\begin{pmatrix}s_{11}&s_{12}&\cdots&s_{1p}\\s_{21}&s_{22}&\cdots&s_{2p}\\\vdots&\vdots&\ddots&\vdots\\s_{p1}&s_{p2}&\cdots&s_{pp}\end{pmatrix}$，样本相关系数矩阵$R=\begin{pmatrix}r_{11}&r_{12}&\cdots&r_{1p}\\r_{21}&r_{22}&\cdots&r_{2p}\\\vdots&\vdots&\ddots&\vdots\\r_{p1}&r_{p2}&\cdots&r_{pp}\end{pmatrix}$，其中
+    $$
+    \bar{x}_k = \frac1n\sum_{j=1}^n x_{jk}, \quad s_{kk} = \frac1n\sum_{j=1}^n (x_{jk} - \bar{x}_k)^2, \quad s_{kl} = \frac1n\sum_{j=1}^n (x_{jk} - \bar{x}_k)(x_{jl} - \bar{x}_l), \quad r_{kl} = \frac{s_{kl}}{\sqrt{s_{kk} s_{ll}}}.
+    $$
+
+多元数据可视化方法：
+1. 边际分布  
+    + 一维：直方图
+    + 二维：散点图
+    + 三维：散点图（带颜色）、散点图矩阵（如果有分类变量）
+2. 高维表示：雷达图（也称星形图）、Chernoff脸图（不常用）
+
+多元数据的距离度量：
++ 一般不直接采用欧氏距离，而采用统计距离（类似二次型，考虑协方差）
++ 二维形式：$d(O,P)=\sqrt{a_{11}x_{1}^2+2a_{12}x_1x_2+a_{22}x_2^2}$
++ 在计算距离前按需对数据进行标准化（考虑不同变量的重要性）
+
+# 预备知识
+> 多元统计分析的预备知识与线性模型基本重合，因此在[线性模型Cheat Sheet](/posts/mathematics/线性模型-cheat-sheet)中已经记录的内容这里就不再赘述，只补充未涉及的内容。
+## 向量与矩阵代数
+对于两个向量$\mathbf{x}=(x_1,x_2,\cdots,x_p)^\top,\mathbf{y}=(y_1,y_2,\cdots,y_p)^\top$，可定义下述概念：
++ 内积：$\mathbf{x}^\top\mathbf{y}=x_1y_1+\cdots+x_py_p$
++ 长度（范数）：$L_x=\sqrt{x_1^2+\cdots+x_p^2}=\sqrt{\mathbf{x}^\top\mathbf{x}}$
++ 余弦（相似度）：$\cos\theta=\dfrac{\mathbf{x}^\top\mathbf{y}}{L_xL_y}$
++ $\mathbf{x}$在$\mathbf{y}$上的投影：
+    $$
+    \frac{\mathbf{x}^\top \mathbf{y}}{\mathbf{y}^\top \mathbf{y}} \cdot \mathbf{y} = \frac{\mathbf{x}^\top \mathbf{y}}{L_y} \cdot \frac{\mathbf{y}}{L_y} = L_x \cos(\theta) \cdot \frac{\mathbf{y}}{L_y}
+    $$
+    投影长度为$L_x |\cos(\theta)|=\dfrac{\mathbf{x}^\top\mathbf{y}}{L_y}$。
+### 二次型与统计距离
+二次型标准形式：
+    $$
+    Q = \mathbf{x}^\top A\mathbf{x}=\sum_{i=1}^p\sum_{j=1}^pa_{ij}x_ix_j
+    =\begin{bmatrix}x_1, x_2, \cdots, x_p\end{bmatrix}
+    \begin{bmatrix}
+    a_{11} & a_{12} & \cdots & a_{1p} \\
+    a_{21} & a_{22} & \cdots & a_{2p} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    a_{p1} & a_{p2} & \cdots & a_{pp}
+    \end{bmatrix}
+    \begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    \vdots \\
+    x_p
+    \end{bmatrix}
+    $$
++ 取$c=\sqrt{Q}=\sqrt{\mathbf{x}^\top A\mathbf{x}}$即可作为统计距离（前提是$A$为正定矩阵）。当$p=2$时，由$A$的谱分解可得：
+    $$
+    A=\lambda_1\mathbf{e}_1^\top\mathbf{e}_1+\lambda_2\mathbf{e}_2^\top\mathbf{e}_2\Longrightarrow \mathbf{x}^\top A\mathbf{x}=\lambda_1(\mathbf{x}^\top\mathbf{e}_1)^2+\lambda_2(\mathbf{x}^\top\mathbf{e}_2)^2
+    $$
+    其中$\mathbf{e}_1$和$\mathbf{e}_2$为标准正交矩阵列向量。再令$y_1=\mathbf{x}^\top\mathbf{e}_1,y_2=\mathbf{x}^\top\mathbf{e}_2$，则统计距离等高线可以表示为
+    $$
+    c^2=\lambda_1y_1^2+\lambda_2y_2^2
+    $$
+    又因为$\lambda_1,\lambda_2>0$，因此这就是一个椭圆。
+    + $p$更高时就得到一个（超）椭球，其半长轴长度为$\dfrac{c}{\sqrt{\lambda_i}},i=1,2,\cdots,p$。
+### 矩阵不等式
+1. 柯西-施瓦茨不等式：对于任意 $\mathbf{b}, \mathbf{d} \in \mathbb{R}^p$，$B_{p \times p} > 0$，
+    1.  $$
+        (\mathbf{b}^\top\mathbf{d})^2 \leq (\mathbf{b}^\top\mathbf{b})(\mathbf{d}^\top\mathbf{d})
+        $$
+        取等号条件：$\mathbf{b} = c\mathbf{d}$，其中$c$为常数。
+    2.  $$
+        (\mathbf{b}^\top\mathbf{d})^2 \leq (\mathbf{b}^\top B\mathbf{b})(\mathbf{d}^\top B^{-1}\mathbf{d})
+        $$
+        取等条件：$\mathbf{b} = cB^{-1}\mathbf{d}$，其中$c$为常数；
+    3.  $$
+        \max \frac{(\mathbf{x}^\top\mathbf{d})^2}{\mathbf{x}^\top B\mathbf{x}} = \mathbf{d}^\top B^{-1}\mathbf{d}
+        $$
+        取得最大值条件：$\mathbf{x} = cB^{-1}\mathbf{d}$，其中$c$为非零常数。
+2. 二次型不等式：设$ B\in\R^{p\times p}$为正定矩阵，其特征值为$\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_p \geq 0$，对应的归一化特征向量为$\mathbf{e}_1, \mathbf{e}_2, \dots, \mathbf{e}_p$。则
+    $$
+    \max_{\mathbf{x} \neq 0} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_1,\quad \min_{\mathbf{x} \neq 0} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_p
+    $$
+    最大最小值分别在$\mathbf{x} = \mathbf{e}_1$和$\mathbf{x} = \mathbf{e}_p$时取得。
+    另有
+    $$
+    \max_{\mathbf{x} \perp \mathbf{e}_1, \dots, \mathbf{e}_k} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_{k+1}
+    $$
+    最大值在$\mathbf{x} = \mathbf{e}_{k+1}, k = 1, 2, \cdots, p - 1$时取得。
+### 分块矩阵
+考虑矩阵$A\in\R^{k\times k}$，其可以用分块矩阵$\begin{pmatrix}A_{11}&A_{12}\\A_{21}&A_{22}\end{pmatrix}$表示，其中$A_{11}\in\R^{k_1\times k_1},A_{22}\in\R^{k_2\times k_2},k_1+k_2=k$。
++ 另外定义矩阵的两个舒尔补（用逆矩阵表示时默认其可逆）：
+    $$
+    A_{11.2}=A_{11}-A_{12}A_{22}^{-1}A_{21},\quad A_{22.1}=A_{22}-A_{21}A_{11}^{-1}A_{12}.
+    $$
++ 由此可得到分块矩阵求逆公式：
+    + 若 $A_{11}^{-1} $和 $A_{22.1}^{-1} $存在，
+        $$
+        A^{-1}=\begin{pmatrix}
+        -A_{11}^{-1} + A_{11}^{-1}A_{12}A_{22.1}^{-1}A_{21}A_{11}^{-1} & -A_{11}^{-1}A_{12}A_{22.1}^{-1} \\[5pt]
+        -A_{22.1}^{-1}A_{21}A_{11}^{-1} & A_{22.1}^{-1}
+        \end{pmatrix}
+        $$
+    + 如果 $A_{22}^{-1} $和 $A_{11.2}^{-1} $存在，
+        $$
+        A^{-1}=\begin{pmatrix}
+        A_{11.2}^{-1} & -A_{11.2}^{-1}A_{12}A_{22}^{-1} \\[5pt]
+        -A_{22}^{-1}A_{21}A_{11.2}^{-1} & A_{22}^{-1} + A_{22}^{-1}A_{21}A_{11.2}^{-1}A_{12}A_{22}^{-1}
+        \end{pmatrix}
+        $$
+        
+    当然如果这四个逆都存在，那么$A^{-1}$对角线对应位置的块矩阵相等。
+    > 当然，实际上$A$可求逆时$A_{11}^{-1}$和$A_{22}^{-1}$的逆不一定存在，如对角线块矩阵均为$\mathbf{0}$。
++ 当$A$为正定矩阵时，$A_{11},A_{22},A_{22.1},A_{11.2}$均为正定矩阵。
++ 分块矩阵行列式计算：对于$A=\begin{pmatrix}A_{11}&A_{12}\\A_{21}&A_{22}\end{pmatrix}$，
+    + 若$A_{12}=\mathbf{0}$或$A_{21}=\mathbf{0}$，则有$|A|=|A_{11} |\cdot|A_{22}|$；
+    + 若$A_{22}$可逆，则$|A|=|A_{22} |\cdot|A_{11.2}|$；若$A_{11}$可逆，则$A=|A_{11} |\cdot|A_{22.1}|$。
+## 随机向量与矩阵

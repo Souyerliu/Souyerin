@@ -1,0 +1,93 @@
+---
+title: 线性模型 Cheat Sheet
+date: 2026-09-17 22:12:04
+categories: [数学,统计学]
+tags:
+    - 回归分析
+    - 数理统计
+    - 线性代数
+cover: ./线性模型-Cheat-Sheet/ira.png
+---
+
+一般的统计模型形式：$y=f(x)+\epsilon$，其中：
++ $x$为数据/自变量，$y$为预测/因变量，$\epsilon$为误差/噪声。
+
+线性模型就是对这一模型的理想化近似：$f(x)=\beta_0+x_1\beta_1+\cdots+x_p\beta_p$，其中$p$为数据的维度。同时假设误差服从（多元）正态分布$N(0,\Sigma)$。
+
+# 前置知识（矩阵代数与随机向量）
+> 这里主要是对高等代数（矩阵论）以及概率论（期望、方差、矩母函数等）的回顾。一些概念可能会与[概率论 Cheat Sheet](https://souyerin.netlify.app/posts/mathematics/%E6%A6%82%E7%8E%87%E8%AE%BA-cheat-sheet/#%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F)以及[CS127系列笔记](https://souyerin.netlify.app/posts/computer-science/cs127/cs127-chapter-3/)有部分重复，但笔者还是决定再记一遍~毕竟有些概念确实容易忘记~
+## 矩阵论
+1. 矩阵的迹与特征值  
+    $$
+    \begin{aligned}
+    \text{tr}(A+B)&=\text{tr}(A)+\text{tr}(B)\\
+    \text{tr}(AB)&=\text{tr}(BA)
+    \end{aligned}
+    $$
+    + 设$A\in\R^{m\times n},B\in\R^{n\times m}$，则$AB$的非零特征值与$BA$相同（考虑代数重数）。【证明提示：$ABx=\lambda x\Longrightarrow BA(Bx)=\lambda(Bx)$】
+        + 特别地，当$A$与$B$均为方阵时，$AB$与$BA$的特征值完全相同。【若$AB$有零特征值，则$|AB|=0=|BA|$】
+    + 若$A$为$n$阶方阵，且有$n$个特征值$\lambda_1,\cdots,\lambda_n$，那么有
+        $$
+        \text{tr}(A)=\sum_{i=1}^n\lambda_i,\quad |A|=\prod_{i=1}^n\lambda_i.
+        $$
+2. 对称矩阵（用于考察协方差矩阵）   
+    设$A$为$n$阶实对称矩阵，那么其有以下性质：
+    1. $A$的所有特征值均为实数，对应的特征向量也由实数构成；
+    2. 矩阵任意两个不同特征值对应的特征向量相互正交；
+    3. $A$一定有$n$个特征值（记作$\lambda_1,\cdots,\lambda_n$），且对应的$n$个特征向量可以标准正交对角化；
+    4. $A$可以进行下述分解（也称为谱分解）：
+        $$
+        A=P\begin{pmatrix}\lambda_1&&\\&\ddots&\\&&\lambda_n\end{pmatrix}P^\top\triangleq P\Lambda P^\top
+        $$
+        其中$P$为标准正交矩阵。
+    5. 对任意正整数$s$，有
+        $$
+        A=P\begin{pmatrix}\lambda_1^s&&\\&\ddots&\\&&\lambda_n^s\end{pmatrix}P^\top\triangleq P\Lambda^s P^\top\Longrightarrow \text{tr}(A^s)=\sum_{i=1}^n\lambda_i^s
+        $$
+    6. 若$A$满秩，则$A^{-1}$的特征值为$\lambda_1^{-1},\cdots,\lambda_n^{-1}$；
+    7. $I_n+cA$的特征值为$1+c\lambda_1,\cdots,1+c\lambda_n$；
+    8. 若$A$为半正定矩阵（p.s.d.），则其所有特征值均非负，因此$\text{tr}(A)\geq 0$。
+    9. Rayleigh商性质：
+        $$
+        \max_{\mathbf{x}^\top\mathbf{x}\neq 0}\frac{\mathbf{x}^\top A\mathbf{x}}{\mathbf{x}^\top\mathbf{x}}=\lambda_{\max}(A),\quad \min_{\mathbf{x}^\top\mathbf{x}\neq 0}\frac{\mathbf{x}^\top A\mathbf{x}}{\mathbf{x}^\top\mathbf{x}}=\lambda_{\min}(A)
+        $$
+3. 半正定矩阵  
+    定义矩阵的Löwner序：$A\succeq B\Longleftrightarrow A-B$为半正定矩阵$\Longleftrightarrow \mathbf{x}^\top A\mathbf{x}\geq\mathbf{x}^\top B\mathbf{x},\forall\mathbf{x}\in\R^n$
+    + 特别地，若$A,B$均为正定矩阵，则有$A\succeq B\Longleftrightarrow A^{-1}\preceq B^{-1}$。【当然也可以推广到$B$为半正定矩阵的情形，此时$AB^-A\preceq A$】
+4. 矩阵列空间  
+    设矩阵$X$的列空间为$\mathcal{M}(X)$，则有$\mathcal{M}(X^\top)=\mathcal{M}(X^\top X)$（相应地，有$\mathcal{M}(X)=\mathcal{M}(XX^\top)$）
+5. 奇异值分解（SVD）  
+    奇异值定义：设$X\in\R^{n\times p}$的秩为$r$，$X^\top X$的正特征值为$\lambda_1\geq\cdots\geq\lambda_r>0$，则$X$的奇异值为$\sqrt{\lambda_1},\cdots,\sqrt{\lambda_r}$
+    + 对上述矩阵$X$，一定存在标准正交矩阵$P\in\R^{p\times p}$和$Q\in\R^{n\times n}$使得
+        $$
+        X=Q\begin{pmatrix}\Lambda^{\frac12}&\mathbf{0}\\\mathbf{0}&\mathbf{0}\end{pmatrix}P^\top\triangleq Q_1\Lambda_r^{\frac12}P_1^\top
+        $$
+        其中$Q_1$和$P_1$分别是由$XX^\top$和$X^\top X$的非零特征值对应的特征向量构成的矩阵。
+6. 幂等矩阵与投影矩阵  
+    + 幂等矩阵定义：$A^2=A$，其主要性质为：特征值只有$0$和$1$。
+    + （正交）投影定义：设$\Omega$为$\R^n$的一个线性子空间，$\mathbf{y}\in\R^n$，则如果对于$\mathbf{u}\in\Omega$有$\mathbf{y}-\mathbf{u}\perp\Omega$，则称$\mathbf{u}$为$\mathbf{y}$在$\Omega$上的正交投影，记作$\mathbf{u}=\text{proj}_\Omega(\mathbf{y})$。
+    + 正交投影（矩阵）具有如下性质：
+        1. 正交投影具有唯一性（设$\Omega=\mathcal{M}(X)$，则可用矩阵$X(X^\top X)^{-1}X^\top$表示这一变换）
+        2.  $$
+            \text{proj}(\mathbf{y}) = \argmin_{\alpha \in \Omega} \|\mathbf{y} - \alpha\|^2 = \argmin_{X\mathbf{\beta} \in \Omega = \mathcal{M}(X)} \|\mathbf{y} - X\mathbf{\beta}\|^2.
+            $$
+        3. $\phi:\R^n\to\Omega\subseteq\R^n$为正交投影$\Longleftrightarrow$存在幂等矩阵$P\in\R^{n\times n}$，$\Omega=\mathcal{M}(P)$使得$\phi(\mathbf{y})=P\mathbf{y},\forall \mathbf{y}\in\R^n$【投影矩阵$\Leftrightarrow$实对称幂等矩阵】
+        4. 当$P$为$\R^n$到$\Omega$的投影矩阵时，$I_n-P$为$\R^n$到$\Omega^\perp$的投影矩阵。
+        5. 对于投影矩阵$P_1,P_2$，下列表述等价：
+            + $P_1\succeq P_2$；
+            + $P_1P_2=P_2P_1=P_2$；
+            + $P_1-P_2$为投影矩阵；
+            + $\mathcal{M}(P_2)\subseteq\mathcal{M}(P_1)$。
+7. 向量微分与广义逆  
+    定义$\beta=\begin{pmatrix}\beta_1,\beta_2,\cdots,\beta_n\end{pmatrix}^\top$，则$\dfrac{\partial}{\partial\beta}=\begin{pmatrix}\dfrac{\partial}{\partial\beta_1},\dfrac{\partial}{\partial\beta_2},\cdots,\dfrac{\partial}{\partial\beta_n}\end{pmatrix}^\top$，由此可定义如下微分：
+    + 当$y=f(\mathbf{x}):\R^n\to\R$，则$\dfrac{\partial f}{\partial x}=\begin{pmatrix}\dfrac{\partial f}{\partial x_1},\dfrac{\partial f}{\partial  x_2},\cdots,\dfrac{\partial f}{\partial x_n}\end{pmatrix}^\top$；
+    + 当$\mathbf{y}=f(\mathbf{x}):\R^n\to\R^m$，则$\dfrac{\partial f^\top}{\partial \mathbf{x}}=\begin{pmatrix}\dfrac{\partial f_1}{\partial\mathbf{x}},\dfrac{\partial f_2}{\partial\mathbf{x}},\cdots,\dfrac{\partial f_m}{\partial \mathbf{x}}\end{pmatrix}$【结果为$n\times m$矩阵】，$\dfrac{\partial f}{\partial \mathbf{x}^\top}=\left(\dfrac{\partial f^\top}{\partial \mathbf{x}}\right)^\top$。
+
+    实例：
+    + 对任意向量$\mathbf{a}\in\R^n$，$\dfrac{\partial\beta^\top\mathbf{a}}{\partial\beta}=\mathbf{a}$，而对任意列数为$n$的矩阵$A$，$\dfrac{\partial\beta^\top A}{\partial\beta}=A$。
+    + 对于任意方阵$A$，$\dfrac{\partial(\beta^\top A \beta)}{\partial\beta} = (A+A^\top)\beta$。特别地，当$A$为对称矩阵时，$\dfrac{\partial(\beta^\top A \beta)}{\partial\beta} = 2A\beta$。
+
+    矩阵的广义逆定义：$A^-$满足$AA^-A=A$。
+    + 例：当$A=\begin{pmatrix}A_{11}&\mathbf{0}\\\mathbf{0}&\mathbf{0}\end{pmatrix}$时，$A^-=\begin{pmatrix}A_{11}&B\\C&D\end{pmatrix}$，其中$B,C,D$为任意矩阵。
+## 随机向量
+

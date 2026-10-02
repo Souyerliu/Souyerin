@@ -13,7 +13,12 @@
       "soyo/039_school_winter-2023",
       "soyo/039_birthday_2024_ssr",
       "soyo/039_live_default"
+    ],
+    [
+      "yuno/adv_live2d_yuno_015_casual_spring_01",
+      "yuno/adv_live2d_yuno_015_virtual_01",
+      "yuno/live2d_yuno_015_live_01"
     ]
   ],
-  "messages": ["祥子 (Sakiko)", "素世 (Soyo)"]
+  "messages": ["祥子 (Sakiko)", "素世 (Soyo)", "由乃 (Yuno)"]
 }

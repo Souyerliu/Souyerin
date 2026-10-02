@@ -1,4 +1,9 @@
 ---
+import { installCubism2ContextReset } from "../toolkit/live2d-context";
+import { installLive2DPointerTracking } from "../toolkit/live2d-pointer";
+import { installLive2DGazeRefresh } from "../toolkit/live2d-gaze";
+import { resolveLive2DWelcome } from "../toolkit/live2d-welcome";
+
 const cdnBases = [
   "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist",
   "https://cdn.jsdelivr.net/npm/live2d-widgets@1.0.1/dist",
@@ -28,6 +33,11 @@ const initScript = `{
   const config = ${JSON.stringify(widgetConfig)};
   const stateKey = "__souyerLive2dState";
   const hostId = "live2d-persist-host";
+  const installContextReset = ${installCubism2ContextReset.toString()};
+  const installPointerTracking = ${installLive2DPointerTracking.toString()};
+  const installGazeRefresh = ${installLive2DGazeRefresh.toString()};
+  const resolveWelcome = ${resolveLive2DWelcome.toString()};
+  const tipsPath = config.waifuPath;
 
   const getRightOffset = () => {
     const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -75,7 +85,7 @@ const initScript = `{
 
   // 欢迎气泡：waifu-tips.js 只在 initWidget 首次挂载时弹一次"欢迎阅读「标题」"。
   // ClientRouter 切页时看板娘被 persist 保留、不会重新 initWidget，因此这里在每次
-  // 切页后按当前角色（characterTips）的 welcome 模板 + document.title 复刻一次气泡，
+  // 切页后按当前角色、页面栏目及 document.title 复刻一次气泡，
   // 沿用库的优先级(11)/7s 自动隐藏规则，效果与整页加载一致。
   const resolvedModelId = () => {
     const stored = Number.parseInt(localStorage.getItem("modelId") || "", 10);
@@ -85,7 +95,7 @@ const initScript = `{
   let tipsRequest = null;
   const loadTips = () => {
     if (!tipsRequest) {
-      tipsRequest = fetch(config.waifuPath)
+      tipsRequest = fetch(tipsPath)
         .then((res) => {
           if (!res.ok) throw new Error("waifu-tips.json HTTP " + res.status);
           return res.json();
@@ -113,9 +123,7 @@ const initScript = `{
 
   const showWelcome = async () => {
     const state = window[stateKey] || {};
-    if (location.pathname === "/") return;
-    // 挂载瞬间(<1s)忽略，避免与库自身的初始欢迎语抢跑
-    if (Date.now() - (state.mountedAt || 0) < 1000) return;
+    const welcomePath = location.pathname;
     const waifu = document.getElementById("waifu");
     const tipsEl = document.getElementById("waifu-tips");
     if (!waifu || !tipsEl || getComputedStyle(waifu).display === "none") return;
@@ -127,10 +135,8 @@ const initScript = `{
       return; // 取不到文案就不打扰
     }
 
-    const charId = String(resolvedModelId());
-    const charTips = tips.characterTips?.[charId];
-    const welcome =
-      charTips?.message?.welcome || tips.message?.welcome;
+    if (location.pathname !== welcomePath) return;
+    const welcome = resolveWelcome(tips, String(resolvedModelId()), welcomePath);
     if (!welcome) return;
 
     // 与库一致：i(text, 7e3, 11) —— 优先级 11 最高，可压过悬停/点击气泡
@@ -196,11 +202,25 @@ const initScript = `{
     widget.classList.add("waifu-active"); // 触发 bottom 3s 过渡：从屏下升起
   };
 
-  const mount = () => {
+  const mount = async () => {
     const state = window[stateKey] || {};
     if (typeof window.initWidget !== "function") return false;
+    if (state.pointerRuntime !== state.loadedBase) {
+      const cubism3 = await import(state.loadedBase + "/chunk/index2.js");
+      installPointerTracking(undefined, cubism3.AppDelegate.prototype);
+      installGazeRefresh(cubism3.AppDelegate.prototype);
+      state.pointerRuntime = state.loadedBase;
+    }
     // Cubism2 运行时与 waifu-tips 取自同一成功的 CDN
     config.cubism2Path = state.loadedBase + "/live2d.min.js";
+    // CDN 首次加载读取通用 welcome，保留原配置并只替换当前页面的欢迎语。
+    const tips = await loadTips();
+    const welcome = resolveWelcome(tips, String(resolvedModelId()), location.pathname);
+    if (state.welcomeConfigUrl) URL.revokeObjectURL(state.welcomeConfigUrl);
+    state.welcomeConfigUrl = URL.createObjectURL(new Blob([
+      JSON.stringify({ ...tips, message: { ...tips.message, welcome } }),
+    ], { type: "application/json" }));
+    config.waifuPath = state.welcomeConfigUrl;
     window.initWidget(config);
     state.mountedAt = Date.now();
     ensureLayout();
@@ -224,9 +244,15 @@ const initScript = `{
     script.src = base + "/waifu-tips.js";
     script.addEventListener(
       "load",
-      () => {
+      async () => {
         state.loadedBase = base;
-        mount();
+        try {
+          await mount();
+        } catch (error) {
+          console.warn("[Live2D] runtime initialization failed", error);
+          script.remove();
+          loadRuntime(attempt + 1);
+        }
       },
       { once: true },
     );
@@ -264,12 +290,36 @@ const initScript = `{
 
     if (!state.bound) {
       state.bound = true;
-      const observer = new MutationObserver(() => {
+      const observer = new MutationObserver((records) => {
+        // 模型核心按需加载，先重置跨画布遮罩缓存，再修正鼠标事件。
+        for (const record of records) {
+          for (const node of record.addedNodes) {
+            if (node instanceof HTMLScriptElement && node.src.endsWith("/live2d.min.js")) {
+              node.addEventListener("load", async () => {
+                const core = window.Live2D;
+                if (core && state.patchedCubism2 !== core) {
+                  installContextReset(core);
+                  state.patchedCubism2 = core;
+                }
+                // Cubism 2 模块继承核心的 AMotion，必须在核心加载后导入。
+                try {
+                  const { default: Cubism2 } = await import(state.loadedBase + "/chunk/index.js");
+                  if (state.pointerCubism2 !== Cubism2.prototype) {
+                    installPointerTracking(Cubism2.prototype, undefined);
+                    state.pointerCubism2 = Cubism2.prototype;
+                  }
+                } catch (error) {
+                  console.warn("[Live2D] pointer tracking initialization failed", error);
+                }
+              }, { once: true });
+            }
+          }
+        }
         if (document.getElementById("waifu") || document.getElementById("waifu-toggle")) {
           ensureLayout();
         }
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
 
       let resizeTimer;
       window.addEventListener("resize", () => {
@@ -297,17 +347,15 @@ const initScript = `{
         const path = location.pathname + location.search;
         if (state.lastWelcomePath !== path) {
           state.lastWelcomePath = path;
-          if (location.pathname !== "/") {
-            replayRise();
-            showWelcome();
-          }
+          replayRise();
+          showWelcome();
         }
       }, 500);
     }
 
     // 运行时已在本窗口加载过（脚本按 URL 缓存），直接挂载即可
     if (typeof window.initWidget === "function") {
-      mount();
+      mount().catch((error) => console.warn("[Live2D] runtime initialization failed", error));
       return;
     }
 
@@ -319,4 +367,3 @@ const initScript = `{
 ---
 
 <script is:inline set:html={initScript}></script>
-
