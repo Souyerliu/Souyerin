@@ -7,6 +7,7 @@ tags:
     - 数理统计
     - 线性代数
 cover: ./线性模型-Cheat-Sheet/ira.png
+sticky: true
 ---
 
 一般的统计模型形式：$y=f(x)+\epsilon$，其中：
@@ -49,10 +50,10 @@ cover: ./线性模型-Cheat-Sheet/ira.png
     8. 若$A$为半正定矩阵（p.s.d.），则其所有特征值均非负，因此$\text{tr}(A)\geq 0$。
     9. Rayleigh商性质：
         $$
-        \max_{\mathbf{x}^\top\mathbf{x}\neq 0}\frac{\mathbf{x}^\top A\mathbf{x}}{\mathbf{x}^\top\mathbf{x}}=\lambda_{\max}(A),\quad \min_{\mathbf{x}^\top\mathbf{x}\neq 0}\frac{\mathbf{x}^\top A\mathbf{x}}{\mathbf{x}^\top\mathbf{x}}=\lambda_{\min}(A)
+        \max_{\boldsymbol{x}^\top\boldsymbol{x}\neq 0}\frac{\boldsymbol{x}^\top A\boldsymbol{x}}{\boldsymbol{x}^\top\boldsymbol{x}}=\lambda_{\max}(A),\quad \min_{\boldsymbol{x}^\top\boldsymbol{x}\neq 0}\frac{\boldsymbol{x}^\top A\boldsymbol{x}}{\boldsymbol{x}^\top\boldsymbol{x}}=\lambda_{\min}(A)
         $$
 3. 半正定矩阵  
-    定义矩阵的Löwner序：$A\succeq B\Longleftrightarrow A-B$为半正定矩阵$\Longleftrightarrow \mathbf{x}^\top A\mathbf{x}\geq\mathbf{x}^\top B\mathbf{x},\forall\mathbf{x}\in\R^n$
+    定义矩阵的Löwner序：$A\succeq B\Longleftrightarrow A-B$为半正定矩阵$\Longleftrightarrow \boldsymbol{x}^\top A\boldsymbol{x}\geq\boldsymbol{x}^\top B\boldsymbol{x},\forall\boldsymbol{x}\in\R^n$
     + 特别地，若$A,B$均为正定矩阵，则有$A\succeq B\Longleftrightarrow A^{-1}\preceq B^{-1}$。【当然也可以推广到$B$为半正定矩阵的情形，此时$AB^-A\preceq A$】
 4. 矩阵列空间  
     设矩阵$X$的列空间为$\mathcal{M}(X)$，则有$\mathcal{M}(X^\top)=\mathcal{M}(X^\top X)$（相应地，有$\mathcal{M}(X)=\mathcal{M}(XX^\top)$）
@@ -60,18 +61,18 @@ cover: ./线性模型-Cheat-Sheet/ira.png
     奇异值定义：设$X\in\R^{n\times p}$的秩为$r$，$X^\top X$的正特征值为$\lambda_1\geq\cdots\geq\lambda_r>0$，则$X$的奇异值为$\sqrt{\lambda_1},\cdots,\sqrt{\lambda_r}$
     + 对上述矩阵$X$，一定存在标准正交矩阵$P\in\R^{p\times p}$和$Q\in\R^{n\times n}$使得
         $$
-        X=Q\begin{pmatrix}\Lambda^{\frac12}&\mathbf{0}\\\mathbf{0}&\mathbf{0}\end{pmatrix}P^\top\triangleq Q_1\Lambda_r^{\frac12}P_1^\top
+        X=Q\begin{pmatrix}\Lambda^{\frac12}&\boldsymbol{0}\\\boldsymbol{0}&\boldsymbol{0}\end{pmatrix}P^\top\triangleq Q_1\Lambda_r^{\frac12}P_1^\top
         $$
         其中$Q_1$和$P_1$分别是由$XX^\top$和$X^\top X$的非零特征值对应的特征向量构成的矩阵。
 6. 幂等矩阵与投影矩阵  
     + 幂等矩阵定义：$A^2=A$，其主要性质为：特征值只有$0$和$1$。
-    + （正交）投影定义：设$\Omega$为$\R^n$的一个线性子空间，$\mathbf{y}\in\R^n$，则如果对于$\mathbf{u}\in\Omega$有$\mathbf{y}-\mathbf{u}\perp\Omega$，则称$\mathbf{u}$为$\mathbf{y}$在$\Omega$上的正交投影，记作$\mathbf{u}=\text{proj}_\Omega(\mathbf{y})$。
+    + （正交）投影定义：设$\Omega$为$\R^n$的一个线性子空间，$\boldsymbol{y}\in\R^n$，则如果对于$\boldsymbol{u}\in\Omega$有$\boldsymbol{y}-\boldsymbol{u}\perp\Omega$，则称$\boldsymbol{u}$为$\boldsymbol{y}$在$\Omega$上的正交投影，记作$\boldsymbol{u}=\text{proj}_\Omega(\boldsymbol{y})$。
     + 正交投影（矩阵）具有如下性质：
         1. 正交投影具有唯一性（设$\Omega=\mathcal{M}(X)$，则可用矩阵$X(X^\top X)^{-1}X^\top$表示这一变换）
         2.  $$
-            \text{proj}(\mathbf{y}) = \argmin_{\alpha \in \Omega} \|\mathbf{y} - \alpha\|^2 = \argmin_{X\mathbf{\beta} \in \Omega = \mathcal{M}(X)} \|\mathbf{y} - X\mathbf{\beta}\|^2.
+            \text{proj}(\boldsymbol{y}) = \argmin_{\alpha \in \Omega} \|\boldsymbol{y} - \alpha\|^2 = \argmin_{X\boldsymbol{\beta} \in \Omega = \mathcal{M}(X)} \|\boldsymbol{y} - X\boldsymbol{\beta}\|^2.
             $$
-        3. $\phi:\R^n\to\Omega\subseteq\R^n$为正交投影$\Longleftrightarrow$存在幂等矩阵$P\in\R^{n\times n}$，$\Omega=\mathcal{M}(P)$使得$\phi(\mathbf{y})=P\mathbf{y},\forall \mathbf{y}\in\R^n$【投影矩阵$\Leftrightarrow$实对称幂等矩阵】
+        3. $\phi:\R^n\to\Omega\subseteq\R^n$为正交投影$\Longleftrightarrow$存在幂等矩阵$P\in\R^{n\times n}$，$\Omega=\mathcal{M}(P)$使得$\phi(\boldsymbol{y})=P\boldsymbol{y},\forall \boldsymbol{y}\in\R^n$【投影矩阵$\Leftrightarrow$实对称幂等矩阵】
         4. 当$P$为$\R^n$到$\Omega$的投影矩阵时，$I_n-P$为$\R^n$到$\Omega^\perp$的投影矩阵。
         5. 对于投影矩阵$P_1,P_2$，下列表述等价：
             + $P_1\succeq P_2$；
@@ -80,14 +81,47 @@ cover: ./线性模型-Cheat-Sheet/ira.png
             + $\mathcal{M}(P_2)\subseteq\mathcal{M}(P_1)$。
 7. 向量微分与广义逆  
     定义$\beta=\begin{pmatrix}\beta_1,\beta_2,\cdots,\beta_n\end{pmatrix}^\top$，则$\dfrac{\partial}{\partial\beta}=\begin{pmatrix}\dfrac{\partial}{\partial\beta_1},\dfrac{\partial}{\partial\beta_2},\cdots,\dfrac{\partial}{\partial\beta_n}\end{pmatrix}^\top$，由此可定义如下微分：
-    + 当$y=f(\mathbf{x}):\R^n\to\R$，则$\dfrac{\partial f}{\partial x}=\begin{pmatrix}\dfrac{\partial f}{\partial x_1},\dfrac{\partial f}{\partial  x_2},\cdots,\dfrac{\partial f}{\partial x_n}\end{pmatrix}^\top$；
-    + 当$\mathbf{y}=f(\mathbf{x}):\R^n\to\R^m$，则$\dfrac{\partial f^\top}{\partial \mathbf{x}}=\begin{pmatrix}\dfrac{\partial f_1}{\partial\mathbf{x}},\dfrac{\partial f_2}{\partial\mathbf{x}},\cdots,\dfrac{\partial f_m}{\partial \mathbf{x}}\end{pmatrix}$【结果为$n\times m$矩阵】，$\dfrac{\partial f}{\partial \mathbf{x}^\top}=\left(\dfrac{\partial f^\top}{\partial \mathbf{x}}\right)^\top$。
+    + 当$y=f(\boldsymbol{x}):\R^n\to\R$，则$\dfrac{\partial f}{\partial x}=\begin{pmatrix}\dfrac{\partial f}{\partial x_1},\dfrac{\partial f}{\partial  x_2},\cdots,\dfrac{\partial f}{\partial x_n}\end{pmatrix}^\top$；
+    + 当$\boldsymbol{y}=f(\boldsymbol{x}):\R^n\to\R^m$，则$\dfrac{\partial f^\top}{\partial \boldsymbol{x}}=\begin{pmatrix}\dfrac{\partial f_1}{\partial\boldsymbol{x}},\dfrac{\partial f_2}{\partial\boldsymbol{x}},\cdots,\dfrac{\partial f_m}{\partial \boldsymbol{x}}\end{pmatrix}$【结果为$n\times m$矩阵】，$\dfrac{\partial f}{\partial \boldsymbol{x}^\top}=\left(\dfrac{\partial f^\top}{\partial \boldsymbol{x}}\right)^\top$。
 
     实例：
-    + 对任意向量$\mathbf{a}\in\R^n$，$\dfrac{\partial\beta^\top\mathbf{a}}{\partial\beta}=\mathbf{a}$，而对任意列数为$n$的矩阵$A$，$\dfrac{\partial\beta^\top A}{\partial\beta}=A$。
+    + 对任意向量$\boldsymbol{a}\in\R^n$，$\dfrac{\partial\beta^\top\boldsymbol{a}}{\partial\beta}=\boldsymbol{a}$，而对任意列数为$n$的矩阵$A$，$\dfrac{\partial\beta^\top A}{\partial\beta}=A$。
     + 对于任意方阵$A$，$\dfrac{\partial(\beta^\top A \beta)}{\partial\beta} = (A+A^\top)\beta$。特别地，当$A$为对称矩阵时，$\dfrac{\partial(\beta^\top A \beta)}{\partial\beta} = 2A\beta$。
 
     矩阵的广义逆定义：$A^-$满足$AA^-A=A$。
-    + 例：当$A=\begin{pmatrix}A_{11}&\mathbf{0}\\\mathbf{0}&\mathbf{0}\end{pmatrix}$时，$A^-=\begin{pmatrix}A_{11}&B\\C&D\end{pmatrix}$，其中$B,C,D$为任意矩阵。
+    + 例：当$A=\begin{pmatrix}A_{11}&\boldsymbol{0}\\\boldsymbol{0}&\boldsymbol{0}\end{pmatrix}$时，$A^-=\begin{pmatrix}A_{11}&B\\C&D\end{pmatrix}$，其中$B,C,D$为任意矩阵。
 ## 随机向量
-
+符号约定：随机向量$\boldsymbol{X}=(X_1,X_2,\cdots,X_n)^\top$，随机矩阵$\boldsymbol{X}=\begin{pmatrix}X_{11}&X_{12}&\cdots&X_{1n}\\X_{21}&X_{22}&\cdots&X_{2n}\\\vdots&\vdots&\ddots&\vdots\\X_{n1}&X_{n2}&\cdots&X_{nn}\end{pmatrix}$
+1. 期望（矩阵）  
+    记$\boldsymbol{Z}=(Z_{ij})_{m\times n}$，定义期望矩阵$\mathbb{E}\boldsymbol{Z}=(\mathbb{E}Z_{ij})_{m\times n}$
+    + 给定矩阵$A,B,C$，有$\mathbb{E}(A\boldsymbol{Z}B+C)=A\mathbb{E}(\boldsymbol{Z})B+C$
+2. （协）方差矩阵   
+    设$\boldsymbol{X}$和$\boldsymbol{Y}$分别为$m$维与$n$维随机向量，则协方差矩阵定义为$\mathrm{Cov}(\boldsymbol{X},\boldsymbol{Y})=(\mathrm{Cov}(X_i,Y_j))_{m\times n}$
+    + 特别地，若$\boldsymbol{Y}=\boldsymbol{X}$，定义$\mathrm{Var}(\boldsymbol{X})=\mathrm{Cov}(\boldsymbol{X})=\mathrm{Cov}(\boldsymbol{X},\boldsymbol{X})$
+    + 若$\boldsymbol{X}$的均值向量为$\boldsymbol{\mu}$，协方差矩阵为$\Sigma$，那么可以写作$\boldsymbol{X}\sim(\boldsymbol{\mu},\Sigma)$
+    
+    协方差矩阵具有下述性质：
+    1. $\text{Cov}(\boldsymbol{X}, \boldsymbol{Y}) = \mathbb{E}[(\boldsymbol{X} - \mathbb{E}\boldsymbol{X})(\boldsymbol{Y} - \mathbb{E}\boldsymbol{Y})^\top] = \mathbb{E}(\boldsymbol{X}\boldsymbol{Y}^\top) - \mathbb{E}\boldsymbol{X}\mathbb{E}\boldsymbol{Y}^\top$；
+        + $\text{Cov}(\boldsymbol{X}, \boldsymbol{Y}) = \text{Cov}(\boldsymbol{Y}, \boldsymbol{X})^\top$；【注意转置】
+        + $\text{Var}(\boldsymbol{X}) = \mathbb{E}[(\boldsymbol{X} - \mathbb{E}\boldsymbol{X})(\boldsymbol{X} - \mathbb{E}\boldsymbol{X})^\top] = \mathbb{E}(\boldsymbol{X}\boldsymbol{X}^\top) - \mathbb{E}\boldsymbol{X}\mathbb{E}\boldsymbol{X}^\top$。
+    2. $\text{Cov}(\boldsymbol{X}, \boldsymbol{Y} + \boldsymbol{Z}) = \text{Cov}(\boldsymbol{X}, \boldsymbol{Y}) + \text{Cov}(\boldsymbol{X}, \boldsymbol{Z})$；
+        + 推论：$\text{Cov}(\boldsymbol{X} + \boldsymbol{Y}) = \text{Cov}(\boldsymbol{X}) + \text{Cov}(\boldsymbol{Y}) + \text{Cov}(\boldsymbol{X}, \boldsymbol{Y}) + \text{Cov}(\boldsymbol{Y}, \boldsymbol{X})$。
+    3. 对于任意常数向量 $\boldsymbol{c}$，有 $\text{Cov}(\boldsymbol{X} + \boldsymbol{c}) = \text{Cov}(\boldsymbol{X})$；
+    4. $\text{Cov}(\boldsymbol{A}\boldsymbol{X}, \boldsymbol{B}\boldsymbol{Y}) = \boldsymbol{A}\text{Cov}(\boldsymbol{X}, \boldsymbol{Y})\boldsymbol{B}^\top$；
+    5. $\text{Cov}(\boldsymbol{X}) \geq 0$。【半正定性】
+3. （非）奇异（退化）随机向量   
+    若随机向量$\boldsymbol{X}$的协方差矩阵是（非）奇异矩阵，那么就称$\boldsymbol{X}$是（非）奇异的。
+    + 实际上，协方差矩阵非奇异等价于协方差矩阵正定。
+    + $\boldsymbol{X}$非奇异$\Longleftrightarrow$不存在常数向量$\boldsymbol{a}\neq\boldsymbol{0}$和$\boldsymbol{b}$使得$\boldsymbol{a}^\top\boldsymbol{X}=\boldsymbol{b}\quad\text{a.s.}$；【证明提示：$\boldsymbol{a}^\top\Sigma\boldsymbol{a}=\mathrm{Var}(\boldsymbol{a}^\top\boldsymbol{X})=\mathbb{E}[(\boldsymbol{a}^\top(\boldsymbol{X}-\boldsymbol{\mu}))^2]$】
+    + 若$\boldsymbol{X}$的均值向量为$\boldsymbol{0}$，则$\boldsymbol{X}\in\mathcal{M}(\Sigma)\quad\text{a.s.}$。【证明提示：对于对称矩阵，$\mathcal{M}(\Sigma)=\mathcal{N}(\Sigma)^\perp$，$\mathcal{N}(\cdot)$表示零空间；零空间中的任意向量与$\boldsymbol{X}$正交$\quad\text{a.s.}$】
+        + 当然，若$\boldsymbol{X}$的均值向量为$\boldsymbol{\mu}\neq\boldsymbol{0}$，则$\boldsymbol{X}-\boldsymbol{\mu}\in\mathcal{M}(\Sigma)\quad\text{a.s.}$
+        + 另一方面，由此可以得到推论：$\boldsymbol{X}^\top\Sigma^{-}\boldsymbol{X}$是良定义的（广义逆的选择不影响结果）。
+    + 对上面的推论，我们还可以推广到分块协方差矩阵上：记$\mathrm{Cov}\begin{pmatrix}\boldsymbol{X}\\\boldsymbol{Y}\end{pmatrix}=\begin{pmatrix}\Sigma_{\boldsymbol{XX}}&\Sigma_{\boldsymbol{XY}}\\\Sigma_{\boldsymbol{YX}}&\Sigma_{\boldsymbol{YY}}\end{pmatrix}$，则$\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-\Sigma_{\boldsymbol{XX}}(=\Sigma_{\boldsymbol{YX}})$与$\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-(\boldsymbol{X}-\mathbb{E}(\boldsymbol{X}))$的结果与广义逆的选择无关。
+        + 证明提示：$\boldsymbol{X}-\mathbb{E}\boldsymbol{X}\in\mathcal{M}(\Sigma_{\boldsymbol{XX}})\Longrightarrow \forall\boldsymbol{a}\in\mathcal{N}(\Sigma_{\boldsymbol{XX}}),\boldsymbol{a}^\top\boldsymbol{X}$为常数$\quad\text{a.s.}\Longrightarrow\Sigma_{\boldsymbol{YX}}\boldsymbol{a}=0,\mathcal{N}(\Sigma_{\boldsymbol{YX}})\subseteq\mathcal{N}(\Sigma_{\boldsymbol{XX}})\Longrightarrow \Sigma_{\boldsymbol{YX}}(\boldsymbol{I}-\Sigma_{\boldsymbol{XX}}^-\Sigma_{\boldsymbol{XX}})=0$
+4. 随机向量投影（逐渐接入线性回归）  
+    对于任意随机向量 $\boldsymbol{X}_{m \times 1}$ 和 $\boldsymbol{Y}_{n \times 1}$，定义最小化问题
+    $$
+    \min_{\boldsymbol{Z}=\boldsymbol{M}\boldsymbol{X}+\boldsymbol{b}: \boldsymbol{M} \in \mathbb{R}^{n \times m}, \boldsymbol{b} \in \mathbb{R}^n} \boldsymbol{E} \left[ (\boldsymbol{Y} - \boldsymbol{Z})(\boldsymbol{Y} - \boldsymbol{Z})^\top \right]
+    $$
+    在Löwner序下的解$\hat{\boldsymbol{Y}}$为$\boldsymbol{Y}$在$\boldsymbol{X}$上的线性投影，记作$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$。
+    + 实际上，这里的线性投影可以表示为$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})=\mathbb{E}\boldsymbol{Y}+\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-(\boldsymbol{X}-\mathbb{E}\boldsymbol{X})$，其中$\Sigma_{\boldsymbol{YX}}=\mathrm{Cov}(\boldsymbol{Y},\boldsymbol{X}),\Sigma_{\boldsymbol{XX}}=\mathrm{Cov}(\boldsymbol{X})$。

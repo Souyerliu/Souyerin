@@ -6,7 +6,7 @@ tags:
     - 多元统计
     - 数理统计
 cover: ./多元统计分析-Cheat-Sheet/cover.png
-draft: true
+sticky: true
 ---
 
 一些基本的概念界定：
@@ -131,3 +131,7 @@ draft: true
     + 若$A_{12}=\mathbf{0}$或$A_{21}=\mathbf{0}$，则有$|A|=|A_{11} |\cdot|A_{22}|$；
     + 若$A_{22}$可逆，则$|A|=|A_{22} |\cdot|A_{11.2}|$；若$A_{11}$可逆，则$A=|A_{11} |\cdot|A_{22.1}|$。
 ## 随机向量与矩阵
++ 协方差矩阵与相关系数矩阵的关系：设相关系数矩阵$\boldsymbol{\rho}=(\rho_{ij})_{p\times p}$，$V^{\frac12}=\text{diag}\{\sqrt{\sigma_{11}},\cdots,\sqrt{\sigma_{pp}}\}$，则有$\Sigma=V^{\frac12}\boldsymbol{\rho}V^{\frac12}$。
++ 随机向量的线性变换：设$\mathbf{x}$为$p$维随机向量，$C$为$k\times p$行满秩矩阵（$k\leq p$），那么对于$\mathbf{x}$的一个线性变换$\mathbf{z}=C\mathbf{x}$：
+    1. 均值向量：$\boldsymbol{\mu}_{\mathbf{z}}=C\boldsymbol{\mu}_\mathbf{x}$；
+    2. 协方差矩阵：$\Sigma_{\mathbf{z}}=C\Sigma_{\mathbf{x}}C^\top$。

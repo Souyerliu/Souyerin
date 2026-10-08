@@ -3,6 +3,7 @@ import { installCubism2ContextReset } from "../toolkit/live2d-context";
 import { installLive2DPointerTracking } from "../toolkit/live2d-pointer";
 import { installLive2DGazeRefresh } from "../toolkit/live2d-gaze";
 import { resolveLive2DWelcome } from "../toolkit/live2d-welcome";
+import { createLive2DCharacterTips } from "../toolkit/live2d-character-tips";
 
 const cdnBases = [
   "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist",
@@ -37,6 +38,7 @@ const initScript = `{
   const installPointerTracking = ${installLive2DPointerTracking.toString()};
   const installGazeRefresh = ${installLive2DGazeRefresh.toString()};
   const resolveWelcome = ${resolveLive2DWelcome.toString()};
+  const createCharacterTips = ${createLive2DCharacterTips.toString()};
   const tipsPath = config.waifuPath;
 
   const getRightOffset = () => {
@@ -221,6 +223,26 @@ const initScript = `{
       JSON.stringify({ ...tips, message: { ...tips.message, welcome } }),
     ], { type: "application/json" }));
     config.waifuPath = state.welcomeConfigUrl;
+    state.runtimeTips = createCharacterTips(
+      { ...tips, message: { ...tips.message, welcome } },
+      () => String(resolvedModelId()),
+      () => resolveWelcome(tips, String(resolvedModelId()), location.pathname),
+    );
+    // 库只读取顶层配置且长期缓存它；仅为本站配置 URL 提供动态角色视图。
+    // 其他模型、纹理及业务请求仍按原有 fetch 执行。
+    if (!state.characterTipsFetch) {
+      const fetchTips = window.fetch.bind(window);
+      window.fetch = async (input, options) => {
+        const response = await fetchTips(input, options);
+        const url = input instanceof Request ? input.url : String(input);
+        if (url === state.welcomeConfigUrl) {
+          const runtimeTips = state.runtimeTips;
+          response.json = async () => runtimeTips;
+        }
+        return response;
+      };
+      state.characterTipsFetch = true;
+    }
     window.initWidget(config);
     state.mountedAt = Date.now();
     ensureLayout();
@@ -345,6 +367,12 @@ const initScript = `{
       window.setInterval(() => {
         if (!state.initialized || !document.getElementById("waifu")) return;
         const path = location.pathname + location.search;
+        const modelId = resolvedModelId();
+        if (state.lastTipsModelId !== undefined && state.lastTipsModelId !== modelId) {
+          dismissWelcome(state);
+          sessionStorage.removeItem("waifu-message-priority");
+        }
+        state.lastTipsModelId = modelId;
         if (state.lastWelcomePath !== path) {
           state.lastWelcomePath = path;
           replayRise();

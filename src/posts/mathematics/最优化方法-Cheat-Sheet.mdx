@@ -1,0 +1,88 @@
+---
+title: 最优化方法 Cheat Sheet
+date: 2026-09-21 22:12:40
+categories: [数学,最优化]
+tags:
+    - 运筹学
+    - 最优化理论
+cover: ./最优化方法-Cheat-Sheet/cover.png
+---
+
+# 引言
+什么是优化？其本质是在将问题进行数学建模后求出最优解的过程。一般的优化问题包括：目标函数、不等式/等式约束函数（可选）、优化（决策）变量与变量空间。
++ 最优化理论主要研究的内容包括解决的方法（算法），为什么方法有效（理论）以及如何实现（软件/编程）。
++ 在本课程中，主要研究凸优化问题，主要因为：
+    + 凸优化理论已得到较为充分的研究，有很多高效且可靠的算法
+    + 很多现实问题可以转化为凸优化问题
+    + 对凸优化问题的解决思路可以指导解决更一般的问题（非凸优化）
+## 优化问题的分类
+1. 连续与离散优化问题  
+    连续优化问题是指决策变量连续取值的优化问题，例如在平面、区间等集合中取值；
+    + 连续优化问题中，在可微性等适当条件下，一个点的最优性信息可以通过其邻域内的其他点的信息来推断。
+    
+    离散优化问题是指决策变量的可行集为离散集合，例如整数集合（整数规划）、离散点集等。
+    + 离散优化问题通常不能直接利用导数信息；连续松弛是重要的求解思路之一，但具体难度取决于问题结构。
+2. 无约束与约束优化问题  
+    无约束优化问题是决策变量$\boldsymbol{x}$没有约束，即可行集为$\R^n$；约束优化问题是决策变量$\boldsymbol{x}$有约束，即可行集为$\R^n$的子集。
+    + 约束问题可以通过引入指示函数（indicator function）来转化为无约束问题。比如：
+        $$
+        \min_{\boldsymbol{x} \in \mathbb{R}^n} \ f(\boldsymbol{x}) \quad \text{s.t.} \ \boldsymbol{x} \in C\Longrightarrow \min_{\boldsymbol{x} \in \mathbb{R}^n} \ f(\boldsymbol{x}) + I_C(\boldsymbol{x}),
+        $$
+        其中$I_C(\boldsymbol{x})=\begin{cases}0,\boldsymbol{x}\in C\\\infty,\boldsymbol{x}\not\in C\end{cases}$。除此之外，约束优化问题还可以通过拉格朗日乘子法、罚函数法转化为无约束优化问题。
+3. 确定性与随机优化问题
+    + 确定性优化问题的目标函数和约束由给定的数据确定；求解时也可以采用随机算法。
+    + 随机优化问题的模型涉及随机量，利用其分布信息优化期望目标或处理随机约束。
+    
+    注意问题的随机性与算法的随机性是不同的概念。
+4. 凸优化与非凸优化问题  
+    + 凸优化问题是指目标函数为凸函数、可行域为凸集的优化问题。凸优化问题的任何局部解都是全局最优解。
+    + 非凸优化问题是指目标函数非凸、或可行域不是凸集的优化问题。非凸优化问题的局部最优解不一定是全局最优解。集合大得多，也困难得多。
+
+    在实际中，最好是解决一个凸优化问题，或是将原问题转换（近似）为一个（或一系列）凸优化问题来逐步解决。
+    > 历史上曾经将优化问题划分为线性优化与非线性优化，但之后发现线性优化能够解决的问题范围太小，于是重新划分为凸优化与非凸优化问题。  
+    > 另一方面，如今神经网络的优化往往是非凸优化，这可能也需要单独作为一个研究领域。
+
+## 凸性的基本概念
+1. 凸集：在集合$C \subseteq \mathbb{R}^n$中，对$\forall \boldsymbol{x}, \boldsymbol{y} \in C$，和$0 \leq \theta \leq 1$，有
+    $$
+    \theta \boldsymbol{x} + (1 - \theta)\boldsymbol{y} \in C.
+    $$
+    直观理解：凸集中任意两点连线都在集合中。 
+2. 凸函数  
+    称函数$f: \mathbb{R}^n \to \mathbb{R}$为凸函数，如果$\text{dom}\ f$（定义域）是凸集，且$\forall \boldsymbol{x}, \boldsymbol{y} \in \text{dom}\ f, 0 \leq \theta \leq 1$，有
+    $$
+    f(\theta \boldsymbol{x} + (1 - \theta)\boldsymbol{y}) \leq \theta f(\boldsymbol{x}) + (1 - \theta)f(\boldsymbol{y}).
+    $$
+    直观理解：函数上任意两点所连接的弦落在函数以上。
+    + 等价地，函数为凸当且仅当其在任意直线与定义域的交集上为凸，即$\forall \boldsymbol{x} \in \text{dom}\ f, \boldsymbol{v} \in \mathbb{R}^n$，$g(t) = f(\boldsymbol{x} + t\boldsymbol{v})$ 是凸函数，$t \in \{t \mid \boldsymbol{x} + t\boldsymbol{v} \in \text{dom}\ f\}$。【特别适用于判断高维函数的凸性】
+    + 特别地，对于二次型函数$f(\boldsymbol{x})=\boldsymbol{x}^\top A\boldsymbol{x},\boldsymbol{x}\in\R^n$，矩阵$A$的正定性决定了函数的凸性。
+3. 凸优化问题  
+    $$
+    \begin{aligned}
+    \min_{\boldsymbol{x} \in D} \quad & f_0(\boldsymbol{x}) \\
+    \text{s.t.} \quad & f_i(\boldsymbol{x}) \leq 0, \quad i = 1, \dots, m, \\
+    & h_j(\boldsymbol{x}) = 0, \quad j = 1, \dots, p
+    \end{aligned}
+    $$
+    其中，
+    - 目标函数 $f_0$ 和不等约束函数 $f_i, i = 1, \dots, m$ 均为凸函数
+    - 等式约束函数 $h_j, j = 1, \dots, p$ 为仿射的 （即$h_j(\boldsymbol{x}) = a_j^\top \boldsymbol{x} + b_j$）
+    - 优化定义域 $D = \text{dom } f_0 \cap \bigcap_i \text{dom } f_i$
+
+    典例：最小二乘、线性规划（下面会详细介绍）
+4. 局部最优与全局最优   
+    凸优化有一个重要特性：局部最小值即为全局最小值。具体而言，严格地说，若$x$为可行解（$x \in D$），且在一个邻域内最小：
+    $$
+    f(x) \leq f(y) \quad \forall y\in D, \|x - y\|_2 \leq \rho
+    $$
+    则$f(x) \leq f(y),\  \forall y\in D$。
+5. 非凸优化转为凸优化  
+    一般的非凸优化问题主要有两个方面的途径解决：
+    1. 局部优化方法
+        + 利用局部信息迭代寻找驻点或局部最小值
+        + 可使用多个初始点改善结果
+        + 通常无法得到全局最优保证或全局误差界
+        + 通常速度较快
+    2. 全局优化方法
+        + 搜索全局最优（如粒子群优化、模拟退火）；这类启发式方法通常无有限时间全局最优保证
+        + 最坏情况下，计算代价可能随问题规模呈指数级增长
