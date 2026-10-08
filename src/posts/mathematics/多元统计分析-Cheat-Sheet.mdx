@@ -39,7 +39,7 @@ sticky: true
 + 在计算距离前按需对数据进行标准化（考虑不同变量的重要性）
 
 # 预备知识
-> 多元统计分析的预备知识与线性模型基本重合，因此在[线性模型Cheat Sheet](/posts/mathematics/线性模型-cheat-sheet)中已经记录的内容这里就不再赘述，只补充未涉及的内容。
+> 多元统计分析的预备知识与线性模型基本重合，因此在[线性模型Cheat Sheet](/posts/mathematics/线性模型-cheat-sheet/)中已经记录的内容这里就不再赘述，只补充未涉及的内容。
 ## 向量与矩阵代数
 对于两个向量$\mathbf{x}=(x_1,x_2,\cdots,x_p)^\top,\mathbf{y}=(y_1,y_2,\cdots,y_p)^\top$，可定义下述概念：
 + 内积：$\mathbf{x}^\top\mathbf{y}=x_1y_1+\cdots+x_py_p$
@@ -52,22 +52,24 @@ sticky: true
     投影长度为$L_x |\cos(\theta)|=\dfrac{\mathbf{x}^\top\mathbf{y}}{L_y}$。
 ### 二次型与统计距离
 二次型标准形式：
-    $$
-    Q = \mathbf{x}^\top A\mathbf{x}=\sum_{i=1}^p\sum_{j=1}^pa_{ij}x_ix_j
-    =\begin{bmatrix}x_1, x_2, \cdots, x_p\end{bmatrix}
-    \begin{bmatrix}
-    a_{11} & a_{12} & \cdots & a_{1p} \\
-    a_{21} & a_{22} & \cdots & a_{2p} \\
-    \vdots & \vdots & \ddots & \vdots \\
-    a_{p1} & a_{p2} & \cdots & a_{pp}
-    \end{bmatrix}
-    \begin{bmatrix}
-    x_1 \\
-    x_2 \\
-    \vdots \\
-    x_p
-    \end{bmatrix}
-    $$
+
+$$
+Q = \mathbf{x}^\top A\mathbf{x}=\sum_{i=1}^p\sum_{j=1}^pa_{ij}x_ix_j
+=\begin{bmatrix}x_1, x_2, \cdots, x_p\end{bmatrix}
+\begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1p} \\
+a_{21} & a_{22} & \cdots & a_{2p} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{p1} & a_{p2} & \cdots & a_{pp}
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+\vdots \\
+x_p
+\end{bmatrix}
+$$
+
 + 取$c=\sqrt{Q}=\sqrt{\mathbf{x}^\top A\mathbf{x}}$即可作为统计距离（前提是$A$为正定矩阵）。当$p=2$时，由$A$的谱分解可得：
     $$
     A=\lambda_1\mathbf{e}_1^\top\mathbf{e}_1+\lambda_2\mathbf{e}_2^\top\mathbf{e}_2\Longrightarrow \mathbf{x}^\top A\mathbf{x}=\lambda_1(\mathbf{x}^\top\mathbf{e}_1)^2+\lambda_2(\mathbf{x}^\top\mathbf{e}_2)^2

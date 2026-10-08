@@ -31,10 +31,10 @@ function projectPathCandidates(postId: string): string[] {
 function readSummaryArtifact(postId: string, postTitle?: string): LocalAiSummary | null {
   const candidates = new Set(projectPathCandidates(postId).map((path) => path.toLowerCase()));
   const title = postTitle?.trim() || "";
-  const entry = summaryArtifact.entries.find(
-    (candidate) =>
-      candidates.has(candidate.path.toLowerCase()) || (title !== "" && candidate.title === title),
-  );
+  // 先按路径匹配，避免文章移动后同名旧记录抢先命中。
+  const entry =
+    summaryArtifact.entries.find((candidate) => candidates.has(candidate.path.toLowerCase())) ??
+    (title ? summaryArtifact.entries.find((candidate) => candidate.title === title) : undefined);
   const content = entry?.content.trim() || "";
   if (!content) return null;
   return {
@@ -64,11 +64,14 @@ export function readLocalAiSummary(postId: string, postTitle?: string): LocalAiS
         `SELECT summary, summaryModel, summarySourceHash
          FROM Post
          WHERE lower(path) IN (${placeholders})${titleClause}
+         ORDER BY CASE WHEN lower(path) IN (${placeholders}) THEN 0 ELSE 1 END
          LIMIT 1`,
       )
-      .get(...normalizedPaths, ...(normalizedTitle ? [normalizedTitle] : [])) as
-      | { summary?: unknown; summaryModel?: unknown; summarySourceHash?: unknown }
-      | undefined;
+      .get(
+        ...normalizedPaths,
+        ...(normalizedTitle ? [normalizedTitle] : []),
+        ...normalizedPaths,
+      ) as { summary?: unknown; summaryModel?: unknown; summarySourceHash?: unknown } | undefined;
     const content = typeof row?.summary === "string" ? row.summary.trim() : "";
     if (!content) return readSummaryArtifact(postId, postTitle);
     return {
