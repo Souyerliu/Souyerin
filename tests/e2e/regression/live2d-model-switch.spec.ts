@@ -6,6 +6,12 @@ import sharp from "sharp";
 test("@regression Live2D 跨版本切换后遮罩正常且画布尺寸保持一致", async ({ page }) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 900 });
+  const modelRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/model/yuno/") && request.url().includes(".moc3")) {
+      modelRequests.push(request.url());
+    }
+  });
   await page.addInitScript(() => {
     localStorage.setItem("modelId", "1");
     localStorage.setItem("modelTexturesId", "0");
@@ -61,6 +67,10 @@ test("@regression Live2D 跨版本切换后遮罩正常且画布尺寸保持一�
         .toBe(false);
     }
     await expectRendered();
+    if (id === 2) {
+      expect(modelRequests.length).toBeGreaterThan(0);
+      expect(modelRequests.every((url) => new URL(url).pathname.endsWith(".moc3.gz"))).toBe(true);
+    }
     if (id === 2 && !gazeChecked) {
       gazeChecked = true;
       const runtime = await page

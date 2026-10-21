@@ -87,3 +87,119 @@ sticky: true
     2. 全局优化方法
         + 搜索全局最优（如粒子群优化、模拟退火）；这类启发式方法通常无有限时间全局最优保证
         + 最坏情况下，计算代价可能随问题规模呈指数级增长
+
+# 向量与矩阵范数
+## 向量范数
+定义：若函数 $\|\cdot\|: \mathbb{R}^n \to \mathbb{R}$ 满足以下条件：
++ 齐次性：$\forall \boldsymbol{v} \in \mathbb{R}^n, \forall \alpha \in \mathbb{R}$，有$\|\alpha \boldsymbol{v}\| = |\alpha| \|\boldsymbol{v}\|$；
++ 三角不等式：$\forall \boldsymbol{v}, \boldsymbol{w} \in \mathbb{R}^n$，有$\|\boldsymbol{v} + \boldsymbol{w}\| \leq \|\boldsymbol{v}\| + \|\boldsymbol{w}\|$；
++ 正定性：$\forall \boldsymbol{v} \in \mathbb{R}^n$，有 $\|\boldsymbol{v}\| \geq 0$，且$\|\boldsymbol{v}\| = 0$当且仅当$\boldsymbol{v} = \boldsymbol{0}$.
+
+则称$\|\cdot\|$为$\mathbb{R}^n$上的向量范数.
++ 常用向量范数：$\ell_p$范数（$p\geq 1$）
+    $$
+    \|\boldsymbol{v}\|_p=\left(\sum_{i=1}^n|v_i|^p\right)^{1/p}
+    $$
+    其中$\boldsymbol{v}\in\R^n$。在实际优化问题中$p$最常取$1,2$或$\infty$。$\ell_{\infty}$范数定义为$\displaystyle\|\boldsymbol{v}\|_{\infty}=\max_{1\leq i\leq n}|v_i|$。
+    + 当然也可以定义$\ell_0$“范数”：$\displaystyle\|\boldsymbol{v}\|_0=\sum_{i=1}^n\mathbf{1}_{\{v_i\neq 0\}}$，不过它并不是向量范数（齐次性不满足）。可以证明，$\ell_1$范数是$\ell_0$范数在$\{\boldsymbol{v}\mid\|\boldsymbol{v}\|_{\infty}\leq 1\}$上的凸包络（最大凸下界函数）。
+## 矩阵范数
+定义与向量范数类似，只需要将定义域改为$\R^{m\times n}$即可。典型的矩阵范数如下：
++ 核范数：矩阵的奇异值之和
+    $$
+    \|A\|_*=\sum_{i=1}^{\min\{m,n\}}\sigma_i(A)=\|\boldsymbol{\sigma}(A)\|_1
+    $$
+    由此可见核范数就是奇异值向量的$\ell_1$范数。相应地，也有奇异值向量$\ell_0$范数对应的矩阵范数：矩阵秩函数
+    $$
+    \operatorname{rank}(A) = \sum_{i=1}^{\min\{m,n\}} \mathbb{1}_{\{\sigma_i(A) > 0\}} = \|\boldsymbol{\sigma}(A)\|_0.
+    $$
+    同样在范数单位球上，核范数是秩函数的凸包络，因此其在优化中常被用来寻找低秩矩阵。
++ Frobenius范数（F范数）
+    $$
+    \|A\|_F=\sqrt{\sum_{i=1}^m\sum_{j=1}^n|a_{ij}|^2}=\sqrt{\text{trace}(A^\top A)}=\sqrt{\sum_{i,j}a_{ij}^2}
+    $$
+    其可以看作向量$\ell_2$范数的推广。
+    + F范数具有正交不变性：$\|UAV\|_F=\|A\|_F$
+    + 在优化中，常用的矩阵内积是Frobenius内积：
+        $$
+        \langle A,B\rangle_F=\text{trace}(A^\top B)=\sum_{i=1}^m\sum_{j=1}^na_{ij}b_{ij}
+        $$
++ 谱范数：矩阵的最大奇异值
+    $$
+    \|A\|=\sigma_{\max}(A)=\sqrt{\lambda_{\max}(A^\top A)}
+    $$
+    与F范数的关系：$\|A\|\leq\|A\|_F$
+<Note title="补充">
+与向量$\ell_p$范数类似，矩阵范数也可以用 Schatten 范数统一表示：
+1. Schatten p 范数：$\displaystyle\|X\|_{S_p} = \left( \sum_{i=1}^{\min\{m,n\}} \sigma_i(X)^p \right)^{1/p}$
+2. 当 $p=1$ 时，$\|X\|_{S_1} = \|\boldsymbol{\sigma}(X)\|_1 = \|X\|_*$
+3. 当 $p \to 0$ 时（非范数），$\|X\|_{S_0} = \|\boldsymbol{\sigma}(X)\|_0 = \operatorname{rank}(X)$
+4. 当 $p \to \infty$ 时，$\|X\|_{S_\infty} = \|\boldsymbol{\sigma}(X)\|_\infty = \sigma_1(X)$
+
+另外，我们还可以从向量范数诱导得到另一类矩阵范数：
+$$
+\|X\|_p=\sup_{\boldsymbol{v}\neq 0}\frac{\|X\boldsymbol{v}\|_p}{\|\boldsymbol{v}\|_p}
+$$
+特别地，当$p=2$时，这个范数就是谱范数。
+</Note>
+
+范数在优化算法中的作用：
++ 作为目标函数的正则项，对估计量的复杂度进行不同程度的惩罚：
+    | 惩罚项 | 估计量的结构 | 例子 |
+    |---|---|---|
+    | $\|\beta\|_1$ | 稀疏：多数分量为 0 | Lasso|
+    | $\|X\|_*$ | 低秩 | 矩阵补全|
+    | $\|\beta\|_2^2$ | 收缩，分量一般非零 | 岭回归 |
++ 作为最快下降的度量：设优化变量为矩阵$W \in \mathbb{R}^{m \times n}$（如神经网络一层的权重），目标函数在当前点的梯度$G = \nabla f(W) \in \mathbb{R}^{m \times n}$。范数$\|\cdot\|$下的最速下降方向为
+    $$
+    \Delta^\star = \arg\min \left\{ \langle G, \Delta \rangle : \Delta \in \mathbb{R}^{m \times n},\ \|\Delta\| \leq 1 \right\}:
+    $$
+    | 范数 | $\Delta^\star$ | 对应算法 |
+    |---|---|---|
+    | F 范数 | $-G/\|G\|_F$ | 梯度下降 |
+    | $\ell_\infty$（逐元素） | $-\operatorname{sign}(G)$ | 符号下降（Adam） |
+    | 谱范数 | $-UV^\top$ | Muon |
+
+    变量为向量时，前两行即通常的梯度下降与符号下降；第三行只对矩阵变量有意义（需要对$G$进行紧凑奇异值分解：$G = U \Sigma V^\top$，$U \in \mathbb{R}^{m \times r}$，$V \in \mathbb{R}^{n \times r}$，$r = \operatorname{rank}(G)$）。
+    > 紧凑SVD（也称截断SVD）与普通SVD的主要区别在于：紧凑SVD只保留了非零奇异值及对应的奇异向量。
+# 凸性进阶
+> 前面我们已经简单提到凸性的基本概念，这里就不重复赘述了。
+## 仿射集
+定义：若集合$C\subseteq\R^n$包含经过集合中任意两点的直线，那么就称$C$为仿射集。【符号定义：$z=\theta x+(1-\theta)y\in C,\ \forall x,y\in C,\theta\in\R$】
++ $C$是仿射集$\iff$若$x_1, \dots, x_k \in C, \theta_1 + \dots + \theta_k = 1$，则$\theta_1 x_1 + \dots + \theta_k x_k \in C$。
++ 若$C$是仿射集，给定$x_0\in C$，则结合$V=C-x_0=\{x-x_0\mid x\in C\}$为$\R^n$的一个线性子空间。
++ 对任意仿射集$C$，其可以表示为某个线性方程组$\{x\mid Ax=b\}$的解集
+## 凸包与凸集
++ 首先定义凸组合：对于$x_1,\cdots,x_k\in\R^n,\displaystyle\sum_i\theta_i=1,\theta_i\geq 0,i=1,2,\cdots,k$，$x=\theta_1x_1+\cdots+\theta_kx_k$为这些点的凸组合。
++ 对于集合$C\subseteq\R^n$，它的凸包就是其所有点的凸组合：
+    $$
+    \text{conv}(C) = \left\{ \sum_{i=1}^k \theta_ix_i \mid x_i \in C, \theta_i \ge 0, i = 1, \dots, k, \sum_i \theta_i = 1 \right\}.
+    $$
+    $C$的凸包是包含$C$的最小凸集。
++ 一些典型的凸集：
+    - 范数球：$\{x : \|x - x_c\| \le r\}$，给定范数、球心$x_c$和半径$r \ge 0$；
+    - 超平面：$\{x : a^\top x = b\}$，给定$a, b$；
+    - 半空间：$\{x : a^\top x \le b\}$，给定$a, b$；
+    - 仿射空间：$\{x : Ax = b\}$，给定$A, b$；
+    + 多面体：$\{x : Ax \preceq b\}$，给定$A, b$（或$\{x : Ax \preceq b, Cx = d\}$）。【$\preceq$表示向量分量不等号】
+        + 可以理解为有限个半空间与超平面的交集
+    + 单纯形：仿射独立点集$v_1, v_2, \dots, v_k \in \mathbb{R}^n$（即$v_2-v_1,\cdots,v_k-v_1$线性无关）的凸包
+        $$
+        \text{conv} \{v_1, \dots, v_k\} = \{\sum_i \theta_i v_i | \theta \succeq 0, 1^\top \theta = 1\}
+        $$
+        + 概率单纯形：$\text{conv} \{e_1, \dots, e_n\} = \{\omega | \omega \succeq 0, 1^\top \omega = 1\}$（即标准基向量的凸包）
+## 锥体
+定义：对于集合$C \subseteq \mathbb{R}^n$，若对任意$ \boldsymbol{x} \in C,\theta \ge 0 $，有$\theta \boldsymbol{x} \in C$，则称$C$为锥体。
++ 凸锥（既是锥体又是凸集）：满足任意$\boldsymbol{x}_1, \boldsymbol{x}_2 \in C$，有$\theta_1 \boldsymbol{x}_1 + \theta_2 \boldsymbol{x}_2 \in C, \forall\theta_1, \theta_2 \ge 0$
++ 锥组合（非负线性组合）：对$\boldsymbol{x}_1, \dots, \boldsymbol{x}_k \in \mathbb{R}^n,\theta_1, \dots, \theta_k \ge 0$，$\theta_1 \boldsymbol{x}_1 + \dots + \theta_k \boldsymbol{x}_k$为锥组合。
++ 锥包：集合中所有点的锥组合。
++ 一些典型的凸锥：
+    + 范数锥：对于范数$\|\cdot\|$，称$C = \{(x, t) : \|x\| \le t\} \subseteq \mathbb{R}^{n+1}$为范数锥；
+        + 特别地，对于$\ell_2$范数$\|\cdot\|_2$得到的范数锥也称为二阶锥。
+    + 法向锥：对于凸集$C$和点$x_0 \in C$，法向锥定义为$N_C(x_0) = \{y : y^\top (x - x_0) \le 0, \forall x \in C\}$
+    + 半正定锥：首先定义
+        + $n \times n$对称矩阵集 $\mathbf{S}^n = \{\boldsymbol{X} \in \mathbb{R}^{n \times n} : \boldsymbol{X} = \boldsymbol{X}^\top\}$
+        + $n \times n$对称半正定矩阵集（$\forall \boldsymbol{z} \in \mathbb{R}^n, \boldsymbol{z}^\top \boldsymbol{X} \boldsymbol{z} \ge 0$）: $\mathbf{S}_+^n = \{\boldsymbol{X} \in \mathbf{S}^n : \boldsymbol{X} \succeq 0\}$
+        + $n \times n$对称正定矩阵集 $\mathbf{S}_{++}^n = \{\boldsymbol{X} \in \mathbf{S}^n : \boldsymbol{X} \succ 0\}$
+
+        可以证明$\mathbf{S}_+^n$是凸锥。
+## 凸集性质

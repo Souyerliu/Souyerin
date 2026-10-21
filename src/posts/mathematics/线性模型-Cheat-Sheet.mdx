@@ -124,4 +124,120 @@ sticky: true
     \min_{\boldsymbol{Z}=\boldsymbol{M}\boldsymbol{X}+\boldsymbol{b}: \boldsymbol{M} \in \mathbb{R}^{n \times m}, \boldsymbol{b} \in \mathbb{R}^n} \boldsymbol{E} \left[ (\boldsymbol{Y} - \boldsymbol{Z})(\boldsymbol{Y} - \boldsymbol{Z})^\top \right]
     $$
     在Löwner序下的解$\hat{\boldsymbol{Y}}$为$\boldsymbol{Y}$在$\boldsymbol{X}$上的线性投影，记作$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$。
-    + 实际上，这里的线性投影可以表示为$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})=\mathbb{E}\boldsymbol{Y}+\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-(\boldsymbol{X}-\mathbb{E}\boldsymbol{X})$，其中$\Sigma_{\boldsymbol{YX}}=\mathrm{Cov}(\boldsymbol{Y},\boldsymbol{X}),\Sigma_{\boldsymbol{XX}}=\mathrm{Cov}(\boldsymbol{X})$。
+    + 实际上，这里的线性投影可以表示为
+        $$
+        \text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})=\mathbb{E}\boldsymbol{Y}+\mathrm{Cov}(\boldsymbol{Y},\boldsymbol{X})[\mathrm{Cov}(\boldsymbol{X})]^-(\boldsymbol{X}-\mathbb{E}\boldsymbol{X})=\boldsymbol{\mu}_{\boldsymbol{Y}}+\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-(\boldsymbol{X}-\boldsymbol{\mu}_{\boldsymbol{X}})
+        $$
+        其中$\Sigma_{\boldsymbol{YX}}=\mathrm{Cov}(\boldsymbol{Y},\boldsymbol{X}),\Sigma_{\boldsymbol{XX}}=\mathrm{Cov}(\boldsymbol{X})$。由此得到最优系数
+        $$
+        \boldsymbol{M}^*=\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-,\quad \boldsymbol{b}^*=\boldsymbol{\mu}_{\boldsymbol{Y}}-\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-\boldsymbol{\mu}_{\boldsymbol{X}}
+        $$
+        > 当$(\boldsymbol{X},\boldsymbol{Y})$服从联合正态分布时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$就对应$\mathbb{E}(\boldsymbol{Y}\mid\boldsymbol{X})$。
+    + 特别地，当$\boldsymbol{X}$退化为定值时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$即为$\boldsymbol{Y}$的均值。
+    + 当$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})=\boldsymbol{M}^*\boldsymbol{X}+\boldsymbol{b}^*$时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{a}^\top\boldsymbol{Y})=\boldsymbol{a}^\top \boldsymbol{M}^*\boldsymbol{X}+\boldsymbol{a}^\top\boldsymbol{b}^*=\boldsymbol{a}^\top\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$
+    + $\hat{\boldsymbol{Y}}$满足的性质：$\mathbb{E}(\boldsymbol{Y}-\hat{\boldsymbol{Y}})=0,\mathbb{E}(\boldsymbol{X}^\top(\boldsymbol{Y}-\hat{\boldsymbol{Y}}))=0$
+5. 随机向量二次型   
+    + 设$\mathbb{E}\boldsymbol{X}=\boldsymbol{\mu},\mathrm{Cov}(\boldsymbol{X})=\Sigma$，则
+    $$
+    \begin{aligned}
+    \mathbb{E}(\boldsymbol{X}^\top \boldsymbol{A}\boldsymbol{X}) &= \operatorname{tr}(\boldsymbol{A}\Sigma) + \boldsymbol{\mu}^\top \boldsymbol{A}\boldsymbol{\mu}\\
+    \mathbb{E}[(\boldsymbol{X} - \boldsymbol{b})^\top \boldsymbol{A}(\boldsymbol{X} - \boldsymbol{b})] &= \operatorname{tr}(\boldsymbol{A}\Sigma) + (\boldsymbol{\mu} - \boldsymbol{b})^\top \boldsymbol{A}(\boldsymbol{\mu} - \boldsymbol{b})
+    \end{aligned}
+    $$
+    特别地，若$\Sigma=\sigma^2\boldsymbol{I}$（$\boldsymbol{X}$各分量不相关且等方差），则$\mathbb{E}(\boldsymbol{X}^\top \boldsymbol{A}\boldsymbol{X})=\sigma^2\text{tr}(\boldsymbol{A})+\boldsymbol{\mu}^\top \boldsymbol{A}\boldsymbol{\mu}$。
+    > 当$\boldsymbol{A}=\boldsymbol{I}$时，就是二阶矩计算公式。
+    + 设$\boldsymbol{X} \sim (\boldsymbol{\mu}, \sigma^2\boldsymbol{I}_n)$，其各分量相互独立，且对于$k = 3, 4$以及每个$i = 1, 2, \dots, n$，有$\mathbb{E}(X_i - \mu_i)^k = \nu_k$。如果$\boldsymbol{A}$是任意$n \times n$对称矩阵，且$\boldsymbol{a} \coloneqq (a_{11}, a_{22}, \dots, a_{nn})^\top$（$\boldsymbol{A}$对角线元素向量），那么
+        $$
+        \operatorname{Var}(\boldsymbol{X}^\top \boldsymbol{A}\boldsymbol{X}) = (\nu_4 - 3\sigma^4)\boldsymbol{a}^\top \boldsymbol{a} + 2\sigma^4\operatorname{tr}(\boldsymbol{A}^2) + 4\sigma^2\boldsymbol{\mu}^\top \boldsymbol{A}^2\boldsymbol{\mu} + 4\nu_3\boldsymbol{\mu}^\top \boldsymbol{A}\boldsymbol{a}.
+        $$
+## 矩母函数
++ 随机向量$\mathbf{X}$的矩母函数定义（默认存在）：$M_{\mathbf{X}}(\mathbf{t})=\mathbb{E}\left(\exp\{\mathbf{t}^\top\mathbf{X}\}\right)$。
+    + 矩母函数也称为矩生成函数，其名称来源于函数可以生成随机向量的任意阶矩。具体而言，对于一维随机变量：
+        $$
+        M_X(t) = \sum_{n=0}^\infty \frac{t^n}{n!} \mathbb{E}(X^n)\Longrightarrow M_X^{(n)}(0) = \mathbb{E}(X^n)
+        $$
+        而对于$k$维随机向量$\mathbf{X}$：
+        $$
+        M_{\mathbf{X}}(\mathbf{t}) = \sum_{n_1=0}^\infty \dots \sum_{n_k=0}^\infty \frac{t_1^{n_1} \dots t_k^{n_k}}{n_1! \dots n_k!} \mathbb{E}(X_1^{n_1} \dots X_k^{n_k})\Longrightarrow\frac{\partial^{n_1 + n_2 + \dots + n_k} M_{\mathbf{X}}(\mathbf{0})}{\partial t_1^{n_1} \partial t_2^{n_2} \dots \partial t_k^{n_k}}  = \mathbb{E}(X_1^{n_1} X_2^{n_2} \dots X_k^{n_k})
+        $$
+    + 常见分布矩母函数：
+        1. 一元标准正态分布$N(0,1)$：$M_X(t)=\exp\{\frac{t^2}{2}\}$；
+        2. 卡方分布$\chi_r^2$：$M_X(t)=(1-2t)^{-\frac{r}{2}},\quad t=[0,\frac12)$；
+        3. 多元正态分布$N_k(\boldsymbol{\mu},\Sigma)$：$M_{\mathbf{X}}(\mathbf{t}) = \exp\left\{ \mathbf{t}^\top \boldsymbol{\mu} + \frac{1}{2} \mathbf{t}^\top \Sigma \mathbf{t} \right\}$。
++ 矩母函数的性质：
+    1. 若在$\|\mathbf{t}\|< t_0$（$t_0>0$）范围内矩母函数$M_{\mathbf{X}}(\mathbf{t})$存在，那么其有且仅有一个分布与之对应；
+    2. 若$M_{(\mathbf{X},\mathbf{Y})}(\mathbf{t}_1,\mathbf{t}_2)$是$(\mathbf{X},\mathbf{Y})$的联合矩母函数，那么有$M_{\mathbf{X}}(t)=M_{(\mathbf{X},\mathbf{Y})}(\mathbf{t},0)$；
+    3. $\mathbf{X}$与$\mathbf{Y}$相互独立（记作$\mathbf{X}\perp\!\!\!\perp\mathbf{Y}$）$\Longleftrightarrow M_{(\mathbf{X},\mathbf{Y})}(\mathbf{t}_1,\mathbf{t}_2)=M_{\mathbf{X}}(\mathbf{t}_1)M_{\mathbf{Y}}(\mathbf{t}_2)$
+        + 应用例：$Q=Q_1+Q_2,Q\sim\chi^2_r,Q_1\sim\chi^2_{r_1},Q_1\perp\!\!\!\perp Q_2$，则$Q_2\sim\chi^2_{r-r_1}$。
+# 多元正态分布
++ 首先定义标准多元正态分布：设$Z_1,\cdots,Z_n\stackrel{i.i.d.}{\sim}N(0,1)$，则称$\mathbf{Z}=(Z_1,\cdots,Z_n)^\top$服从$n$维标准正态分布，记作$\mathbf{Z}\sim N_n(0,\mathbf{I}_n)$（或$N(0,\mathbf{I}_n)$）
+    + $\mathbf{Z}$的联合概率密度函数为
+        $$
+        f(\mathbf{z})=(2\pi)^{-\frac{n}{2}} \exp \left\{ -\frac{1}{2}\mathbf{z}^\top\mathbf{z} \right\}, \quad\mathbf{z} \in \mathbb{R}^n
+        $$
+        而$\mathbf{Z}$的矩母函数则为
+        $$
+        M_{\mathbf{Z}}(\mathbf{t}) = \prod_{i=1}^n \exp \left\{ \frac{1}{2}t_i^2 \right\} = \exp \left\{ \frac{1}{2}\mathbf{t}^\top\mathbf{t} \right\}.
+        $$
++ 基于标准多元正态分布，定义一般的多元正态分布：设$\mathbf{Z}\sim N_n(0,\mathbf{I}_n)$，若$m$维随机向量$\mathbf{Y}$与$A\mathbf{Z}+\boldsymbol{\mu}$同分布（$A\in\R^{m\times n},\boldsymbol{\mu}\in\R^{m\times 1}$），则称$\mathbf{Y}$服从$m$维正态分布，记作$\mathbf{Y}\sim N_n(\boldsymbol{\mu},\Sigma)$，其中$\Sigma=AA^\top\in\R^{m\times m}$。
+    + 由此可以发现，在定义中并没有对$A$作任何限制，因此当$A$非满秩（退化）时，得到的$\mathbf{Y}$分布也是退化的（甚至可以退化为常数向量）。而这种退化情形无法直接用密度函数形式进行刻画。
+    + $\mathbf{Y}$具有下述性质：
+        1. 期望与（协）方差：$\mathbb{E}\mathbf{Y}=\boldsymbol{\mu},\quad \mathrm{Var}(\mathbf{Y})=\Sigma$；
+        2. 矩母函数与特征函数：$M_{\mathbf{Y}}(\mathbf{t}) = \exp\left\{ \frac{1}{2} \mathbf{t}^\top \Sigma \mathbf{t}+\mathbf{t}^\top \boldsymbol{\mu} \right\},\quad \phi_{\mathbf{Y}}(\mathbf{t}) = \exp\left\{- \frac{1}{2} \mathbf{t}^\top \Sigma \mathbf{t}+i\mathbf{t}^\top \boldsymbol{\mu} \right\}$；
+        3. 线性变换：$C\mathbf{Y}+\mathbf{d}\sim N(C\boldsymbol{\mu}+\mathbf{d},C^\top\Sigma C)$；
+        4. 若$\Sigma>0$，则$\mathbf{Y}$的概率密度函数为
+            $$
+            f(\boldsymbol{y}) = (2\pi)^{-\frac{m}{2}} |\Sigma|^{-\frac{1}{2}} \exp \left\{ -\frac{1}{2}(\boldsymbol{y} - \boldsymbol{\mu})^\top\Sigma^{-1}(\boldsymbol{y} - \boldsymbol{\mu}) \right\}, \boldsymbol{y} \in \mathbb{R}^m,
++ 分块性质：设$\mathbf{Y}=\begin{pmatrix}\mathbf{Y}_1\\\mathbf{Y}_2\end{pmatrix}\sim N(\boldsymbol{\mu},\Sigma)$，$\boldsymbol{\mu}=\begin{pmatrix}\boldsymbol{\mu}_1\\\boldsymbol{\mu}_2\end{pmatrix}$和$\Sigma=\begin{pmatrix}\Sigma_{11}&\Sigma_{12}\\\Sigma_{21}&\Sigma_{22}\end{pmatrix}$为向量/矩阵分块。则   
+    + 边际分布性质：
+        1. $\mathbf{Y}_1\sim N(\boldsymbol{\mu}_1,\Sigma_{11})$且$\mathbf{Y}_2\sim N(\boldsymbol{\mu}_2,\Sigma_{22})$，
+        2. $\mathbf{Y}_1\perp\!\!\!\perp\mathbf{Y}_2$当且仅当$\Sigma_{12}=\mathbf{0}$，即$\mathbf{Y}_1\perp\!\!\!\perp\mathbf{Y}_2\iff\text{Cov}(\mathbf{Y}_1,\mathbf{Y}_2)=\mathbf{0}$。因此，如果$\mathbf{Y}\sim N(\boldsymbol{\mu},\Sigma)$，那么$A\mathbf{Y}\perp\!\!\!\perp B\mathbf{Y}\Longleftrightarrow A\Sigma B^\top=\mathbf{0}$。
+        
+        + 应用例：设$\mathbf{Y}_1, \mathbf{Y}_2, \dots, \mathbf{Y}_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$。则$\overline{\mathbf{Y}} \perp\!\!\!\perp S^2 =\displaystyle \frac{1}{n-1} \sum_i (\mathbf{Y}_i - \overline{\mathbf{Y}})^2$。
+    + 条件分布性质：给定$\mathbf{Y}_2$时，
+        $$
+        \mathbf{Y}_1\sim N\left(\boldsymbol{\mu}_1+\Sigma_{12}\Sigma_{22}^{-1}(\mathbf{Y}_2-\boldsymbol{\mu}_2),\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}\right)
+        $$
+        > 这个定理在后续回归分析中有重要作用。
++ 若$\mathbf{Y} \sim N(\boldsymbol{\mu}, \Sigma)$，将$\Sigma$特征分解为$P\Lambda_r P^\top$，则$\mathbf{U} = \Lambda_r^{-\frac{1}{2}} P^\top(\mathbf{Y} - \boldsymbol{\mu}) \sim N(\mathbf{0}, \mathbf{I}_r)$且$\mathbf{Y} = P\Lambda_r^{\frac{1}{2}}\mathbf{U} + \boldsymbol{\mu}\ \text{a.s.}$。
+    + 这也说明上述基于标准多元正态分布的定义里实际上完全可以找到一个标准多元正态分布向量使其线性变换后就得到$\mathbf{Y}$。
++ 多元正态判定条件：$\mathbf{Y}\in\R^m$服从多元正态分布当且仅当对任意非零常数向量$\mathbf{a}\in\R^{m}$，$\mathbf{a}^\top\mathbf{Y}$服从一元正态分布。
+## 多元正态分布的“回归”
+有上述条件分布定理可得，$\mathbb{E}(\mathbf{Y}_1|\mathbf{Y}_2=\mathbf{y}_2)=\boldsymbol{\mu}_1+\Sigma_{12}\Sigma_{22}^{-1}(\mathbf{Y}_2-\boldsymbol{\mu}_2)$，将其转化为
+$$
+\mathbb{E}(\mathbf{Y}_1|\mathbf{Y}_2=\mathbf{y}_2)-\boldsymbol{\mu}_1=\Sigma_{12}\Sigma_{22}^{-1}(\mathbf{Y}_2-\boldsymbol{\mu}_2)
+$$
+特别地，当$\mathbf{Y}_1$和$\mathbf{Y}_2$均为一元随机变量，则
+$$
+\begin{aligned}
+\mathbb{E}(Y_1|Y_2) &= \mu_1 + \frac{\sigma_{12}}{\sigma_2^2} Y_2 - \mu_2 \\
+&= \mu_1 + \frac{\sigma_1}{\sigma_2} \rho (Y_2 - \mu_2) \\
+&= \mu_1 - \beta \mu_2 + \beta Y_2,
+\end{aligned}
+$$
+这里$\sigma_1,\sigma_2$为标准差，$\rho$为相关系数。这一式子由统计学家高尔顿首次发现，同时其还发现下述规律：
++ $Y_2>\mu_2$时，$\mathbb{E}(Y_1|Y_2)$倾向于大于$\mu_1$；【父亲身高高于父亲均值时，儿子身高预测也倾向高于儿子均值】
++ 观测值表明$\beta\in(0,1)$，这说明$Y_1$的变化幅度总体低于$Y_2$【儿子群体身高变异整体低于父亲群体】。这也是高尔顿将这一现象命名为（均值）回归的原因。
+    + 实际上，这一现象的本质很容易理解：因为$\sigma_1\leq\sigma_2$（在高尔顿的实验中假设$\sigma_1=\sigma_2$），而相关系数$|\rho|< 1$，因此自然得到$|\beta|< 1$。而如今的回归分析已脱离了原本回归的本意，作为一般线性模型的分析方法。
+## 多元正态二次型分布
+设$\mathbf{Z} \sim N(\boldsymbol{\mu}, \mathbf{I}_m)$，由此我们可以定义以下重要分布（注意与数理统计中的中心分布区分）：
+1. 非中心卡方分布：$\mathbf{Z}^\top\mathbf{Z} \sim \chi^2_m(\delta^2)$，称为自由度为$m$的非中心卡方分布，其中$\delta^2 = \boldsymbol{\mu}^\top\boldsymbol{\mu}$称为非中心参数。特别地，$\delta^2 = 0$（即$\boldsymbol{\mu} = \mathbf{0}$）时即为（中心）卡方分布，记作$\chi^2_m$。
+    + 矩母函数：$\displaystyle M_{\chi^2_m(\delta^2)}(t) = (1 - 2t)^{-\frac{m}{2}} \exp \left\{ \frac{t}{1 - 2t} \delta^2 \right\}, t \in [0, 1/2) $；
+    + 非中心卡方分布仍然满足可加性。
+2. 非中心t分布：如果$u \overset{d}{=} \frac{\mathbf{Y}}{\sqrt{\mathbf{Z}/m}}$，则称随机变量$u$具有自由度为$m$的非中心学生t分布，记作$u \sim t_m(\mu)$，其中$\mathbf{Y} \sim N(\mu, 1),\mathbf{Z} \sim \chi^2_m$且相互独立，$\mu$称为非中心参数。
+3. 非中心F分布：如果$u \overset{d}{=} \frac{\mathbf{Y}/m_1}{\mathbf{Z}/m_2}$，则称随机变量$u$具有第一自由度为$m_1$和第二自由度为$m_2$的非中心F分布，记作$u \sim F_{m_1,m_2}(\delta^2)$，其中$\mathbf{Y} \sim \chi^2_{m_1}(\delta^2),\mathbf{Z} \sim \chi^2_{m_2}$且相互独立，$\delta^2$是非中心参数。
+
++ 设$\mathbf{Y} \sim N(\boldsymbol{\mu}, \mathbf{I}_n)$且$A$为对称矩阵，则$\mathbf{Y}^\top A\mathbf{Y}\sim \chi^2_r(\boldsymbol{\mu}^\top A\boldsymbol{\mu})\Longleftrightarrow A$是秩为$r$的幂等矩阵。
+    + 应用例：
+        1. 设$\mathbf{X} \sim N(\mu\mathbf{1}_n, \sigma^2\mathbf{I}_n),\displaystyle S^2 = \frac{1}{n-1}\sum_{i=1}^n(X_i - \overline{X})^2$，则$\displaystyle\frac{(n-1)S^2}{\sigma^2} = \frac{1}{\sigma^2}\mathbf{X}^\top (\mathbf{I}_n - \frac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top)\mathbf{X} \sim \chi^2_{n-1}$。
+        2. 设$A$和$B$为对称矩阵，$\mathbf{Y} \sim N(\boldsymbol{\mu}, \mathbf{I}_n)$，且$\mathbf{Y}^\top A\mathbf{Y}$和$\mathbf{Y}^\top B\mathbf{Y}$服从卡方分布，则$\mathbf{Y}^\top A\mathbf{Y} \perp\!\!\!\perp \mathbf{Y}^\top B\mathbf{Y}\Longleftrightarrow AB = 0$。
+        3. 设$\mathbf{Y} \sim N(0, \mathbf{I}_n)$，并令$Q_i = \mathbf{Y}^\top P_i\mathbf{Y} \sim \chi^2_{r_i}, i = 1, 2$。如果$P_1 \ge P_2$，则$Q_1 - Q_2 \perp\!\!\!\perp Q_2$且$Q_1 - Q_2 \sim \chi^2_{r_1 - r_2}$。
++ 设$\mathbf{Y} \sim N(0, \Sigma)$，且$A$为对称矩阵，则$\mathbf{Y}^\top A\mathbf{Y} \sim \chi^2_r \iff \Sigma^{1/2}A\Sigma^{1/2}$是秩为$r$的幂等矩阵$\iff A\Sigma$的$r$个特征值为$1$，其余为$0$。
+    + 特别地，如果$\Sigma > 0$，则$\Sigma^{1/2}A\Sigma^{1/2}$是幂等矩阵$\Longleftrightarrow A\Sigma$是幂等矩阵。由此可得$\mathbf{Y}^\top \Sigma^{-}\mathbf{Y} \sim \chi^2_{r(\Sigma)}$。
++ 如果$\mathbf{Y} \sim N(\boldsymbol{\mu}, \Sigma)$，其中$\Sigma > 0$，则$\mathbf{Y}^\top \Sigma^{-1}\mathbf{Y} \sim \chi^2_n(\boldsymbol{\mu}^\top \Sigma^{-1}\boldsymbol{\mu})$。
++ Fisher-Cochran 定理：设$\mathbf{Y} \sim N(\boldsymbol{\mu}, \mathbf{I}_m)$，且$\displaystyle \mathbf{I}_m = \sum_{i=1}^k A_i$，其中$A_i$为秩为$r_i$的对称矩阵，则有
+    $$
+    \mathbf{Y}^\top A_i\mathbf{Y} \sim \chi^2_{r_i}(\delta_i^2),\quad i = 1, 2, \dots, k
+    $$
+   其中$\delta_i^2 = \boldsymbol{\mu}^\top A_i\boldsymbol{\mu}, i = 1, 2, \dots, k,\quad \displaystyle\sum_{i=1}^k \delta_i^2 = \boldsymbol{\mu}^\top \boldsymbol{\mu}$。
+   + 当且仅当$\displaystyle \sum_{i=1}^k r_i = m$时，上述二次型相互独立。

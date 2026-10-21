@@ -1,0 +1,442 @@
+---
+title: 多元统计分析 代码合集
+date: 2026-10-21 10:09:53
+categories: [数学,统计学]
+tags:
+    - 多元统计
+    - 数理统计
+cover: ./多元统计分析-Cheat-Sheet/cover.png
+draft: true
+---
+
+> 本文与[数理统计-代码合集](/posts/mathematics/数理统计-代码合集/)的整理思路类似，以R代码为主，python对应代码辅助。
+1. 矩阵运算
+    <Tabs class="code-group" defaultValue="r">   
+        <Tab label="R" value="r">
+
+        ```r
+        A <- matrix(c(3, 1, -1,
+                5, 2, 4), nrow = 2, byrow = TRUE)
+        t(A) # 转置
+        B <- matrix(c(1, 2, -2,
+                    5, -3, 1), nrow = 2, byrow = TRUE)
+        4 * A # 矩阵标量乘法
+        A + B # 矩阵加法
+        A %*% t(B) # 矩阵乘法 
+
+        C <- c(-2,7,9)
+
+        A %*% C # 矩阵向量乘法（自动确定行/列向量）
+
+        D <- matrix(c(3, 4,
+                    2, 1), nrow = 2, byrow = TRUE)
+        solve(D) # 矩阵求逆
+
+        F <- matrix(c(3/2, -1/2, 0,
+                    -1/2, 3/2, 0,
+                    0, 0, 1), nrow = 3, byrow = TRUE)
+
+        F_eigen <- eigen(F)
+        F_value <- F_eigen$values # 矩阵特征值（向量形式）
+        F_vector <- F_eigen$vectors # 矩阵特征向量（矩阵形式）
+
+        library(psych)
+        tr(F) # 矩阵的迹
+        det(F) # 矩阵行列式
+        ```
+        </Tab>
+        
+        <Tab label="Python" value="python">
+        ```python
+        import numpy as np
+        A = np.array([[3, 1, -1],
+                    [5, 2, 4]])
+        print(A.T)
+
+        B = np.array([[1, 2, -2],
+                    [5, -3, 1]])
+        print(4 * A)
+        print(A + B)
+        print(A @ B.T)
+
+        C = np.array([-2, 7, 9])
+        print(A @ C)
+
+        D = np.array([[3, 4],
+                    [2, 1]])
+        print(np.linalg.inv(D))
+
+        F = np.array([[3/2, -1/2, 0],
+                    [-1/2, 3/2, 0],
+                    [0, 0, 1]])
+        F_value, F_vector = np.linalg.eig(F)
+        print(F_value)
+        print(F_vector)
+        print(np.linalg.det(F))
+        print(np.trace(F))
+        ```
+        </Tab>
+    </Tabs>
+2. 绘制椭圆  
+    注：旋转椭圆的二次型形式为
+    $$
+    \begin{bmatrix}
+    x \\
+    y
+    \end{bmatrix}
+    A_1
+    \begin{bmatrix}
+    x & y
+    \end{bmatrix}=\begin{bmatrix}
+    x \\
+    y
+    \end{bmatrix}
+    \begin{bmatrix}
+    a_1 & \frac{a_3}{2} \\
+    \frac{a_3}{2} & a_2
+    \end{bmatrix}
+    \begin{bmatrix}
+    x & y
+    \end{bmatrix}
+    = a_1x^2 + a_2y^2 + a_3xy = 1
+    $$
+    <Tabs class="code-group" defaultValue="r">   
+        <Tab label="R" value="r">
+
+        ```r
+        library(plotrix)
+        par(pty = "s")
+        plot(c(-2, 2), c(-2, 2), type = "n", xlab = "", ylab = "")
+        grid()
+        # 原始椭圆：(x,y)确定中心坐标，a和b确定轴长
+        draw.ellipse(x = 0, y = 0, a = 2, b = 1, angle = 0, deg = FALSE)
+
+        # 旋转椭圆的画法
+        A1 <- matrix(c(3, -sqrt(2),
+                    -sqrt(2), 2), nrow=2)
+        par(pty = "s")
+        plot(c(-1, 1), c(-1, 1),
+            type = "n", xlab = "", ylab = "")
+        grid()
+        draw.ellipse(x = 0, y = 0,
+                    a = 1/sqrt(eigen(A1)$values[1]), # 对应特征值
+                    b = 1/sqrt(eigen(A1)$values[2]),
+                    angle = atan(eigen(A1)$vectors[2,1] / eigen(A1)$vectors[1,1]), # 对应最大特征值对应特征向量与x正半轴夹角
+                    deg = FALSE) 
+        # 原始坐标轴
+        arrows(0, 0, 1, 0)
+        arrows(0, 0, 0, 1)
+        text(1, -0.1, label = "x1")
+        text(-0.1, 1, label = "y1")
+        # 旋转后坐标轴
+        arrows(0, 0, -eigen(A1)$vectors[1,1], -eigen(A1)$vector[2,1], lty = 2)
+        arrows(0, 0, -eigen(A1)$vectors[1,2], -eigen(A1)$vector[2,2], lty = 2)
+        text(-eigen(A1)$vectors[1,1], -eigen(A1)$vector[2,1], label = "x2")
+        text(-eigen(A1)$vectors[1,2], -eigen(A1)$vector[2,2], label = "y2")
+
+        # 使用contour函数绘图
+        d <- function(x, y){
+            3 * x^2 + 2 * y^2 - 2 * sqrt(2) * x * y
+        }
+        x1 <- y1 <- seq(-1.5, 1.5, length = 100)
+        z <- outer(x1, y1, d)
+        contour(x = x1, y = y1, z = z, levels = c(1, 2),
+                labels=c('c^2=1', 'c^2=4'),
+                main = expression(c^2 == 3*x^2 + 2*y^2 - 2*sqrt(2)*x*y)) 
+        grid()
+        legend('bottomright', lty=c(1, 2),
+            legend=c(expression(c^2==1),
+                        expression(c^2==4)))
+        ```
+        </Tab>
+        
+        <Tab label="Python" value="python">
+        ```python
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from matplotlib.patches import Ellipse
+
+        # 绘制椭圆
+        def draw_ellipse(ax, x, y, a, b, angle_rad, **kwargs):
+            ellipse = Ellipse(xy=(x, y), width=2*a, height=2*b, 
+                            angle=np.degrees(angle_rad), **kwargs)
+            ax.add_patch(ellipse)
+
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+        ax1.set_aspect('equal') 
+        ax1.set_xlim(-2, 2)
+        ax1.set_ylim(-2, 2)
+        ax1.set_xticks(np.arange(-2, 2.5, 0.5))
+        ax1.set_yticks(np.arange(-2, 2.5, 0.5))
+        ax1.grid(True)
+        ax1.set_xticklabels([])
+        ax1.set_yticklabels([])
+
+        # 画原始椭圆
+        draw_ellipse(ax1, x=0, y=0, a=2, b=1, angle_rad=0, edgecolor='blue', facecolor='none')
+        ax1.set_title("Original Ellipse")
+        ax2.set_aspect('equal')
+        ax2.set_xlim(-1, 1)
+        ax2.set_ylim(-1, 1)
+        ax2.grid(True)
+        ax2.set_xticklabels([])
+        ax2.set_yticklabels([])
+
+        A1 = np.array([[3, -np.sqrt(2)],
+                    [-np.sqrt(2), 2]])
+
+        eigenvalues, eigenvectors = np.linalg.eig(A1)
+        idx = np.argsort(eigenvalues)[::-1] 
+        eigenvalues = eigenvalues[idx]
+        eigenvectors = eigenvectors[:, idx]
+
+        a = 1 / np.sqrt(eigenvalues[0]) 
+        b = 1 / np.sqrt(eigenvalues[1])
+
+        angle_rad = np.arctan(eigenvectors[1, 0] / eigenvectors[0, 0])
+
+        # 画旋转椭圆
+        draw_ellipse(ax2, x=0, y=0, a=a, b=b, angle_rad=angle_rad, edgecolor='blue', facecolor='none')
+
+        ax2.arrow(0, 0, 1, 0, head_width=0.03, head_length=0.05, fc='k', ec='k')
+        ax2.arrow(0, 0, 0, 1, head_width=0.03, head_length=0.05, fc='k', ec='k')
+        ax2.text(1.05, -0.05, "x1", fontsize=12)
+        ax2.text(-0.1, 1.05, "y1", fontsize=12)
+
+        v1 = -eigenvectors[:, 0]
+        v2 = -eigenvectors[:, 1]
+
+        ax2.arrow(0, 0, v1[0], v1[1], head_width=0.03, head_length=0.05, fc='r', ec='r', linestyle='--')
+        ax2.arrow(0, 0, v2[0], v2[1], head_width=0.03, head_length=0.05, fc='g', ec='g', linestyle='--')
+
+        ax2.text(v1[0] * 1.1, v1[1] * 1.1, "x2", fontsize=12, color='r')
+        ax2.text(v2[0] * 1.1, v2[1] * 1.1, "y2", fontsize=12, color='g')
+
+        ax2.set_title("Rotated Ellipse (Quadratic Form)")
+
+        plt.tight_layout()
+        plt.show()
+
+
+        from matplotlib.lines import Line2D
+
+        def d(x, y):
+            return 3 * x**2 + 2 * y**2 - 2 * np.sqrt(2) * x * y
+
+        x1 = np.linspace(-1.5, 1.5, 100)
+        y1 = np.linspace(-1.5, 1.5, 100)
+        X, Y = np.meshgrid(x1, y1)
+        Z = d(X, Y)
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        contour = ax.contour(X, Y, Z, levels=[1, 2], colors='tab:blue')
+
+        fmt = {1: 'c^2=1', 2: 'c^2=4'}
+        ax.clabel(contour, inline=True, fontsize=10, fmt=fmt)
+
+        ax.set_title(r'\(c^2 = 3x^2 + 2y^2 - 2\sqrt{2}xy\)', fontsize=14)
+
+        ax.grid(True, linestyle='-', alpha=0.7)
+
+        custom_lines = [
+            Line2D([0], [0], color='tab:blue', lw=2, linestyle='-'),
+            Line2D([0], [0], color='tab:blue', lw=2, linestyle='--')
+        ]
+        ax.legend(custom_lines, [r'\(c^2=1\)', r'\(c^2=4\)'], loc='lower right')
+
+        ax.set_xlim(-1.5, 1.5)
+        ax.set_ylim(-1.5, 1.5)
+
+        plt.show()
+        ```
+        </Tab>
+    </Tabs>
+
+3. 正态分布
+    <Tabs class="code-group" defaultValue="r">   
+        <Tab label="R" value="r">
+        ```r
+        # 设置随机数种子
+        set.seed(seed = 0)
+        # 产生来自 N(1, 2^2) 的 40 个样本
+        x1 <- rnorm(n = 40, mean = 1, sd = 2)
+        # 使用直方图查看样本分布
+        hist(x1)
+        ```
+        </Tab>
+        
+        <Tab label="Python" value="python">
+        ```python
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        np.random.seed(0)
+        x1 = np.random.normal(loc=1, scale=2, size=40)
+        plt.hist(x1)
+        plt.show()
+        ```
+        </Tab>
+    </Tabs>
+    考察不同协方差矩阵对正态分布的影响：
+    <Tabs class="code-group" defaultValue="r">   
+        <Tab label="R" value="r">
+        ```r
+        library(MASS)
+        # 均值向量
+        mu <- c(2,1)
+        # 协方差矩阵
+        Sigma1 <- matrix(c(5, 4,
+                        4, 5), ncol = 2, byrow = TRUE)
+        Sigma2 <- diag(c(3,3)) # diag里第一个参数是对角化向量，后面为矩阵大小（默认与向量长度一致）
+        Sigma3 <- matrix(c(5, -4,
+                        -4, 5), ncol = 2, byrow = TRUE)
+        # 设置随机数种子
+        set.seed(seed = 0)
+        # 生成 3 组样本（均值向量相同，协方差矩阵各异）
+        X1 <- mvrnorm(n = 40, mu = mu, Sigma = Sigma1)
+        X2 <- mvrnorm(n = 40, mu = mu, Sigma = Sigma2)
+        X3 <- mvrnorm(n = 40, mu = mu, Sigma = Sigma3)
+
+
+        plot(X1, pch = 19)
+        plot(X2, pch = 19)
+        plot(X3, pch = 19)
+        ```
+        </Tab>
+        
+        <Tab label="Python" value="python">
+        ```python
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        mu = np.array([2, 1])
+
+        Sigma1 = np.array([[5,  4],
+                        [4,  5]])
+        Sigma2 = np.diag([3, 3])  
+        Sigma3 = np.array([[5, -4],
+                        [-4,  5]])
+
+        np.random.seed(0)
+
+        X1 = np.random.multivariate_normal(mean=mu, cov=Sigma1, size=40)
+        X2 = np.random.multivariate_normal(mean=mu, cov=Sigma2, size=40)
+        X3 = np.random.multivariate_normal(mean=mu, cov=Sigma3, size=40)
+        for X, name in [(X1, "X1"), (X2, "X2"), (X3, "X3")]:
+            plt.figure()
+            plt.scatter(X[:, 0], X[:, 1], marker='o')  # pch = 19 ≈ 实心圆
+            plt.xlabel("x")
+            plt.ylabel("y")
+            plt.title(name)
+            plt.show()
+        ```
+        </Tab>
+    </Tabs>
+    三维正态分布密度图：
+    <Tabs class="code-group" defaultValue="r">   
+        <Tab label="R" value="r">
+        ```r
+        library(mvtnorm)
+        # 多元正态分布的均值
+        mu1 <- 0.5
+        mu2 <- 0.5
+        # 对应书上 Figure 4.2(a) 的\rho_{12}，这里意味着 X1 和 X2 独立
+        rho1 <- 0
+        # 对应书上 Figure 4.2(b) 的\rho_{12}
+        rho2 <- 0.75
+        # 对应书上\sigma_{11} = \sigma_{22}
+        sigma <- 0.2
+        # 协方差矩阵的维数
+        p <- 2
+        # 构造协方差矩阵，用 rho 来表示
+        Sigma1 <- (diag(c(1-rho1, 1-rho1)) + matrix(rep(rho1, p^2), ncol = p)) * sigma
+        Sigma2 <- (diag(c(1-rho2, 1-rho2)) + matrix(rep(rho2, p^2), ncol = p)) * sigma
+        # 张成一个 40x40 的网格
+        x1 <- seq(from = mu1 - 7*sigma, to = mu1 + 7*sigma, length.out = 40)
+        x2 <- seq(from = mu2 - 7*sigma, to = mu2 + 7*sigma, length.out = 40)
+        ## 将 x1 和 x2" 编织" 成网格 (可类比 JMP 中的表> 堆叠操作）
+        ## 对于 x2 的每一个取值都有 x1 的所有 40 个取值与之对应
+        ## 相当于把网格里的每一个点（二维）都枚举了出来，每一行就是一个点
+        X <- expand.grid(x1 = x1, x2 = x2)
+
+        dX1 <- dmvnorm(X, mean = c(mu1, mu2), sigma = Sigma1)
+        dX2 <- dmvnorm(X, mean = c(mu1, mu2), sigma = Sigma2)
+        ## 将一维的向量转换成矩阵
+        dX1_ <- matrix(dX1, nrow = 40, ncol = 40)
+        dX2_ <- matrix(dX2, nrow = 40, ncol = 40)
+        # 画出三维透视图
+        persp(x = x1, y = x2, z = dX1_, theta = 30, phi = 30)
+        persp(x = x1, y = x2, z = dX2_, theta = 30, phi = 30)
+
+        # 等高线图
+        contour(x = x1, y = x2, z = dX1_, levels = c(0.1, 0.5)) 
+        contour(x = x1, y = x2, z = dX2_, levels = c(0.1, 0.5))
+
+        # 绘制样本椭圆（python中无对应）
+        library(car)
+        dataEllipse(X1, levels = c(0.95, 0.5))
+        ```
+        </Tab>
+        
+        <Tab label="Python" value="python">
+        ```python
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from scipy.stats import multivariate_normal
+
+        mu1 = 0.5
+        mu2 = 0.5
+        rho1 = 0
+        rho2 = 0.75
+        sigma = 0.2
+        p = 2
+
+        Sigma1 = (np.diag([1 - rho1, 1 - rho1]) + np.full((p, p), rho1)) * sigma
+        Sigma2 = (np.diag([1 - rho2, 1 - rho2]) + np.full((p, p), rho2)) * sigma
+
+        x1 = np.linspace(mu1 - 7 * sigma, mu1 + 7 * sigma, 40)
+        x2 = np.linspace(mu2 - 7 * sigma, mu2 + 7 * sigma, 40)
+
+        X1, X2 = np.meshgrid(x1, x2)
+        pos = np.dstack((X1, X2))
+
+        dX1 = multivariate_normal.pdf(pos, mean=[mu1, mu2], cov=Sigma1)
+        dX2 = multivariate_normal.pdf(pos, mean=[mu1, mu2], cov=Sigma2)
+
+        fig1 = plt.figure()
+        ax1 = fig1.add_subplot(111, projection='3d')
+        ax1.plot_surface(X1, X2, dX1, cmap='viridis')
+        ax1.view_init(elev=30, azim=30)
+
+        fig2 = plt.figure()
+        ax2 = fig2.add_subplot(111, projection='3d')
+        ax2.plot_surface(X1, X2, dX2, cmap='viridis')
+        ax2.view_init(elev=30, azim=30)
+
+        plt.show()
+
+        plt.contour(x1, x2, dX1, levels=[0.1, 0.5])
+        plt.show()
+
+        plt.contour(x1, x2, dX2, levels=[0.1, 0.5])
+        plt.show()
+        ```
+        </Tab>
+    </Tabs>
+
+    
+<Tabs class="code-group" defaultValue="r">   
+    <Tab label="R" value="r">
+    ```r
+    
+    ```
+    </Tab>
+    
+    <Tab label="Python" value="python">
+    ```python
+    
+    ```
+    </Tab>
+</Tabs>

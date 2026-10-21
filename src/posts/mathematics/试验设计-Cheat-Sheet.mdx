@@ -281,4 +281,112 @@ sticky: true
 + 方差齐性检验的假设形式为：$H_0:\sigma_1^2=\sigma_2^2=\cdots=\sigma_a^2\quad\text{vs}\quad H_1:$至少一个$\sigma_i^2$不满足这一关系。
     + 一般会采用Bartlett检验（对正态性假定敏感）或修正 Levene 检验（更加稳健）。
 ## 均值比较方法
-在ANOVA的基础上，如果拒绝原假设（均值间存在差异），我们希望在此基础上进一步研究哪些均值间存在差异。
+在ANOVA的基础上，如果拒绝原假设（均值间存在差异），我们希望在此基础上进一步研究哪些均值间存在差异。这一类方法通常称为多重比较方法。
++ 最直接的方法是图形比较。若均值间没有差异，那它们可以看作独立同分布的随机样本，标准差为$\dfrac{\sigma}{\sqrt{n}}$。于是可以直接拿正态分布沿均值轴滑动，若假设成立则均值能被同一个分布包裹住（设定显著性水平）。
+    + 实际中$\sigma$往往未知，此时可用$\sqrt{MS_E}$替代，并用$t$分布代替正态分布。
++ 这一方法比较粗略，更精确的方法是使用对照：
+### 对照
++ 定义：设待比较参数为$\mu_1,\cdots,\mu_a$，那么对照就是形如$\displaystyle\Gamma=\sum_{i=1}^ac_i\mu_i$的组合，其中$\displaystyle\sum_{i=1}^ac_i=0$。由此可将假设归纳为$H_0:\Gamma=0\quad\text{vs}\quad H_1:\Gamma\neq 0$。对这一假设进行检验的方法主要有下述两种：
+1. t检验：记$C=\displaystyle\sum_{i=1}^ac_i\overline{y}_{i.}$，则$\displaystyle C\sim N\left(\sum_{i=1}^ac_i\mu_i,\sigma^2\sum_{i=1}^a\frac{c_i^2}{n}\right)$（假设数据平衡），因此
+    $$
+    Z = \frac{\displaystyle C - \sum_{i=1}^a c_i \mu_i}{\displaystyle\sqrt{\frac{\sigma^2}{n} \sum_{i=1}^a c_i^2}}\sim N(0,1)
+    $$
+    当$\sigma^2$未知时，用$MS_E$替代，从而得到t检验统计量
+    $$
+    t_0=\frac{\displaystyle C}{\displaystyle\sqrt{\frac{MS_E}{n} \sum_{i=1}^a c_i^2}}\sim t(N-a)
+    $$
+    若$|t_0|>t_{\frac\alpha2}(N-a)$即拒绝原假设。
+2. F检验：只需将上述$t_0$取平方，得到$F_0=t_0^2\sim F(1,N-a)$，然后$F_0>F_{\alpha}(1,N-a)$时拒绝原假设。
+    + 实际上这里的$F_0$可以表示为$F_0=\dfrac{SS_C/1}{MS_E}$，其中$SS_C=\displaystyle\frac{C^2}{\frac1n\sum_{i=1}^ac_i^2}$称为对照平方和。
++ 当然我们也能构造$\Gamma$的置信区间：
+    $$
+    \sum_{i=1}^{a} c_{i}\overline{y}_{i.}-t_{\frac\alpha2}(N-a)\sqrt{\frac{MS_{E}}{n}\sum_{i=1}^{a} c_{i}^{2}} \leq \Gamma \leq \sum_{i=1}^{a} c_{i}\overline{y}_{i.}+t_{\frac\alpha2}(N-a)\sqrt{\frac{MS_{E}}{n}\sum_{i=1}^{a} c_{i}^{2}} 
+    $$
++ 另一方面，为了让对照的方差统一为$\sigma^2$，可以考虑将$C$转化为标准化对照
+    $$
+    C^*=\sum_{i=1}^ac_i^*\overline{y}_{i.}=\sum_{i=1}^a\frac{c_i\overline{y}_{i.}}{\sqrt{\frac1n\sum_{i=1}^ac_i^2}}
+    $$
++ 对于不平衡数据，对照的约束需要改为$\displaystyle\sum_{i=1}^an_ic_i=0$，相应的$t_0$和对照平方和也需要改为
+    $$
+    t_0 = \frac{\displaystyle\sum_{i=1}^a c_i \overline{y}_{i.}}{\displaystyle\sqrt{MS_E \sum_{i=1}^a \frac{c_i^2}{n_i}}},\quad SS_C = \frac{\displaystyle\left( \sum_{i=1}^a c_i \overline{y}_{i.} \right)^2}{\displaystyle\sum_{i=1}^a \frac{c_i^2}{n_i}}
+    $$
++ 下面讨论一种特殊的对照性质：正交对照。具体而言，如果系数$\{c_i\}$和$\{d_i\}$满足$\displaystyle\sum_{i=1}^ac_id_i=0$（非平衡数据则为$\displaystyle\sum_{i=1}^a\frac{c_id_i}{n_i}=0$），则称对应的两个对照正交。
+    + 实际上，处理平方和$SS_{Trt}$可以分解为$a-1$个相互正交的对照平方和。于是我们就能将均值比较转化为正交对照的比较。
+    + 正交对照需要在试验之前就确定好，否则如果等到得到观测数据后再选择比较，就会产生数据窥探问题，放大第一类错误。
+### 多重比较方法
++ 在确定好对照后，如何进行多重比较检验呢？历史上统计学家们提出了多种方法，包括（按提出时间排序）：
+1. Fisher LSD（最小显著性差异）方法  
+    检验统计量定义为$t_0=\displaystyle \frac{\overline{y}_{i.}-\overline{y}_{j.}}{MS_E(\frac{1}{n_i}+\frac{1}{n_j})}$，若$t_0>t_{\frac{\alpha}{2}}(N-a)$则拒绝原假设$H_0:\mu_i=\mu_j$。
+    + 这里的LSD定义为$LSD=t_{\frac{\alpha}{2}}(N-a)\sqrt{MS_E(\frac{1}{n_i}+\frac{1}{n_j})}$，因此上述检验本质是均值差与LSD的比较。
+    + 相比其他多重比较方法而言，Fisher LSD方法的判定更加宽松，更容易得到有显著差异结论。【因此相应地第一类错误率也更高】
+2. Bonferroni方法   
+    和前面的置信区间估计一样，设比较次数为$m$，则将每个比较的显著性水平$\alpha$调整为$\dfrac{\alpha}{m}$即可。它与Fisher LSD方法恰好处于两个极端，严格控制了第一类错误率，但也使得统计功效偏低。
+3. Tukey方法   
+    也称Tukey's HSD（诚实显著性差异）检验，其检验统计量基于极差统计量$q=\dfrac{\overline{y}_{\max}-\overline{y}_{\min}}{\sqrt{MS_E/n}}$，其中$\overline{y}_{\max}$和$\overline{y}_{\min}$分别为处理的最大与最小均值。由此得到HSD临界值$q_{\alpha}(a,f)\sqrt{\dfrac{MS_E}{n}}$（$f$为$MS_E$自由度），若均值差超过这一临界值则认为有显著差异。
+    + 对于不平衡数据，临界值根号内改为$\dfrac{MS_E}{2}\left(\dfrac{1}{n_i}+\dfrac{1}{n_j}\right)$，此时也称为Tukey-Kramer检验。
+4. Dunnett法   
+    Dunnett法处理的场景与前面几种有所不同，其主要用于单个对照与其余$a-1$个处理均值的比较。其核心公式为
+    $$
+    \left|\overline{y}_{i.}-\overline{y}_{a.}\right| > d_{\alpha}(a-1,f)\sqrt{MS_{E}\left(\frac{1}{n_{i}}+\frac{1}{n_{a}}\right)} 
+    $$
+    若某个处理均值满足上述条件则判定其与对照均值有显著差异。
+5. Scheffé法  
+    Scheffé法的适用场景与上述方法又不一样，它可以用于比较任意多对照的均值。具体而言，考虑下述$m$个对照
+    $$
+    \Gamma_{u} = c_{1u}\mu_{1}+c_{2u}\mu_{2}+\cdots+c_{au}\mu_{a} \quad u = 1, 2, \ldots, m 
+    $$
+    对应的估计值为
+    $$
+    C_{u} = c_{1u}\overline{y}_{1.}+c_{2u}\overline{y}_{2.}+\cdots+c_{au}\overline{y}_{a.} \quad u = 1, 2, \ldots, m
+    $$
+    构造其标准误$\displaystyle S_{C_{u}} = \sqrt{MS_{E}\sum_{i=1}^{a} (c_{iu}^{2}/n_{i})}$，那么可以得到临界值$S_{\alpha,u} = S_{C_{u}}\sqrt{(a-1)F_{\alpha,a-1,N-a}}$，当$|C_u|>S_{\alpha,u}$时拒绝原假设$H_0:\Gamma_u=0$。
+    + 当然，Scheffé法通用性的代价就是其在两两简单比较上统计功效最低。
+### 位置效应与离散效应
+前面我们探讨的因子水平对响应变量均值的影响也被称为位置效应，而有时我们也会探究因子水平对响应变量变异（如方差）的影响，这被称为离散效应。
++ 在探究离散效应时，一般将$\log(s)$或$\log s^2$（或者相反数）作为相应变量，这可以有效地稳定样本标准差分布中的变异。其余分析与前面的方差分析一致。
+## 随机效应模型
+随机效应线性统计模型可以表示为
+$$
+y_{ij}=\mu+\tau_i+\epsilon_{ij}\quad i=1,2,\cdots,a,\quad j=1,2,\cdots,n
+$$
+其中$\tau_i\sim N(0,\sigma_\tau^2),\epsilon_{ij}\sim N(0,\sigma^2)$且均相互独立。由此可得$\mathrm{Var}(y_{ij})=\sigma_\tau^2+\sigma^2$，故这个模型也称为方差分量模型。另一方面，任意两个观测值的协方差为
+$$
+\begin{aligned}
+&\mathrm{Cov}(y_{ij},y_{ij'})=\sigma_\tau^2,\quad j\neq j'\\
+&\mathrm{Cov}(y_{ij},y_{i'j})=0,\quad i\neq i'
+\end{aligned}
+$$
+即不同处理观测值相互独立，而同一处理下观测值条件独立（在试验完成，$\tau_i$确定后相互独立）。
++ 对随机效应模型的方差分析同样可以采用平方和分解$SS_{T}=SS_{Trt}+SS_{E}$。当然，与固定效应方差分析不同，随机效应方差分析主要关注方差分量假设
+    $$
+    H_0:\sigma_\tau^2=0\quad \text{vs}\quad H_1:\sigma_\tau^2\neq 0 
+    $$
+    若原假设成立，那么就不认为存在随机效应。其假设检验采用F统计量$F_0=\dfrac{MS_{Trt}}{MS_E}$，在$H_0$成立时服从$F(a-1,N-a)$。另外，可以证明
+    $$
+    \mathbb{E}(MS_{Trt})=\sigma^2+n\sigma_\tau^2,\quad \mathbb{E}(MS_E)=\sigma^2
+    $$
+    因此$F_0>F_\alpha(a-1,N-a)$时拒绝$H_0$。
+### 随机效应模型的参数估计
+由上述期望表达式可得$\sigma_\tau^2$和$\sigma^2$的无偏估计分别为
+$$
+\hat{\sigma}^{2} = MS_{E},\quad \hat{\sigma}_{\tau}^{2} = \frac{MS_{Trt}-MS_{E}}{n}
+$$
+对于不平衡数据，只需将$n$替换为$\displaystyle n_{0} = \frac{1}{a-1}\left[\sum_{i=1}^{a} n_{i}-\frac{\sum_{i=1}^{a} n_{i}^{2}}{\sum_{i=1}^{a} n_{i}}\right] $即可。
++ $\sigma^2$的$(1-\alpha)$置信区间则为
+    $$
+    \frac{(N-a)MS_{E}}{\chi_{\alpha/2,N-a}^{2}} \leq \sigma^{2} \leq \frac{(N-a)MS_{E}}{\chi_{1-(\alpha/2),N-a}^{2}}
+    $$
++ 我们无法构造精确的$\sigma_\tau^2$的置信区间，但可以构造$\dfrac{\sigma_{\tau}^{2}}{\sigma_{\tau}^{2}+\sigma^{2}}$的（这也被称为组内相关系数）：
+    $$
+    \frac{L}{1+L} \leq \frac{\sigma_{\tau}^{2}}{\sigma_{\tau}^{2}+\sigma^{2}} \leq \frac{U}{1+U}
+    $$
+    其中
+    $$
+    L = \frac{1}{n}\left(\frac{MS_{Trt}}{MS_{E}}\frac{1}{F_{\frac\alpha2}(a-1,N-a)}-1\right),\quad R= \frac{1}{n}\left(\frac{MS_{Trt}}{MS_{E}}\frac{1}{F_{1-\frac\alpha2}(a-1,N-a)}-1\right) 
+    $$
+    实际上$[L,U]$就是$\dfrac{\sigma_{\tau}^{2}}{\sigma^{2}}$的$1-\alpha$置信区间。
++ 关于总均值$\mu$，其可以用$\dfrac{MS_{Trt}}{an}$来估计，置信区间为
+    $$
+    \overline{y}_{..}-t_{\alpha/2,a(n-1)}\sqrt{\frac{MS_{Trt}}{an}} \leq \mu \leq \overline{y}_{..}+t_{\alpha/2,a(n-1)}\sqrt{\frac{MS_{Trt}}{an}}
+    $$
+# 随机区组及拉丁方设计

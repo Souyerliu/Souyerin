@@ -7,6 +7,33 @@ tags:
 ---
 
 # 这是一级标题
+
+## Tab 折叠答案公式测试
+
+<Tabs defaultValue="proof">
+  <Tab label="公式证明" value="proof">
+    <Collapse title="点击查看答案" type="primary">
+
+    ```math
+    \begin{aligned}
+      \mathrm{Var}(X)&=\mathbb{E}[X^2]-(\mathbb{E}[X])^2\\
+      P(|X|>x)&\leq\frac{\mathbb{E}[|X|^p]}{x^p}
+    \end{aligned}
+    ```
+
+    </Collapse>
+  </Tab>
+  <Tab label="公式补充" value="extra">
+    <Collapse title="点击查看答案" type="info">
+
+    ```math
+    \sum_{k=1}^{n}k=\frac{n(n+1)}{2}
+    ```
+
+    </Collapse>
+  </Tab>
+</Tabs>
+
 ## 这是二级标题
 ### 这是三级标题
 #### 这是四级标题

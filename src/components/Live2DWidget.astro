@@ -1,5 +1,6 @@
 ---
 import { installCubism2ContextReset } from "../toolkit/live2d-context";
+import { installLive2DModelCompression } from "../toolkit/live2d-compression";
 import { installLive2DPointerTracking } from "../toolkit/live2d-pointer";
 import { installLive2DGazeRefresh } from "../toolkit/live2d-gaze";
 import { resolveLive2DWelcome } from "../toolkit/live2d-welcome";
@@ -35,6 +36,7 @@ const initScript = `{
   const stateKey = "__souyerLive2dState";
   const hostId = "live2d-persist-host";
   const installContextReset = ${installCubism2ContextReset.toString()};
+  const installModelCompression = ${installLive2DModelCompression.toString()};
   const installPointerTracking = ${installLive2DPointerTracking.toString()};
   const installGazeRefresh = ${installLive2DGazeRefresh.toString()};
   const resolveWelcome = ${resolveLive2DWelcome.toString()};
@@ -206,6 +208,10 @@ const initScript = `{
 
   const mount = async () => {
     const state = window[stateKey] || {};
+    if (!state.modelCompressionInstalled) {
+      installModelCompression(window);
+      state.modelCompressionInstalled = true;
+    }
     if (typeof window.initWidget !== "function") return false;
     if (state.pointerRuntime !== state.loadedBase) {
       const cubism3 = await import(state.loadedBase + "/chunk/index2.js");

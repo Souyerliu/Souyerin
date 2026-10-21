@@ -1,4 +1,5 @@
 import { defineMdastPlugin, type MdastPluginDefinition, type MdxJsxAttributeNode } from "satteri";
+import { renderToString } from "katex";
 
 /**
  * katex（satteri 版）：
@@ -57,6 +58,14 @@ export default function katex(options: KatexOptions = {}): MdastPluginDefinition
 
   return defineMdastPlugin({
     name: "katex",
+    // 旧文章使用 math 代码围栏书写行间公式，折叠块和 Tabs 内也应按公式渲染。
+    code(node, ctx) {
+      if (node.lang !== "math") return undefined;
+      if (ctx.sourceFormat === "markdown") {
+        return { rawHtml: renderToString(node.value, { displayMode: true, throwOnError }) };
+      }
+      return toKatexComponent(node.value, true, throwOnError);
+    },
     math(node) {
       return toKatexComponent(node.value, true, throwOnError);
     },

@@ -3,10 +3,10 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build:site": "astro build",
+    "dev": "node scripts/compress-live2d-models.mjs && astro dev",
+    "build:site": "node scripts/compress-live2d-models.mjs && astro build",
     "build:index": "pagefind --site ./dist",
-    "build": "astro build && pagefind --site ./dist",
+    "build": "node scripts/compress-live2d-models.mjs && astro build && pagefind --site ./dist",
     "font:subset": "python scripts/subset_fonts.py",
     "preview": "astro preview",
     "astro": "astro",

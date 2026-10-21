@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# 开发和构建时从原始 Live2D 核心生成
+/public/live2d-models/model/yuno/**/*.moc3.gz
+
 # generated types
 .astro/
 

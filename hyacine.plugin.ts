@@ -42,7 +42,7 @@ export default defineConfig({
       radius: 16,
     }),
     articleAgeWarning({
-      maxAgeDays: 180,
+      maxAgeDays: 365,
     }),
     vercount(),
     analytics({

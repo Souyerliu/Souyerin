@@ -49,7 +49,7 @@ sticky: true
     $$
     \frac{\mathbf{x}^\top \mathbf{y}}{\mathbf{y}^\top \mathbf{y}} \cdot \mathbf{y} = \frac{\mathbf{x}^\top \mathbf{y}}{L_y} \cdot \frac{\mathbf{y}}{L_y} = L_x \cos(\theta) \cdot \frac{\mathbf{y}}{L_y}
     $$
-    投影长度为$L_x |\cos(\theta)|=\dfrac{\mathbf{x}^\top\mathbf{y}}{L_y}$。
+    投影长度为$L_x |\cos(\theta)|=\dfrac{|\mathbf{x}^\top\mathbf{y}|}{L_y}$。
 ### 二次型与统计距离
 二次型标准形式：
 
@@ -72,7 +72,7 @@ $$
 
 + 取$c=\sqrt{Q}=\sqrt{\mathbf{x}^\top A\mathbf{x}}$即可作为统计距离（前提是$A$为正定矩阵）。当$p=2$时，由$A$的谱分解可得：
     $$
-    A=\lambda_1\mathbf{e}_1^\top\mathbf{e}_1+\lambda_2\mathbf{e}_2^\top\mathbf{e}_2\Longrightarrow \mathbf{x}^\top A\mathbf{x}=\lambda_1(\mathbf{x}^\top\mathbf{e}_1)^2+\lambda_2(\mathbf{x}^\top\mathbf{e}_2)^2
+    A=\lambda_1\mathbf{e}_1\mathbf{e}_1^\top+\lambda_2\mathbf{e}_2\mathbf{e}_2^\top\Longrightarrow \mathbf{x}^\top A\mathbf{x}=\lambda_1(\mathbf{x}^\top\mathbf{e}_1)^2+\lambda_2(\mathbf{x}^\top\mathbf{e}_2)^2
     $$
     其中$\mathbf{e}_1$和$\mathbf{e}_2$为标准正交矩阵列向量。再令$y_1=\mathbf{x}^\top\mathbf{e}_1,y_2=\mathbf{x}^\top\mathbf{e}_2$，则统计距离等高线可以表示为
     $$
@@ -114,7 +114,7 @@ $$
     + 若 $A_{11}^{-1} $和 $A_{22.1}^{-1} $存在，
         $$
         A^{-1}=\begin{pmatrix}
-        -A_{11}^{-1} + A_{11}^{-1}A_{12}A_{22.1}^{-1}A_{21}A_{11}^{-1} & -A_{11}^{-1}A_{12}A_{22.1}^{-1} \\[5pt]
+        A_{11}^{-1} + A_{11}^{-1}A_{12}A_{22.1}^{-1}A_{21}A_{11}^{-1} & -A_{11}^{-1}A_{12}A_{22.1}^{-1} \\[5pt]
         -A_{22.1}^{-1}A_{21}A_{11}^{-1} & A_{22.1}^{-1}
         \end{pmatrix}
         $$
@@ -131,9 +131,133 @@ $$
 + 当$A$为正定矩阵时，$A_{11},A_{22},A_{22.1},A_{11.2}$均为正定矩阵。
 + 分块矩阵行列式计算：对于$A=\begin{pmatrix}A_{11}&A_{12}\\A_{21}&A_{22}\end{pmatrix}$，
     + 若$A_{12}=\mathbf{0}$或$A_{21}=\mathbf{0}$，则有$|A|=|A_{11} |\cdot|A_{22}|$；
-    + 若$A_{22}$可逆，则$|A|=|A_{22} |\cdot|A_{11.2}|$；若$A_{11}$可逆，则$A=|A_{11} |\cdot|A_{22.1}|$。
+    + 若$A_{22}$可逆，则$|A|=|A_{22} |\cdot|A_{11.2}|$；若$A_{11}$可逆，则$|A|=|A_{11} |\cdot|A_{22.1}|$。
 ## 随机向量与矩阵
 + 协方差矩阵与相关系数矩阵的关系：设相关系数矩阵$\boldsymbol{\rho}=(\rho_{ij})_{p\times p}$，$V^{\frac12}=\text{diag}\{\sqrt{\sigma_{11}},\cdots,\sqrt{\sigma_{pp}}\}$，则有$\Sigma=V^{\frac12}\boldsymbol{\rho}V^{\frac12}$。
 + 随机向量的线性变换：设$\mathbf{x}$为$p$维随机向量，$C$为$k\times p$行满秩矩阵（$k\leq p$），那么对于$\mathbf{x}$的一个线性变换$\mathbf{z}=C\mathbf{x}$：
     1. 均值向量：$\boldsymbol{\mu}_{\mathbf{z}}=C\boldsymbol{\mu}_\mathbf{x}$；
     2. 协方差矩阵：$\Sigma_{\mathbf{z}}=C\Sigma_{\mathbf{x}}C^\top$。
+## 样本几何与随机抽样
+考虑多元数据矩阵$X=\begin{pmatrix}\mathbf{x}_1^\top\\\mathbf{x}_2^\top\\\vdots\\\mathbf{x}_n^\top\end{pmatrix}$，其可以看作$\R^p$空间中的$n$个数据点。用$\overline{\mathbf{x}}$（$p$维向量）可以刻画数据点的中心，$S$（$p\times p$矩阵）可以刻画数据点的变异。
++ 当然，也可以将数据矩阵按列分割$X=(\mathbf{y}_1:\mathbf{y}_2:\cdots:\mathbf{y}_p)$，即$\R^n$上的$p$个向量。
++ 下面我们引入偏差向量：记$\mathbf{1}_n=(1,1,\cdots,1)^\top\in\R^{n\times 1}$，那么$\dfrac{\mathbf{1}_n}{\sqrt{n}}$可看作等角方向的单位向量。向量$\mathbf{y}_i$在$\dfrac{\mathbf{1}_n}{\sqrt{n}}$上的正交投影则为
+    $$
+    \left(\mathbf{y}_i^\top\dfrac{\mathbf{1}_n}{\sqrt{n}}\right)\cdot\dfrac{\mathbf{1}_n}{\sqrt{n}}= \overline{x}_i \mathbf{1}_n.
+    $$
+    于是$\mathbf{y}_i$可进行如下正交分解：$\mathbf{y}_i = \overline{x}_i \mathbf{1}_n + (\mathbf{y}_i - \overline{x}_i \mathbf{1}_n)$，其中$\mathbf{y}_i - \overline{x}_i \mathbf{1}_n$即为偏差向量，记作$\mathbf{d}_i$。关于偏差向量，其几何性质如下：
+    + 偏差向量的长度$\displaystyle L_{\mathbf{d}_i}^2=\mathbf{d}_i^\top\mathbf{d}_i=\sum_{j=1}^n(x_{ji}-\overline{x}_i)^2$；
+    + 偏差向量$\mathbf{d}_i$与$\mathbf{d}_k$间的夹角余弦
+        $$
+        \begin{aligned}
+        \cos\theta_{ik}= \frac{\mathbf{d}_i^\top\mathbf{d}_k}{L_{d_i} L_{d_k}}&= \frac{\sum_{j=1}^n (x_{ji} - \bar{x}_i)(x_{jk} - \bar{x}_k)}{\sqrt{\sum_{j=1}^n (x_{ji} - \bar{x}_i)^2} \sqrt{\sum_{j=1}^n (x_{jk} - \bar{x}_k)^2}} \\
+        &= \frac{s_{ik}}{\sqrt{s_{ii}} \sqrt{s_{kk}}} = r_{ik}
+        \end{aligned}
+        $$
+        为原始数据列向量的相关系数。
+
+    因此样本协方差矩阵$S_n$完全可以由偏差向量（的内积）进行刻画。
++ 关于样本均值和样本协方差矩阵的正式定义：设$p$维随机向量$\mathbf{x}\sim f(\mathbf{x}|\boldsymbol{\theta})$，分布满足$\mathbb{E}(\mathbf{x})=\boldsymbol{\mu},\mathrm{Cov}(\mathbf{x})=\Sigma$。基于此分布进行简单随机抽样得到样本$\mathbf{x}_1,\cdots,\mathbf{x}_n\stackrel{i.i.d.}{\sim}f(\mathbf{x})$，其样本均值和样本协方差定义为
+    $$
+    \overline{\mathbf{x}}=\frac{1}{n}\sum_{i=1}^n\mathbf{x}_i,\quad S=\frac{1}{n-1}\sum_{i=1}^n(\mathbf{x}_i-\overline{\mathbf{x}})(\mathbf{x}_i-\overline{\mathbf{x}})^\top
+    $$
+    其满足下述性质：
+    $$
+    \mathbb{E}(\overline{\mathbf{x}})=\boldsymbol{\mu},\quad \mathrm{Cov}(\overline{\mathbf{x}})=\frac{1}{n}\Sigma,\quad \mathbb{E}(S)=\Sigma
+    $$
++ 基于样本协方差矩阵，进一步定义：
+    1. 广义样本方差：$|S|=\displaystyle\prod_{i=1}^p\lambda_i$
+    2. 总样本方差：$\text{tr}(S)=\displaystyle\sum_{i=1}^p\lambda_i$
+
+    不过这两个方差仍然不能完全替代协方差矩阵，因为其忽略了特征向量（方向）的信息。
+    + 广义样本方差的几何意义：
+        1. 数据在$\R^n$空间中的超平行四边体体积。具体而言，
+            $$
+            |S|=\frac{1}{(n-1)^p}(\text{超平行四边体的体积})^2
+            $$
+            这里的超平行四边体（$p=2$时即为平行四边形）由偏差向量构成。
+        2. 数据在$\R^p$空间中的超椭球体积。具体而言，由于$S$为对称正定矩阵，因此可沿用上述谱分解及二次型推导，得到
+            $$
+            (\mathbf{x} - \overline{\mathbf{x}})^\top S^{-1} (\mathbf{x} - \overline{\mathbf{x}}) = c^2
+            $$
+            可以证明，这个超椭球的体积可表示为
+            $$
+            \int_{\{ \mathbf{x} : (\mathbf{x} - \overline{\mathbf{x}})^\top S^{-1} (\mathbf{x} - \overline{\mathbf{x}}) \leq c^2 \}}\mathrm{d}x = \frac{2\pi^{p/2}}{p\Gamma(p/2)} |S|^{1/2} c^p.
+            $$
+            实际上，$S$的特征值决定了椭球的形状，而$S$的特征向量则决定了椭球的轴向。
++ 那么什么条件下$S$会变为奇异矩阵（即$\text{rank}(S)< p$）呢？主要有下面两个充分条件：
+    1. $n\leq p$；
+    2. $X$的列向量线性相关。
+
+    其证明需要构造$S$与$X$的关系。可以证明：
+    $$
+    (n - 1)S = (X - \frac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top X)^\top (X - \frac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top X) = X^\top (\mathbf{I}_n - \frac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top )X.
+    $$
+    其中$\mathbf{I}_n - \dfrac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top$为秩$n-1$的幂等矩阵。
++ $S$与相关系数矩阵$R$的关系：记
+    $$
+    D^{1/2} = \begin{pmatrix}
+    \sqrt{s_{11}} & & & \\
+    & \sqrt{s_{22}} & & \\
+    & & \ddots & \\
+    & & & \sqrt{s_{pp}}
+    \end{pmatrix}
+    $$
+    则有$S = D^{1/2} R D^{1/2}, \quad R = D^{-1/2} S D^{-1/2}$。
++ 协方差矩阵的线性变换：设$\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_n$为随机样本。构造线性变换$\mathbf{z}_i = A\mathbf{x}_i$，其中$A\in\R^{q \times p}$。则有
+    $$
+    \overline{\mathbf{z}} = A\overline{\mathbf{x}},\quad S_z = AS_xA^\top.
+    $$
+# 多元正态分布
+> 同样，在[线性模型Cheat Sheet](/posts/mathematics/线性模型-cheat-sheet/)中已经记录的内容不再赘述（虽然重复的应该不多）。
+
++ 基于概率密度函数的定义：若$p$维随机向量$\mathbf{x}$服从$p$维正态分布（记作$\mathbf{x}\sim N_p(\boldsymbol{\mu},\Sigma)$，其中$\boldsymbol{\mu}\in\R^p,\Sigma$为正定矩阵），则其概率密度函数为
+    $$
+    f_{\mathbf{x}}(\mathbf{x}|\boldsymbol{\mu}, \Sigma) = \frac{1}{(2\pi)^{p/2}|\Sigma|^{1/2}} \exp \left\{ -\frac{1}{2}(\mathbf{x} - \boldsymbol{\mu})^\top\Sigma^{-1}(\mathbf{x} - \boldsymbol{\mu}) \right\},
+    $$
++ 基于标准正态分布的定义：对于均值向量为$\boldsymbol{\mu}$，协方差矩阵为$\Sigma$的随机向量$\mathbf{x}$，则如果存在线性变换$\mathbf{x}=A\mathbf{z}+\boldsymbol{\mu}$（其中$AA^\top=\Sigma,\mathbf{z}$为独立标准正态随机变量组成的随机向量），那么称$\mathbf{x}$满足$p$维正态分布。
++ 线性变换：若$\mathbf{x}\sim N_p(\boldsymbol{\mu},\Sigma)$，那么对任意$A\in\R^{q\times p}$，有$A\mathbf{x}+\mathbf{b}\sim N_q(A\boldsymbol{\mu}+\mathbf{b},A\Sigma A^\top)$。
++ 分块性质：考虑下述分块
+    $$
+    \mathbf{x} = \begin{pmatrix} \mathbf{x}^{(1)} \\ \mathbf{x}^{(2)} \end{pmatrix} 
+    \begin{matrix} \in&\R^q \\ \in&\R^{p - q} \end{matrix} \ , \quad 
+    \boldsymbol{\mu} = \begin{pmatrix} \boldsymbol{\mu}^{(1)} \\ \boldsymbol{\mu}^{(2)} \end{pmatrix} \ , \quad 
+    \Sigma = \begin{pmatrix} \Sigma_{11} & \Sigma_{12} \\ \Sigma_{21} & \Sigma_{22} \end{pmatrix} .
+    $$
+    则有：
+    1. 边际分布：$\mathbf{x}^{(1)}\sim N_q(\boldsymbol{\mu}^{(1)},\Sigma_{11})$【可用上述线性变换结论证明】
+    2. 不相关与独立性等价：当$\Sigma_{12}=\mathbf{0}$时，$\mathbf{x}^{(1)}$与$\mathbf{x}^{(2)}$相互独立。
+    3. 条件分布：给定$\mathbf{x}^{(2)}$时，$\mathbf{x}^{(1)}$的条件分布为$N_q (\boldsymbol{\mu}_{1.2}, \Sigma_{11.2})$，其中
+        $$
+        \boldsymbol{\mu}_{1.2} = \boldsymbol{\mu}^{(1)} + \Sigma_{12}\Sigma_{22}^{-1}(\mathbf{x}^{(2)} - \boldsymbol{\mu}^{(2)}), \quad \Sigma_{11.2} = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}.
+        $$
+        其中$B=\Sigma_{12}\Sigma_{22}^{-1}\in\R^{q\times(p-q)}$也称为$\mathbf{x}^{(1)}$关于$\mathbf{x}^{(2)}$回归系数矩阵，而$\boldsymbol{\mu}_{1.2}$也称为回归函数。$\Sigma_{11.2}$则称为偏协方差矩阵（由此也可得到偏相关系数）。
++ 特征函数：$N_p(\boldsymbol{\mu},\Sigma)$分布的特征函数为
+    $$
+    \phi_{\mathbf{x}}(\mathbf{t}) = \exp\{i\boldsymbol{\mu}'\mathbf{t} - \frac{1}{2}\mathbf{t}'\Sigma\mathbf{t}\}.
+    $$
+    基于这个特征函数可以得到随机变量的任意矩：
+    $$
+    \mathrm{E}\left(\prod_{j=1}^k x_{ij}^{h_j}\right) = \left. \frac{\partial \phi_{\mathbf{x}}(\mathbf{t})}{\partial(it_{i_1})^{h_1} \dots \partial(it_{i_k})^{h_k}} \right|_{\mathbf{t}=0}.
+    $$
++ 二次型分布：若$\mathbf{x}\sim N_p(\boldsymbol{\mu},\Sigma),\Sigma>0$，则有$(\mathbf{x} - \boldsymbol{\mu})^\top\Sigma^{-1}(\mathbf{x} - \boldsymbol{\mu}) \sim \chi^2_p$。
+    + 这里的$(\mathbf{x} - \boldsymbol{\mu})^\top\Sigma^{-1}(\mathbf{x} - \boldsymbol{\mu})$实际上就是马氏距离的平方。
+## 多元正态样本统计量
+设$\mathbf{x}_1,\cdots,\mathbf{x}_n$为$N_p(\boldsymbol{\mu},\Sigma)$分布的随机样本，则可以应用数理统计的相关知识：
++ 极大似然估计：$\boldsymbol{\mu},\Sigma$的极大似然估计分别为$\overline{\mathbf{x}}$和$S_n=\frac1n\sum_{i=1}^n(\mathbf{x}_i-\overline{\mathbf{x}})(\mathbf{x}_i-\overline{\mathbf{x}})^\top$。
+    + 推论：$\boldsymbol{\mu}^\top\Sigma^{-1}\boldsymbol{\mu}$的MLE是$\overline{\mathbf{x}}^\top S_n^{-1}\overline{\mathbf{x}}$；$\sqrt{\sigma_{ii}}$的MLE是$\sqrt{s_{ii}}$（$s_{ii}$的第$(i,i)$个元素）。
++ 样本均值分布：$\overline{\mathbf{x}}\sim N(\boldsymbol{\mu},\frac1n\Sigma)$
++ 样本协方差的分布：定义$\displaystyle A=(n-1)S=\sum_{i=1}^n(\mathbf{x}_i-\overline{\mathbf{x}})(\mathbf{x}_i-\overline{\mathbf{x}})^\top$，则
+    + 可以证明：当$n>p$时，$P(S>0)=1$，即$S$可逆概率为$1$。
+    + 另一方面，$\displaystyle A\stackrel{d}{=}\sum_{i=1}^{n-1}\mathbf{z}_i\mathbf{z}_i^\top$，其中$\mathbf{z}_i\stackrel{i.i.d}{\sim}N_p(\mathbf{0},\Sigma)$，此时$A$的分布被称为Wishart分布，记为$A\sim W(n-1,\Sigma)$【分布密度函数略，其形式类似卡方分布】
++ $\overline{\mathbf{x}}$与$S$相互独立（证明见线性模型）
++ 多元中心极限定理：$\sqrt{n}(\bar{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{L} N(\mathbf{0}, \Sigma) $（$n \to \infty$）
++ 马氏距离渐近分布：$n(\bar{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1} (\bar{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{L} \chi^2_p$（$n \to \infty$）
++ 样本相关系数（二维情形）：因为协方差矩阵$\Sigma=\begin{pmatrix}\sigma_1^2&\rho\sigma_1\sigma_2\\\rho\sigma_1\sigma_2&\sigma_2^2\end{pmatrix}$，因此样本相关系数定义为$r=\dfrac{a_{12}}{\sqrt{a_{11}a_{22}}}$，其中
+    $$
+    \begin{aligned}
+    a_{11} = \sum_{k=1}^{n} (x_{k1} - \bar{x}_1)^2 ,\quad a_{22} = \sum_{k=1}^{n} (x_{k2} - \bar{x}_2)^2,\quad a_{12} = \sum_{k=1}^{n} (x_{k1} - \bar{x}_1)(x_{k2} - \bar{x}_2)
+    \end{aligned}
+    $$
+    当$\rho=0$时，$\sqrt{n-2}\dfrac{r}{\sqrt{1-r^2}} \sim t_{n-2}$；
+    + 渐近正态性：$\dfrac{\sqrt{n}(r-\rho)}{1-\rho^2} \xrightarrow{L} N(0,1)$
+    + Fisher z-变换：记$z(x)=\dfrac12\log\dfrac{1+x}{1-x}$，则$\sqrt{n}\{z(r)-z(\rho)\}\xrightarrow{}N(0,1)$
