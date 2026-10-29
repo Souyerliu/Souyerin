@@ -6,7 +6,6 @@ tags:
     - 深度学习
     - 神经网络
 cover: ./dl.png
-draft: true
 ---
 
 在[《机器学习方法》](/categories/机器学习方法/)中，我们已经对机器学习的生成模型（如朴素贝叶斯，GMM，HMM等）有了基本的认识。而随着神经网络与深度学习的发展，基于神经网络的深度生成模型逐渐兴起，其中的代表便是GAN、VAE与扩散模型。它们也是如今生成式人工智能的重要基石。
@@ -164,7 +163,7 @@ $$
     在给定$\mathbf{x}$时，$\displaystyle \frac{p_\mathbf{X}(\mathbf{x})}{p_G(\mathbf{x})}D(\mathbf{x}) - f^*(D(\mathbf{x}))$的最大值为$f\left(\dfrac{p_\mathbf{X}(\mathbf{x})}{p_G(\mathbf{x})}\right)$，此时$D^*(\mathbf{x})=f'\left(\dfrac{p_\mathbf{X}(\mathbf{x})}{p_G(\mathbf{x})}\right)$。
     因此
     $$
-    \int_{\mathbf{x}} p_G(\mathbf{x}) f\left(\frac{p_\mathbf{X}(\mathbf{x})}{p_G(\mathbf{x})}\right) \amthrm{d}\mathbf{x} = \mathrm{D}_f(p_\mathbf{X}(\mathbf{x}) || p_G(\mathbf{x})) \geq 0
+    \int_{\mathbf{x}} p_G(\mathbf{x}) f\left(\frac{p_\mathbf{X}(\mathbf{x})}{p_G(\mathbf{x})}\right) \mathrm{d}\mathbf{x} = \mathrm{D}_f(p_\mathbf{X}(\mathbf{x}) || p_G(\mathbf{x})) \geq 0
     $$
     等号成立当且仅当$p_\mathbf{X}(\mathbf{x}) = p_G(\mathbf{x})$。
 + fGAN原始论文给出了部分散度的对应的$f$-散度函数形式：
@@ -330,7 +329,133 @@ $$
         + 为解决这一问题，考虑在目标函数上增加一项$\mathcal{R}_\mathcal{L}=\mathbb{E}_{(x,y)\sim p(x,y)}[-\log p_c(y|x)]$。可以证明，最小化$\mathcal{R}_\mathcal{L}$等价于最小化$KL(p(x,y)\|p_c(x,y))$，且$\mathcal{R}_\mathcal{L}$与$D$无关，所以这样就能让最优解满足$p(x,y)=p_c(x,y)=p_g(x,y)$。
         + 当然，在实际的Triple GAN训练中，还会另外增加一项$\alpha_\mathcal{P}\mathcal{R}_{\mathcal{P}}=\alpha_\mathcal{P}\mathbb{E}_{p_g}[-\log p_c(y|x)]$，这可以防止生成器$G$出现模型坍塌。
 # 变分自编码器（VAE）
-生成模型的另一个方向是先将数据编码为潜空间分布（作为近似后验），再从先验分布采样，经过解码器生成数据。这一思想可以最早追溯到1986年Hinton团队提出的反向传播论文，在2006年通过Deep AE进一步发展，最终到2013~14年由Kingma与Welling提出VAE，在深度生成模型里占据一席之地。
+生成模型的另一个方向是先将数据编码为潜空间分布（作为近似后验），再从先验分布采样，经过解码器生成数据。这一思想可以最早追溯到1986年Hinton团队提出的反向传播论文，在2006年通过Deep AE基本确定架构，最终到2013~14年由Kingma与Welling提出变分自编码器VAE，在深度生成模型里占据一席之地。
 + 自编码器的本质是一种自监督学习方法，通过一个编码器和一个解码器（通常为神经网络），将数据转化为向量（一般为低维），再从向量重建数据。【这里的向量也可看作数据的嵌入或表示】
+    + 自编码器的训练目标是让输出$\hat{x}$与原始输入$x$尽量接近，损失函数可表示为
+        $$
+        L(x,\hat{x})=\|x-\hat{x}\|_2^2=\|x-d_{\phi}(z)\|_2^2=\|x-d_{\phi}(e_{\theta}(x))\|_2^2
+        $$
+    + 自编码器存在的问题包括：
+        + AE模型容易过拟合，泛化性能不好。
+        + 对于一个训练好的AE，输入某个图片，只会将其编码成某个固定嵌入向量；而输入某个确定的嵌入向量，只会输出确定的图片。
+        + 如果某隐向量来自于训练集没有见过的图片，那么生成的图片可能不好。
 
+        实际上，在VAE提出之前，自编码器只要还是用于数据的压缩（降维）与恢复，并不适用于生成数据。
++ VAE在自编码器的基础上还吸收了EM算法与变分推断的思想。关于EM算法和变分推断的基本概念可以参见[机器学习方法 Ch.15 概率模型估计方法](/posts/computer-science/machine-learning/机器学习方法-ch15-概率模型估计方法/)，这里不再赘述。
+    + VAE的基本架构图如下（图源蒲公英书）：![VAE](./深度学习方法-Ch.18-深度生成模型/VAE.png)
+        其中编码器用于估计变分分布$q(\mathbf{z}|\mathbf{x};\phi)$，解码器则基于变分分布中采样的$\mathbf{z}$估计条件分布$p(\mathbf{x}|\mathbf{z};\theta)$。
+    + 推断网络（编码器）的目标函数为：
+        $$
+        \phi^* = \argmin_{\phi} KL(q(\mathbf{z}|x; \phi) || p(\mathbf{z}|x; \theta)) = \argmax_{\phi} L(q, x; \theta, \phi)
+        $$
+        推导提示：
+        $$
+        \begin{aligned}
+        \log p(\mathbf{x}) &= L(q, \mathbf{x}; \theta, \phi) + KL(q(\mathbf{z}|\mathbf{x}; \phi) || p(\mathbf{z}|\mathbf{x}; \theta))\\
+        L(q, \mathbf{x}; \theta, \phi)&= \mathbb{E}_{\mathbf{z} \sim q(\mathbf{z}|\mathbf{x}; \phi)} \left[ \log \frac{p(\mathbf{x}, \mathbf{z}; \theta)}{q(\mathbf{z}|\mathbf{x}; \phi)} \right]
+        \end{aligned}
+        $$
+    + 同理，生成网络（解码器）的目标（极大似然估计）：
+        $$
+        \theta^* = \argmax_{\theta} \mathbb{E}_{\mathbf{z} \sim q(\mathbf{z}|\mathbf{x}; \phi)} [\log p(\mathbf{x}, \mathbf{z}; \theta)] = \argmax_{\theta} L(q, \mathbf{x}; \theta, \phi)
+        $$
+        实际上，上述优化编码器与解码器的过程恰好对应EM算法的E步与M步。由此可得VAE的总目标函数为
+        $$
+        \begin{aligned}
+        \max_{\theta,\phi} L(q, \mathbf{x}; \theta, \phi) &= \max_{\theta,\phi}\mathbb{E}_{\mathbf{z}\sim q(\mathbf{z}|\mathbf{x};\phi)} \left[ \log \frac{p(\mathbf{x}|\mathbf{z};\theta)p(\mathbf{z})}{q(\mathbf{z}|\mathbf{x};\phi)} \right] \\
+        &= \max_{\theta,\phi} \mathbb{E}_{\mathbf{z}\sim q(\mathbf{z}|\mathbf{x};\phi)}[\log p(\mathbf{x}|\mathbf{z};\theta)] - KL(q(\mathbf{z}|\mathbf{x};\phi)||p(\mathbf{z}))
+        \end{aligned}
+        $$
+    + 注意到上述目标函数里涉及到对$\mathbf{z}$的随机采样，这导致解码器梯度难以反向传播到编码器。对此，VAE的解决方案是进行重参数化：
+        + 令$\mathbf{z} = \mu_{\mathbf{z}} + \sigma_{\mathbf{z}} \odot \epsilon, \quad \epsilon \sim N(0, I)$，这样$\mathbf{z} \sim q(\mathbf{z}|\mathbf{x}; \phi) = N(\mu_\mathbf{z}, \text{diag}(\sigma_\mathbf{z}^2))$，其中$\begin{bmatrix} \mu_\mathbf{z} \\ \sigma_\mathbf{z}^2 \end{bmatrix} = f_I(\mathbf{x}, \phi)$ 由推断网络（编码器）来进行建模。
+        + 另外假设先验分布$p(\mathbf{z}) = N(0, I)$，这样我们就能将KL散度重新写为
+            $$
+            \begin{aligned}
+            -KL(q(\mathbf{z}|\mathbf{x}; \phi) || p(\mathbf{z}))&=-KL\left(N\left(\mu_\mathbf{z}, \text{diag}(\sigma_\mathbf{z}^2)\right) || N(0, I)\right)\\
+            &=\frac{1}{2} \sum_{j=1}^J \left(1 + \log \sigma_{\mathbf{z}j}^2 - \mu_{\mathbf{z}j}^2 - \sigma_{\mathbf{z}j}^2\right)
+            \end{aligned}
+            $$
+            其中$J$为$\mathbf{z}$的维度，$\mu_{\mathbf{z}j}$和$\sigma_{\mathbf{z}j}^2$分别为$\mu_\mathbf{z}$和$\sigma_\mathbf{z}^2$的第$j$个分量。
++ 最终我们得到VAE的训练过程：
+    1. 从$N(\mathbf{0}, \mathbf{I})$中随机抽出样本$\boldsymbol{\epsilon}_1, \boldsymbol{\epsilon}_2, \cdots, \boldsymbol{\epsilon}_M$
+    2. 计算$\mathbf{z}_m = \boldsymbol{\mu}_\mathbf{z} + \boldsymbol{\sigma}_\mathbf{z} \odot \boldsymbol{\epsilon}_m$
+    3. 计算$\displaystyle\mathbb{E}_{\mathbf{z} \sim q(\mathbf{z}|\mathbf{x};\phi)}[\log p(\mathbf{x}|\mathbf{z}; \theta)] \approx \frac{1}{M} \sum_{m=1}^M \log p(\mathbf{x}|\mathbf{z}_m; \theta)$
+
+    4. 目标函数近似表达为
+        $$
+        \frac{1}{M} \sum_{m=1}^M \log p(\mathbf{x}|\mathbf{z}_m; \theta) + \frac{1}{2} \sum_{j=1}^J (1 + \log \sigma_{\mathbf{z}j}^2 - \mu_{\mathbf{z}j}^2 - \sigma_{\mathbf{z}j}^2)
+        $$
+        其中$\begin{bmatrix} \mu_\mathbf{z} \\ \sigma_\mathbf{z}^2 \end{bmatrix} = f_I(\mathbf{x}, \phi)$来自于编码器，$p(\mathbf{x}|\mathbf{z}_m; \theta)$为解码器。
+    5. 给定样本$\mathbf{x}_1, \mathbf{x}_2, \cdots, \mathbf{x}_n$，利用随机梯度上升来求解。
++ 最后总结下VAE的特点：
+    + 将潜在变量的条件强制为单位范数，压缩形式是潜在变量的均值和方差； 
+    + 潜在变量是平滑连续的，且其随机值在解码器产生有意义的输出； 
+    + 解码器的输入是从具有编码器输出均值和方差的高斯中采样的随机值； 
+    + 正则化的潜在空间，具有生成能力。
 # 扩散模型
+在介绍扩散模型前，先引入前向和反向扩散过程：
++ 前向扩散过程可以理解为：从一张图片开始，逐步加入随机噪音，最终得到纯高斯噪音图片。其数学形式为：
+    $$
+    q(\mathbf{x}_t \mid  \mathbf{x}_{t-1}) = N(\mathbf{x}_t; \sqrt{\alpha_t}\mathbf{x}_{t-1}, (1 - \alpha_t)\mathbf{I})
+    $$
+    由此可以推导出$\mathbf{x}_t\mid\mathbf{x_0}$的分布：
+    $$
+    \mathbf{x}_t \mid \mathbf{x}_0 \sim N(\sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t) \mathbf{I})
+    $$
+    其中$ \bar{\alpha}_t = \alpha_1 \alpha_2 \cdots \alpha_t$。由此可知，当$t\to\infty$时，$\mathbf{x}_t\mid\mathbf{x}_0\stackrel{d}{\longrightarrow}N(0,\mathbf{I})$。
++ 反向扩散过程则恰好与前向扩散过程相反，相当于从噪音图片逐渐还原出图像。由上述公式可以推出：
+    $$
+    \begin{aligned}
+    q(x_{t-1}\mid x_t, x_0) &= \frac{q(x_t\mid x_{t-1}, x_0)q(x_{t-1}\mid x_0)}{q(x_t\mid x_0)} \\
+    &= \frac{N(x_t; \sqrt{\alpha_t}x_{t-1}, (1 - \alpha_t)\mathbf{I})N(x_{t-1}; \sqrt{\bar{\alpha}_{t-1}}x_0, (1 - \bar{\alpha}_{t-1})\mathbf{I})}{N(x_t; \sqrt{\bar{\alpha}_t}x_0, (1 - \bar{\alpha}_t)\mathbf{I})} \\
+    &\propto \exp\left\{ -\frac{1}{2} \left[ \frac{(x_t - \sqrt{\alpha_t}x_{t-1})^2}{1 - \alpha_t} + \frac{(x_{t-1} - \sqrt{\bar{\alpha}_{t-1}}x_0)^2}{1 - \bar{\alpha}_{t-1}} \right] \right\} \\
+    &= \exp\left\{ -\frac{1}{2} \left[ \left( \frac{\alpha_t}{1 - \alpha_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \right) x_{t-1}^2 - 2 \left( \frac{\sqrt{\alpha_t}x_t}{1 - \alpha_t} + \frac{\sqrt{\bar{\alpha}_{t-1}}x_0}{1 - \bar{\alpha}_{t-1}} \right) x_{t-1} \right] \right\} \\
+    &\propto N\left(x_{t-1}; \underbrace{\frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})x_t + \sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)x_0}{1 - \bar{\alpha}_t}}_{\mu_q(x_t, x_0)}, \underbrace{\frac{(1 - \alpha_t)(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\mathbf{I}}_{\Sigma_q(t)}\right)
+    \end{aligned}
+    $$
++ 然而，直接的反向扩散过程不能用来生成图片，因为缺乏原始图像数据的支持。一个合适的训练方案是通过训练另一个概率分布$p(x_{t-1}\mid x_t)$，使其接近$q(x_{t-1}\mid x_t, x_0)$。也就是说要使得
+    $$
+    p(x_{t-1}\mid x_t)\propto N\left(x_{t-1}; \underbrace{\frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})x_t + \sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)\hat{x}_\theta(x_t,t)}{1 - \bar{\alpha}_t}}_{\mu_\theta(x_t, t)}, \underbrace{\frac{(1 - \alpha_t)(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\mathbf{I}}_{\Sigma_q(t)}\right)
+    $$
+    其中$\hat{x}_\theta(x_t,t)$为待训练神经网络，$\theta$为参数。其训练损失函数即为KL散度：
+    $$
+    D_{KL}(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t))
+    $$
+    具体展开计算如下：
+    $$
+    \begin{aligned}
+    & D_{KL}(q(x_{t-1}|x_t, x_0) \parallel p_\theta(x_{t-1}|x_t)) \\
+    &= D_{KL}(N(x_{t-1}; \boldsymbol{\mu}_q, \boldsymbol{\Sigma}_q(t)) \parallel N(x_{t-1}; \boldsymbol{\mu}_\theta, \boldsymbol{\Sigma}_q(t))) \\
+    &= \frac{1}{2} \left[ \log \frac{|\boldsymbol{\Sigma}_q(t)|}{|\boldsymbol{\Sigma}_q(t)|} - d + \mathrm{tr}(\boldsymbol{\Sigma}_q(t)^{-1}\boldsymbol{\Sigma}_q(t)) + (\boldsymbol{\mu}_\theta - \boldsymbol{\mu}_q)^\top \boldsymbol{\Sigma}_q(t)^{-1} (\boldsymbol{\mu}_\theta - \boldsymbol{\mu}_q) \right] \\
+    &= \frac{1}{2} \left[ (\boldsymbol{\mu}_\theta - \boldsymbol{\mu}_q)^\top (\sigma_q^2(t)\mathbf{I})^{-1} (\boldsymbol{\mu}_\theta - \boldsymbol{\mu}_q) \right] \\
+    &= \frac{1}{2\sigma_q^2(t)} \left[ \| \boldsymbol{\mu}_\theta - \boldsymbol{\mu}_q \|_2^2 \right]\\
+    &= \frac{1}{2\sigma_q^2(t)} \frac{\bar{\alpha}_{t-1}(1 - \alpha_t)^2}{(1 - \bar{\alpha}_t)^2} \left[ \| \hat{x}_\theta(x_t, t) - x_0 \|_2^2 \right]
+    \end{aligned}
+    $$
+    其中$\sigma_q^2(t) = \dfrac{(1 - \alpha_t)(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}$。
++ 上述目标函数仍然难以训练，且预测$\mu_{\theta}$的效果不稳定。因此下述训练的等价形式被推出：
+    + 首先，前向扩散过程里$x_0$可以直接由$x_t$得到：
+        $$
+        x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon \quad \Longrightarrow \quad x_0 = \frac{x_t - \sqrt{1 - \bar{\alpha}_t}\epsilon}{\sqrt{\bar{\alpha}_t}}
+        $$
+        将其代回$\mu_q(x_t,x_0)$中，得到
+        $$
+        \begin{aligned}
+        \boldsymbol{\mu}_q(x_t, x_0) &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})x_t + \sqrt{\bar{\alpha}_{t-1}}(1 - \alpha_t)x_0}{1 - \bar{\alpha}_t} \\
+        &= \frac{1}{\sqrt{\alpha_t}} x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}\sqrt{\alpha_t}} \epsilon
+        \end{aligned}
+        $$
+        由此可见其只和$x_t$与$\epsilon$有关。
+    + 于是我们可以直接训练噪声神经网络：
+        $$
+        \boldsymbol{\mu}_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}} x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}\sqrt{\alpha_t}} \hat{\epsilon}_\theta(x_t, t)
+        $$
+        将其代入KL散度得到
+        $$
+        \begin{aligned}
+        D_{\mathrm{KL}}(q \parallel p_\theta) &\propto \frac{1}{2\sigma_q^2(t)} \|\boldsymbol{\mu}_\theta - \boldsymbol{\mu}_q\|_2^2 \\
+        &= \frac{1}{2\sigma_q^2(t)} \frac{(1 - \alpha_t)^2}{(1 - \bar{\alpha}_t)\alpha_t} \left\| \epsilon - \hat{\epsilon}_\theta(x_t, t) \right\|_2^2
+        \end{aligned}
+        $$
+        这便是扩散模型“预测噪声”的精髓。
+> 当然，扩散模型的算法远不止于此，实际模型常常会考虑连续时间状态情形，此时需要用到随机微积分的知识，这里就不详细展开了。

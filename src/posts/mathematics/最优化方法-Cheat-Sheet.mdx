@@ -101,7 +101,7 @@ sticky: true
     \|\boldsymbol{v}\|_p=\left(\sum_{i=1}^n|v_i|^p\right)^{1/p}
     $$
     其中$\boldsymbol{v}\in\R^n$。在实际优化问题中$p$最常取$1,2$或$\infty$。$\ell_{\infty}$范数定义为$\displaystyle\|\boldsymbol{v}\|_{\infty}=\max_{1\leq i\leq n}|v_i|$。
-    + 当然也可以定义$\ell_0$“范数”：$\displaystyle\|\boldsymbol{v}\|_0=\sum_{i=1}^n\mathbf{1}_{\{v_i\neq 0\}}$，不过它并不是向量范数（齐次性不满足）。可以证明，$\ell_1$范数是$\ell_0$范数在$\{\boldsymbol{v}\mid\|\boldsymbol{v}\|_{\infty}\leq 1\}$上的凸包络（最大凸下界函数）。
+    + 当然也可以定义$\ell_0$“范数”：$\displaystyle\|\boldsymbol{v}\|_0=\sum_{i=1}^n\boldsymbol{1}_{\{v_i\neq 0\}}$，不过它并不是向量范数（齐次性不满足）。可以证明，$\ell_1$范数是$\ell_0$范数在$\{\boldsymbol{v}\mid\|\boldsymbol{v}\|_{\infty}\leq 1\}$上的凸包络（最大凸下界函数）。
 ## 矩阵范数
 定义与向量范数类似，只需要将定义域改为$\R^{m\times n}$即可。典型的矩阵范数如下：
 + 核范数：矩阵的奇异值之和
@@ -163,12 +163,13 @@ $$
     > 紧凑SVD（也称截断SVD）与普通SVD的主要区别在于：紧凑SVD只保留了非零奇异值及对应的奇异向量。
 # 凸性进阶
 > 前面我们已经简单提到凸性的基本概念，这里就不重复赘述了。
-## 仿射集
+## 凸集
+### 仿射集
 定义：若集合$C\subseteq\R^n$包含经过集合中任意两点的直线，那么就称$C$为仿射集。【符号定义：$z=\theta x+(1-\theta)y\in C,\ \forall x,y\in C,\theta\in\R$】
 + $C$是仿射集$\iff$若$x_1, \dots, x_k \in C, \theta_1 + \dots + \theta_k = 1$，则$\theta_1 x_1 + \dots + \theta_k x_k \in C$。
 + 若$C$是仿射集，给定$x_0\in C$，则结合$V=C-x_0=\{x-x_0\mid x\in C\}$为$\R^n$的一个线性子空间。
 + 对任意仿射集$C$，其可以表示为某个线性方程组$\{x\mid Ax=b\}$的解集
-## 凸包与凸集
+### 凸包与凸集
 + 首先定义凸组合：对于$x_1,\cdots,x_k\in\R^n,\displaystyle\sum_i\theta_i=1,\theta_i\geq 0,i=1,2,\cdots,k$，$x=\theta_1x_1+\cdots+\theta_kx_k$为这些点的凸组合。
 + 对于集合$C\subseteq\R^n$，它的凸包就是其所有点的凸组合：
     $$
@@ -187,7 +188,7 @@ $$
         \text{conv} \{v_1, \dots, v_k\} = \{\sum_i \theta_i v_i | \theta \succeq 0, 1^\top \theta = 1\}
         $$
         + 概率单纯形：$\text{conv} \{e_1, \dots, e_n\} = \{\omega | \omega \succeq 0, 1^\top \omega = 1\}$（即标准基向量的凸包）
-## 锥体
+### 锥体
 定义：对于集合$C \subseteq \mathbb{R}^n$，若对任意$ \boldsymbol{x} \in C,\theta \ge 0 $，有$\theta \boldsymbol{x} \in C$，则称$C$为锥体。
 + 凸锥（既是锥体又是凸集）：满足任意$\boldsymbol{x}_1, \boldsymbol{x}_2 \in C$，有$\theta_1 \boldsymbol{x}_1 + \theta_2 \boldsymbol{x}_2 \in C, \forall\theta_1, \theta_2 \ge 0$
 + 锥组合（非负线性组合）：对$\boldsymbol{x}_1, \dots, \boldsymbol{x}_k \in \mathbb{R}^n,\theta_1, \dots, \theta_k \ge 0$，$\theta_1 \boldsymbol{x}_1 + \dots + \theta_k \boldsymbol{x}_k$为锥组合。
@@ -197,9 +198,210 @@ $$
         + 特别地，对于$\ell_2$范数$\|\cdot\|_2$得到的范数锥也称为二阶锥。
     + 法向锥：对于凸集$C$和点$x_0 \in C$，法向锥定义为$N_C(x_0) = \{y : y^\top (x - x_0) \le 0, \forall x \in C\}$
     + 半正定锥：首先定义
-        + $n \times n$对称矩阵集 $\mathbf{S}^n = \{\boldsymbol{X} \in \mathbb{R}^{n \times n} : \boldsymbol{X} = \boldsymbol{X}^\top\}$
-        + $n \times n$对称半正定矩阵集（$\forall \boldsymbol{z} \in \mathbb{R}^n, \boldsymbol{z}^\top \boldsymbol{X} \boldsymbol{z} \ge 0$）: $\mathbf{S}_+^n = \{\boldsymbol{X} \in \mathbf{S}^n : \boldsymbol{X} \succeq 0\}$
-        + $n \times n$对称正定矩阵集 $\mathbf{S}_{++}^n = \{\boldsymbol{X} \in \mathbf{S}^n : \boldsymbol{X} \succ 0\}$
+        + $n \times n$对称矩阵集 $\boldsymbol{S}^n = \{\boldsymbol{X} \in \mathbb{R}^{n \times n} : \boldsymbol{X} = \boldsymbol{X}^\top\}$
+        + $n \times n$对称半正定矩阵集（$\forall \boldsymbol{z} \in \mathbb{R}^n, \boldsymbol{z}^\top \boldsymbol{X} \boldsymbol{z} \ge 0$）: $\boldsymbol{S}_+^n = \{\boldsymbol{X} \in \boldsymbol{S}^n : \boldsymbol{X} \succeq 0\}$
+        + $n \times n$对称正定矩阵集 $\boldsymbol{S}_{++}^n = \{\boldsymbol{X} \in \boldsymbol{S}^n : \boldsymbol{X} \succ 0\}$
 
-        可以证明$\mathbf{S}_+^n$是凸锥。
-## 凸集性质
+        可以证明$\boldsymbol{S}_+^n$是凸锥。
+### 凸集与超平面
++ 超平面分割定理：假设凸集$C, D$非空且$C \cap D = \varnothing$，则有一个超平面分割它们，即存在$\boldsymbol{a} \neq 0, b$，使得
+    $$
+    \boldsymbol{a}^\top \boldsymbol{x} \ge b \quad\forall \boldsymbol{x} \in C, \qquad \boldsymbol{a}^\top \boldsymbol{x} \le b\quad \forall \boldsymbol{x} \in D
+    $$
+    这里的分割超平面可表示为$\{\boldsymbol{x}:\boldsymbol{a}^\top\boldsymbol{x}-b=0\}$。
+    + 注：这个分割超平面不一定能够严格分割这两个凸集（即超平面与两个凸集没有交集）。
++ 支持超平面定理：凸集的任意边界点上有经过该点的支持超平面，即对$x_0\in\operatorname{bd}C$，存在$a\neq 0$使得
+    $$
+    \boldsymbol{a}^\top \boldsymbol{x} \le \boldsymbol{a}^\top \boldsymbol{x}_0, \quad\forall \boldsymbol{x} \in C
+    $$
+    支持超平面表示为$\{ \boldsymbol{x} : \boldsymbol{a}^\top \boldsymbol{x} - \boldsymbol{a}^\top \boldsymbol{x}_0 = 0 \}$，其在$\boldsymbol{x}_0$与$C$相切，且半空间$\{ \boldsymbol{x} : \boldsymbol{a}^\top \boldsymbol{x} \le \boldsymbol{a}^\top \boldsymbol{x}_0 \}$包含了$C$。
+### 凸集保凸性运算
+判断集合是否为凸集，除了采用定义之外，还可以通过保凸性运算得到。常见的保凸性运算包括：
+1. 集合交   
+    + 多面体是多个半空间和超平面的交集，因此是凸集
+    + 交集运算可以推广到无穷个集合
+2. 仿射变换  
+    + 定义：若函数$f: \mathbb{R}^n \to \mathbb{R}^m$满足$f(\boldsymbol{x}) = A\boldsymbol{x} + \boldsymbol{b}$（$A \in \mathbb{R}^{m \times n}$， $\boldsymbol{b} \in \mathbb{R}^m$），则称$f$为仿射变换。
+    + 若$C \subseteq \mathbb{R}^n$是凸集，函数$f$是仿射的，则$C$在$f$下的像
+        $$
+        f(C) = \{f(\boldsymbol{x}) : \boldsymbol{x} \in C\}
+        $$
+        是凸集，凸集$D \subseteq \mathbb{R}^m$在$f$下的原像
+        $$
+        f^{-1}(D) = \{\boldsymbol{x} : f(\boldsymbol{x}) \in D\}
+        $$
+        也是凸集。
+    + 常见的仿射变换包括缩放、平移、投影、加和、部分加和等。
+3. 透视：若函数$P: \mathbb{R}^n \times \mathbb{R}_{++} \to \mathbb{R}^n$（$\mathbb{R}_{++}$代表正实数）满足
+    $$
+    P(\boldsymbol{x}, z) =\frac{\boldsymbol{x}}{z}, \quad \text{dom } P = \{(\boldsymbol{x}, z) : \boldsymbol{x} \in \mathbb{R}^n, z > 0\}
+    $$
+    则称$P$为透视。
+    + 若$C \subseteq \text{dom } P$是凸集，则$P(C)$是凸集，且若$D$是凸集，则$P^{-1}(D)$是凸集。
+4. 线性分数：若函数$f: \mathbb{R}^n \to \mathbb{R}^m$满足
+    $$
+    f(\boldsymbol{x}) = \frac{A\boldsymbol{x} + b}{\boldsymbol{c}^\top \boldsymbol{x} + d}, \quad \text{dom } f = \{\boldsymbol{x} \mid \boldsymbol{c}^\top \boldsymbol{x} + d > 0\}
+    $$
+    则称$f$为线性分数。线性分数可看作透视函数与仿射函数的复合，凸集在该函数下的像和原像均是凸集。
+## 凸函数
+凸函数的定义前面已经提到过，下面再定义两种特殊的凸函数：
++ 严格凸函数：如果$\text{dom}\ f$是凸集，且$\forall \boldsymbol{x}, \boldsymbol{y} \in \text{dom}\ f,\boldsymbol{x}\neq \boldsymbol{y}, 0 \leq \theta \leq 1$，有
+    $$
+    f(\theta \boldsymbol{x} + (1 - \theta)\boldsymbol{y}) < \theta f(\boldsymbol{x}) + (1 - \theta)f(\boldsymbol{y}).
+    $$
+    则称$f$为严格凸函数。
++ 强凸函数：称$f$是$m$-强凸函数（$m > 0$），如果$\displaystyle f(\boldsymbol{x})-\frac{m}{2}\|\boldsymbol{x}\|_2^2$是凸函数。
+    + 强凸函数一定是严格凸函数。
+
+严格凸排除了图像上的线段，而强凸进一步要求$f$减去一个二次函数后仍为凸，即曲率有正的下界$m$。【类似也可定义严格凹函数与强凹函数】
+### 函数凸性判断
+凸函数主要可通过下述凸性条件判断：
++ 一阶条件：若$f$可微分，则$f$是凸的当且仅当$\text{dom } f$是凸集且
+    $$
+    f(\boldsymbol{y}) \ge f(\boldsymbol{x}) + \nabla f(\boldsymbol{x})^\top (\boldsymbol{y} - \boldsymbol{x}) \quad \forall \boldsymbol{x}, \boldsymbol{y} \in \text{dom } f
+    $$
+    也就是说梯度为$0$的点就是全局最小点。
++ 二阶条件：若$f$二阶可微分，则$f$是凸的当且仅当$\text{dom } f$是凸集且对任意$\boldsymbol{x} \in \text{dom } f$
+    $$
+    \nabla^2 f(\boldsymbol{x}) \succeq 0
+    $$
+    若对任意$\boldsymbol{x}$有$\nabla^2 f(\boldsymbol{x}) \succ 0$，则$f$严格凸【反之不然】。
++ Jensen不等式：若$f$为凸函数，随机变量$X$取值于$\text{dom } f$且$\mathbb{E}X$存在，则$f(\mathbb{E}X) \le \mathbb{E}f(X)$。
+
+除此之外，还可以通过简单凸函数的保凸性运算判断，包括：
+1. 非负加权平均/非负线性组合：若$f_1,\cdots,f_k$为凸函数，$\omega_1,\cdots,\omega_k\geq 0$，那么$f=\omega_1f_1+\cdots+\omega_1f_k$也是凸函数。【凸函数集合为凸锥】
+2. 与仿射变换复合：若$f$为凸函数，那么$g(x)=f(Ax+b)$也是凸函数。
+3. 逐点取最大值与上确界：若$f_1,\cdots,f_k$为凸函数，那么$f(x)=\max\{f_1(x),\cdots,f_k(x)\}$也为凸函数，其中$\operatorname{dom}f=\bigcap_{i=1}^k\operatorname{dom}f_i$。【当然这里$\max$也可替换为$\sup$】
+4. 部分极小化：若$f(x,y)$关于$(x,y)$联合为凸函数，那么对于非空集合$C$，$g(x)=\displaystyle\inf_{y\in C}f(x,y)$也为凸函数。【设$g(x)>-\infty$】
+5. 透视函数：若$f:\R^n\to\R$为凸函数，那么其透视函数
+    $$
+    g(x, t) = t f\left(\frac{x}{t}\right), \qquad \operatorname{dom} g = \{(x, t) :\frac{x}{t} \in \operatorname{dom} f, \; t > 0\}
+    $$
+    为$\R^{n+1}$上的凸函数。
+6. 与标量函数复合：令$f(x) = h(g(x))$，其中$g: \mathbb{R}^n \rightarrow \mathbb{R}, h: \mathbb{R} \rightarrow \mathbb{R}$，那么如果
+    - $g$凸，$h$凸且非降
+    - $g$凹，$h$凸且非升
+
+    则$f$是凸函数。
+
+7. 向量复合：考虑$g_i: \mathbb{R}^n \rightarrow \mathbb{R}, i=1,\dots,k, h: \mathbb{R}^k \rightarrow \mathbb{R}$的复合函数$f(x) = h(g(x)) = h(g_1(x), g_2(x), \dots, g_k(x))$，那么如果
+    - $g_i, i=1,\dots,k$凸，$h$凸且关于每个分量非降
+    - $g_i, i=1,\dots,k$凹，$h$凸且关于每个分量非升
+
+    则$f$是凸函数。
+    > 如果$\operatorname{dom} h$是$\R^k$子集，那么需要保证延拓后的$\tilde{h}$（在延拓区域取值$+\infty$）单调性仍然成立。
+
+复合凸函数的典型例子：
++ $\exp(g(\boldsymbol{x}))$是凸函数，如果 $g$是凸函数
++ $\dfrac{1}{g(\boldsymbol{x})}$是凸函数，如果$g(\boldsymbol{x}) > 0, \forall \boldsymbol{x} \in \text{dom } g$，且$g$为凹函数
++ $\displaystyle\sum_{i=1}^m \log g_i(\boldsymbol{x})$是凹函数，如果$g_i(\boldsymbol{x}) > 0, i = 1, \dots, m$且$g_i$为凹函数
++ $\displaystyle\log \sum_{i=1}^m \exp(g_i(\boldsymbol{x}))$为凸函数，若每个$g_i$为凸函数（向量复合）【这也被称为"log-sum-exp"函数，可看作max函数的平滑近似，对$g_i$求偏导可得到softmax函数】
+## 凸优化问题 
+标准的凸优化问题形式上面已经提到，这里就不再重复。【一般的优化问题标准形式就是在此基础上去掉凸函数限制，故同样作略】  
+下面基于此进行补充：
+1. 最优化问题的解
+    - 最优化值：$f^* = \inf \{f_0(\boldsymbol{x}) \mid f_i(\boldsymbol{x}) \leq 0, i = 1, \dots, m, h_i(\boldsymbol{x}) = 0, i = 1, \dots, p\}$
+    - 若$\boldsymbol{x}$是可行的且$f_0(\boldsymbol{x}) = f^*$，则$\boldsymbol{x}$是最优点/最优解/最小值点
+    - 若$\boldsymbol{x}$是可行的且$f_0(\boldsymbol{x}) \leq f^* + \epsilon$，则$\boldsymbol{x}$是$\epsilon$-次优的
+    - 若$\boldsymbol{x}$是可行的，且$f_i(\boldsymbol{x}) = 0$，则称第$i$个不等式约束在$\boldsymbol{x}$处活跃（active）
+    - $\boldsymbol{x}$是局部最优的，如果存在$R > 0$使得$\boldsymbol{x}$是如下问题的最优解
+    $$
+    \begin{aligned}
+    \min \quad & f_0(\boldsymbol{z}) \\
+    \text{s.t.} \quad & f_i(\boldsymbol{z}) \leq 0, \quad i = 1, \dots, m, \quad h_i(\boldsymbol{z}) = 0, \quad i = 1, \dots, p \\
+    & \|\boldsymbol{z} - \boldsymbol{x}\|_2 \leq R
+    \end{aligned}
+    $$
+2. 凸优化问题的解集
+    + 对于凸优化问题，由凸函数的限制可知可行域
+        $$
+        \bigcap_{i=0}^m \operatorname{dom} f_i \cap \bigcap_{i=1}^m \{\boldsymbol{x} : f_i(\boldsymbol{x}) \leq 0\} \cap \bigcap_{i=1}^p \{\boldsymbol{x} : \boldsymbol{a}_i^\top \boldsymbol{x} = b_i\}
+        $$
+        为凸集。
+    + 令$X_{\text{opt}}$为凸优化问题的所有最优解组成的集合，记作
+        $$
+        \begin{aligned}
+        X_{\text{opt}} = \argmin\  &f_0(\boldsymbol{x}) \\
+        \text{s.t.} \quad & f_i(\boldsymbol{x}) \leq 0,\ i = 1, \dots, m \\
+        &A\boldsymbol{x} = b
+        \end{aligned}
+        $$
+        则$X_{\text{opt}}$为凸集。
+    + 若$f_0$严格凸，则最优解若存在必唯一，即$X_{\text{opt}}$至多包含一个元素。
+3. 优化问题等价形式
+    $$
+    \begin{aligned}
+    \min_{\boldsymbol{x}} \quad & f_0(\boldsymbol{x}) \\
+    \text{s.t.} \quad & f_i(\boldsymbol{x}) \leq 0, i = 1, \dots, m \\
+    & A\boldsymbol{x} = b
+    \end{aligned}
+    $$
+    可以等价写作
+    $$
+    \min_{\boldsymbol{x}} \quad f_0(\boldsymbol{x}), \quad \text{s.t. } \boldsymbol{x} \in C
+    $$
+    其中$C = \{\boldsymbol{x} : f_i(\boldsymbol{x}) \leq 0, i = 1, \dots, m, A\boldsymbol{x} = b\}$为可行集。
+    + 当然，上述问题也可写作无约束形式
+        $$
+        \min_{\boldsymbol{x}} \quad f_0(\boldsymbol{x}) + I_C(\boldsymbol{x})
+        $$
+        其中$I_C(\boldsymbol{x})$为指示函数（$I_C(\boldsymbol{x}) = \begin{cases}0&\text{if } \boldsymbol{x} \in C\\\infty,&\text{if }\boldsymbol{x} \notin C\end{cases}$）；
+        > 因为$C$为凸集时$I_C$为凸函数，所以凸优化问题总可写成无约束形式。
+4. 一阶最优条件：假设凸优化问题中的目标函数$f_0$可微分，则
+    + 若$\boldsymbol{x}, \boldsymbol{y} \in \text{dom } f_0$，有
+        $$
+        f_0(\boldsymbol{y}) \geq f_0(\boldsymbol{x}) + \nabla f_0(\boldsymbol{x})^\top (\boldsymbol{y} - \boldsymbol{x})
+        $$
+    + 令$C$为可行集，可行点$\boldsymbol{x} \in C$是最优点的等价条件是
+        $$
+        \nabla f_0(\boldsymbol{x})^\top (\boldsymbol{y} - \boldsymbol{x}) \geq 0, \text{ for all } \boldsymbol{y} \in C
+        $$
+        这就是一阶最优条件。直观地，从$\boldsymbol{x}$指向任一可行点$\boldsymbol{y}$的方向与$\nabla f_0(\boldsymbol{x})$的夹角不超过$90^\circ$，即$-\nabla f_0(\boldsymbol{x}) \in N_C(\boldsymbol{x})$【法向锥】
+    + 如果没有约束（$C=\R^n$），那么就退化为$\nabla f_0(\boldsymbol{x})=0$。
+5. 部分优化
+    部分优化一个凸优化问题可以保持其凸性，即若$\boldsymbol{x} = (\boldsymbol{x}_1, \boldsymbol{x}_2) \in \mathbb{R}^{n_1} \times \mathbb{R}^{n_2}$，则
+    $$
+    \begin{aligned}
+    & \min_{\boldsymbol{x}_1, \boldsymbol{x}_2} & & f(\boldsymbol{x}_1, \boldsymbol{x}_2) \\
+    & \text{s.t.} & & g_1(\boldsymbol{x}_1) \leq 0 \\
+    & & & g_2(\boldsymbol{x}_2) \leq 0
+    \end{aligned}
+    \quad \Longleftrightarrow \quad
+    \begin{aligned}
+    & \min_{\boldsymbol{x}_1} & & \tilde{f}(\boldsymbol{x}_1) \\
+    & \text{s.t.} & & g_1(\boldsymbol{x}_1) \leq 0
+    \end{aligned}
+    $$
+    其中$\displaystyle\tilde{f}(\boldsymbol{x}_1) = \min_{\boldsymbol{x}_2 : g_2(\boldsymbol{x}_2) \leq 0} f(\boldsymbol{x}_1, \boldsymbol{x}_2)$，若左式为凸优化问题则右式也是。
+    > 实际上部分优化的作用就是将约束条件并入目标函数的同时对优化变量进行降维。
+6. 引入等式约束——松弛变量  
+    引入松弛变量可以将线性不等式约束转换为等式约束加非负约束，即原问题
+    $$
+    \begin{aligned}
+    \min \quad & f_0(\boldsymbol{x}) \\
+    \text{s.t.} \quad & \boldsymbol{a}_i^\top\boldsymbol{x} \leq b_i, \quad i = 1, \dots, m
+    \end{aligned}
+    $$
+    可以等价地转化为
+    $$
+    \begin{aligned}
+    \min_{\boldsymbol{x}, \boldsymbol{s}} \quad & f_0(\boldsymbol{x}) \\
+    \text{s.t.} \quad & s_i = b_i - \boldsymbol{a}_i^\top\boldsymbol{x}, \quad i = 1, \dots, m \\
+    & s_i \geq 0, \quad i = 1, \dots, m
+    \end{aligned}
+    $$
+7. 放松非仿射等式约束  
+    凸优化问题中的等式约束需要是仿射的，带非仿射等式约束的问题一般不是凸优化问题。可用以下方法将原问题扩展为凸优化问题：对
+    $$
+    \min_{\boldsymbol{x}} f_0(\boldsymbol{x}) \quad\text{s.t.}\ \boldsymbol{x} \in C
+    $$
+    及$\tilde{C} \supseteq C$，扩展问题
+    $$
+    \min_{\boldsymbol{x}} f_0(\boldsymbol{x}) \quad\text{ s.t. }\ \boldsymbol{x} \in \tilde{C}
+    $$
+    称为原问题的放松（relaxation）问题，其中$\tilde{C}$为放松后的约束集合。放松问题的最优值总是小于等于原问题的最优值；若放松问题的解属于$C$，则它也是原问题的解。
+    + 应用于凸函数$h_i$给出的等式约束
+        $$
+        h_i(\boldsymbol{x}) = 0, \quad i = 1, \dots, p
+        $$
+        可放松为$h_i(\boldsymbol{x}) \leq 0, \quad i = 1, \dots, p$，得到凸优化问题。

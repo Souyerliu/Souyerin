@@ -151,63 +151,63 @@ sticky: true
         \operatorname{Var}(\boldsymbol{X}^\top \boldsymbol{A}\boldsymbol{X}) = (\nu_4 - 3\sigma^4)\boldsymbol{a}^\top \boldsymbol{a} + 2\sigma^4\operatorname{tr}(\boldsymbol{A}^2) + 4\sigma^2\boldsymbol{\mu}^\top \boldsymbol{A}^2\boldsymbol{\mu} + 4\nu_3\boldsymbol{\mu}^\top \boldsymbol{A}\boldsymbol{a}.
         $$
 ## 矩母函数
-+ 随机向量$\mathbf{X}$的矩母函数定义（默认存在）：$M_{\mathbf{X}}(\mathbf{t})=\mathbb{E}\left(\exp\{\mathbf{t}^\top\mathbf{X}\}\right)$。
++ 随机向量$\boldsymbol{X}$的矩母函数定义（默认存在）：$M_{\boldsymbol{X}}(\boldsymbol{t})=\mathbb{E}\left(\exp\{\boldsymbol{t}^\top\boldsymbol{X}\}\right)$。
     + 矩母函数也称为矩生成函数，其名称来源于函数可以生成随机向量的任意阶矩。具体而言，对于一维随机变量：
         $$
         M_X(t) = \sum_{n=0}^\infty \frac{t^n}{n!} \mathbb{E}(X^n)\Longrightarrow M_X^{(n)}(0) = \mathbb{E}(X^n)
         $$
-        而对于$k$维随机向量$\mathbf{X}$：
+        而对于$k$维随机向量$\boldsymbol{X}$：
         $$
-        M_{\mathbf{X}}(\mathbf{t}) = \sum_{n_1=0}^\infty \dots \sum_{n_k=0}^\infty \frac{t_1^{n_1} \dots t_k^{n_k}}{n_1! \dots n_k!} \mathbb{E}(X_1^{n_1} \dots X_k^{n_k})\Longrightarrow\frac{\partial^{n_1 + n_2 + \dots + n_k} M_{\mathbf{X}}(\mathbf{0})}{\partial t_1^{n_1} \partial t_2^{n_2} \dots \partial t_k^{n_k}}  = \mathbb{E}(X_1^{n_1} X_2^{n_2} \dots X_k^{n_k})
+        M_{\boldsymbol{X}}(\boldsymbol{t}) = \sum_{n_1=0}^\infty \dots \sum_{n_k=0}^\infty \frac{t_1^{n_1} \dots t_k^{n_k}}{n_1! \dots n_k!} \mathbb{E}(X_1^{n_1} \dots X_k^{n_k})\Longrightarrow\frac{\partial^{n_1 + n_2 + \dots + n_k} M_{\boldsymbol{X}}(\boldsymbol{0})}{\partial t_1^{n_1} \partial t_2^{n_2} \dots \partial t_k^{n_k}}  = \mathbb{E}(X_1^{n_1} X_2^{n_2} \dots X_k^{n_k})
         $$
     + 常见分布矩母函数：
         1. 一元标准正态分布$N(0,1)$：$M_X(t)=\exp\{\frac{t^2}{2}\}$；
         2. 卡方分布$\chi_r^2$：$M_X(t)=(1-2t)^{-\frac{r}{2}},\quad t=[0,\frac12)$；
-        3. 多元正态分布$N_k(\boldsymbol{\mu},\Sigma)$：$M_{\mathbf{X}}(\mathbf{t}) = \exp\left\{ \mathbf{t}^\top \boldsymbol{\mu} + \frac{1}{2} \mathbf{t}^\top \Sigma \mathbf{t} \right\}$。
+        3. 多元正态分布$N_k(\boldsymbol{\mu},\Sigma)$：$M_{\boldsymbol{X}}(\boldsymbol{t}) = \exp\left\{ \boldsymbol{t}^\top \boldsymbol{\mu} + \frac{1}{2} \boldsymbol{t}^\top \Sigma \boldsymbol{t} \right\}$。
 + 矩母函数的性质：
-    1. 若在$\|\mathbf{t}\|< t_0$（$t_0>0$）范围内矩母函数$M_{\mathbf{X}}(\mathbf{t})$存在，那么其有且仅有一个分布与之对应；
-    2. 若$M_{(\mathbf{X},\mathbf{Y})}(\mathbf{t}_1,\mathbf{t}_2)$是$(\mathbf{X},\mathbf{Y})$的联合矩母函数，那么有$M_{\mathbf{X}}(t)=M_{(\mathbf{X},\mathbf{Y})}(\mathbf{t},0)$；
-    3. $\mathbf{X}$与$\mathbf{Y}$相互独立（记作$\mathbf{X}\perp\!\!\!\perp\mathbf{Y}$）$\Longleftrightarrow M_{(\mathbf{X},\mathbf{Y})}(\mathbf{t}_1,\mathbf{t}_2)=M_{\mathbf{X}}(\mathbf{t}_1)M_{\mathbf{Y}}(\mathbf{t}_2)$
+    1. 若在$\|\boldsymbol{t}\|< t_0$（$t_0>0$）范围内矩母函数$M_{\boldsymbol{X}}(\boldsymbol{t})$存在，那么其有且仅有一个分布与之对应；
+    2. 若$M_{(\boldsymbol{X},\boldsymbol{Y})}(\boldsymbol{t}_1,\boldsymbol{t}_2)$是$(\boldsymbol{X},\boldsymbol{Y})$的联合矩母函数，那么有$M_{\boldsymbol{X}}(t)=M_{(\boldsymbol{X},\boldsymbol{Y})}(\boldsymbol{t},0)$；
+    3. $\boldsymbol{X}$与$\boldsymbol{Y}$相互独立（记作$\boldsymbol{X}\perp\!\!\!\perp\boldsymbol{Y}$）$\Longleftrightarrow M_{(\boldsymbol{X},\boldsymbol{Y})}(\boldsymbol{t}_1,\boldsymbol{t}_2)=M_{\boldsymbol{X}}(\boldsymbol{t}_1)M_{\boldsymbol{Y}}(\boldsymbol{t}_2)$
         + 应用例：$Q=Q_1+Q_2,Q\sim\chi^2_r,Q_1\sim\chi^2_{r_1},Q_1\perp\!\!\!\perp Q_2$，则$Q_2\sim\chi^2_{r-r_1}$。
 # 多元正态分布
-+ 首先定义标准多元正态分布：设$Z_1,\cdots,Z_n\stackrel{i.i.d.}{\sim}N(0,1)$，则称$\mathbf{Z}=(Z_1,\cdots,Z_n)^\top$服从$n$维标准正态分布，记作$\mathbf{Z}\sim N_n(0,\mathbf{I}_n)$（或$N(0,\mathbf{I}_n)$）
-    + $\mathbf{Z}$的联合概率密度函数为
++ 首先定义标准多元正态分布：设$Z_1,\cdots,Z_n\stackrel{i.i.d.}{\sim}N(0,1)$，则称$\boldsymbol{Z}=(Z_1,\cdots,Z_n)^\top$服从$n$维标准正态分布，记作$\boldsymbol{Z}\sim N_n(0,\boldsymbol{I}_n)$（或$N(0,\boldsymbol{I}_n)$）
+    + $\boldsymbol{Z}$的联合概率密度函数为
         $$
-        f(\mathbf{z})=(2\pi)^{-\frac{n}{2}} \exp \left\{ -\frac{1}{2}\mathbf{z}^\top\mathbf{z} \right\}, \quad\mathbf{z} \in \mathbb{R}^n
+        f(\boldsymbol{z})=(2\pi)^{-\frac{n}{2}} \exp \left\{ -\frac{1}{2}\boldsymbol{z}^\top\boldsymbol{z} \right\}, \quad\boldsymbol{z} \in \mathbb{R}^n
         $$
-        而$\mathbf{Z}$的矩母函数则为
+        而$\boldsymbol{Z}$的矩母函数则为
         $$
-        M_{\mathbf{Z}}(\mathbf{t}) = \prod_{i=1}^n \exp \left\{ \frac{1}{2}t_i^2 \right\} = \exp \left\{ \frac{1}{2}\mathbf{t}^\top\mathbf{t} \right\}.
+        M_{\boldsymbol{Z}}(\boldsymbol{t}) = \prod_{i=1}^n \exp \left\{ \frac{1}{2}t_i^2 \right\} = \exp \left\{ \frac{1}{2}\boldsymbol{t}^\top\boldsymbol{t} \right\}.
         $$
-+ 基于标准多元正态分布，定义一般的多元正态分布：设$\mathbf{Z}\sim N_n(0,\mathbf{I}_n)$，若$m$维随机向量$\mathbf{Y}$与$A\mathbf{Z}+\boldsymbol{\mu}$同分布（$A\in\R^{m\times n},\boldsymbol{\mu}\in\R^{m\times 1}$），则称$\mathbf{Y}$服从$m$维正态分布，记作$\mathbf{Y}\sim N_n(\boldsymbol{\mu},\Sigma)$，其中$\Sigma=AA^\top\in\R^{m\times m}$。
-    + 由此可以发现，在定义中并没有对$A$作任何限制，因此当$A$非满秩（退化）时，得到的$\mathbf{Y}$分布也是退化的（甚至可以退化为常数向量）。而这种退化情形无法直接用密度函数形式进行刻画。
-    + $\mathbf{Y}$具有下述性质：
-        1. 期望与（协）方差：$\mathbb{E}\mathbf{Y}=\boldsymbol{\mu},\quad \mathrm{Var}(\mathbf{Y})=\Sigma$；
-        2. 矩母函数与特征函数：$M_{\mathbf{Y}}(\mathbf{t}) = \exp\left\{ \frac{1}{2} \mathbf{t}^\top \Sigma \mathbf{t}+\mathbf{t}^\top \boldsymbol{\mu} \right\},\quad \phi_{\mathbf{Y}}(\mathbf{t}) = \exp\left\{- \frac{1}{2} \mathbf{t}^\top \Sigma \mathbf{t}+i\mathbf{t}^\top \boldsymbol{\mu} \right\}$；
-        3. 线性变换：$C\mathbf{Y}+\mathbf{d}\sim N(C\boldsymbol{\mu}+\mathbf{d},C^\top\Sigma C)$；
-        4. 若$\Sigma>0$，则$\mathbf{Y}$的概率密度函数为
++ 基于标准多元正态分布，定义一般的多元正态分布：设$\boldsymbol{Z}\sim N_n(0,\boldsymbol{I}_n)$，若$m$维随机向量$\boldsymbol{Y}$与$A\boldsymbol{Z}+\boldsymbol{\mu}$同分布（$A\in\R^{m\times n},\boldsymbol{\mu}\in\R^{m\times 1}$），则称$\boldsymbol{Y}$服从$m$维正态分布，记作$\boldsymbol{Y}\sim N_n(\boldsymbol{\mu},\Sigma)$，其中$\Sigma=AA^\top\in\R^{m\times m}$。
+    + 由此可以发现，在定义中并没有对$A$作任何限制，因此当$A$非满秩（退化）时，得到的$\boldsymbol{Y}$分布也是退化的（甚至可以退化为常数向量）。而这种退化情形无法直接用密度函数形式进行刻画。
+    + $\boldsymbol{Y}$具有下述性质：
+        1. 期望与（协）方差：$\mathbb{E}\boldsymbol{Y}=\boldsymbol{\mu},\quad \mathrm{Var}(\boldsymbol{Y})=\Sigma$；
+        2. 矩母函数与特征函数：$M_{\boldsymbol{Y}}(\boldsymbol{t}) = \exp\left\{ \frac{1}{2} \boldsymbol{t}^\top \Sigma \boldsymbol{t}+\boldsymbol{t}^\top \boldsymbol{\mu} \right\},\quad \phi_{\boldsymbol{Y}}(\boldsymbol{t}) = \exp\left\{- \frac{1}{2} \boldsymbol{t}^\top \Sigma \boldsymbol{t}+i\boldsymbol{t}^\top \boldsymbol{\mu} \right\}$；
+        3. 线性变换：$C\boldsymbol{Y}+\boldsymbol{d}\sim N(C\boldsymbol{\mu}+\boldsymbol{d},C^\top\Sigma C)$；
+        4. 若$\Sigma>0$，则$\boldsymbol{Y}$的概率密度函数为
             $$
             f(\boldsymbol{y}) = (2\pi)^{-\frac{m}{2}} |\Sigma|^{-\frac{1}{2}} \exp \left\{ -\frac{1}{2}(\boldsymbol{y} - \boldsymbol{\mu})^\top\Sigma^{-1}(\boldsymbol{y} - \boldsymbol{\mu}) \right\}, \boldsymbol{y} \in \mathbb{R}^m,
-+ 分块性质：设$\mathbf{Y}=\begin{pmatrix}\mathbf{Y}_1\\\mathbf{Y}_2\end{pmatrix}\sim N(\boldsymbol{\mu},\Sigma)$，$\boldsymbol{\mu}=\begin{pmatrix}\boldsymbol{\mu}_1\\\boldsymbol{\mu}_2\end{pmatrix}$和$\Sigma=\begin{pmatrix}\Sigma_{11}&\Sigma_{12}\\\Sigma_{21}&\Sigma_{22}\end{pmatrix}$为向量/矩阵分块。则   
++ 分块性质：设$\boldsymbol{Y}=\begin{pmatrix}\boldsymbol{Y}_1\\\boldsymbol{Y}_2\end{pmatrix}\sim N(\boldsymbol{\mu},\Sigma)$，$\boldsymbol{\mu}=\begin{pmatrix}\boldsymbol{\mu}_1\\\boldsymbol{\mu}_2\end{pmatrix}$和$\Sigma=\begin{pmatrix}\Sigma_{11}&\Sigma_{12}\\\Sigma_{21}&\Sigma_{22}\end{pmatrix}$为向量/矩阵分块。则   
     + 边际分布性质：
-        1. $\mathbf{Y}_1\sim N(\boldsymbol{\mu}_1,\Sigma_{11})$且$\mathbf{Y}_2\sim N(\boldsymbol{\mu}_2,\Sigma_{22})$，
-        2. $\mathbf{Y}_1\perp\!\!\!\perp\mathbf{Y}_2$当且仅当$\Sigma_{12}=\mathbf{0}$，即$\mathbf{Y}_1\perp\!\!\!\perp\mathbf{Y}_2\iff\text{Cov}(\mathbf{Y}_1,\mathbf{Y}_2)=\mathbf{0}$。因此，如果$\mathbf{Y}\sim N(\boldsymbol{\mu},\Sigma)$，那么$A\mathbf{Y}\perp\!\!\!\perp B\mathbf{Y}\Longleftrightarrow A\Sigma B^\top=\mathbf{0}$。
+        1. $\boldsymbol{Y}_1\sim N(\boldsymbol{\mu}_1,\Sigma_{11})$且$\boldsymbol{Y}_2\sim N(\boldsymbol{\mu}_2,\Sigma_{22})$，
+        2. $\boldsymbol{Y}_1\perp\!\!\!\perp\boldsymbol{Y}_2$当且仅当$\Sigma_{12}=\boldsymbol{0}$，即$\boldsymbol{Y}_1\perp\!\!\!\perp\boldsymbol{Y}_2\iff\text{Cov}(\boldsymbol{Y}_1,\boldsymbol{Y}_2)=\boldsymbol{0}$。因此，如果$\boldsymbol{Y}\sim N(\boldsymbol{\mu},\Sigma)$，那么$A\boldsymbol{Y}\perp\!\!\!\perp B\boldsymbol{Y}\Longleftrightarrow A\Sigma B^\top=\boldsymbol{0}$。
         
-        + 应用例：设$\mathbf{Y}_1, \mathbf{Y}_2, \dots, \mathbf{Y}_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$。则$\overline{\mathbf{Y}} \perp\!\!\!\perp S^2 =\displaystyle \frac{1}{n-1} \sum_i (\mathbf{Y}_i - \overline{\mathbf{Y}})^2$。
-    + 条件分布性质：给定$\mathbf{Y}_2$时，
+        + 应用例：设$\boldsymbol{Y}_1, \boldsymbol{Y}_2, \dots, \boldsymbol{Y}_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$。则$\overline{\boldsymbol{Y}} \perp\!\!\!\perp S^2 =\displaystyle \frac{1}{n-1} \sum_i (\boldsymbol{Y}_i - \overline{\boldsymbol{Y}})^2$。
+    + 条件分布性质：给定$\boldsymbol{Y}_2$时，
         $$
-        \mathbf{Y}_1\sim N\left(\boldsymbol{\mu}_1+\Sigma_{12}\Sigma_{22}^{-1}(\mathbf{Y}_2-\boldsymbol{\mu}_2),\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}\right)
+        \boldsymbol{Y}_1\sim N\left(\boldsymbol{\mu}_1+\Sigma_{12}\Sigma_{22}^{-1}(\boldsymbol{Y}_2-\boldsymbol{\mu}_2),\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}\right)
         $$
         > 这个定理在后续回归分析中有重要作用。
-+ 若$\mathbf{Y} \sim N(\boldsymbol{\mu}, \Sigma)$，将$\Sigma$特征分解为$P\Lambda_r P^\top$，则$\mathbf{U} = \Lambda_r^{-\frac{1}{2}} P^\top(\mathbf{Y} - \boldsymbol{\mu}) \sim N(\mathbf{0}, \mathbf{I}_r)$且$\mathbf{Y} = P\Lambda_r^{\frac{1}{2}}\mathbf{U} + \boldsymbol{\mu}\ \text{a.s.}$。
-    + 这也说明上述基于标准多元正态分布的定义里实际上完全可以找到一个标准多元正态分布向量使其线性变换后就得到$\mathbf{Y}$。
-+ 多元正态判定条件：$\mathbf{Y}\in\R^m$服从多元正态分布当且仅当对任意非零常数向量$\mathbf{a}\in\R^{m}$，$\mathbf{a}^\top\mathbf{Y}$服从一元正态分布。
++ 若$\boldsymbol{Y} \sim N(\boldsymbol{\mu}, \Sigma)$，将$\Sigma$特征分解为$P\Lambda_r P^\top$，则$\boldsymbol{U} = \Lambda_r^{-\frac{1}{2}} P^\top(\boldsymbol{Y} - \boldsymbol{\mu}) \sim N(\boldsymbol{0}, \boldsymbol{I}_r)$且$\boldsymbol{Y} = P\Lambda_r^{\frac{1}{2}}\boldsymbol{U} + \boldsymbol{\mu}\ \text{a.s.}$。
+    + 这也说明上述基于标准多元正态分布的定义里实际上完全可以找到一个标准多元正态分布向量使其线性变换后就得到$\boldsymbol{Y}$。
++ 多元正态判定条件：$\boldsymbol{Y}\in\R^m$服从多元正态分布当且仅当对任意非零常数向量$\boldsymbol{a}\in\R^{m}$，$\boldsymbol{a}^\top\boldsymbol{Y}$服从一元正态分布。
 ## 多元正态分布的“回归”
-有上述条件分布定理可得，$\mathbb{E}(\mathbf{Y}_1|\mathbf{Y}_2=\mathbf{y}_2)=\boldsymbol{\mu}_1+\Sigma_{12}\Sigma_{22}^{-1}(\mathbf{Y}_2-\boldsymbol{\mu}_2)$，将其转化为
+由上述条件分布定理可得，$\mathbb{E}(\boldsymbol{Y}_1|\boldsymbol{Y}_2=\boldsymbol{y}_2)=\boldsymbol{\mu}_1+\Sigma_{12}\Sigma_{22}^{-1}(\boldsymbol{Y}_2-\boldsymbol{\mu}_2)$，将其转化为
 $$
-\mathbb{E}(\mathbf{Y}_1|\mathbf{Y}_2=\mathbf{y}_2)-\boldsymbol{\mu}_1=\Sigma_{12}\Sigma_{22}^{-1}(\mathbf{Y}_2-\boldsymbol{\mu}_2)
+\mathbb{E}(\boldsymbol{Y}_1|\boldsymbol{Y}_2=\boldsymbol{y}_2)-\boldsymbol{\mu}_1=\Sigma_{12}\Sigma_{22}^{-1}(\boldsymbol{Y}_2-\boldsymbol{\mu}_2)
 $$
-特别地，当$\mathbf{Y}_1$和$\mathbf{Y}_2$均为一元随机变量，则
+特别地，当$\boldsymbol{Y}_1$和$\boldsymbol{Y}_2$均为一元随机变量，则
 $$
 \begin{aligned}
 \mathbb{E}(Y_1|Y_2) &= \mu_1 + \frac{\sigma_{12}}{\sigma_2^2} Y_2 - \mu_2 \\
@@ -218,26 +218,172 @@ $$
 这里$\sigma_1,\sigma_2$为标准差，$\rho$为相关系数。这一式子由统计学家高尔顿首次发现，同时其还发现下述规律：
 + $Y_2>\mu_2$时，$\mathbb{E}(Y_1|Y_2)$倾向于大于$\mu_1$；【父亲身高高于父亲均值时，儿子身高预测也倾向高于儿子均值】
 + 观测值表明$\beta\in(0,1)$，这说明$Y_1$的变化幅度总体低于$Y_2$【儿子群体身高变异整体低于父亲群体】。这也是高尔顿将这一现象命名为（均值）回归的原因。
-    + 实际上，这一现象的本质很容易理解：因为$\sigma_1\leq\sigma_2$（在高尔顿的实验中假设$\sigma_1=\sigma_2$），而相关系数$|\rho|< 1$，因此自然得到$|\beta|< 1$。而如今的回归分析已脱离了原本回归的本意，作为一般线性模型的分析方法。
+    + 实际上，这一现象的本质很容易理解：因为$\sigma_1\leq\sigma_2$（在高尔顿的实验中假设$\sigma_1=\sigma_2$），而相关系数$|\rho|< 1$，因此自然得到$|\beta|< 1$。而如今的回归分析已脱离了原本回归的本意，变成了一般线性模型的分析方法。
 ## 多元正态二次型分布
-设$\mathbf{Z} \sim N(\boldsymbol{\mu}, \mathbf{I}_m)$，由此我们可以定义以下重要分布（注意与数理统计中的中心分布区分）：
-1. 非中心卡方分布：$\mathbf{Z}^\top\mathbf{Z} \sim \chi^2_m(\delta^2)$，称为自由度为$m$的非中心卡方分布，其中$\delta^2 = \boldsymbol{\mu}^\top\boldsymbol{\mu}$称为非中心参数。特别地，$\delta^2 = 0$（即$\boldsymbol{\mu} = \mathbf{0}$）时即为（中心）卡方分布，记作$\chi^2_m$。
+设$\boldsymbol{Z} \sim N(\boldsymbol{\mu}, \boldsymbol{I}_m)$，由此我们可以定义以下重要分布（注意与数理统计中的中心分布区分）：
+1. 非中心卡方分布：$\boldsymbol{Z}^\top\boldsymbol{Z} \sim \chi^2_m(\delta^2)$，称为自由度为$m$的非中心卡方分布，其中$\delta^2 = \boldsymbol{\mu}^\top\boldsymbol{\mu}$称为非中心参数。特别地，$\delta^2 = 0$（即$\boldsymbol{\mu} = \boldsymbol{0}$）时即为（中心）卡方分布，记作$\chi^2_m$。
     + 矩母函数：$\displaystyle M_{\chi^2_m(\delta^2)}(t) = (1 - 2t)^{-\frac{m}{2}} \exp \left\{ \frac{t}{1 - 2t} \delta^2 \right\}, t \in [0, 1/2) $；
     + 非中心卡方分布仍然满足可加性。
-2. 非中心t分布：如果$u \overset{d}{=} \frac{\mathbf{Y}}{\sqrt{\mathbf{Z}/m}}$，则称随机变量$u$具有自由度为$m$的非中心学生t分布，记作$u \sim t_m(\mu)$，其中$\mathbf{Y} \sim N(\mu, 1),\mathbf{Z} \sim \chi^2_m$且相互独立，$\mu$称为非中心参数。
-3. 非中心F分布：如果$u \overset{d}{=} \frac{\mathbf{Y}/m_1}{\mathbf{Z}/m_2}$，则称随机变量$u$具有第一自由度为$m_1$和第二自由度为$m_2$的非中心F分布，记作$u \sim F_{m_1,m_2}(\delta^2)$，其中$\mathbf{Y} \sim \chi^2_{m_1}(\delta^2),\mathbf{Z} \sim \chi^2_{m_2}$且相互独立，$\delta^2$是非中心参数。
+2. 非中心t分布：如果$u \overset{d}{=} \frac{\boldsymbol{Y}}{\sqrt{\boldsymbol{Z}/m}}$，则称随机变量$u$具有自由度为$m$的非中心学生t分布，记作$u \sim t_m(\mu)$，其中$\boldsymbol{Y} \sim N(\mu, 1),\boldsymbol{Z} \sim \chi^2_m$且相互独立，$\mu$称为非中心参数。
+3. 非中心F分布：如果$u \overset{d}{=} \frac{\boldsymbol{Y}/m_1}{\boldsymbol{Z}/m_2}$，则称随机变量$u$具有第一自由度为$m_1$和第二自由度为$m_2$的非中心F分布，记作$u \sim F_{m_1,m_2}(\delta^2)$，其中$\boldsymbol{Y} \sim \chi^2_{m_1}(\delta^2),\boldsymbol{Z} \sim \chi^2_{m_2}$且相互独立，$\delta^2$是非中心参数。
 
-+ 设$\mathbf{Y} \sim N(\boldsymbol{\mu}, \mathbf{I}_n)$且$A$为对称矩阵，则$\mathbf{Y}^\top A\mathbf{Y}\sim \chi^2_r(\boldsymbol{\mu}^\top A\boldsymbol{\mu})\Longleftrightarrow A$是秩为$r$的幂等矩阵。
++ 设$\boldsymbol{Y} \sim N(\boldsymbol{\mu}, \boldsymbol{I}_n)$且$A$为对称矩阵，则$\boldsymbol{Y}^\top A\boldsymbol{Y}\sim \chi^2_r(\boldsymbol{\mu}^\top A\boldsymbol{\mu})\Longleftrightarrow A$是秩为$r$的幂等矩阵。
     + 应用例：
-        1. 设$\mathbf{X} \sim N(\mu\mathbf{1}_n, \sigma^2\mathbf{I}_n),\displaystyle S^2 = \frac{1}{n-1}\sum_{i=1}^n(X_i - \overline{X})^2$，则$\displaystyle\frac{(n-1)S^2}{\sigma^2} = \frac{1}{\sigma^2}\mathbf{X}^\top (\mathbf{I}_n - \frac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top)\mathbf{X} \sim \chi^2_{n-1}$。
-        2. 设$A$和$B$为对称矩阵，$\mathbf{Y} \sim N(\boldsymbol{\mu}, \mathbf{I}_n)$，且$\mathbf{Y}^\top A\mathbf{Y}$和$\mathbf{Y}^\top B\mathbf{Y}$服从卡方分布，则$\mathbf{Y}^\top A\mathbf{Y} \perp\!\!\!\perp \mathbf{Y}^\top B\mathbf{Y}\Longleftrightarrow AB = 0$。
-        3. 设$\mathbf{Y} \sim N(0, \mathbf{I}_n)$，并令$Q_i = \mathbf{Y}^\top P_i\mathbf{Y} \sim \chi^2_{r_i}, i = 1, 2$。如果$P_1 \ge P_2$，则$Q_1 - Q_2 \perp\!\!\!\perp Q_2$且$Q_1 - Q_2 \sim \chi^2_{r_1 - r_2}$。
-+ 设$\mathbf{Y} \sim N(0, \Sigma)$，且$A$为对称矩阵，则$\mathbf{Y}^\top A\mathbf{Y} \sim \chi^2_r \iff \Sigma^{1/2}A\Sigma^{1/2}$是秩为$r$的幂等矩阵$\iff A\Sigma$的$r$个特征值为$1$，其余为$0$。
-    + 特别地，如果$\Sigma > 0$，则$\Sigma^{1/2}A\Sigma^{1/2}$是幂等矩阵$\Longleftrightarrow A\Sigma$是幂等矩阵。由此可得$\mathbf{Y}^\top \Sigma^{-}\mathbf{Y} \sim \chi^2_{r(\Sigma)}$。
-+ 如果$\mathbf{Y} \sim N(\boldsymbol{\mu}, \Sigma)$，其中$\Sigma > 0$，则$\mathbf{Y}^\top \Sigma^{-1}\mathbf{Y} \sim \chi^2_n(\boldsymbol{\mu}^\top \Sigma^{-1}\boldsymbol{\mu})$。
-+ Fisher-Cochran 定理：设$\mathbf{Y} \sim N(\boldsymbol{\mu}, \mathbf{I}_m)$，且$\displaystyle \mathbf{I}_m = \sum_{i=1}^k A_i$，其中$A_i$为秩为$r_i$的对称矩阵，则有
+        1. 设$\boldsymbol{X} \sim N(\mu\boldsymbol{1}_n, \sigma^2\boldsymbol{I}_n),\displaystyle S^2 = \frac{1}{n-1}\sum_{i=1}^n(X_i - \overline{X})^2$，则$\displaystyle\frac{(n-1)S^2}{\sigma^2} = \frac{1}{\sigma^2}\boldsymbol{X}^\top (\boldsymbol{I}_n - \frac{1}{n}\boldsymbol{1}_n\boldsymbol{1}_n^\top)\boldsymbol{X} \sim \chi^2_{n-1}$。
+        2. 设$A$和$B$为对称矩阵，$\boldsymbol{Y} \sim N(\boldsymbol{\mu}, \boldsymbol{I}_n)$，且$\boldsymbol{Y}^\top A\boldsymbol{Y}$和$\boldsymbol{Y}^\top B\boldsymbol{Y}$服从卡方分布，则$\boldsymbol{Y}^\top A\boldsymbol{Y} \perp\!\!\!\perp \boldsymbol{Y}^\top B\boldsymbol{Y}\Longleftrightarrow AB = 0$。
+        3. 设$\boldsymbol{Y} \sim N(0, \boldsymbol{I}_n)$，并令$Q_i = \boldsymbol{Y}^\top P_i\boldsymbol{Y} \sim \chi^2_{r_i}, i = 1, 2$。如果$P_1 \ge P_2$，则$Q_1 - Q_2 \perp\!\!\!\perp Q_2$且$Q_1 - Q_2 \sim \chi^2_{r_1 - r_2}$。
++ 设$\boldsymbol{Y} \sim N(0, \Sigma)$，且$A$为对称矩阵，则$\boldsymbol{Y}^\top A\boldsymbol{Y} \sim \chi^2_r \iff \Sigma^{1/2}A\Sigma^{1/2}$是秩为$r$的幂等矩阵$\iff A\Sigma$的$r$个特征值为$1$，其余为$0$。
+    + 特别地，如果$\Sigma > 0$，则$\Sigma^{1/2}A\Sigma^{1/2}$是幂等矩阵$\Longleftrightarrow A\Sigma$是幂等矩阵。由此可得$\boldsymbol{Y}^\top \Sigma^{-}\boldsymbol{Y} \sim \chi^2_{r(\Sigma)}$。
++ 如果$\boldsymbol{Y} \sim N(\boldsymbol{\mu}, \Sigma)$，其中$\Sigma > 0$，则$\boldsymbol{Y}^\top \Sigma^{-1}\boldsymbol{Y} \sim \chi^2_n(\boldsymbol{\mu}^\top \Sigma^{-1}\boldsymbol{\mu})$。
++ Fisher-Cochran 定理：设$\boldsymbol{Y} \sim N(\boldsymbol{\mu}, \boldsymbol{I}_m)$，且$\displaystyle \boldsymbol{I}_m = \sum_{i=1}^k A_i$，其中$A_i$为秩为$r_i$的对称矩阵，则有
     $$
-    \mathbf{Y}^\top A_i\mathbf{Y} \sim \chi^2_{r_i}(\delta_i^2),\quad i = 1, 2, \dots, k
+    \boldsymbol{Y}^\top A_i\boldsymbol{Y} \sim \chi^2_{r_i}(\delta_i^2),\quad i = 1, 2, \dots, k
     $$
    其中$\delta_i^2 = \boldsymbol{\mu}^\top A_i\boldsymbol{\mu}, i = 1, 2, \dots, k,\quad \displaystyle\sum_{i=1}^k \delta_i^2 = \boldsymbol{\mu}^\top \boldsymbol{\mu}$。
    + 当且仅当$\displaystyle \sum_{i=1}^k r_i = m$时，上述二次型相互独立。
+# 线性模型大观
+建立统计模型时，一般有两种方向：
+1. 从物理世界出发构建模型：这类模型一般被视作“正确”的模型，其往往是非参数模型，不会对数据分布作假设。然而，我们基本无法使用这类模型进行计算或预测。
+2. 从数学定理出发构建模型：这类模型（一般为参数模型）往往更简单，但也牺牲了一定的正确性。其对模型进行建模时提取数据的主要特征，从而实现数据分布参数的降维。线性模型就是这一类模型中最简单、最经典的代表。
+    + 实际上，这一类模型的建模过程（也称为生成式建模）就是寻找最优参数$\theta^*$使得$X^*=g(U,\theta^*)$与真实分布$G_0$最接近。【这其实也是数理统计中参数估计的本质】其中$U$表示隐变量或噪声，$f_U$分布往往易于采样；而$g$则为生成函数（如神经网络），负责将$U$映射为复杂数据$X$。
+
+当然，正如Box所言：“All models are wrong, but some are useful.” 任何模型都包含了人的主观假设，没有绝对正确的模型，只有特定场景下“足够好用”的模型。
++ 线性模型（回归模型）作为统计模型中的一大代表，其主要用途包括：
+    1. 描述或解释随机变量间的关系；
+    2. 检验科学假设；
+    3. 预测；
+    
+    等等。
+## 现代（线性）回归模型定义
+前面我们提到了“回归”这个概念的历史来源，现在我们就对回归模型进行正式定义。现代回归模型一般有下述两种形式：
+1. 随机向量$\boldsymbol{Y}_{p\times 1}$由确定向量$\boldsymbol{x}$的函数与随机误差得到，即$\boldsymbol{Y}=f(\boldsymbol{x})+\epsilon$；
+2. $\boldsymbol{X}$和$\boldsymbol{Y}$都是随机向量，模型通过条件期望确定：$\boldsymbol{Y}=f(\boldsymbol{X})+\epsilon$，其中$f(\boldsymbol{x})=\mathbb{E}(\boldsymbol{Y}\mid\boldsymbol{X}=\boldsymbol{x})$，且$\mathbb{E}(\epsilon\mid\boldsymbol{X})=0$。
+
+上述随机误差$\epsilon$均假设均值为$0$，方差为$\sigma^2$（$\epsilon\sim(0,\sigma^2)$）。特别地，当$f(x_1,\cdots,x_p)=\beta_0+\beta_1x_1+\cdots+\beta_px_p$时，上述模型也称为线性回归模型。其中：
++ $\boldsymbol{Y}$称为响应变量/预测变量/隐变量，$\boldsymbol{x}$（或$\boldsymbol{X}$）称为解释变量/回归因子/协变量/自变量。
+    + 根据重期望公式和条件方差公式，条件期望模型在MSE指标上是对$\boldsymbol{Y}$的最优预测。
++ $\beta_j$（$j=1,\cdots,p$）称为回归系数（在$p\geq 2$时也称偏回归系数）。
++ $\beta_0$称为截距，在$\boldsymbol{x}$可取到$\boldsymbol{0}$时表示这一情形下$\boldsymbol{Y}$的均值。
+
+实际上，线性模型的一般形式可以表示为
+$$
+\begin{aligned}
+&\mathbb{E}(\boldsymbol{Y}\mid X_1 = x_1, X_2 = x_2, \dots, X_p = x_p)= f(x_1, x_2, \dots, x_p) \\
+=&\beta_0 + \beta_1 g_1(x_1, x_2, \dots, x_p) + \beta_2 g_2(x_1, x_2, \dots, x_p) + \cdots+ \beta_m g_m(x_1, x_2, \dots, x_p),
+\end{aligned}
+$$
+其中$g_1,\cdots,g_m$为已知函数。也就是说，线性模型只需要关于参数$\beta_j$线性即可。
+### 回归系数的解释：辛普森悖论
+在建立了线性回归模型之后，往往会用回归系数$\beta_j$的值（或符号）解释解释变量$x_j$对$\boldsymbol{Y}$的影响：$x_j$的变化一个单位将导致$\boldsymbol{Y}$平均变化$\beta_j$个单位。
++ 然而，这一结论仅适用于$x_j$非随机的情况；因为当$x_j$为随机变量时，任一变量的变化通常都会同时引起其他变量的变化，因此无法在保持其他变量不变的情况下进行考察。
++ 辛普森悖论就是一个典型的例子：在不同子群体中观察到的趋势，在将群体合并（聚合）后可能会发生反转。这本质还是因为存在未纳入回归模型的混杂因子。
+## 线性回归的预测：最小二乘
+由上面的辛普森悖论可知，线性模型得到的条件均值$\mathbb{E}(\boldsymbol{Y}\mid\boldsymbol{X})$在很多情况下并不能准确反映真实规律。在这种情况下，线性回归承担的主要角色则会变为带约束的预测，并基于最小二乘得到最优系数。下面用数学表达式说明：
++ 假设$\begin{pmatrix} \tilde{\boldsymbol{x}} \\ Y \end{pmatrix}$是一个均值为$\boldsymbol{\mu} = (\mu_{\boldsymbol{x}}, \mu_Y)^\top$、方差矩阵为$\Sigma = \begin{pmatrix} \Sigma_{\boldsymbol{xx}} & \Sigma_{\boldsymbol{x}Y} \\ \Sigma_{Y\boldsymbol{x}} & \Sigma_{YY} \end{pmatrix}$的$p$维随机向量，其中$\tilde{\boldsymbol{x}}=(x_1,\cdots,x_{p-1})^\top$和$Y$均为随机变量。那么目标就是通过构建线性模型$b_0 + \boldsymbol{x}^\top\boldsymbol{b}$预测$Y$，也就是最小化
+    $$
+    \text{MSE} = \mathbb{E}(Y - b_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{b})^2,\quad b_0\in\R,\boldsymbol{b}\in\R^{p-1}
+    $$
+    具体而言，就是确定$\beta_0$和$\boldsymbol{\beta}_c=(\beta_1,\cdots,\beta_{p-1})$使得
+    $$
+    \mathbb{E}(Y - \beta_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{\beta}_c)^2 \le \mathbb{E}(Y - b_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{b})^2
+    $$
+    实际上，这可以看作前面随机向量投影的一种特例，因此易得解为
+    $$
+    \beta_0 = \mu_Y - \Sigma_{Y\boldsymbol{x}}\Sigma_{\boldsymbol{xx}}^{-1}\mu_{\boldsymbol{x}} ,\quad \boldsymbol{\beta}_c = \Sigma_{\boldsymbol{xx}}^{-1}\Sigma_{\boldsymbol{x}Y}.
+    $$
+    从而得到$Y$的最佳线性预测：
+    $$
+    \hat{Y} = \mu_Y + \Sigma_{Y\boldsymbol{x}} \Sigma_{\boldsymbol{xx}}^{-1} (\tilde{\boldsymbol{x}} - \mu_{\boldsymbol{x}})
+    $$
++ 定义预测误差（即残差）$\epsilon=Y-\hat{Y}=Y-\beta_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{\beta}_c$，那么就得到标准线性模型：
+    $$
+    Y=\beta_0+ \tilde{\boldsymbol{x}}^\top\boldsymbol{\beta}_c+\epsilon
+    $$
+    实际上，因为$\hat{Y}$就是$Y$在$\tilde{\boldsymbol{x}}$线性超平面上的正交投影，所以残差与自变量不相关（$\mathrm{Cov}(\tilde{\boldsymbol{x}},\epsilon)=0$）。
++ 特别地，当$\begin{pmatrix} \tilde{\boldsymbol{x}} \\ Y \end{pmatrix}$服从联合正态分布，那么$\hat{Y}$就是条件均值$\mathbb{E}(Y\mid\tilde{\boldsymbol{x}})$。
++ 另一方面，将上述最优预测系数代入$\text{MSE}$公式中得到
+    $$
+    \min_{b_0,\boldsymbol{b}} \mathbb{E} \left( Y - b_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{b} \right)^2 = \mathbb{E} \left( Y - \beta_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{\beta}_c \right)^2 = \sigma^2 - \Sigma_{y\boldsymbol{x}}\Sigma_{\boldsymbol{xx}}^{-1}\Sigma_{\boldsymbol{x}y}.
+    $$
+    这一结果小于等于$\displaystyle\min_{b_0} \mathbb{E}(Y - b_0)^2 = \mathbb{E}(Y - \mathbb{E}Y)^2 = \sigma^2$，当且仅当$\mathrm{Cov}(\boldsymbol{x},Y)=0$（即因变量与自变量不相关）时取等号。【这个结论也可以推广到任意回归模型】
+## 确定性变量的线性近似
+前面我们基本都是在$\mathbf{x}$是随机向量的前提下进行讨论。那么当$\mathbf{x}$是确定性向量时，线性回归的预测又有什么作用呢？实际上，这种情况下线性回归的作用就是用一个线性函数去尽可能“逼近”真实的、未知的非线性函数。【其实就是线性拟合】
++ 具体而言，我们希望用线性函数$\theta_0+\boldsymbol{\theta}^\top\mathbf{x}_{i}$（$\boldsymbol{\theta}=(\theta_1,\cdots,\theta_{p-1})^\top$，$\mathbf{x}_i,\ i=1,\cdots,n$表示$n$个因变量观测值）预测相应变量$Y_i$（$\mathbb{E}Y_i=f(\mathbf{x}_i)$），即寻找最优参数
+    $$
+    \boldsymbol{\beta} = \argmin_{\boldsymbol{\theta}}\sum_{i=1}^{n} (f(\boldsymbol{x}_i) - \theta_0 - \boldsymbol{x}_i^\top \boldsymbol{\theta})^2
+    $$
+    可以解得$\boldsymbol{\beta} = (\boldsymbol{X}^\top \boldsymbol{X})^{-1} \boldsymbol{X}^\top f(\boldsymbol{X})$【与最小二乘解的形式很像】。
+### 协变量的数量影响：概率论vs数理统计
+从理论（概率论）上，当变量分布已知时，引入更多的协变量可以让预测的平均误差一直降低。然而，在实际情形（统计）中，变量的分布往往未知，只能从有限的样本进行推断。此时引入更多协变量不一定能让预测或估计更精确，因为这会引入更多未知参数，反而可能让模型方差增大（也就是机器学习中的“过拟合”）。
++ 一个简单的例子：设$Y\sim N(\mu,\sigma^2)$，现在需要预测未来观测值$Y^*$：
+    + 如果直接预测$Y^*=0$，那么预测的均方误差为$\mu^2+\sigma^2$；
+    + 如果先从分布中简单随机抽样$n$个样本$Y_1,\cdots,Y_n$，计算样本均值$\overline{Y}$来预测$Y^*$，均方误差则为$\sigma^2+\dfrac{\sigma^2}{n}$。
+
+    从局部均方误差的视角看，如果$\mu$接近$0$，$\sigma^2$很大或者$n$很小时，第二种预测（可看作引入参数/协变量）的均方误差未必比第一种更低。然而，从整体视角看，对任意$\mu$，第二种预测的均方误差都是$\sigma^2+\dfrac{\sigma^2}{n}$，而第一种预测的均方误差可达到无穷大，因此总体上引入数据（利用协变量/参数）可以提升预测的稳健性。
+
++ 总而言之，在构建模型时，需要综合进行探索与利用的平衡（Exploration-Exploitation Trade-off）。【探索对应统计学，利用对应概率论】
+## 线性模型的典型数据结构
+为了构建线性回归模型，我们往往需要收集下述形式的观测值：
+$$
+\{(x_{i1},x_{i2},\cdots,x_{i,p-1};Y_i),i=1,2,\cdots,n\}
+$$
+由此构建一系列方程：
+$$
+Y_i = \beta_0 + \beta_1 x_{i1} + \dots + \beta_{p-1} x_{i,p-1} + \epsilon_i, \quad i = 1, 2, \cdots, n
+$$
+当然也可以写成矩阵形式（有点像线性方程组）：
+$$
+\begin{aligned}
+\begin{pmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_n
+\end{pmatrix}
+&=
+\begin{pmatrix}
+x_{10} & x_{11} & \cdots & x_{1,p-1} \\
+x_{20} & x_{21} & \cdots & x_{2,p-1} \\
+\cdots & \cdots & \cdots & \cdots \\
+x_{n0} & x_{n1} & \cdots & x_{n,p-1}
+\end{pmatrix}
+\begin{pmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_{p-1}
+\end{pmatrix}
++
+\begin{pmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+\epsilon_n
+\end{pmatrix} \\
+&=
+\begin{pmatrix}
+\boldsymbol{x}^\top_1 \\
+\boldsymbol{x}^\top_2 \\
+\vdots \\
+\boldsymbol{x}^\top_n
+\end{pmatrix}
+\begin{pmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_{p-1}
+\end{pmatrix}
++
+\begin{pmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+\epsilon_n
+\end{pmatrix}
+\end{aligned}
+$$
+或者
+$$
+\boldsymbol{Y}_{n \times 1} = \boldsymbol{X}_{n \times p}\boldsymbol{\beta}_{p \times 1} + \boldsymbol{\epsilon}_{n \times 1}
+$$
+通常矩阵$\boldsymbol{X}$的第一列元素都是$1$，$\boldsymbol{X}$也被称为设计矩阵；$\boldsymbol{\epsilon}\sim(\mathbf{0},\Sigma)$，其中$\Sigma$通常取$\sigma^2\mathbf{I}_n$。
