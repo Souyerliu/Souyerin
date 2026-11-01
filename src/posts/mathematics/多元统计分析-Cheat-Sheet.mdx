@@ -21,9 +21,9 @@ sticky: true
 一些符号约定：
 + 多元数据采用矩阵$X=\begin{pmatrix}x_{11}&x_{12}&\cdots&x_{1p}\\x_{21}&x_{22}&\cdots&x_{2p}\\\vdots&\vdots&\ddots&\vdots\\x_{n1}&x_{n2}&\cdots&x_{np}\end{pmatrix}$表示；【一行对应一个样本，一列对应一个变量（属性）】
 + 用$A,B,C,\cdots$表示常数矩阵，$X,Y,Z$表示随机变量矩阵（或观测数据），$\mathbf{a},\mathbf{b},\mathbf{c},\cdots$表示常数向量，$\mathbf{x},\mathbf{y},\mathbf{z}$表示随机向量，$x,y,z$表示随机变量。
-+ 样本均值向量$\bar{x}=\begin{pmatrix}\bar{x}_1\\\bar{x}_2\\\vdots\\\bar{x}_p\end{pmatrix}$，样本（协）方差矩阵$S=\begin{pmatrix}s_{11}&s_{12}&\cdots&s_{1p}\\s_{21}&s_{22}&\cdots&s_{2p}\\\vdots&\vdots&\ddots&\vdots\\s_{p1}&s_{p2}&\cdots&s_{pp}\end{pmatrix}$，样本相关系数矩阵$R=\begin{pmatrix}r_{11}&r_{12}&\cdots&r_{1p}\\r_{21}&r_{22}&\cdots&r_{2p}\\\vdots&\vdots&\ddots&\vdots\\r_{p1}&r_{p2}&\cdots&r_{pp}\end{pmatrix}$，其中
++ 样本均值向量$\overline{x}=\begin{pmatrix}\overline{x}_1\\\overline{x}_2\\\vdots\\\overline{x}_p\end{pmatrix}$，样本（协）方差矩阵$S=\begin{pmatrix}s_{11}&s_{12}&\cdots&s_{1p}\\s_{21}&s_{22}&\cdots&s_{2p}\\\vdots&\vdots&\ddots&\vdots\\s_{p1}&s_{p2}&\cdots&s_{pp}\end{pmatrix}$，样本相关系数矩阵$R=\begin{pmatrix}r_{11}&r_{12}&\cdots&r_{1p}\\r_{21}&r_{22}&\cdots&r_{2p}\\\vdots&\vdots&\ddots&\vdots\\r_{p1}&r_{p2}&\cdots&r_{pp}\end{pmatrix}$，其中
     $$
-    \bar{x}_k = \frac1n\sum_{j=1}^n x_{jk}, \quad s_{kk} = \frac1n\sum_{j=1}^n (x_{jk} - \bar{x}_k)^2, \quad s_{kl} = \frac1n\sum_{j=1}^n (x_{jk} - \bar{x}_k)(x_{jl} - \bar{x}_l), \quad r_{kl} = \frac{s_{kl}}{\sqrt{s_{kk} s_{ll}}}.
+    \overline{x}_k = \frac1n\sum_{j=1}^n x_{jk}, \quad s_{kk} = \frac1n\sum_{j=1}^n (x_{jk} - \overline{x}_k)^2, \quad s_{kl} = \frac1n\sum_{j=1}^n (x_{jk} - \overline{x}_k)(x_{jl} - \overline{x}_l), \quad r_{kl} = \frac{s_{kl}}{\sqrt{s_{kk} s_{ll}}}.
     $$
 
 多元数据可视化方法：
@@ -149,7 +149,7 @@ $$
     + 偏差向量$\mathbf{d}_i$与$\mathbf{d}_k$间的夹角余弦
         $$
         \begin{aligned}
-        \cos\theta_{ik}= \frac{\mathbf{d}_i^\top\mathbf{d}_k}{L_{d_i} L_{d_k}}&= \frac{\sum_{j=1}^n (x_{ji} - \bar{x}_i)(x_{jk} - \bar{x}_k)}{\sqrt{\sum_{j=1}^n (x_{ji} - \bar{x}_i)^2} \sqrt{\sum_{j=1}^n (x_{jk} - \bar{x}_k)^2}} \\
+        \cos\theta_{ik}= \frac{\mathbf{d}_i^\top\mathbf{d}_k}{L_{d_i} L_{d_k}}&= \frac{\sum_{j=1}^n (x_{ji} - \overline{x}_i)(x_{jk} - \overline{x}_k)}{\sqrt{\sum_{j=1}^n (x_{ji} - \overline{x}_i)^2} \sqrt{\sum_{j=1}^n (x_{jk} - \overline{x}_k)^2}} \\
         &= \frac{s_{ik}}{\sqrt{s_{ii}} \sqrt{s_{kk}}} = r_{ik}
         \end{aligned}
         $$
@@ -233,7 +233,7 @@ $$
         其中$B=\Sigma_{12}\Sigma_{22}^{-1}\in\R^{q\times(p-q)}$也称为$\mathbf{x}^{(1)}$关于$\mathbf{x}^{(2)}$回归系数矩阵，而$\boldsymbol{\mu}_{1.2}$也称为回归函数。$\Sigma_{11.2}$则称为偏协方差矩阵（由此也可得到偏相关系数）。
 + 特征函数：$N_p(\boldsymbol{\mu},\Sigma)$分布的特征函数为
     $$
-    \phi_{\mathbf{x}}(\mathbf{t}) = \exp\{i\boldsymbol{\mu}'\mathbf{t} - \frac{1}{2}\mathbf{t}'\Sigma\mathbf{t}\}.
+    \phi_{\mathbf{x}}(\mathbf{t}) = \exp\{i\boldsymbol{\mu}^\top\mathbf{t} - \frac{1}{2}\mathbf{t}^\top\Sigma\mathbf{t}\}.
     $$
     基于这个特征函数可以得到随机变量的任意矩：
     $$
@@ -244,20 +244,198 @@ $$
 ## 多元正态样本统计量
 设$\mathbf{x}_1,\cdots,\mathbf{x}_n$为$N_p(\boldsymbol{\mu},\Sigma)$分布的随机样本，则可以应用数理统计的相关知识：
 + 极大似然估计：$\boldsymbol{\mu},\Sigma$的极大似然估计分别为$\overline{\mathbf{x}}$和$S_n=\frac1n\sum_{i=1}^n(\mathbf{x}_i-\overline{\mathbf{x}})(\mathbf{x}_i-\overline{\mathbf{x}})^\top$。
+    <Collapse title="证明">
+    似然函数：
+    $$
+    \begin{aligned}
+    L(\boldsymbol{\mu}, \Sigma)&= \prod_{i=1}^{n} f(\mathbf{x}_i | \boldsymbol{\mu}, \Sigma) \\
+    &= \prod_{i=1}^{n} \frac{1}{(2\pi)^{p/2}|\Sigma|^{1/2}} \exp \left\{ -\frac{1}{2}(\mathbf{x}_i - \boldsymbol{\mu})^\top\Sigma^{-1}(\mathbf{x}_i - \boldsymbol{\mu}) \right\} \\
+    &= \frac{1}{(2\pi)^{np/2}|\Sigma|^{n/2}} \exp \left[ -\frac{1}{2}\mathrm{tr} \left\{ \Sigma^{-1} \sum_{i=1}^{n} (\mathbf{x}_i - \boldsymbol{\mu})(\mathbf{x}_i - \boldsymbol{\mu})^\top \right\} \right]
+    \end{aligned}
+    $$
+    其中最后一个等号因为指数是标量，所以可以引入迹。由此得到对数似然函数：
+    $$
+    \begin{aligned}
+    \log L(\boldsymbol{\mu}, \Sigma)&= -\frac{np}{2} \log(2\pi) - \frac{n}{2} \log|\Sigma| - \frac{1}{2}\mathrm{tr} \left\{ \Sigma^{-1} \sum_{i=1}^{n} (\mathbf{x}_i - \boldsymbol{\mu})(\mathbf{x}_i - \boldsymbol{\mu})^\top \right\} \\
+    &= -\frac{np}{2} \log(2\pi) - \frac{n}{2} \log|\Sigma| - \frac{1}{2}\mathrm{tr} \left[ \Sigma^{-1} \{ A + n(\overline{\mathbf{x}} - \boldsymbol{\mu})(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top \} \right] \\
+    &= -\frac{np}{2} \log(2\pi) - \frac{n}{2} \log|\Sigma| - \frac{1}{2}\mathrm{tr}\Sigma^{-1}A - \frac{n}{2}(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top\Sigma^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}) \\
+    &\le -\frac{np}{2} \log(2\pi) - \frac{n}{2} \log|\Sigma| - \frac{1}{2}\mathrm{tr}\Sigma^{-1}A \\
+    &= \log L(\overline{\mathbf{x}}, \Sigma),
+    \end{aligned}
+    $$
+    其中$\displaystyle A=(n-1)S=\sum_{i=1}^n(\mathbf{x}_i-\boldsymbol{\mu})(\mathbf{x}_i-\boldsymbol{\mu})^\top$。$\overline{\mathbf{x}}=\boldsymbol{\mu}$时取等号。  
+    下面再对$L(\overline{\mathbf{x}},\Sigma)$关于$\Sigma$最大化：
+    $$
+    \begin{aligned}
+    L(\overline{\mathbf{x}},\Sigma)&= -\frac{np}{2}\log(2\pi) - \frac{n}{2}\log|\Sigma| - \frac{1}{2}\mathrm{tr}\Sigma^{-1}A \\
+    &= -\frac{np}{2}\log(2\pi) - \frac{n}{2}\left\{ \log|\Sigma| + \mathrm{tr}\left(\Sigma^{-1}\frac{A}{n}\right) + \log\left|\frac{A}{n}\right| - \log\left|\frac{A}{n}\right| \right\} \\
+    &= -\frac{np}{2}\log(2\pi) - \frac{n}{2}\log\left|\frac{A}{n}\right|- \frac{n}{2}\left\{ \mathrm{tr}\left(\Sigma^{-1/2}\frac{A}{n}\Sigma^{-1/2}\right) - \log\left|\Sigma^{-1/2}\frac{A}{n}\Sigma^{-1/2}\right| \right\} \\
+    &\le -\frac{np}{2}\log(2\pi) - \frac{n}{2}\log\left|\frac{A}{n}\right| - \frac{np}{2}
+    \end{aligned}
+    $$
+    $\Sigma=\dfrac{A}{n}$时取等号。这里的不等号基于下述不等式：设$B\in\R^{p\times p}$为正定矩阵，则
+    $$
+    \text{tr}(B)-\log |B|\geq p
+    $$
+    等号当且仅当$B=\mathbf{I}_p$时取到。这可以用特征值证明：
+    $$
+    \text{tr}(B) - p - \log|B| = \sum_{j=1}^{p}(\lambda_j - 1 - \log \lambda_j) \ge 0
+    $$
+    等号当且仅当$\lambda_j=1$，对应$B=\mathbf{I}_p$。
+    </Collapse>
     + 推论：$\boldsymbol{\mu}^\top\Sigma^{-1}\boldsymbol{\mu}$的MLE是$\overline{\mathbf{x}}^\top S_n^{-1}\overline{\mathbf{x}}$；$\sqrt{\sigma_{ii}}$的MLE是$\sqrt{s_{ii}}$（$s_{ii}$的第$(i,i)$个元素）。
 + 样本均值分布：$\overline{\mathbf{x}}\sim N(\boldsymbol{\mu},\frac1n\Sigma)$
 + 样本协方差的分布：定义$\displaystyle A=(n-1)S=\sum_{i=1}^n(\mathbf{x}_i-\overline{\mathbf{x}})(\mathbf{x}_i-\overline{\mathbf{x}})^\top$，则
     + 可以证明：当$n>p$时，$P(S>0)=1$，即$S$可逆概率为$1$。
     + 另一方面，$\displaystyle A\stackrel{d}{=}\sum_{i=1}^{n-1}\mathbf{z}_i\mathbf{z}_i^\top$，其中$\mathbf{z}_i\stackrel{i.i.d}{\sim}N_p(\mathbf{0},\Sigma)$，此时$A$的分布被称为Wishart分布，记为$A\sim W(n-1,\Sigma)$【分布密度函数略，其形式类似卡方分布】
 + $\overline{\mathbf{x}}$与$S$相互独立（证明见线性模型）
-+ 多元中心极限定理：$\sqrt{n}(\bar{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{L} N(\mathbf{0}, \Sigma) $（$n \to \infty$）
-+ 马氏距离渐近分布：$n(\bar{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1} (\bar{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{L} \chi^2_p$（$n \to \infty$）
++ 多元中心极限定理：$\sqrt{n}(\overline{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{L} N(\mathbf{0}, \Sigma) $（$n \to \infty$）
++ 马氏距离渐近分布：$n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1} (\overline{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{L} \chi^2_p$（$n \to \infty$）
 + 样本相关系数（二维情形）：因为协方差矩阵$\Sigma=\begin{pmatrix}\sigma_1^2&\rho\sigma_1\sigma_2\\\rho\sigma_1\sigma_2&\sigma_2^2\end{pmatrix}$，因此样本相关系数定义为$r=\dfrac{a_{12}}{\sqrt{a_{11}a_{22}}}$，其中
     $$
     \begin{aligned}
-    a_{11} = \sum_{k=1}^{n} (x_{k1} - \bar{x}_1)^2 ,\quad a_{22} = \sum_{k=1}^{n} (x_{k2} - \bar{x}_2)^2,\quad a_{12} = \sum_{k=1}^{n} (x_{k1} - \bar{x}_1)(x_{k2} - \bar{x}_2)
+    a_{11} = \sum_{k=1}^{n} (x_{k1} - \overline{x}_1)^2 ,\quad a_{22} = \sum_{k=1}^{n} (x_{k2} - \overline{x}_2)^2,\quad a_{12} = \sum_{k=1}^{n} (x_{k1} - \overline{x}_1)(x_{k2} - \overline{x}_2)
     \end{aligned}
     $$
     当$\rho=0$时，$\sqrt{n-2}\dfrac{r}{\sqrt{1-r^2}} \sim t_{n-2}$；
     + 渐近正态性：$\dfrac{\sqrt{n}(r-\rho)}{1-\rho^2} \xrightarrow{L} N(0,1)$
     + Fisher z-变换：记$z(x)=\dfrac12\log\dfrac{1+x}{1-x}$，则$\sqrt{n}\{z(r)-z(\rho)\}\xrightarrow{}N(0,1)$
+# 均值推断
+可以看作是一元随机变量均值推断的扩展，目标是对$\boldsymbol{\mu}=(\mu_1,\cdots,\mu_p)^\top$进行参数估计与假设检验（假设总体服从多元正态分布）。推断的关键是对观测值$\boldsymbol{y}$进行联合分析。
+## HoTelling $T^2$ 检验
+回顾一元随机变量均值的$t$检验：$H_0:\mu=\mu_0\quad\text{vs}\quad H_1:\mu\neq\mu_0$，使用的检验统计量为
+$$
+t=\frac{\overline{x}-\mu_0}{\frac{s}{\sqrt{n}}}\stackrel{H_0}{\sim}t(n-1)
+$$
+当$|t|\geq t_{\frac{\alpha}{2}}(n-1)$时拒绝$H_0$。同时得到$\mu$的$1-\alpha$置信区间：
+$$
+\left[ \overline{x} - t_{\frac\alpha2}(n-1) \frac{s}{\sqrt{n}}, \quad \overline{x} + t_{\frac\alpha2}(n-1) \frac{s}{\sqrt{n}} \right]
+$$
+下面我们将假设检验判定条件两边取平方：
+$$
+t^2 = (\overline{x} - \mu_0) \left( \frac{s^2}{n} \right)^{-1} (\overline{x} - \mu_0) > t^2_{\frac\alpha2}(n-1)
+$$
+基于此可以推广到多元随机变量的均值检验，即HoTelling $T^2$检验。其假设为：
+$$
+H_0:\boldsymbol{\mu}=\boldsymbol{\mu}_0\quad\text{vs}\quad H_1:\boldsymbol{\mu}\neq\boldsymbol{\mu}_0
+$$
+构造HoTelling $T^2$统计量：
+$$
+\begin{aligned}
+T^2 &= (\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top \left(\frac{S}{n}\right)^{-1} (\overline{\mathbf{x}} - \boldsymbol{\mu}_0) = n(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top S^{-1} (\overline{\mathbf{x}} - \boldsymbol{\mu}_0) \\
+&\overset{H_0}{\sim} T^2(p, n-1) = \frac{(n-1)p}{n-p} F(p, n-p)
+\end{aligned}
+$$
+当$T^2 > \dfrac{(n - 1)p}{n - p} F_{\alpha}(p, n-p)$时拒绝$H_0$。
++ 下面对$T^2$统计量进行详细研究：实际上，$T^2$统计量的分布可以表示为
+    $$
+    T^2_{p,n-1} = N_p(\mathbf{0}, \boldsymbol{\Sigma})^\top \left[ \frac{1}{n-1} \mathbf{W}_{p,n-1}(\boldsymbol{\Sigma}) \right]^{-1} N_p(\mathbf{0}, \boldsymbol{\Sigma})
+    $$
+    而Wishart分布可看作卡方分布的多元推广，所以$T^2$统计量的本质就是一元$t$统计量平方的推广。
+    > 另一方面，$T^2$的表达式也可以看作是一种$\overline{x}$到$\boldsymbol{\mu}_0$的马氏距离，假设检验中这个距离过大时就拒绝$H_0$。
++ $T^2$统计量还具有仿射不变性。具体而言，对于非奇异的$C_{p \times p}$和$\mathbf{b} \in \mathbb{R}^p$，令$\mathbf{y} = C\mathbf{x} + \mathbf{b}$，那么
+    $$
+    H_0^{(x)} : \boldsymbol{\mu} = \boldsymbol{\mu}_0 \quad \iff \quad H_0^{(y)} : \boldsymbol{\mu}_y = C\boldsymbol{\mu}_0 + \mathbf{b}
+    $$
+    且$T_x^2 = T_y^2$。
++ HoTelling $T^2$ 检验是[似然比检验](https://souyerin.netlify.app/posts/mathematics/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1-cheat-sheet/#%E4%BC%BC%E7%84%B6%E6%AF%94%E6%A3%80%E9%AA%8C)。
+    <Collapse title="证明">
+    上面已推导得出
+    $$
+    L(\boldsymbol{\mu},\Sigma)=\frac{1}{(2\pi)^{np/2}|\Sigma|^{n/2}} \exp \left[ -\frac{1}{2}\mathrm{tr} \left\{ \Sigma^{-1} \sum_{i=1}^{n} (\mathbf{x}_i - \boldsymbol{\mu})(\mathbf{x}_i - \boldsymbol{\mu})^\top \right\} \right]
+    $$
+    以及它的最大值
+    $$
+    \max_{\boldsymbol{\mu}\in\R^p,\Sigma>0}L(\boldsymbol{\mu},\Sigma)=\frac{e^{-np/2}}{(2\pi)^{np/2}|\widehat{\Sigma}|^{n/2}},
+    $$
+    对应$\widehat{\boldsymbol{\mu}}=\overline{\mathbf{x}},\widehat{\Sigma}=\dfrac{A}{n}$。而在$H_0$条件下，
+    $$
+    \max_{H_0} L(\boldsymbol{\mu}, \Sigma) = \max L(\boldsymbol{\mu}_0, \widehat{\Sigma}_0) = \frac{e^{-np/2}}{(2\pi)^{np/2} |\widehat{\Sigma}_0|^{n/2}}
+    $$
+    其中$\displaystyle\widehat{\Sigma}_0 =\frac1n\sum_{i=1}^{n} (\mathbf{x}_i - \boldsymbol{\mu}_0)(\mathbf{x}_i - \boldsymbol{\mu}_0)^\top$。于是设似然比为$\Lambda$，那么
+    $$
+    \Lambda^{\frac2n} = \frac{|n\widehat{\Sigma}|}{|n\widehat{\Sigma}_0|} = \frac{|A|}{|A + [\sqrt{n}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)][\sqrt{n}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)]^\top|}=\left( 1 + \frac{T^2}{n-1} \right)^{-1}.
+    $$
+    由此得证。
+    </Collapse>
+## 置信域与同时置信区间
++ 置信域的定义：参数$\boldsymbol{\theta}$的$1-\alpha$置信域$R(\mathbf{X})$满足$P(\boldsymbol{\theta}\in R(\mathbf{X}))=1-\alpha$。
+    + 由此我们可以定义上述$\boldsymbol{\mu}$的$1-\alpha$置信域：
+        $$
+        \{ \boldsymbol{\mu} : n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}) \leq \frac{p(n - 1)}{n - p} F_{p, n-p}(\alpha) \}
+        $$
+        这是一个以$\overline{\mathbf{x}}$为中心的一个椭球。
++ 下面我们尝试寻找同时置信区间$\{[L_j,U_j]:j=1,\cdots,p\}$使得$P(L_j< \mu_j< U_j,j=1,\cdots,p)=1-\alpha$：
+    + 首先考虑线性变换$\mathbf{a}^\top\boldsymbol{\mu}$的置信区间（$\mathbf{a}\in\R^p$）。设$z=\mathbf{a}^\top\mathbf{x}$中简单随机抽样得到样本$z_1,\cdots,z_n$，则$\overline{z}=\mathbf{a}^\top\overline{\mathbf{x}},s_z^2=\mathbf{a}^\top S\mathbf{a}$。那么
+        $$
+        t = \frac{\sqrt{n}(\overline{z} - \mu_z)}{s_z} = \frac{\sqrt{n}(\mathbf{a}^\top\overline{\mathbf{x}} - \mathbf{a}^\top\boldsymbol{\mu})}{\sqrt{\mathbf{a}^\top S\mathbf{a}}} \sim t_{n-1}.
+        $$
+        因此对于给定$\mathbf{a}$，$\mathbf{a}^\top\boldsymbol{\mu}$的$1-\alpha$置信区间为
+        $$
+        \left[ \overline{z} - t_{n-1} \left( \frac{\alpha}{2} \right) \frac{s_z}{\sqrt{n}},\ \overline{z} + t_{n-1} \left( \frac{\alpha}{2} \right) \frac{s_z}{\sqrt{n}} \right]
+        $$
+        或
+        $$
+        \left[\mathbf{a}^\top\overline{\mathbf{x}} - t_{n-1}\left(\frac{\alpha}{2}\right)\sqrt{\frac{\mathbf{a}^\top S\mathbf{a}}{n}},\ \mathbf{a}^\top\overline{\mathbf{x}} + t_{n-1}\left(\frac{\alpha}{2}\right)\sqrt{\frac{\mathbf{a}^\top S\mathbf{a}}{n}}\right].
+        $$
+    + 若直接取$\mathbf{a}=\mathbf{e}_j$（标准基向量），那么就能得到每个$\mu_j$的$1-\alpha$置信区间
+        $$
+        \left[\overline{x}_j - t_{n-1}\left(\frac{\alpha}{2}\right)\sqrt{\frac{s_{jj}}{n}},\ \overline{x}_j + t_{n-1}\left(\frac{\alpha}{2}\right)\sqrt{\frac{s_{jj}}{n}}\right].
+        $$
+        然而将这$p$个置信区间直接取交集，得到的置信水平会小于$1-\alpha$。特别地，当$x_j$相互独立时，置信水平为$(1-\alpha)^p< 1-\alpha$。【也就是得到的置信区间不够宽】
+    + 那么如何解决这个问题？主要有下述两种方法（两位统计学家的名字在试验设计中也有出现）：
+        1. Scheffé方法   
+            这一方法实际上将原有的同时置信区间问题进行了推广，即找到一个上界$c$使得$\displaystyle P\left(\frac{n(\mathbf{a}^\top\overline{\mathbf{x}} - \mathbf{a}^\top\boldsymbol{\mu})^2}{\mathbf{a}^\top S\mathbf{a}}\leq c^2,\forall \mathbf{a}\right)\geq 1-\alpha$成立。对此，我们可以使用上面矩阵不等式得到
+            $$
+            \max_{\mathbf{a} \neq 0} \frac{n\{\mathbf{a}^\top (\overline{\mathbf{x}} - \boldsymbol{\mu})\}^2}{\mathbf{a}^\top S\mathbf{a}} = n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}) = T^2.
+            $$
+            于是只需要取$c^2=T^2_\alpha(p, n-1) = \dfrac{(n-1)p}{n-p} F_\alpha(p, n-p)$即可。
+            + 因此对于$\mathbf{a}^\top\boldsymbol{\mu}$和每个$\mu_j$的$1-\alpha$置信区间，只需要将上面置信区间的$\displaystyle t_{n-1}\left(\frac{\alpha}{2}\right)$改为$\sqrt{T^2_\alpha(p, n-1)}$即可。
+            > 实际上，我们可以构造$\mu_j$任意线性组合的$1-\alpha$置信区间，这都可以看作置信域椭球的变换投影。
+        2. Bonferroni方法   
+            这一方法主要基于下述不等式：
+            $$
+            \mathrm{P}(\cap_{j=1}^m C_j) = 1 - \mathrm{P}(\cup_{j=1}^m C_j^c) \ge 1 - \sum_{j=1}^m \mathrm{P}(C_j^c) = 1 - \sum_{j=1}^m \alpha_j.
+            $$
+            其中$C_j$表示置信区间包含$\mathbf{a}_j^\top\boldsymbol{\mu}$这一事件。由此，当我们取$\alpha_j=\dfrac{\alpha}{m}$和$\mathbf{a}_j=\mathbf{e}_j$，那么得到的同时置信区间
+            $$
+            \overline{x}_j \pm t_{n-1} \left( \frac{\alpha}{2m} \right) \sqrt{\frac{S_{jj}}{n}}, \quad j = 1, \dots, p
+            $$
+            的置信水平就至少为$1-\alpha$。这个置信区间通常比Scheffé方法得到的置信区间更窄。
+## 大样本均值推断
+有时总体不一定服从多元正态分布。在这种情况下，当$n$足够大时，因为样本协方差矩阵$S$趋向总体协方差矩阵$\Sigma$，因此
+$$
+T^2 = n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{d}n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top \Sigma^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu})\sim\chi^2_p.
+$$
+于是假设检验时判定拒绝原假设就可以用$n(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0) > \chi_p^2(\alpha)$，而$\boldsymbol{\mu}$的$1-\alpha$置信区间则可近似表示为
+$$
+\{\boldsymbol{\mu}:n(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0) < \chi_p^2(\alpha)\}
+$$
++ 另一方面，利用$T^2_p$分布近似$\chi^2_p$，也可以得到$\mathbf{a}^\top\boldsymbol{\mu}$的近似$1-\alpha$置信区间（对应Scheffé方法）：
+    $$
+    \mathbf{a}^\top\overline{\mathbf{x}} \pm \sqrt{\chi^2_p(\alpha)} \sqrt{\frac{\mathbf{a}^\top S\mathbf{a}}{n}}
+    $$
+    从而得到$\mu_1,\cdots,\mu_p$的$1-\alpha$近似置信区间$\displaystyle\overline{x}_j \pm \sqrt{\chi^2_p(\alpha)} \sqrt{\frac{S_{jj}}{n}}, \quad j = 1, 2, \dots, p$。
++ 而对于Bonferroni方法，当$n$足够大时（相对$p$而言），上述置信区间里的$t$分布可以替换为标准正态分布也能达到近似。
+## 缺失值处理
+有时样本的观测值中会存在部分缺失（这在问卷调查中特别常见），这会对样本均值的估计产生阻碍。这里我们假定数据的缺失是一种随机缺失，即缺失概率不受变量值的影响。
++ 处理这种缺失值的一种方法是直接利用已有的数据使用条件概率密度函数构造似然函数然后做MLE，不过这样得到的似然函数往往难以直接求导计算。
++ 因此，一种更有效的方法是采用EM算法进行迭代估计。具体而言，考虑下述两个充分统计量
+    $$
+    T_1 = \sum_{i=1}^{n} \mathbf{x}_i ,\qquad T_2 = \sum_{i=1}^{n} \mathbf{x}_i \mathbf{x}_i^\top
+    $$
+    如果是完全数据，那么MLE即为$\displaystyle\hat{\boldsymbol{\mu}} = \frac{T_1}{n}, \hat{\Sigma} = \frac{1}{n}(T_2 - T_1^2)$。下面假设数据$\mathbf{x}_i = \begin{pmatrix} \mathbf{x}_i^{(1)} \\ \mathbf{x}_i^{(2)} \end{pmatrix},i=1,\cdots,n$，其中$\mathbf{x}_i^{(1)}$为缺失数据。EM算法的流程如下：
+    1. 确定初始值$\hat{\boldsymbol{\mu}}_0$和$\hat{\Sigma}_0$（可以通过将缺失值用观测值平均填充后得到）
+    2. E步：
+        $$
+        \begin{aligned}
+        \widetilde{\mathbf{x}}_i^{(1)} &= \mathbb{E}(\mathbf{x}_i^{(1)} | \mathbf{x}_i^{(2)} ; \hat{\boldsymbol{\mu}}_{k-1}, \hat{\Sigma}_{k-1}) \\
+        \widetilde{\mathbf{x}_i^{(1)} \mathbf{x}_i^{(1)^\top}} &= \mathbb{E}(\mathbf{x}_i^{(1)} \mathbf{x}_i^{(1)^\top} | \mathbf{x}_i^{(2)} ; \hat{\boldsymbol{\mu}}_{k-1}, \hat{\Sigma}_{k-1}) \\
+        \widetilde{\mathbf{x}_i^{(1)} \mathbf{x}_i^{(2)^\top}} &= \mathbb{E}(\mathbf{x}_i^{(1)} \mathbf{x}_i^{(2)^\top} | \mathbf{x}_i^{(2)} ; \hat{\boldsymbol{\mu}}_{k-1}, \hat{\Sigma}_{k-1}) = \widetilde{\mathbf{x}}_i^{(1)} \mathbf{x}_i^{(2)^\top}
+        \end{aligned}
+        $$
+    3. M步（MLE）：
+        $$
+        \hat{\boldsymbol{\mu}}_k = \frac{\widetilde{T}_{1,k}}{n}, \qquad \hat{\Sigma}_k = \frac{1}{n}(\widetilde{T}_{2,k} - \frac{1}{n}\widetilde{T}_{1,k}\widetilde{T}_{1,k}^\top)
+        $$
+        可以证明$k\to\infty$时$\hat{\boldsymbol{\mu}}_k\to\hat{\boldsymbol{\mu}},\hat{\Sigma}_k\to\hat{\Sigma}$。

@@ -405,3 +405,127 @@ $$
         h_i(\boldsymbol{x}) = 0, \quad i = 1, \dots, p
         $$
         可放松为$h_i(\boldsymbol{x}) \leq 0, \quad i = 1, \dots, p$，得到凸优化问题。
+# 梯度下降法
+## 迭代算法
+对于一个优化问题，如果可以写出最优解的解析表达式，则称其为显式解；但是对于一般情况下，显式解无法直接求出，我们只能通过迭代的方式来逼近最优解，这种方法被称为迭代算法。
++ 迭代算法的具体形式：从一个初始点$\boldsymbol{x}$出发，按照某种规则进行迭代，得到一系列的点$\{\boldsymbol{x}^{(k)}\}=\boldsymbol{x}^{(1)},\boldsymbol{x}^{(2)},\cdots$。算法经过有限步终止时，我们希望得到给定精度的近似最优解。
++ 下面我们考虑迭代算法（点列）的收敛性，其定义为目标函数值趋于最优值，或迭代点趋于某个最优解。常用的收敛准则有以下几种：
+    1. 相对最优性差距小于某个阈值，即$\dfrac{f(\boldsymbol{x}^{(k)})-f^*}{\max\{|f^*|,1\}}\leq\epsilon$；【其中$\epsilon>0$为容差，$f^*$为最优值，其通常未知；若$f^*$以其估计值代替，则该不等式不再是严格的误差界】
+    2. 无约束可微问题中，梯度范数小于某个阈值$\|\nabla f(\boldsymbol{x}^{(k)})\|\leq\epsilon$；
+    3. 约束违反程度小于某个阈值（仅衡量近似可行性）
+
+    当然，满足上述收敛准则并不一定意味着接近最优，这取决于问题的假设。
++ 在实际使用中，上述收敛准则里往往很难直接计算$f^*$或其近似，因此一般会采用停机准则作为算法的停止条件。常用的停机准则包括：
+    + 相邻迭代点的相对误差$\dfrac{\|\boldsymbol{\boldsymbol{x}}^{(k+1)}-\boldsymbol{\boldsymbol{x}}^{(k)}\|}{\max\{\|\boldsymbol{x}^{(k)}\|,1\}} \leq \epsilon$.
+    + 相邻两次迭代点的目标函数相对误差小于某个阈值$\dfrac{|f(\boldsymbol{x}^{(k+1)})-f(\boldsymbol{x}^{(k)})|}{\max\{|f(\boldsymbol{x}^{(k)})|,1\}} \leq \epsilon$.
+
+    这些停机准则是启发式的：相邻迭代变化小可能只是步长过小或迭代停滞，不能单独保证接近最优。因此停机准则通常与梯度范数、可行性残差及最大迭代次数一起使用。
++ 下面我们进一步讨论迭代算法的（渐近）收敛速度。首先定义两种收敛阶：
+    + Q-收敛速度（这里的Q表示商，Quotient）：对于收敛于$\boldsymbol{x}^*$的迭代点列$\{\boldsymbol{x}^{(k)}\}$，如果满足
+        $$
+        \lim_{k\to\infty}\frac{\left\| \boldsymbol{x}^{(k+1)} - \boldsymbol{x}^* \right\|}{\left\| \boldsymbol{x}^{(k)} - \boldsymbol{x}^* \right\|^q}\triangleq\lim_{k\to\infty}\frac{e_{k+1}}{e_k} = a
+        $$
+        其中$q>1,a\in(0,+\infty)$或$q=1,a\in[0,1]$，那么就称$\{\boldsymbol{x}^{(k)}\}$满足Q-收敛。（默认要求$\boldsymbol{x}^{(k)}\neq\boldsymbol{x}^*$）特别地，
+        + 当$q=1,a\in(0,1)$时，称为Q-线性收敛；【当然也允许在$(0,a]$之间振荡】
+        + 当$q=1,a=0$时，称为Q-超线性收敛；
+        + 当$q=1,a=1$时，称为Q-次线性收敛；
+        + 当$q=2$时，称为Q-二次收敛。【同样允许$(0,a]$振荡】
+
+        > 可以通过绘制$k-\log e_k$图判断收敛速度：Q-线性收敛对应直线，Q-次线性收敛对应负对数曲线，而Q-二次收敛就对应开口向下的抛物线。
+    + R-收敛速度（R表示根，Root）：若存在Q-收敛于$0$的非负序列$\{t_k\}$，且有
+        $$
+        \|\boldsymbol{x}^{(k)}-\boldsymbol{x}^*\|\leq t_k
+        $$
+        那么就称$\{\boldsymbol{x}^{(k)}\}$满足R-收敛。【具体的R-收敛形式与$\{t_k\}$的Q-收敛形式对应】
+        + R-线性收敛的等价条件：存在$C>0$和$0< q< 1$，使$\|\boldsymbol{x}^{(k)}-\boldsymbol{x}^*\|\le Cq^k$。
+    + 当然我们也可以用大$O$表示误差的渐近上界，如$O\left(\dfrac{1}{k}\right),O\left(\dfrac{1}{k^2}\right)$等。可以证明，多项式阶的上界不蕴含R-线性收敛。
++ 除了渐近收敛速度外，我们还可以用迭代到指定精度所需步数衡量迭代算法的复杂度。具体而言，我们定义$N(\epsilon)$为达到精度$\epsilon$所需要的迭代次数，其一般也用大$O$表示。
+    + 实际上，$N(\epsilon)$的渐近函数阶与上面的收敛阶恰好互为反函数关系。比如Q-线性（R线性）收敛对应的$N(\epsilon)=O(\log\frac{1}{\epsilon})$。
+## 梯度下降（GD）算法
+在无约束凸优化问题的迭代算法中，最常用的就是梯度下降算法。给定初始点$\boldsymbol{x}^{(0)}$后，其具体流程如下：
+1. 计算更新方向为负梯度方向：$\Delta\boldsymbol{x}=-\nabla f(\boldsymbol{x})$
+2. 选择固定步长或通过线搜索确定步长$t_i$
+3. 更新：$\boldsymbol{x}^{(i+1)}=\boldsymbol{x}^{(i)}+t_i\Delta \boldsymbol{x}^{(i)}$
+
+重复直至预设停止条件满足，或者达到最大迭代次数。
++ 那么为什么梯度下降算法有效？我们可以考虑函数在$\boldsymbol{x}$处的上抛物线包络：
+    $$
+    g(\boldsymbol{y}) = f(\boldsymbol{x}) + \nabla f(\boldsymbol{x})^\top (\boldsymbol{y} - \boldsymbol{x}) + \frac{1}{2t} \|\boldsymbol{y} - \boldsymbol{x}\|^2
+    $$
+    其中$\dfrac{1}{2t} \|\boldsymbol{y} - \boldsymbol{x}\|^2$可看作一个惩罚项，目的是限制更新幅度。那么当$f(\boldsymbol{x})$是L-smooth的（会在后面解释），且$t\leq\dfrac1L$，则$g(\boldsymbol{y})\geq f(\boldsymbol{y})$对任意$\boldsymbol{y}$都成立。
+    + 于是我们可以求$g(\boldsymbol{y})$的最低点：
+        $$
+        \begin{aligned}
+        \boldsymbol{x}^+ = \argmin_{\boldsymbol{y}}g(\boldsymbol{y})&= \argmin_{\boldsymbol{y}} \left[f(\boldsymbol{x}) + \nabla f(\boldsymbol{x})^\top (\boldsymbol{y} - \boldsymbol{x}) + \frac{1}{2t} \|\boldsymbol{y} - \boldsymbol{x}\|^2 \right]\\
+        &= \boldsymbol{x} - t\nabla f(\boldsymbol{x})
+        \end{aligned}
+        $$
+        这便是基于负梯度进行参数更新，可以保证梯度下降算法总会让解更优。更详细的收敛性分析后面会展开。
+### 线搜索方法
+对于步长的选择，随意选择的步长$t_i = t$并不能保证算法收敛到最优点，并且可能导致算法收敛缓慢。更好的解决方案是采用线搜索，具体包括：
+1. 精确线搜索：$\displaystyle t\in\argmin_{s\geq 0}f(\boldsymbol{x}+s\Delta\boldsymbol{x})$，前提是沿当前方向的一维最小值能够取到
+    + 其计算代价取决于一维子问题的结构；对一般函数，求一维最小值的计算代价可能较高，因此实际中并不常用
+2. 回溯线搜索  
+    由Larry Armijo最早于1966年提出，其具体算法如下：设方向$\Delta\boldsymbol{x}$满足$\nabla f(\boldsymbol{x})^\top \Delta \boldsymbol{x} < 0$（方向导数为负），那么
+    + 固定参数$0 < \alpha \le\dfrac12,0 < \beta < 1,t_{\text{init}} > 0$
+    + 在每次迭代中，初始化$t = t_{\text{init}}$，当
+        $$
+        f(\boldsymbol{x} + t\Delta \boldsymbol{x}) > f(\boldsymbol{x}) + \alpha t \nabla f(\boldsymbol{x})^\top \Delta \boldsymbol{x}
+        $$
+        时，重复缩减步长$t = \beta t$，直至不等式不再成立，再更新
+        $$
+        \boldsymbol{x}^+ = \boldsymbol{x} + t\Delta \boldsymbol{x}
+        $$
+        在梯度下降中，因为$\Delta\boldsymbol{x}=-f(\boldsymbol{x})$，因此当步长足够小时，回溯一定会停止。
+    + 这里$\alpha$的含义：实际下降量不少于一阶近似所预测下降量的$\alpha$倍（充分下降条件），一般会取一个较小的值（如$0.01$或$10^{-4}$）。
+## 算法收敛性分析
+首先给出函数L-smooth和m-强凸的定义：
++ L-smooth：设$f: \mathbb{R}^n \to \mathbb{R}$为可微凸函数，存在最优解，且$\nabla f$为Lipschitz连续：
+    $$
+    \|\nabla f(\boldsymbol{x}) - \nabla f(\boldsymbol{y})\|_2 \le L\|\boldsymbol{x} - \boldsymbol{y}\|_2, \quad \forall \boldsymbol{x}, \boldsymbol{y}
+    $$
+    其中$L > 0$。
+    + $f$二阶可微时，条件可简化为$0 \preceq \nabla^2 f(\boldsymbol{x}) \preceq L\boldsymbol{I}$。
+    + 可以证明，对于固定步长$0 < t \le\dfrac1L$的梯度下降算法，有
+        $$
+        f(\boldsymbol{x}^{(k)}) - f^* \le \frac{\|\boldsymbol{x}^{(0)} - \boldsymbol{x}^*\|_2^2}{2tk},\quad k\geq 1
+        $$
+        而对于回溯搜索也有类似结论：取$\alpha = \dfrac12$时，上式中$t$替换为$\underline{t} = \min\{t_{\text{init}}, \frac{\beta}{L}\}$即可。
+    
+    因此，目标函数值误差$f(\boldsymbol{x}^{(k)}) - f^*$收敛阶为$O\left(\dfrac1k\right)$，对应$N(\epsilon)=O\left(\dfrac{1}{\epsilon}\right)$。
++ m-强凸：若函数$f$满足$f-\dfrac{m}{2}\|\boldsymbol{x}\|_2^2$为凸函数（$m>0$），那么就称$f$为m-强凸函数。
+    + $f$二阶可微时，条件可简化为$\nabla^2 f(\boldsymbol{x})\succeq m\boldsymbol{I}$。
+    + 同一函数可以既是L-smooth又是m-强凸，只要$0< m\leq L$即可。对于这类函数，使用固定步长$0< t\le\dfrac1L$的梯度下降算法，有
+        $$
+        f(\boldsymbol{x}^{(k)}) - f^* \le (1 - mt)^k(f(\boldsymbol{x}^{(0)}) - f^*),\quad k\geq 1
+        $$
+        令$\gamma=1-mt\in[0,1)$；$\gamma=0$时一步迭代即得最优解（比如二次函数）。
+        + 当$0< \gamma< 1$时，目标函数值误差以几何速率衰减。$m,L$固定时，$N(\epsilon)=O\left(\log\left(\dfrac1\epsilon\right)\right)$。
++ 实际上，我们还可以将L-smooth且m-强凸函数的梯度下降收敛性与Hessian矩阵的条件数构建联系。由条件数的定义（可见[CS127 Chapter 6](https://souyerin.netlify.app/posts/computer-science/cs127/cs127-chapter-6/#%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E6%89%B0%E5%8A%A8%E9%97%AE%E9%A2%98)）可知，这类函数的条件数上界就是$\dfrac{L}{m}$。对于上述不等式，取$t=\dfrac1L$，当$0< \epsilon< f(\boldsymbol{x}^{(0)})-f^*$时，达到进度$\epsilon$精度所需迭代次数
+    $$
+    k \ge \frac{L}{m} \log \frac{f(\boldsymbol{x}^{(0)}) - f^*}{\epsilon}.
+    $$
+    也就是说，这类函数梯度下降的收敛速度与条件数以及初始误差有关。
+## 梯度范数停机与算法改进
+前面我们提到，对于可微凸函数，可以考虑用梯度范数小于$\epsilon$作为停止迭代条件。【在最优解处$\nabla f(\boldsymbol{x}^*)=0$】
++ 对此，我们进一步限制$f$为m-强凸函数，那么有$f(\boldsymbol{x})-f^*\leq\dfrac{\|\nabla f(\boldsymbol{x})\|_2^2}{2m}$【推导略】，于是
+    $$
+    \|\nabla f(\boldsymbol{x})\|_2\leq\sqrt{2m\epsilon}\Longrightarrow f(\boldsymbol{x})-f^*\leq\epsilon
+    $$
+
+目前我们讨论的梯度下降算法对于条件数较小的强凸问题，收敛较快；而对于非强凸或条件数较大时，收敛可能很慢。另一方面，标准梯度法要求目标可微，因此对于非光滑问题（如深度学习反向传播）需采用其他方法。
++ 针对第一个问题，1983年Nesterov提出了一个重要结论：对于任意的一阶最优化算法，可以构造函数$f$使得对任意$1\leq k\leq\dfrac{n-1}{2}$（$n$为函数维度）和任意$\boldsymbol{x}^{(0)}$，
+    $$
+    f(\boldsymbol{x}^{(k)}) - f^\star \ge \frac{3L \|\boldsymbol{x}^{(0)} - \boldsymbol{x}^*\|_2^2}{32(k + 1)^2} 
+    $$
+    也就是说，一阶算法的收敛速度下界就是$O\left(\dfrac{1}{k^2}\right)$，对应$N(\epsilon)=O\left(\dfrac{1}{\sqrt{\epsilon}}\right)$。
+    + 那么有没有一阶算法能够达到这一下界？有！这便是Nesterov加速梯度法，其引入了动量机制，在机器学习优化中尤为常用。
+
++ 另外，针对非凸函数，由于其不一定存在全局最优解，所以要想使用梯度下降，需要另外定义$\epsilon$-近似驻点：$\|\nabla f(\boldsymbol{x})\|_2\leq\epsilon$。
+    + 可以证明，只要函数L-smooth且有下界（$\inf f>-\infty$），那么对于固定步长$t_k \equiv t \in (0, \dfrac1L]$，有
+        $$
+        \min_{i=0,\dots,k} \|\nabla f(\boldsymbol{x}^{(i)})\|_2 \le \sqrt{\frac{2\left(f(\boldsymbol{x}^{(0)}) - f_{\text{inf}}\right)}{t(k+1)}}
+        $$
+        也就是说，其梯度收敛速度为$O\left(\dfrac{1}{\sqrt{k}}\right)$，对应$N(\epsilon)=O\left(\dfrac{1}{\epsilon^2}\right)$。【当维数充分高时，这个收敛速度就不可改进】
+## 梯度增强（Gradient Boosting）
+可以参见[机器学习算法 Ch.7 集成模型](/posts/computer-science/machine-learning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95-ch7-%E9%9B%86%E6%88%90%E6%A8%A1%E5%9E%8B/#gbm%E6%A2%AF%E5%BA%A6%E6%8F%90%E5%8D%87%E7%AE%97%E6%B3%95)，这里就不详细展开了……

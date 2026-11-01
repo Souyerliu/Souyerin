@@ -109,7 +109,7 @@ $$
     \mathbb{E}_{\mathbf{z}\sim p_\mathbf{Z}(\mathbf{z})}[\log {D^*}(G(\mathbf{z}))]&= \mathbb{E}_{\mathbf{x}\sim p_G(\mathbf{x})}\left[\log \frac{p_X(\mathbf{x})}{p_X(\mathbf{x}) + p_G(\mathbf{x})}\right] \\
     &= -\mathbb{E}_{\mathbf{x}\sim p_G(\mathbf{x})}\left[\log \frac{p_G(\mathbf{x})}{p_X(\mathbf{x})}\right] + \mathbb{E}_{\mathbf{x}\sim p_G(\mathbf{x})}\left[\log \frac{p_G(\mathbf{x})}{p_X(\mathbf{x}) + p_G(\mathbf{x})}\right] \\
     &= -KL(p_G \| p_X) + \mathbb{E}_{\mathbf{x}\sim p_G(\mathbf{x})}[1 - D^*(\mathbf{x})] \\
-    &= -KL(p_G \| p_X) + 2 \times JSD(p_X \| p_G) - 2\log 2 - \mathbb{E}_{\mathbf{x}\sim p_X(\mathbf{x})}[\log \color{green}{D^*}(\mathbf{x})]
+    &= -KL(p_G \| p_X) + 2 \times JSD(p_X \| p_G) - 2\log 2 - \mathbb{E}_{\mathbf{x}\sim p_X(\mathbf{x})}[\log D^*(\mathbf{x})]
     \end{aligned}
     $$
     后面两项与$G$无关，因此最大化$\mathbb{E}_{\mathbf{z} \sim p_\mathbf{Z}(\mathbf{z})}[\log D(G(\mathbf{z}))]$等价于最小化
