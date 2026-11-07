@@ -131,7 +131,10 @@ $$
     - 无风险组合：$S_0u\Delta - f_u = S_0d\Delta - f_d \Longrightarrow \Delta = \dfrac{f_u-f_d}{S_0u-S_0d}$
     - 根据构造组合的成本 = 组合价值的贴现，得到
     $$
-    S_0\Delta - f = (S_0u\Delta - f_u)e^{-rT} = (S_0d\Delta - f_d)e^{-rT}\Longrightarrow f = e^{-rT}[pf_u + (1-p)f_d], \quad p = \frac{e^{rT}-d}{u-d}
+    \begin{aligned}
+    &S_0\Delta - f = (S_0u\Delta - f_u)e^{-rT} = (S_0d\Delta - f_d)e^{-rT}\\
+    \Longrightarrow &f = e^{-rT}[pf_u + (1-p)f_d], \quad p = \frac{e^{rT}-d}{u-d}
+    \end{aligned}
     $$
 2. 两步二叉树模型   
     一般在动态组合复制定价中使用，核心仍然是用风险中性原理从后向前反推定价（拆成多个单步二叉树模型计算）

@@ -519,7 +519,7 @@ $$
     f(\boldsymbol{x}^{(k)}) - f^\star \ge \frac{3L \|\boldsymbol{x}^{(0)} - \boldsymbol{x}^*\|_2^2}{32(k + 1)^2} 
     $$
     也就是说，一阶算法的收敛速度下界就是$O\left(\dfrac{1}{k^2}\right)$，对应$N(\epsilon)=O\left(\dfrac{1}{\sqrt{\epsilon}}\right)$。
-    + 那么有没有一阶算法能够达到这一下界？有！这便是Nesterov加速梯度法，其引入了动量机制，在机器学习优化中尤为常用。
+    + 那么有没有一阶算法能够达到这一下界？有！这便是Nesterov加速梯度法，其引入了动量机制，在机器学习优化中尤为常用。【下面会详细展开】
 
 + 另外，针对非凸函数，由于其不一定存在全局最优解，所以要想使用梯度下降，需要另外定义$\epsilon$-近似驻点：$\|\nabla f(\boldsymbol{x})\|_2\leq\epsilon$。
     + 可以证明，只要函数L-smooth且有下界（$\inf f>-\infty$），那么对于固定步长$t_k \equiv t \in (0, \dfrac1L]$，有
@@ -529,3 +529,75 @@ $$
         也就是说，其梯度收敛速度为$O\left(\dfrac{1}{\sqrt{k}}\right)$，对应$N(\epsilon)=O\left(\dfrac{1}{\epsilon^2}\right)$。【当维数充分高时，这个收敛速度就不可改进】
 ## 梯度增强（Gradient Boosting）
 可以参见[机器学习算法 Ch.7 集成模型](/posts/computer-science/machine-learning/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95-ch7-%E9%9B%86%E6%88%90%E6%A8%A1%E5%9E%8B/#gbm%E6%A2%AF%E5%BA%A6%E6%8F%90%E5%8D%87%E7%AE%97%E6%B3%95)，这里就不详细展开了……
+
+# 近端梯度下降与Nesterov加速
+## 近端梯度下降
+上述梯度下降算法都假定目标函数可微。那么目标函数不可微时该如何进行迭代优化呢？这里我们就要对梯度下降算法进行推广，即近端梯度下降。
++ 模型：$f(\boldsymbol{x})=g(\boldsymbol{x})+h(\boldsymbol{x})$，其中$g$为可微凸函数，$h$为正常闭凸函数（定义域非空且不取$-\infty$，可取到最小值）。对此，我们考虑单独对$g$取上抛物线包络：
+    $$
+    \begin{aligned}
+    \boldsymbol{x}^+ &= \argmin_{\boldsymbol{z}} \bar{g}_t(\boldsymbol{z}) + h(\boldsymbol{z}) \\
+    &= \argmin_{\boldsymbol{z}} g(\boldsymbol{x}) + \nabla g(\boldsymbol{x})^\top (\boldsymbol{z} - \boldsymbol{x}) + \frac{1}{2t} \|\boldsymbol{z} - \boldsymbol{x}\|_2^2 + h(\boldsymbol{z}) \\
+    &= \argmin_{\boldsymbol{z}} \frac{1}{2t} \left\{ \|\boldsymbol{z} - \boldsymbol{x}\|_2^2 + 2t\nabla g(\boldsymbol{x})^\top(\boldsymbol{z} - \boldsymbol{x}) + \|t\nabla g(\boldsymbol{x})\|_2^2 \right\} + h(\boldsymbol{z}) \\
+    &= \argmin_{\boldsymbol{z}} \frac{1}{2t} \|\boldsymbol{z} - (\boldsymbol{x} - t\nabla g(\boldsymbol{x}))\|_2^2 + h(\boldsymbol{z})
+    \end{aligned}
+    $$
++ 由此我们可以定义近端映射（有且仅有一个最小值点）
+    $$
+    \mathrm{prox}_{h,t}(\boldsymbol{x}) = \argmin_{\boldsymbol{z}} \frac{1}{2t} \|\boldsymbol{x} - \boldsymbol{z}\|_2^2 + h(\boldsymbol{z})
+    $$
+    那么近端梯度下降的算法可表示为：给定初始点$\boldsymbol{x}^{(0)}\in\operatorname{dom}h$，迭代公式为
+    $$
+    \boldsymbol{x}^{(k)} = \operatorname{prox}_{h, t_k} \left( \boldsymbol{x}^{(k-1)} - t_k \nabla g(\boldsymbol{x}^{(k-1)}) \right), \quad k = 1, 2, \dots
+    $$
+    也可以改写为类似标准梯度下降的形式：
+    $$
+    \boldsymbol{x}^{(k)} = \boldsymbol{x}^{(k-1)} - t_k G_{t_k} \left( \boldsymbol{x}^{(k-1)} \right)
+    $$
+    其中
+    $$
+    G_t(\boldsymbol{x}) = \frac{\boldsymbol{x} - \operatorname{prox}_{h, t}(\boldsymbol{x} - t\nabla g(\boldsymbol{x}))}{t}
+    $$
+    为梯度映射。
+    > 近端映射的直观理解：求解一个距$\boldsymbol{x}$不算太远的点，并兼顾使新点的函数值$h(\boldsymbol{z})$较小。
++ 使用近端算子$\text{prox}_{h,t}$的优点是其对很多重要的函数$h$有显式解，且
+    + $\text{prox}_{h,t}(\cdot)$只依赖$h$和$t$，并不依赖于函数$g$
+    + 尽管光滑部分$g$可能很复杂，但其梯度往往不难计算
++ 收敛速度：可以证明，若$g$为L-smooth，近端梯度下降的收敛速度与标准梯度下降一致。
++ 近端梯度下降也被称为广义梯度下降，是因为其包含下述特殊情形：
+    1. $h = 0$: 一般梯度下降
+    2. $h = I_C$: 投影梯度下降   
+        对于给定非空闭凸集$C\subseteq\R^n$，可定义投影算子
+        $$
+        \operatorname{prox}_{I_C,t}(\boldsymbol{x}) = \argmin_{\boldsymbol{z}} \frac{1}{2t}\|\boldsymbol{x} - \boldsymbol{z}\|_2^2 + I_C(\boldsymbol{z})= \argmin_{\boldsymbol{z} \in C} \|\boldsymbol{x} - \boldsymbol{z}\|_2^2
+        $$
+        于是梯度下降更新步骤为
+        $$
+        \boldsymbol{x}^{+} = \operatorname{prox}_{I_C,t}(\boldsymbol{x} - t\nabla g(\boldsymbol{x}))\triangleq P_C(\boldsymbol{x} - t\nabla g(\boldsymbol{x}))
+        $$
+    3. $g = 0$: 近端最小化算法  
+        考虑优化问题$\displaystyle\min_{\boldsymbol{x}}h(\boldsymbol{x})$，其近端最小化算法更新公式为
+        $$
+        \boldsymbol{x}^+ = \argmin_{\boldsymbol{z}} \frac{1}{2t}\|\boldsymbol{x} - \boldsymbol{z}\|_2^2 + h(\boldsymbol{z})
+        $$
+        也就是说，其迭代每一步需求解一个强凸子问题。若该步仅近似求解，误差会进入收敛估计，不能直接套用精确算法的定理。
++ 近端梯度下降的步长选择同样有回溯线搜索方法。具体而言，取$0 < \beta < 1$和$t_0 > 0$。第$k$步从$t = t_{k-1}$开始，先计算$\boldsymbol{x}^+ = \operatorname{prox}_{h,t}(\boldsymbol{v} - t\nabla g(\boldsymbol{v}))$，若
+    $$
+    g(\boldsymbol{x}^+) > g(\boldsymbol{v}) + \nabla g(\boldsymbol{v})^\top(\boldsymbol{x}^+ - \boldsymbol{v}) + \frac{1}{2t}\|\boldsymbol{x}^+ - \boldsymbol{v}\|_2^2
+    $$
+    则令$t \leftarrow \beta t$，重新计算$\boldsymbol{x}^+$并检查；否则接受$t_k = t$及$\boldsymbol{x}^{(k)} = \boldsymbol{x}^+$。
+## Nesterov加速算法
+这里在近端梯度下降的基础上讨论加速算法，即加速近端梯度算法。考虑复合函数优化问题
+$$
+\min_{\boldsymbol{x}} g(\boldsymbol{x}) + h(\boldsymbol{x})
+$$
+其中$g$可微凸、$h$正常闭凸。给定$\boldsymbol{x}^{(0)} = \boldsymbol{x}^{(-1)} \in \operatorname{dom} h$，则$k\geq 1$时，算法迭代公式为
+$$
+\begin{aligned}
+\boldsymbol{v} &= \boldsymbol{x}^{(k-1)} + \frac{k - 2}{k + 1} \left( \boldsymbol{x}^{(k-1)} - \boldsymbol{x}^{(k-2)} \right)\\
+\boldsymbol{x}^{(k)} &= \operatorname{prox}_{h, t_k} (\boldsymbol{v} - t_k \nabla g(\boldsymbol{v}))
+\end{aligned}
+$$
+由此可见，加速近端梯度下降中，趋势的权重随迭代步数变化（逐渐趋向$1$）
++ 第一步迭代为普通的近端梯度下降，而之后的$\boldsymbol{v}$都携带了部分上一步迭代的趋势（动量）
++ 当$h = 0$时，算法称为加速的梯度下降算法。

@@ -138,7 +138,7 @@ sticky: true
 + 记$d=\mu_1-\mu_2$，则假设为：$H_0:d=0\quad\text{vs}\quad d\neq 0$
     + 可使用配对t检验（具体略）
 + 实际上，配对比较设计是随机区组设计（RBD）的一种特例。这里的区组表示一组相对齐同的一组样本。
-    + 随机区组设计在完全随机化设计的基础上增加了限制：只能在区组内进行随机化。
+    + 随机区组设计在完全随机化设计的基础上增加了限制：只能在区组内进行随机化。我们将在后面对此详细讨论。
 + 另一方面，与完全随机化设计相比，配对比较设计在消除区组间的变异影响的同时也减小了模型的自由度。【因此区组化可以视作一种降噪设计技术】     
     + 关于是否要使用区组化设计，还是需要对区组内变异与区组间的变异进行比较。【关于区组化设计的更多内容下面会具体展开】
 
@@ -265,7 +265,7 @@ sticky: true
     $$
     \hat{y}_{ij}=\hat{\mu}+\hat{\tau}_i=\overline{y}_{..}+(\overline{y}_{i.}-\overline{y}_{..})=\overline{y}_{i.}
     $$
-+ 首先需要对残差进行**正态性检验**（残差$\displaystyle e_{ij}\stackrel{i.i.d.}{\sim} N\left(0,\sigma^2\left(1-\dfrac{1}{n_i}\right)\right)$），主要采用正态概率图。具体示意图如下：![normal](./试验设计-Cheat-Sheet/normal.png)
++ 首先需要对残差进行**正态性检验**（残差$\displaystyle e_{ij}\sim N\left(0,\sigma^2\left(1-\dfrac{1}{n_i}\right)\right)$），主要采用正态概率图。具体示意图如下：![normal](./试验设计-Cheat-Sheet/normal.png)
     一般来说，在固定效应方差分析中，中度偏离正态性关系不大；随机效应模型受非正态性的影响则要严重得多。
     + 使用正态概率图检验时需要注意离群值的影响（会严重影响ANOVA结果）。可以用标准化残差$d_{ij}=\dfrac{e_{ij}}{\sqrt{MS_E}}$粗略检查离群值。【方差近似为$1$】
     > 注意不能直接使用正态性检验（如A-D检验）的结果，因为这些检验假定数据独立，但残差并不独立。
@@ -390,3 +390,76 @@ $$
     \overline{y}_{..}-t_{\frac\alpha2}(a-1)\sqrt{\frac{MS_{Trt}}{an}} \leq \mu \leq \overline{y}_{..}+t_{\frac\alpha2}(a-1)\sqrt{\frac{MS_{Trt}}{an}}
     $$
 # 随机区组及拉丁方设计
+上面我们提到，随机化的作用是抑制干扰因子的影响。当干扰变异源已知且可控时，可以采用区组化方法系统地消除它对处理之间统计比较的影响。
++ 在区组化的设计下，如果仍然采用上述完全随机化试验方法，会使试验误差同时包含随机误差与干扰因子的变异，导致二者无法区分。对此，我们引入随机完全区组设计（RCBD），其将干扰因子作为区组因子，并使每个区组（作为试验单元）包含所有处理。
+> 在一定程度上，RCBD可以看作配对比较试验的推广。
+## 随机完全区组设计
+随机完全区组设计的一般形式：$a$个处理，$b$个区组，每个区组中的每个处理都有一个观测值，而每个区组内处理实施的顺序是随机确定的。
++ RCBD的（固定）效应模型：$y_{ij}=\mu+\tau_i+\beta_j+\epsilon_{ij},\quad i=1,\cdots,a,\quad j=1,\cdots,b$，其中$\tau_i$为处理效应，$\beta_j$为区组效应，分别满足$\displaystyle\sum_{i=1}^a\tau_i=0,\sum_{j=1}^b\beta_j=0$。
++ RCBD的检验假设：各处理均值是否相等，即$H_0:\tau_1=\cdots=\tau_a=0\quad\text{vs}\quad H_1:$存在一个$\tau_i\neq 0$
++ RCBD方差分析：
+    $$
+    \begin{aligned}
+    SS_T=\sum_{i=1}^{a} \sum_{j=1}^{b} (y_{ij} - \overline{y}_{..})^{2} &= \sum_{i=1}^{a} \sum_{j=1}^{b} \left[ (\overline{y}_{i.} - \overline{y}_{..}) + (\overline{y}_{.j} - \overline{y}_{..}) + (y_{ij} - \overline{y}_{i.} - \overline{y}_{.j} + \overline{y}_{..}) \right]^{2}\\
+    &=\underbrace{b \sum_{i=1}^{a} (\overline{y}_{i.} - \overline{y}_{..})^{2}}_{SS_{Trt}} + \underbrace{a \sum_{j=1}^{b} (\overline{y}_{.j} - \overline{y}_{..})^{2}}_{SS_{Blk}} + \underbrace{\sum_{i=1}^{a} \sum_{j=1}^{b} (y_{ij} - \overline{y}_{.j} - \overline{y}_{i.} + \overline{y}_{..})^{2}}_{SS_E}
+    \end{aligned}
+    $$
+    对应的自由度：
+    |平方和|自由度|
+    |:----:|:---:|
+    |$SS_T$|$N-1=ab-1$|
+    |$SS_{Trt}$|$a-1$|
+    |$SS_{Blk}$|$b-1$|
+    |$SS_E$|$(a-1)(b-1)$|
+
+    平方和快速计算方法：
+    $$
+    \begin{aligned}
+    SS_T &= \sum_{i=1}^{a} \sum_{j=1}^{b} y_{ij}^2 - \frac{y_{\cdot\cdot}^2}{N} \quad SS_{Trt} = \frac{1}{b} \sum_{i=1}^{a} y_{i\cdot}^2 - \frac{y_{\cdot\cdot}^2}{N} \quad SS_{Blk} = \frac{1}{a} \sum_{j=1}^{b} y_{\cdot j}^2 - \frac{y_{\cdot\cdot}^2}{N}\\
+    SS_E&=SS_T-SS_{Trt}-SS_{Blk}
+    \end{aligned}
+    $$
++ 同样由Cochran定理可得，$\dfrac{SS_{Trt}}{\sigma^2},\dfrac{SS_{Blk}}{\sigma^2},\dfrac{SS_{E}}{\sigma^2}$为相互独立的卡方随机变量，且均方期望分别为
+    $$
+    \mathbb{E}(MS_{Trt}) = \sigma^{2} + \frac{b \sum_{i=1}^{a} \tau_{i}^{2}}{a-1},\quad \mathbb{E}(MS_{Blk}) = \sigma^{2} + \frac{a \sum_{j=1}^{b} \beta_{j}^{2}}{b-1},\quad \mathbb{E}(MS_{E}) = \sigma^{2} 
+    $$
+    检验统计量仍然为$F_0=\dfrac{MS_{Trt}}{MS_E}\stackrel{H_0}{\sim} F(a-1,(a-1)(b-1))$。
++ 当然，我们也可以考虑对区组均值的假设$H_0:\beta_1=\cdots=\beta_b=0$（如果不拒绝原假设，那就无需区组化）进行检验。不过对于检验统计量的选择存在争议，直接用$F_0=\dfrac{MS_{Blk}}{MS_E}$不太能视作精确检验方法，只能用于粗略评估。
++ RCBD参数估计：
+    $$
+    \begin{cases}
+    \hat{\mu}=\overline{y}_{..}\\
+    \hat{\tau}_i=\overline{y}_{i.}-\overline{y}_{..}\\
+    \hat{\beta}_j=\overline{y}_{.j}-\overline{y}_{..}
+    \end{cases}\Longrightarrow
+    \hat{y}_{ij}=\overline{y}_{i.}+\overline{y}_{.j}-\overline{y}_{..}
+    $$
++ RCBD模型合适性检验：可以沿用上述多重比较方法（只需将$n$换为$b$，同时误差自由度改为$(a-1)(b-1)$）。
++ 残差分析：对于残差$e_{ij}=y_{ij}-\hat{y}_{ij}$，除了绘制正态概率图外，也可以绘制其按处理/区组分类的分布图。
+    + 另一方面，还可以绘制残差对观测值的分布图，如果图像呈现出某种曲线，那么说明区组与处理间存在交互作用，此时应对观测值施加变换以消除这种作用。
++ RCBD模型可加性：由于随机区组模型没有区组处理交互项，因此区组效应与处理效应在线性预测上可以相加。也就是说，各区组中不同处理的差异保持恒定，区组只对每个处理造成一个相同的常数平移。
+    + 如果模型不满足可加性（处理效应与区组有关），会放大误差均方，并可能对处理均值的比较产生不利影响。一种解决方法是进行尺度变换（如对数变换），不过更多情况下会考虑因子设计。【后面会详细展开】
++ RCBD随机效应模型：在实际情况中，区组往往是随机因子，即$\beta_1,\cdots,\beta_b\stackrel{i.i.d.}{\sim}N(0,\sigma^2_{\beta})$，而处理为固定因子。此时可得
+    $$
+    \begin{aligned}
+    \mathbb{E}(y_{ij}) &= \mu + \tau_i, \quad i = 1, 2, \dots, a \\
+    \mathrm{Var}(y_{ij}) &= \sigma_{\beta}^2 + \sigma^2 \\
+    \mathrm{Cov}(y_{ij}, y_{i'j'}) &= 0, \quad j \neq j' \\
+    \mathrm{Cov}(y_{ij}, y_{i'j}) &= \sigma_{\beta}^2, \quad i \neq i'
+    \end{aligned}
+    $$
+    而期望均方为
+    $$
+    \begin{aligned}
+    E(MS_{Trt}) &= \sigma^2 + \frac{b \sum_{i=1}^{a} \tau_i^2}{a-1} \\
+    E(MS_{Blk}) &= \sigma^2 + a\sigma_\beta^2 \\
+    E(MS_E) &= \sigma^2
+    \end{aligned}
+    $$
+    所以检验统计量同上。同时$\sigma_{\beta}^2$的估计为$\hat{\sigma}_{\beta}^2=\dfrac{MS_{Blk}-MS_E}{a}$。
+    > 另一方面，上述F统计量实际上也适用于处理与区组存在交互的模型。【推导略】
++ 缺失值估计：使用RCBD时，有时某个区组中会有一个观测值缺失。对此一般有两种处理方法：
+    1. 近似分析：先估计缺失的观测值，然后像这些估计值就是真实数据一样进行通常的方差分析，并把误差自由度减$1$。
+        + 缺失观测值的估计（使$SS_E$最低）：$\hat{x}=\dfrac{ay_{i.}'+by_{.j}'-y_{..}'}{(a-1)(b-1)}$【带$'$表示去掉缺失值后的总和】
+    2. 精确分析：使用一般回归显著性检验【略】
+## 拉丁方设计

@@ -1,0 +1,1086 @@
+---
+title: 数据库系统原理 Cheat Sheet
+date: 2026-11-04 13:01:53
+categories: [计算机科学]
+tags:
+    - SQL
+    - 数据库
+cover: ./数据库系统原理-Cheat-Sheet/DBS.png
+---
+> 本Cheat Sheet系AI基于上课课件编写，限时放出，期中考试后隐藏（待期末考试前再放出）
+
+> 另外，笔者之前也基于Kaggle上的SQL教程写了两篇文章（可见[Kaggle SQL教程](/categories/KaggleSQL/)）【这个是笔者手搓的hh】
+
+# 引言
+
+数据库系统的作用，是方便、高效地存取相互关联的数据。
+
+## 数据库系统的基本概念
+
+|概念|含义|
+|---|---|
+|数据库（Database，DB）|相互关联的数据的集合|
+|数据库管理系统（DBMS）|管理数据库、提供数据访问接口的软件|
+|数据库系统（DBS）|数据库及访问、管理这些数据的程序组成的系统|
+|数据模型|描述数据、数据联系、数据语义和一致性约束的工具|
+|模式（Schema）|数据库的总体设计，类似程序中的类型定义，包括物理模式、逻辑模式与子模式（描述数据库的不同视图）|
+|实例（Instance）|某一时刻数据库中存储的数据，类似变量当前的值|
+|元数据（Metadata）|描述数据的数据，如表结构、约束、索引和权限，保存在数据字典中|
+
+为什么不直接用文件保存数据？文件处理系统容易出现：
+
++ **冗余和不一致**：同一份信息分散在多个文件中，修改时容易漏改。
++ **访问困难、数据孤立**：文件格式不同，新查询往往需要重新写程序。
++ **完整性问题**：约束散落在应用程序里，难以统一维护。
++ **原子性问题**：一次操作只完成一半，例如转账只扣款、未入账。
++ **并发访问异常**：多个程序同时修改数据，可能互相覆盖。
++ **安全性问题**：不同用户需要不同的数据访问权限。
+
+## 数据模型与数据抽象
+
+常见数据模型：关系模型用表表示数据及联系；E-R 模型用实体、属性和联系进行概念设计；基于对象的模型引入对象与封装；半结构化模型使用 XML、JSON 等形式。
+
++ 历史上曾经出现过层次数据模型（树结构）和网状数据模型（图结构），它们直接用了指针/路径，所以在查特定路径的数据时，速度极快（查询效率高）。
++ 然而，当数据复杂程度上升时，层次模型会产生大量冗余，网状模型又太复杂，最终逐渐被关系模型（表结构）淘汰。
++ 关系模型的最大优势在于数据的独立性，易用性，同时也具有关系代数的理论基础（源自离散数学）。当然，关系模型也存在其不足：其查询数据的效率较低，需要进行优化。
+
+数据抽象分为三层：
+
+|层次|描述什么|例子|
+|---|---|---|
+|物理层|数据实际怎样存储|文件、页、索引、存储布局|
+|逻辑层|存哪些数据，数据之间有什么联系|教师表、院系表及其主外码|
+|视图层|用户能看到哪些数据|只显示教师姓名和院系，隐藏工资|
+
+**物理数据独立性**：改变物理存储结构时，不必修改逻辑模式和上层应用。例如，为表增加索引，不需要重写查询该表的业务代码。
+
+逻辑层（面向数据库管理员）降低了数据库设计的耦合性。具体而言，无论底层的物理数据（物理层）怎么变，都不会影响逻辑层的表结构。
+
+视图层（面向数据库普通用户）可以隐藏信息，使用户仅访问数据库的一部分，提高安全性。
+
+数据库设计通常分为：**概念设计 → 逻辑设计 → 物理设计**，分别解决“有哪些实体及联系”“如何组织成表”“如何存储和访问”。
+
+## 数据库语言与系统组成
+
++ **DDL（数据定义语言）**：定义、修改数据库模式，如 `create`、`alter`、`drop`。
+    + DDL生成的表模版保存在数据字典中，其包括表信息、完整性约束、用户授权信息等。【即关系模型的元数据】
++ **DML（数据操纵语言）**：查询、插入、删除和更新数据，如 `select`、`insert`、`delete`、`update`。
++ 过程化语言说明“要什么、怎么做”；声明式语言主要说明“要什么”。SQL 查询主要采用声明式写法。
+
+数据库引擎的主要部件：
+
+|部件|主要工作|
+|---|---|
+|查询处理器|解释 DDL、编译 DML、优化查询、执行查询计划|
+|存储管理器|管理数据文件、索引和数据字典，协调文件与缓冲区访问|
+|事务管理部件|协调并发事务，在故障后进行回滚和恢复，维护数据一致性|
+|权限及完整性管理器|检查用户权限和完整性约束|
+
+事务的定义：数据库应用中完成单一逻辑功能的操作集合，具有ACID（原子性、一致性、隔离性、持久性）特性。
+
+SQL 查询可以理解为：**SQL → 关系代数表达式 → 查询优化 → 执行计划 → 结果**。应用程序可通过 JDBC、ODBC 等接口访问数据库，也可以使用嵌入式 SQL。
+
+数据库管理员（DBA）负责模式与存储设计、权限管理、备份恢复、日常维护和性能监控。
+
+## 体系结构与数据库类型
+
++ **集中式**：主要在一台计算机上运行。
++ **两层 C/S**：客户端直接访问数据库，客户端承担界面和业务逻辑。
++ **三层结构**：前端 → 业务服务器 → 数据库，业务逻辑集中在中间层。
++ **并行数据库**：使用多个处理器和磁盘并行执行任务。
++ **分布式数据库**：数据分布在通过网络连接的多个节点上。
+
+|类型|主要特点|
+|---|---|
+|关系数据库（RDBMS）|关系模型、SQL、事务与完整性约束|
+|NoSQL|键值、文档、列族、图等模型，常用于灵活建模和横向扩展|
+|NewSQL|在支持 SQL 和 ACID 事务的同时，提供可扩展的分布式处理能力|
+
+# 关系模型概述
+
+## 关系、模式与实例
+
+关系数据库由一组表构成。关系模型中的**关系、元组、属性**，分别对应表、行、列。
+
+关系模式记为 $R(A_1,A_2,\ldots,A_n)$，例如：
+
+```text
+instructor(ID, name, dept_name, salary)
+department(dept_name, building, budget)
+```
+
++ 每个属性有自己的**域**，即允许的取值集合；属性值应当是原子的。
++ 关系实例是当前元组的集合，行的先后次序没有意义。
++ 数学上的关系不含重复元组；SQL 表和查询结果默认可以重复。
++ `null` 表示未知或不存在的值，与 `0`、空字符串不同。
+
+## 码与完整性约束
+
+|概念|定义|例子|
+|---|---|---|
+|超码（Superkey）|能唯一标识一个元组的属性集合|教师表中的 `{ID}`、`{ID, name}`|
+|候选码（Candidate key）|不含多余属性的超码，任意真子集都不是超码|若 `ID` 已唯一，则 `{ID, name}` 不是候选码|
+|主码／主键（Primary key）|从候选码中选定的一个|`instructor.ID`|
+|外码／外键（Foreign key）|引用另一关系的键的属性集合|`instructor.dept_name` 引用 `department.dept_name`|
+
+候选码的“最小”是指**不能再删去属性**，不要求它的属性数在所有候选码中最少。一个关系可以有多个候选码，但只选一个主码；主码也可以由多个属性组成。
+
+完整性约束主要有三类：
+
++ **实体完整性**：主码唯一，且主码的各属性都不能为空。
++ **参照完整性**：外码的非空取值必须能在被引用关系中找到。
++ **用户自定义完整性**：由业务决定，如工资大于 0、学分在规定范围内。
+
+课件主要讨论外码引用主码；SQL 中也可引用满足相应唯一性要求的键。外码本身不要求唯一，也不自动要求非空。
+
+模式图用矩形表示关系、下划线表示主码、箭头表示外码引用，箭头从**引用方指向被引用方**。模式图描述表之间的结构，与概念设计阶段的 E-R 图不同。
+
+## 关系代数
+
+关系代数以关系为输入、以关系为输出，运算之间可以继续组合。六种基本运算为：**选择、投影、并、差、笛卡尔积、更名**。
+
+|运算|记号|作用|
+|---|---|---|
+|选择|$\sigma_P(r)$|保留满足条件 $P$ 的行|
+|投影|$\Pi_{A_1,\ldots,A_k}(r)$|保留指定列，并去重|
+|并|$r\cup s$|在 $r$ 或 $s$ 中出现的元组|
+|差|$r-s$|在 $r$ 中、但不在 $s$ 中的元组|
+|笛卡尔积|$r\times s$|将两边的元组两两配对|
+|更名|$\rho_{x(B_1,\ldots,B_n)}(r)$|将关系改名为 $x$，并可修改属性名|
+
+选择条件可以用 $\land$、$\lor$、$\neg$ 组合，也可以比较两个属性。注意：**选择选行，投影选列**。
+
+例如，找出物理系工资超过 80000 的教师姓名：
+
+$$
+\Pi_{\mathrm{name}}\left(
+\sigma_{\mathrm{dept\_name}=\text{“Physics”}\,\land\,\mathrm{salary}>80000}(\mathrm{instructor})
+\right).
+$$
+
+并、差、交要求两个关系**属性数相同，对应属性的域相容**。若 $r$ 有 $m$ 行、$p$ 列，$s$ 有 $n$ 行、$q$ 列，则笛卡尔积有 $mn$ 行、$p+q$ 列；同名属性需用关系名限定或更名。
+
+### 附加运算
+
+|运算|表示或定义|含义|
+|---|---|---|
+|交|$r\cap s=r-(r-s)$|两边都出现的元组|
+|条件连接|$r\bowtie_\theta s=\sigma_\theta(r\times s)$|保留满足连接条件的元组对|
+|自然连接|$r\bowtie s$|所有同名属性分别相等，并只保留一份同名列|
+|赋值|$t\leftarrow E$|将表达式结果赋给关系变量|
+|除|$r(X,Y)\div s(Y)$|找出与 $s$ 中每个 $Y$ 都匹配的 $X$|
+|外连接|左外、右外、全外连接|在连接结果中保留指定一侧或两侧的未匹配元组，缺失处填 `null`|
+
+自然连接没有同名属性时退化为笛卡尔积；同名属性较多时，必须全部匹配。
+
+**除运算对应“全部满足”**。例如 `takes(ID, course_id)` 除以 `required(course_id)`，得到选修了全部指定课程的学生编号。
+
+令 $X$、$Y$ 为互不重叠的属性集，除运算可以用基本运算表示：
+
+$$
+r\div s=\Pi_X(r)-\Pi_X\left((\Pi_X(r)\times s)-r\right).
+$$
+
+理解方式：先找出所有可能的 $X$，再减去“至少缺少一个指定 $Y$”的 $X$。
+
+### 组合查询与修改
+
+找出物理系教师的姓名及其讲授的课程编号：
+
+$$
+\Pi_{\mathrm{name},\mathrm{course\_id}}\left(
+\sigma_{\mathrm{dept\_name}=\text{“Physics”}}(\mathrm{instructor})
+\bowtie_{\mathrm{instructor.ID}=\mathrm{teaches.ID}}\mathrm{teaches}
+\right).
+$$
+
+先筛选物理系教师再连接，与先连接再筛选结果相同，但通常能减少中间结果。这也是查询优化的常用思路。
+
+找最高工资：先通过自连接找出“还存在更高工资”的工资值，再从全部工资中减去它们。
+
+$$
+\Pi_{\mathrm{salary}}(\mathrm{instructor})-
+\Pi_{\mathrm{instructor.salary}}\left(
+\sigma_{\mathrm{instructor.salary}<\mathrm{d.salary}}
+(\mathrm{instructor}\times\rho_d(\mathrm{instructor}))
+\right).
+$$
+
+删除和插入也可以用赋值表达：
+
+$$
+\text{删除：}\quad r\leftarrow r-E,\qquad
+\text{插入：}\quad r\leftarrow r\cup E.
+$$
+
+其中，删除操作中的 $E$ 是待删除元组的集合，插入操作中的 $E$ 可以是常数关系或查询结果。
+
+# SQL
+
+SQL 同时提供数据定义、查询、修改、约束、授权和事务控制。以下沿用课件的大学数据库；基础查询尽量使用通用 SQL，存储程序使用 MySQL 写法。标为“标准 SQL”的示例用于说明概念。
+
+## 示例关系
+
+```text
+department(dept_name, building, budget)
+instructor(ID, name, dept_name, salary)
+student(ID, name, dept_name, tot_cred)
+course(course_id, title, dept_name, credits)
+section(course_id, sec_id, semester, year, building, room_number, time_slot_id)
+teaches(ID, course_id, sec_id, semester, year)
+takes(ID, course_id, sec_id, semester, year, grade)
+prereq(course_id, prereq_id)
+```
+
+`section` 表示某门课在某学期的一次开班，其主码为 `(course_id, sec_id, semester, year)`；`teaches.ID` 是教师编号，`takes.ID` 是学生编号。
+
+## 数据类型与数据定义
+
+### 常用数据类型
+
+|类型|含义|
+|---|---|
+|`char(n)`|定长字符串，不足长度时填充空格|
+|`varchar(n)`|最大长度为 $n$ 的变长字符串|
+|`int`、`smallint`|整数、小整数|
+|`numeric(p,d)` / `decimal(p,d)`|共 $p$ 位数字，其中 $d$ 位为小数|
+|`real`、`double precision`、`float`|浮点数|
+|`date`|日期|
+|`time`|时间|
+|`timestamp`|日期与时间|
+|`interval`|时间间隔，具体写法随数据库而异|
+|`blob`、`clob`|二进制大对象、字符大对象|
+
+例如 `numeric(8,2)` 最多有 6 位整数、2 位小数。金额一般使用定点数。
+
+```sql
+select cast('123' as decimal(5,0)) as number_value;
+select coalesce(salary, 0) as salary from instructor;
+
+-- 标准 SQL 日期、时间字面量
+select date '2026-11-04', time '09:00:00';
+
+-- MySQL 日期运算
+select date '2026-11-04' + interval 7 day;
+```
+
+`cast(e as t)` 转换类型；`coalesce(a,b,...)` 返回第一个非空参数，参数类型应相容。
+
+### 创建表与完整性约束
+
+```sql
+create table department (
+    dept_name varchar(20) primary key,
+    building varchar(15),
+    budget numeric(12,2) check (budget >= 0)
+);
+
+create table instructor (
+    ID varchar(5) primary key,
+    name varchar(20) not null,
+    dept_name varchar(20),
+    salary numeric(8,2) default 0,
+    constraint salary_nonnegative check (salary >= 0),
+    foreign key (dept_name) references department(dept_name)
+);
+```
+
+|约束|作用|
+|---|---|
+|`not null`|不允许空值|
+|`primary key (A,B)`|组合主码，组合唯一，各列都非空|
+|`unique (A,B)`|组合值唯一；空值规则与主码不同|
+|`foreign key (...) references ...`|约束引用关系|
+|`check (P)`|检查行是否满足指定条件|
+|`default v`|插入时省略该列则使用默认值|
+
++ `unique(A,B)` 约束的是二者的**组合**，不要求每列分别唯一。
++ `check` 在条件为 `false` 时拒绝操作，结果为 `unknown` 时通常可通过；因此 `check(salary >= 0)` 仍允许空值，需要时另加 `not null`。
++ 默认值用于省略的列或显式写出的 `default`；显式插入 `null` 不等于使用默认值。
+
+```sql
+alter table instructor add email varchar(100);
+alter table instructor add constraint instructor_email_unique unique (email);
+alter table instructor drop column email;
+
+delete from instructor;  -- 删除全部行，保留表结构
+drop table instructor;   -- 删除表及数据
+
+-- MySQL：按原表定义创建空表
+create table instructor_copy like instructor;
+
+-- 按查询结果创建表并载入数据，不等于复制原表的全部约束和索引
+create table physics_instructor as
+select * from instructor where dept_name = 'Physics';
+```
+
+### 外码与级联操作
+
+```sql
+create table course (
+    course_id varchar(8) primary key,
+    title varchar(50),
+    dept_name varchar(20),
+    credits numeric(2,0) check (credits > 0),
+    foreign key (dept_name) references department(dept_name)
+        on delete set null
+        on update cascade
+);
+```
+
+|动作|删除或修改被引用元组时|
+|---|---|
+|`cascade`|级联删除引用行，或更新相应外码值|
+|`set null`|将引用行的外码设为空，要求该列允许为空|
+|`set default`|将外码设为默认值，默认值仍须满足约束；MySQL InnoDB 不支持此动作|
+|`restrict` / `no action`|存在引用时阻止操作，检查时机取决于实现|
+
+相互引用的数据可以先插入允许为空的外码，再补充更新。支持延迟约束的数据库也可将检查推迟到事务结束，例如标准 SQL 中的 `deferrable initially deferred`；MySQL 外码不能这样延迟检查。
+
+**断言**用于描述整个数据库应满足的条件，可跨表、跨行：
+
+```sql
+-- 标准 SQL，MySQL 不支持 create assertion
+create assertion budget_constraint check (
+    not exists (
+        select * from department where budget < 0
+    )
+);
+```
+
+普通 `check` 主要检查单行，复杂的跨表规则可通过触发器等方式实现。
+
+## 基本查询
+
+```sql
+select distinct name, salary / 12 as monthly_salary
+from instructor
+where dept_name = 'Comp. Sci.' and salary > 80000
+order by monthly_salary desc, name asc;
+```
+
+|子句|作用|关系代数中的对应操作|
+|---|---|---|
+|`from`|指定数据来源，多表可构成笛卡尔积|笛卡尔积、连接|
+|`where`|筛选行|选择|
+|`select`|选取列或计算表达式|投影、广义投影|
+|`distinct`|对输出的整行去重|关系的集合语义|
+|`order by`|指定结果次序|排序|
+
++ SQL 关键字不区分大小写；字符串、标识符的大小写规则取决于数据库配置。
++ 字符串使用单引号，如 `'Physics'`；`*` 表示所有列。
++ 默认保留重复行，`select all` 与省略 `all` 相同；`distinct A,B` 对组合去重。
++ `as` 为列或表起别名；多表有同名列时，用 `表名.列名` 或别名区分。
++ 没有 `order by` 就不保证输出顺序；`asc` 升序，`desc` 降序，默认升序。
+
+### 条件、字符串与排序
+
+```sql
+select * from instructor where salary between 90000 and 100000;
+select * from instructor where dept_name in ('Physics', 'Music');
+select * from instructor where dept_name <> 'History';
+
+select name from instructor where name like '%dar%';
+select title from course where title like 'Intro%';
+select title from course where title like '100!%%' escape '!';
+
+select upper(name), lower(name) from instructor;
+select concat(name, ' / ', dept_name) as label from instructor; -- MySQL
+```
+
++ `between a and b` 包含两端点；`not between` 表示不在该区间。
++ 比较符：`=`、`<>`、`<`、`<=`、`>`、`>=`；逻辑运算：`not`、`and`、`or`，优先级依次降低。
++ `like` 中，`%` 匹配任意长度字符串（包括空串），`_` 匹配一个字符；`escape` 指定转义字符。
++ `like '___'` 匹配恰好三个字符；是否区分大小写取决于排序规则。
++ 标准 SQL 用 `||` 拼接字符串；MySQL 示例使用 `concat`。
+
+### 自连接
+
+同一张表出现两次时，分别起别名。例如，找出工资比某位名为 Einstein 的教师更高的教师：
+
+```sql
+select distinct T.name
+from instructor as T, instructor as S
+where T.salary > S.salary and S.name = 'Einstein';
+```
+
+## 连接查询
+
+```sql
+-- 条件连接：指定对应列
+select I.name, T.course_id
+from instructor as I
+join teaches as T on I.ID = T.ID;
+
+-- using：指定同名连接列，结果只保留一份连接列
+select * from course join prereq using (course_id);
+
+-- 自然连接：自动使用全部同名列
+select * from course natural join prereq;
+
+-- 笛卡尔积
+select * from instructor cross join department;
+```
+
+`on` 可以写一般条件，结果保留两边的连接列；`using` 只指定同名列；`natural join` 自动使用所有同名列。因此，**同名不一定意味着应当连接**：`student natural join instructor` 会同时比较 `ID`、`name`、`dept_name`。
+
+|连接类型|保留哪些行|
+|---|---|
+|`inner join` / `join`|只保留匹配成功的行|
+|`left [outer] join`|保留左表全部行，右侧未匹配列填空|
+|`right [outer] join`|保留右表全部行，左侧未匹配列填空|
+|`full [outer] join`|保留两边全部行，未匹配侧填空；MySQL 无直接语法|
+
+### 外连接中的 on 与 where
+
+列出所有院系及其工资超过 80000 的教师，包括没有这类教师的院系：
+
+```sql
+select D.dept_name, I.name
+from department as D
+left join instructor as I
+    on D.dept_name = I.dept_name and I.salary > 80000;
+```
+
+`on` 决定哪些行匹配，外连接随后补入未匹配行；`where` 在连接完成后筛选。若将 `I.salary > 80000` 放入 `where`，补空行也会被过滤，这些院系便不再出现。
+
+查找没有教师的院系，可以检查右表主码是否为空：
+
+```sql
+select D.dept_name
+from department as D
+left join instructor as I on D.dept_name = I.dept_name
+where I.ID is null;
+```
+
+## 集合运算
+
+```sql
+select course_id from section where semester = 'Fall' and year = 2009
+union
+select course_id from section where semester = 'Spring' and year = 2010;
+```
+
+将 `union` 换成 `intersect`，表示两个学期都开课；换成 `except`，表示前一学期开课、后一学期不开课。两边要求列数相同、对应类型相容。
+
+|运算|默认行为|`all` 版本中某元组的出现次数|
+|---|---|---|
+|`union`|求并并去重|$m+n$|
+|`intersect`|求交并去重|$\min(m,n)$|
+|`except`|求差并去重|$\max(0,m-n)$|
+
+其中 $m,n$ 是该元组在两边出现的次数。具体数据库对集合运算及 `all` 版本的支持不同；`union all` 常用于直接合并结果、保留重复行。
+
+## 空值与三值逻辑
+
+```sql
+select name from instructor where salary is null;
+select name from instructor where salary is not null;
+select ID, coalesce(salary, 0) as salary from instructor;
+```
+
+涉及 `null` 的普通算术运算结果为 `null`，普通比较结果为 `unknown`，包括 `null = null`。**判断空值用 `is null`，不用 `= null`**。
+
+|$P$|`P and unknown`|`P or unknown`|`not P`|
+|---|---|---|---|
+|`true`|`unknown`|`true`|`false`|
+|`false`|`false`|`unknown`|`true`|
+|`unknown`|`unknown`|`unknown`|`unknown`|
+
+`where` 和 `having` 只保留条件为 `true` 的行或分组。`distinct`、分组和集合去重会将相应位置上的多个 `null` 归为同类，这与 `null = null` 的比较不同。
+
+## 聚集与分组
+
+|函数|含义|空值处理|
+|---|---|---|
+|`count(*)`|行数|包括含空值的行|
+|`count(A)`|列 A 的非空值个数|忽略空值|
+|`count(distinct A)`|列 A 不同非空值的个数|去重并忽略空值|
+|`sum(A)`、`avg(A)`|总和、平均值|忽略空值|
+|`min(A)`、`max(A)`|最小值、最大值|忽略空值|
+
+没有可参与计算的值时，`count` 返回 0，其余上述聚集函数返回 `null`。`avg(A)` 的分母是 A 的非空值个数。
+
+```sql
+select dept_name, count(*) as num_instructors, avg(salary) as avg_salary
+from instructor
+where salary > 30000
+group by dept_name
+having avg(salary) > 42000
+order by avg_salary desc;
+```
+
++ `where` 筛选分组前的行，`having` 筛选分组后的组。
++ 按课件中的写法，`select`、`having` 中未被聚集的列必须出现在 `group by` 中。
++ `group by` 将分组列取值相同的行放在一起；它不保证结果排序。
++ 无 `group by` 的聚集查询将筛选结果视为一组；有 `group by` 时，没有输入行就没有分组。
+
+逻辑上按以下顺序理解，实际执行计划由优化器决定：
+
+```text
+from / join → where → group by → having → select → distinct → order by
+```
+
+统计所有院系的教师人数，包括 0 人的院系：
+
+```sql
+select D.dept_name, count(I.ID) as num_instructors
+from department as D
+left join instructor as I on D.dept_name = I.dept_name
+group by D.dept_name;
+```
+
+这里用 `count(I.ID)`；若用 `count(*)`，未匹配院系的补空行也会被计数。
+
+## 嵌套子查询
+
+### in 与 not in
+
+查询同时在两个学期开设的课程：
+
+```sql
+select distinct course_id
+from section
+where semester = 'Fall' and year = 2009
+  and course_id in (
+      select course_id from section
+      where semester = 'Spring' and year = 2010
+  );
+```
+
+`in` 判断是否属于子查询结果，`not in` 判断是否不属于。多列也可以整体判断，例如：
+
+```sql
+select count(distinct ID)
+from takes
+where (course_id, sec_id, semester, year) in (
+    select course_id, sec_id, semester, year
+    from teaches
+    where ID = '10101'
+);
+```
+
+**`not in` 要留意空值**：若子查询含 `null`，未匹配的比较也可能得到 `unknown`。查询“没有对应记录”时通常用 `not exists` 更直接。
+
+### exists 与相关子查询
+
+`exists` 只检查子查询是否至少有一行，不关心它输出哪些列。相关子查询引用外层查询的列，内层同名别名会遮蔽外层。
+
+```sql
+-- 找出没有授课记录的教师
+select I.ID, I.name
+from instructor as I
+where not exists (
+    select 1 from teaches as T where T.ID = I.ID
+);
+```
+
+关系代数中的除运算，也可以写成双重 `not exists`：**不存在一门指定课程，是该学生没有选过的**。
+
+```sql
+-- 找出选修了全部计算机系课程的学生
+select S.ID, S.name
+from student as S
+where not exists (
+    select 1 from course as C
+    where C.dept_name = 'Comp. Sci.'
+      and not exists (
+          select 1 from takes as T
+          where T.ID = S.ID and T.course_id = C.course_id
+      )
+);
+```
+
+若指定课程集合为空，所有学生都满足该条件。
+
+### from 子查询与标量子查询
+
+`from` 中的子查询作为一张临时的结果表使用，并为其起别名：
+
+```sql
+select A.dept_name, A.avg_salary
+from (
+    select dept_name, avg(salary) as avg_salary
+    from instructor
+    group by dept_name
+) as A
+where A.avg_salary > 42000;
+```
+
+标量子查询用于需要单个值的位置：必须只有一列，返回一行时取该值，零行时为 `null`，多行时报错。
+
+```sql
+-- 工资超过全校平均工资的教师
+select name
+from instructor
+where salary > (select avg(salary) from instructor);
+
+-- 每个院系的教师数
+select D.dept_name,
+       (select count(*) from instructor as I
+        where I.dept_name = D.dept_name) as num_instructors
+from department as D;
+```
+
+`lateral` 允许 `from` 中的派生表引用其左侧数据源：
+
+```sql
+select I.name, I.salary, A.avg_salary
+from instructor as I,
+lateral (
+    select avg(J.salary) as avg_salary
+    from instructor as J
+    where J.dept_name = I.dept_name
+) as A;
+```
+
+不需要读取表时可以省略 `from`。注意整数除法的差异，可乘 `1.0` 转为小数计算；`nullif(x,0)` 在 x 为 0 时返回空值，避免除零：
+
+```sql
+select 1.0 * (select count(*) from teaches)
+       / nullif((select count(*) from instructor), 0) as sections_per_teacher;
+```
+
+## 数据的插入、删除与更新
+
+```sql
+-- 指定列名插入，省略的列使用默认值或空值
+insert into student (ID, name, dept_name, tot_cred)
+values ('3003', 'Green', 'Finance', 0);
+
+-- 插入查询结果，列数与类型应对应
+insert into student (ID, name, dept_name, tot_cred)
+select ID, name, dept_name, 0 from instructor;
+
+delete from instructor where dept_name = 'Finance';
+
+update instructor
+set salary = salary * 1.05
+where dept_name = 'Physics';
+```
+
+`delete`、`update` 省略 `where` 会作用于整张表。单条语句按其更新语义确定待处理的数据，不是每改一行就重新解释整条查询。
+
+### case 条件更新
+
+工资超过 100000 的涨 3%，其余涨 5%：
+
+```sql
+update instructor
+set salary = case
+    when salary > 100000 then salary * 1.03
+    else salary * 1.05
+end;
+```
+
+`case when P then x ... else y end` 从上到下选取第一个满足的条件；省略 `else` 且无条件匹配时返回空值。也可写 `case A when v1 then x ... end`，按 A 的取值选择。
+
+将上述更新拆成两条时，要防止第一条修改工资后，某行又满足第二条条件而重复涨薪。
+
+### 子查询更新
+
+重新计算学生已获得的学分，没有通过任何课程时记为 0：
+
+```sql
+update student as S
+set tot_cred = (
+    select coalesce(sum(C.credits), 0)
+    from takes as T
+    join course as C on T.course_id = C.course_id
+    where T.ID = S.ID and T.grade <> 'F' and T.grade is not null
+);
+```
+
+## 视图
+
+**视图是由查询定义的虚拟关系**。普通视图主要保存定义，查询时从基础表取得结果；它可以简化查询，也可以只向用户暴露部分数据。
+
+```sql
+create view faculty as
+select ID, name, dept_name from instructor;
+
+select * from faculty where dept_name = 'Physics';
+
+create view history_instructors as
+select * from instructor where dept_name = 'History'
+with check option;
+
+drop view faculty;
+```
+
++ 视图可以依赖其他视图；非递归视图可通过反复替换定义进行展开。
++ 视图更新最终落实到基础表；连接、聚集、去重等视图通常存在更新歧义。
++ 课件中可更新视图的典型条件：单表、只选择原始列、无 `distinct`、无聚集和分组；插入时，遗漏列还须有默认值或允许为空。
++ `with check option` 检查通过视图插入或更新后的行是否仍满足视图条件。例如，上述视图拒绝插入 Biology 系教师。
++ 没有 `check option` 时，插入可能成功，但新行因不满足视图条件而不出现在该视图中。
+
+**物化视图**实际保存查询结果，基础表改变后需要维护或刷新；刷新可及时、延迟、周期性进行，也可只计算变化部分。它以存储和维护成本换取查询速度，语法由具体数据库提供。
+
+## 事务
+
+事务是完成一个逻辑功能的一组操作，例如一次转账中的“扣款”和“入账”。
+
+|ACID|含义|
+|---|---|
+|原子性（Atomicity）|要么全部完成，要么全部不发生|
+|一致性（Consistency）|事务使数据库从一个满足约束的状态转到另一个满足约束的状态|
+|隔离性（Isolation）|控制并发事务的相互影响，具体程度由隔离级别决定|
+|持久性（Durability）|提交后的结果在系统故障后仍应保留|
+
+```sql
+-- MySQL，使用支持事务的表（如 InnoDB）
+start transaction;
+update account set balance = balance - 100 where account_id = 'A';
+update account set balance = balance + 100 where account_id = 'B';
+commit;
+
+-- 若决定放弃当前事务，则执行 rollback，而非 commit
+```
+
+`commit` 提交当前事务，`rollback` 撤销当前事务尚未提交的修改。自动提交开启时，普通独立 SQL 语句通常各自形成一个事务；显式开启事务可把多条语句作为整体提交。
+
+MySQL 存储程序中的 `begin ... end` 只是语句块，不等于开启事务；许多 DDL 还会隐式提交。
+
+## 模式与授权
+
+标准 SQL 使用“目录 → 模式 → 表／视图”的命名层次，例如 `catalog.schema.course`。MySQL 中 `schema` 与 `database` 同义，常用 `数据库名.表名`。
+
+```sql
+-- MySQL 常用数据库操作
+show databases;
+create database school;
+use school;
+show tables;
+select database();
+```
+
+### 权限与角色
+
+|权限|允许的操作|
+|---|---|
+|`select`|查询表或视图|
+|`insert`|插入数据，可限定列|
+|`update`|更新数据，可限定列|
+|`delete`|删除数据|
+|`references`|建立外码引用|
+|`execute`|执行存储过程或函数|
+
+```sql
+-- 标准 SQL 授权形式，用户／角色需预先存在
+grant select on instructor to U1;
+grant update (salary) on instructor to U1;
+grant select on department to U1 with grant option;
+
+create role teaching_assistant;
+grant select on takes to teaching_assistant;
+grant teaching_assistant to U1;
+
+revoke select on instructor from U1;
+```
+
++ `with grant option` 允许接受者将相应权限转授他人。
++ 角色是一组权限的集合，可授予用户，也可授予其他角色。
++ 标准 SQL 中 `public` 表示所有用户；MySQL 没有这一特殊授权对象。
++ 授权给视图不等于授权给基础表，可通过视图限制可见列和行。
++ `references` 权限控制谁可以建立外码引用，避免任意用户给被引用表增加约束负担。
+
+标准 SQL 的收回选项：`cascade` 连带收回依赖该授权的权限，`restrict` 在存在依赖时拒绝收回；还可以用 `revoke grant option for ...` 只收回转授权。MySQL 的语法和级联规则不同。
+
+授权图中，只要用户仍有一条有效授权路径，就可能继续持有权限；收回某位授权者的授权，不一定清除其他来源的权限。
+
+## 报表汇总：rollup 与 cube
+
+普通 `group by` 只产生指定粒度的分组，`rollup` 沿分组列的顺序逐级汇总，`cube` 则枚举所有维度组合。
+
+|写法|产生的分组集合|
+|---|---|
+|`group by A,B,C`|`(A,B,C)`|
+|`group by rollup(A,B,C)`|`(A,B,C)`、`(A,B)`、`(A)`、`()`|
+|`group by cube(A,B,C)`|`(A,B,C)`、`(A,B)`、`(A,C)`、`(B,C)`、`(A)`、`(B)`、`(C)`、`()`|
+
+`()` 表示全表总计。$n$ 个维度的 `rollup` 有 $n+1$ 个分组集合，`cube` 有 $2^n$ 个。
+
+```sql
+-- MySQL：每个院系、每档工资的人数，附各系小计和全校总计
+select dept_name, salary, count(*) as num_instructors,
+       grouping(dept_name) as dept_total,
+       grouping(salary) as salary_total
+from instructor
+group by dept_name, salary with rollup;
+```
+
+汇总行以 `null` 标记被汇总掉的维度。`grouping(A)=1` 表示该空值由汇总产生，`0` 表示原始分组值，可用来区分数据本来就为空的情况。现代 MySQL 可将 `rollup` 与 `order by` 一起使用，详见 [MySQL 汇总查询说明](https://dev.mysql.com/doc/refman/8.4/en/group-by-modifiers.html)。
+
+`rollup(A,B)` 可分解为三次分组并用 `union all` 合并：
+
+```sql
+select dept_name, salary, count(*) as n
+from instructor group by dept_name, salary
+union all
+select dept_name, null, count(*)
+from instructor group by dept_name
+union all
+select null, null, count(*) from instructor;
+```
+
+`cube(A,B)` 还需补上只按 B 分组的结果。上面的 `group by rollup(...)`、`cube(...)` 是标准写法；MySQL 使用 `with rollup`，不直接支持 `cube`。
+
+## 存储过程与函数
+
+存储过程和存储函数是保存在数据库中的程序，可复用 SQL、减少客户端与服务器之间的往返，也方便统一授权；代价是调试、维护和跨数据库移植较麻烦。
+
+|对比|存储过程（Procedure）|存储函数（Function）|
+|---|---|---|
+|调用|`call p(...)`|作为表达式使用，如 `select f(...)`|
+|参数|`in`、`out`、`inout`|MySQL 中只有输入参数|
+|返回数据|输出参数，也可返回结果集|`returns` 指定类型，`return` 返回一个值|
+|事务控制|可在允许的调用环境中控制事务|MySQL 函数不能提交、回滚事务|
+
+### 定义与调用
+
+```sql
+delimiter $$
+
+create procedure dept_count(in p_dept varchar(20), out p_num int)
+reads sql data
+begin
+    select count(*) into p_num
+    from instructor where dept_name = p_dept;
+end$$
+
+create function annual_to_monthly(p_salary decimal(8,2))
+returns decimal(10,2)
+deterministic
+no sql
+begin
+    return p_salary / 12;
+end$$
+
+delimiter ;
+
+call dept_count('Physics', @num);
+select @num;
+select annual_to_monthly(120000);
+```
+
++ `delimiter` 是 MySQL 客户端命令，用于暂时改变语句分隔符，使程序体内可以使用分号。
++ 无参数也要保留 `()`；`returns` 声明返回类型，`return` 返回实际值。
++ `in` 传入值，`out` 传出值，`inout` 既传入又传出；输出参数调用时需传变量。
++ `reads sql data` 表示读取数据，`modifies sql data` 表示可能修改数据，`no sql` 表示不含 SQL 数据访问，`contains sql` 是默认特征。
++ `deterministic` 声明相同输入产生相同结果；`sql security definer / invoker` 指定按定义者或调用者权限执行。
++ 子程序属于指定数据库，可用 `数据库名.子程序名` 调用。
+
+### 变量与赋值
+
+```sql
+-- 以下为 begin ... end 中的程序片段
+declare v_num int default 0;
+declare v_name varchar(20);
+set v_num = v_num + 1;
+select name into v_name from instructor where ID = '10101';
+```
+
+局部变量用 `declare` 声明，位于语句块开头；未指定默认值时初始为 `null`。`@num` 这样的变量是 MySQL 会话变量，与局部变量不同。
+
+`select ... into` 将一行结果写入变量，列数与变量数应对应；多行时报错，零行触发 `not found`。变量名尽量使用 `v_`、参数名使用 `p_` 等前缀，避免与列名冲突。
+
+### 分支与循环
+
+以下均为 MySQL 存储程序中的语句片段：
+
+```sql
+if v_num > 10 then
+    set v_num = 10;
+elseif v_num < 0 then
+    set v_num = 0;
+else
+    set v_num = v_num + 1;
+end if;
+
+case v_num
+    when 0 then set v_name = 'zero';
+    when 1 then set v_name = 'one';
+    else set v_name = 'other';
+end case;
+
+while v_num < 10 do
+    set v_num = v_num + 1;
+end while;
+
+repeat
+    set v_num = v_num - 1;
+until v_num = 0
+end repeat;
+
+read_loop: loop
+    set v_num = v_num + 1;
+    if v_num >= 10 then leave read_loop; end if;
+    if v_num = 5 then iterate read_loop; end if;
+    -- 其他处理
+end loop read_loop;
+```
+
++ `while` 先判断、再执行；`repeat` 先执行、再检查结束条件，至少执行一次。
++ `loop` 本身没有结束条件，通常配合标签和 `leave`。
++ `leave` 类似 `break`，也可退出带标签的语句块；`iterate` 类似 `continue`，用于循环。
++ 程序中的 `case ... end case` 是控制流语句；查询中的 `case ... end` 是返回值的表达式。
+
+### 条件与错误处理
+
+```sql
+-- 位于 begin ... end 的声明区
+declare duplicate_key condition for 1062;
+declare continue handler for duplicate_key set @duplicate_seen = 1;
+```
+
+|写法|含义|
+|---|---|
+|`continue handler`|处理后继续执行|
+|`exit handler`|处理后退出声明该处理程序的语句块|
+|`sqlstate '23000'`|按 SQLSTATE 类别捕获完整性约束错误|
+|`1062`|按 MySQL 错误号捕获重复键错误|
+|`not found`|无数据，如游标取完、`select into` 未找到行|
+|`sqlwarning`|SQLSTATE 以 `01` 开头的警告|
+|`sqlexception`|SQLSTATE 不以 `00`、`01`、`02` 开头的异常|
+
+`exit` 不等于自动回滚；需要回滚事务时，应在处理程序中明确执行。
+
+### 查看、修改与删除
+
+```sql
+show create procedure dept_count;
+show procedure status like 'dept_count';
+show create function annual_to_monthly;
+
+select routine_name, routine_type
+from information_schema.routines
+where routine_schema = database();
+
+alter procedure dept_count comment '统计院系教师数';
+drop procedure if exists dept_count;
+drop function if exists annual_to_monthly;
+```
+
+`alter procedure/function` 用于修改特征；修改参数或程序体通常需删除后重建。相关权限：`create routine` 创建、`alter routine` 修改或删除、`execute` 执行。
+
+## 游标
+
+游标用于逐行读取查询结果。基本步骤：**声明 → 打开 → 取行 → 关闭**；声明顺序为**变量／条件 → 游标 → 处理程序**。
+
+下面用游标累计已记录的教师工资：
+
+```sql
+delimiter $$
+create procedure salary_sum(out p_total decimal(14,2))
+begin
+    declare v_done boolean default false;
+    declare v_salary decimal(8,2);
+    declare cur cursor for select salary from instructor;
+    declare continue handler for not found set v_done = true;
+
+    set p_total = 0;
+    open cur;
+    read_loop: loop
+        fetch cur into v_salary;
+        if v_done then
+            leave read_loop;
+        end if;
+        set p_total = p_total + coalesce(v_salary, 0);
+    end loop;
+    close cur;
+end$$
+delimiter ;
+
+call salary_sum(@total);
+select @total;
+```
+
+`fetch` 后先判断是否取完，再处理该行，避免重复处理上一行的数据。能直接写成集合查询时，通常无需游标，例如这里直接使用 `select coalesce(sum(salary),0)` 即可。
+
+MySQL 游标**只读、只能向前逐行读取**；其敏感性为 `asensitive`，服务器可能复制结果，也可能不复制，不能假定它会实时反映其他事务的修改。参见 [MySQL 游标说明](https://dev.mysql.com/doc/refman/8.4/en/cursors.html)。
+
+## 触发器
+
+触发器在表发生指定事件时自动执行，常用于检查数据、记录审计信息和维护派生数据。
+
+```sql
+create trigger trigger_name
+before insert on table_name
+for each row
+    -- 一条语句，或 begin ... end 语句块
+;
+```
+
+上面是结构示意：触发时机可用 `before`、`after`，事件可用 `insert`、`update`、`delete`；MySQL 的 `for each row` 表示每个受影响的行触发一次。
+
+|事件|`old`|`new`|
+|---|---|---|
+|`insert`|不可用|插入的新行|
+|`delete`|删除前的旧行|不可用|
+|`update`|修改前的旧行|修改后的新行|
+
+`old` 只读；`before insert/update` 可用 `set new.列名 = ...` 修改待写入值，`after` 中不能这样修改。
+
+### 数据检查
+
+创建触发器，拒绝负工资：
+
+```sql
+delimiter $$
+create trigger instructor_salary_check
+before insert on instructor
+for each row
+begin
+    if new.salary < 0 then
+        signal sqlstate '45000'
+            set message_text = 'salary must be nonnegative';
+    end if;
+end$$
+delimiter ;
+```
+
+`signal` 主动报告错误；如果还要检查更新，应再定义 `before update` 触发器。此例也可以直接用 `check` 约束，触发器更适合复杂规则。
+
+### 审计与派生数据
+
+```sql
+create table salary_audit (
+    instructor_id varchar(5),
+    old_salary decimal(8,2),
+    new_salary decimal(8,2),
+    changed_at timestamp default current_timestamp
+);
+
+delimiter $$
+create trigger instructor_salary_audit
+after update on instructor
+for each row
+begin
+    -- <=> 是 MySQL 的空值安全相等比较，两个 null 也视为相等
+    if not (old.salary <=> new.salary) then
+        insert into salary_audit (instructor_id, old_salary, new_salary)
+        values (new.ID, old.salary, new.salary);
+    end if;
+end$$
+delimiter ;
+```
+
+课件中“选课后剩余名额减一、退课后加一”也是维护派生数据：插入时根据 `new.course_no` 找课程，删除时根据 `old.course_no` 找课程。修改选课课程时也要维护新旧两门课，才能保持一致。
+
+### 管理与限制
+
+```sql
+show triggers;
+show create trigger instructor_salary_check;
+select trigger_name, event_manipulation, action_timing
+from information_schema.triggers
+where trigger_schema = database();
+drop trigger if exists instructor_salary_check;
+```
+
++ 触发器不能向客户端返回结果集，也不能自行开始或结束事务。
++ 在触发器中不能再次对触发它的表执行 `insert/update/delete`；修改待写入行使用 `set new.列名`。
++ 对事务表，触发器失败会使触发它的语句失败并回滚该语句的修改；这不等于自动回滚事务中此前的所有语句。
++ 删除表时，其触发器也被删除；修改触发器通常需先删除再重建。
++ 现代 MySQL 允许同一表存在多个同事件、同时机的触发器，可用 `follows`、`precedes` 指定顺序。参见 [MySQL 触发器说明](https://dev.mysql.com/doc/refman/8.4/en/trigger-syntax.html)。
+

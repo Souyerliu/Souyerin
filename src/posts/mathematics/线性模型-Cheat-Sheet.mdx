@@ -121,7 +121,7 @@ sticky: true
 4. 随机向量投影（逐渐接入线性回归）  
     对于任意随机向量 $\boldsymbol{X}_{m \times 1}$ 和 $\boldsymbol{Y}_{n \times 1}$，定义最小化问题
     $$
-    \min_{\boldsymbol{Z}=\boldsymbol{M}\boldsymbol{X}+\boldsymbol{b}: \boldsymbol{M} \in \mathbb{R}^{n \times m}, \boldsymbol{b} \in \mathbb{R}^n} \boldsymbol{E} \left[ (\boldsymbol{Y} - \boldsymbol{Z})(\boldsymbol{Y} - \boldsymbol{Z})^\top \right]
+    \min_{\boldsymbol{Z}=\boldsymbol{M}\boldsymbol{X}+\boldsymbol{b}: \boldsymbol{M} \in \mathbb{R}^{n \times m}, \boldsymbol{b} \in \mathbb{R}^n} \mathbb{E} \left[ (\boldsymbol{Y} - \boldsymbol{Z})(\boldsymbol{Y} - \boldsymbol{Z})^\top \right]
     $$
     在Löwner序下的解$\hat{\boldsymbol{Y}}$为$\boldsymbol{Y}$在$\boldsymbol{X}$上的线性投影，记作$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$。
     + 实际上，这里的线性投影可以表示为
@@ -307,8 +307,8 @@ $$
     $$
     这一结果小于等于$\displaystyle\min_{b_0} \mathbb{E}(Y - b_0)^2 = \mathbb{E}(Y - \mathbb{E}Y)^2 = \sigma^2$，当且仅当$\mathrm{Cov}(\boldsymbol{x},Y)=0$（即因变量与自变量不相关）时取等号。【这个结论也可以推广到任意回归模型】
 ## 确定性变量的线性近似
-前面我们基本都是在$\mathbf{x}$是随机向量的前提下进行讨论。那么当$\mathbf{x}$是确定性向量时，线性回归的预测又有什么作用呢？实际上，这种情况下线性回归的作用就是用一个线性函数去尽可能“逼近”真实的、未知的非线性函数。【其实就是线性拟合】
-+ 具体而言，我们希望用线性函数$\theta_0+\boldsymbol{\theta}^\top\mathbf{x}_{i}$（$\boldsymbol{\theta}=(\theta_1,\cdots,\theta_{p-1})^\top$，$\mathbf{x}_i,\ i=1,\cdots,n$表示$n$个因变量观测值）预测相应变量$Y_i$（$\mathbb{E}Y_i=f(\mathbf{x}_i)$），即寻找最优参数
+前面我们基本都是在$\boldsymbol{x}$是随机向量的前提下进行讨论。那么当$\boldsymbol{x}$是确定性向量时，线性回归的预测又有什么作用呢？实际上，这种情况下线性回归的作用就是用一个线性函数去尽可能“逼近”真实的、未知的非线性函数。【其实就是线性拟合】
++ 具体而言，我们希望用线性函数$\theta_0+\boldsymbol{\theta}^\top\boldsymbol{x}_{i}$（$\boldsymbol{\theta}=(\theta_1,\cdots,\theta_{p-1})^\top$，$\boldsymbol{x}_i,\ i=1,\cdots,n$表示$n$个因变量观测值）预测相应变量$Y_i$（$\mathbb{E}Y_i=f(\boldsymbol{x}_i)$），即寻找最优参数
     $$
     \boldsymbol{\beta} = \argmin_{\boldsymbol{\theta}}\sum_{i=1}^{n} (f(\boldsymbol{x}_i) - \theta_0 - \boldsymbol{x}_i^\top \boldsymbol{\theta})^2
     $$
@@ -386,4 +386,105 @@ $$
 $$
 \boldsymbol{Y}_{n \times 1} = \boldsymbol{X}_{n \times p}\boldsymbol{\beta}_{p \times 1} + \boldsymbol{\epsilon}_{n \times 1}
 $$
-通常矩阵$\boldsymbol{X}$的第一列元素都是$1$，$\boldsymbol{X}$也被称为设计矩阵；$\boldsymbol{\epsilon}\sim(\mathbf{0},\Sigma)$，其中$\Sigma$通常取$\sigma^2\mathbf{I}_n$。
+通常矩阵$\boldsymbol{X}$的第一列元素都是$1$，$\boldsymbol{X}$也被称为设计矩阵；$\boldsymbol{\epsilon}\sim(\boldsymbol{0},\Sigma)$，其中$\Sigma$通常取$\sigma^2\boldsymbol{I}_n$。
+# 参数估计与分布理论
+## 最小二乘估计
+考虑下述线性模型：$Y=\boldsymbol{x}^\top\boldsymbol{\beta}+\epsilon$，其中$\boldsymbol{x}$为确定性变量（可能包含截距项$1$），而$Y$的分布由$\boldsymbol{x}$，不确定系数$\boldsymbol{\beta}$和随机误差$\epsilon\sim(\boldsymbol{0},\sigma^2\mathbf{I}_n)$确定（不一定正态），即
+$$
+Y\sim (\boldsymbol{x}^\top\boldsymbol{\beta},\sigma^2\mathbf{I}_n)
+$$
+下面我们就需要对$\boldsymbol{\beta}$进行估计。
++ 对于给定$\boldsymbol{x}$，定义函数
+    $$
+    \begin{aligned}
+    g(\boldsymbol{t}) = \mathbb{E}(Y - \boldsymbol{x}^\top \boldsymbol{t})^2 &= \text{Var}(\epsilon) + (\mathbb{E}Y - \boldsymbol{x}^\top \boldsymbol{t})^2 \\
+    &= \sigma^2 + (\boldsymbol{t} - \boldsymbol{\beta})^\top \boldsymbol{x}\boldsymbol{x}^\top (\boldsymbol{t} - \boldsymbol{\beta}), \quad t \in \mathbb{R}^p.
+    \end{aligned}
+    $$
+    这实际上可看作一种理论均方误差（或者机器学习中的期望风险）。可以证明：$g(\boldsymbol{t})\geq g(\boldsymbol{\beta})$。
+    + 然而，如果我们直接取$\boldsymbol{t}^*=\displaystyle\argmin_{\boldsymbol{t}} g(\boldsymbol{t})$作为$\boldsymbol{\beta}$的估计，仍然会存在问题。实际上，$\boldsymbol{t}^*$只需满足$\boldsymbol{x}^\top(\boldsymbol{t}^*-\boldsymbol{\beta})=0$即可（解得$\boldsymbol{t}^*=\boldsymbol{\beta}+\left(\boldsymbol{I}-\dfrac{1}{\boldsymbol{x}^\top\boldsymbol{x}}\boldsymbol{x}\boldsymbol{x}^\top\right)\boldsymbol{z},\ \boldsymbol{z}\in\R^{p\times 1}$）。
++ 在此基础上，我们进一步考虑已知$n$个观测值$(\boldsymbol{x}_i,Y_i)$的情形。对此，可以定义理论误差函数
+    $$
+    \begin{aligned}
+    g_n(\boldsymbol{t}) &= \sum_{i=1}^n \mathbb{E}(Y_i - \boldsymbol{x}_i^\top\boldsymbol{t})^2 \\
+    &= \sum_{i=1}^n \text{Var}(\epsilon_i) + \sum_{i=1}^n (\mathbb{E}Y_i - \boldsymbol{x}_i^\top\boldsymbol{t})^2 \\
+    &= n\sigma^2 + (\boldsymbol{t} - \boldsymbol{\beta})^\top \sum_{i=1}^n \boldsymbol{x}_i\boldsymbol{x}_i^\top(\boldsymbol{t} - \boldsymbol{\beta}) \\
+    &= n\sigma^2 + (\boldsymbol{t} - \boldsymbol{\beta})^\top\boldsymbol{X}^\top\boldsymbol{X}(\boldsymbol{t} - \boldsymbol{\beta}).
+    \end{aligned}
+    $$
+    其中$\boldsymbol{X}=(\boldsymbol{x}_1,\cdots,\boldsymbol{x}_n)^\top$。可以证明，当$\boldsymbol{X}$为列满秩矩阵，那么$\boldsymbol{\beta}$就是$g_n(\boldsymbol{t})$的唯一最小值点。
++ 然而，由于参数$\boldsymbol{\beta}$与$\sigma^2$都未知，我们无法直接计算$g_n(\boldsymbol{t})$的最小值。对此，我们考虑用下述经验误差函数代替：
+    $$
+    \frac{1}{n}\hat{g}_n(\boldsymbol{t}) = \frac{1}{n}\sum_{i=1}^{n}(Y_i - \boldsymbol{x}_i^\top \boldsymbol{t})^2 = \frac{1}{n}(\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t})^\top (\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t}) = \frac{1}{n}\|\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t}\|^2,
+    $$
+    这本质上是用样本均值估计期望。实际上，$\dfrac{1}{n}\hat{g}_n(\boldsymbol{t})$就是$\dfrac{1}{n}g_n(\boldsymbol{t})$的一个相合估计。
++ 由此我们就能得到$\boldsymbol{\beta}$的最小二乘估计：
+    $$
+    \hat{\boldsymbol{\beta}}_{\text{LS}} =\argmin_{\boldsymbol{t}} \hat{g}_n(\boldsymbol{t}) =\argmin_{\boldsymbol{t}} (\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t})^\top(\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t})
+    $$
+    而$\hat{g}_n(\boldsymbol{t})$也被称为最小二乘准则。
+    > 需要注意的是，最小二乘估计只是一种基于观测数据的估计（拟合）方法，不能将其作为数据分析的最终目的。在现实中往往需要加上模型的先验知识或经验进一步处理。
++ 下面我们进一步求解$\hat{\boldsymbol{\beta}}_{\text{LS}}$：
+    $$
+    \begin{aligned}
+    \hat{g}(\boldsymbol{t}) &= (\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t})^\top (\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{t}) = \boldsymbol{Y}^\top \boldsymbol{Y} - 2\boldsymbol{Y}^\top \boldsymbol{X}\boldsymbol{t} + \boldsymbol{t}^\top \boldsymbol{X}^\top \boldsymbol{X}\boldsymbol{t} \\[10pt]
+    \boldsymbol{0}&=\frac{\partial \hat{g}(\boldsymbol{t})}{\partial \boldsymbol{t}} = 2\boldsymbol{X}^\top \boldsymbol{X}\boldsymbol{t} - 2\boldsymbol{X}^\top \boldsymbol{Y}\Longrightarrow\boldsymbol{X}^\top \boldsymbol{X}\boldsymbol{t} = \boldsymbol{X}^\top \boldsymbol{Y}.
+    \end{aligned}
+    $$    
+    最后得到的方程$\boldsymbol{X}^\top\boldsymbol{X}\hat{\boldsymbol{\beta}}_{\text{LS}} = \boldsymbol{X}^\top \boldsymbol{Y}$称作线性模型最小二乘估计的正规方程。
+    + 如果$\boldsymbol{X}$列满秩（$\boldsymbol{X}^\top\boldsymbol{X}$可逆），那么可直接得到$\hat{\boldsymbol{\beta}}_{\text{LS}}=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{Y}$。
+    + 我们也可以从几何角度理解最小二乘估计：实际上，$hat{\boldsymbol{\beta}}_{\text{LS}}$就是$\boldsymbol{Y}$在$\mathcal{M}(\boldsymbol{X})$空间上的正交投影，即
+        $$
+        \boldsymbol{Y} - \boldsymbol{X}\hat{\boldsymbol{\beta}}_{\mathrm{LS}} \perp \mathcal{M}(\boldsymbol{X}) \Longleftrightarrow \boldsymbol{X}^\top \left( \boldsymbol{Y} - \boldsymbol{X}\hat{\boldsymbol{\beta}}_{\mathrm{LS}} \right) = \boldsymbol{0} \Longleftrightarrow \boldsymbol{X}^\top \boldsymbol{X}\hat{\boldsymbol{\beta}}_{\mathrm{LS}} = \boldsymbol{X}^\top \boldsymbol{Y}.
+        $$
+    + 可以证明，上述正规方程一定有解（$\boldsymbol{X}^\top \boldsymbol{Y}\in\mathcal{M}(\boldsymbol{X}^\top)=\mathcal{M}(\boldsymbol{X}^\top\boldsymbol{X})$）。不过当且仅当$\boldsymbol{X}^\top\boldsymbol{X}$可逆时解唯一。对于一般情形，我们可以定义下述投影矩阵
+        $$
+        \boldsymbol{P}=\boldsymbol{X}(\boldsymbol{X}^\top\boldsymbol{X})^{-}\boldsymbol{X}^\top
+        $$
+        由前面的理论可知$\boldsymbol{P}$与广义逆的选取无关，且为对称幂等、秩与$\boldsymbol{X}$相同的矩阵。特别地，当$\boldsymbol{X}^\top\boldsymbol{X}$可逆时也称$\boldsymbol{P}$为帽子矩阵。实际上，正交投影$\boldsymbol{P}\boldsymbol{Y}\triangleq\hat{\boldsymbol{Y}}$就是最小二乘的拟合值。
+<Note title="在简单线性回归的应用">
+下面介绍最小二乘估计在简单线性回归模型中的应用：考虑
+$$
+\boldsymbol{Y}=\boldsymbol{1}_n\beta_0+\boldsymbol{X}\boldsymbol{\beta}_1+\epsilon
+$$
+其中$\boldsymbol{X}=(x_1,\cdots,x_n)^\top\in\R^{n\times 1}$。为了方便矩阵求逆，对模型进行变形：
+$$
+\boldsymbol{Y} = \mathbf{1}_n \beta_0 + \boldsymbol{P}_{\mathbf{1}_n} \boldsymbol{X} \boldsymbol{\beta}_1 + \boldsymbol{N}_{\mathbf{1}_n} \boldsymbol{X} \boldsymbol{\beta}_1 + \epsilon = \mathbf{1}_n \gamma_0 + \boldsymbol{N}_{\mathbf{1}_n} \boldsymbol{X} \boldsymbol{\beta}_1 + \epsilon
+$$
+其中$\boldsymbol{P}_{\mathbf{1}_n}$表示投影到$\mathcal{M}(\mathbf{1}_n)$的投影矩阵（$\boldsymbol{P}_{\mathbf{1}_n} \boldsymbol{X}$得到均值向量），$\boldsymbol{N}_{\mathbf{1}_n}=\mathbf{I}_n-\boldsymbol{P}_{\mathbf{1}_n}$。因此得到新截距$\gamma_0=\beta_0+\overline{X}\boldsymbol{\beta}_1$，由此得到最小二乘估计
+$$
+\begin{aligned}
+\begin{pmatrix} \hat{\gamma}_0 \\ \hat{\beta}_1 \end{pmatrix} 
+&= \left[ \begin{pmatrix} \mathbf{1}_n^\top \\ (\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{X})^\top \end{pmatrix} \begin{pmatrix} \mathbf{1}_n & \boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{X} \end{pmatrix} \right]^{-1} \begin{pmatrix} \mathbf{1}_n^\top \\ \boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n} \end{pmatrix} \boldsymbol{Y} \\
+&= \begin{pmatrix} n & 0 \\ 0 & \boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{X} \end{pmatrix}^{-1} \begin{pmatrix} \mathbf{1}_n^\top \\ \boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n} \end{pmatrix} \boldsymbol{Y} = \begin{pmatrix} \overline{Y} \\ (\boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{X})^{-1} \boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{Y} \end{pmatrix}
+\end{aligned}
+$$
+由此得到原始参数的最小二乘估计：
+$$
+\begin{aligned}
+\hat{\beta}_0 &= \overline{Y} - \overline{X}\hat{\beta}_1 \\
+\hat{\beta}_1 &= (\boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{X})^{-1} \boldsymbol{X}^\top\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{Y} = \frac{\sum_{i=1}^n (x_i - \overline{X})(Y_i - \overline{Y})}{\sum_{i=1}^n (x_i - \overline{X})^2} := \frac{S_{xy}}{S_{xx}}.
+\end{aligned}
+$$
+这个结果与最佳线性预测的结果形式基本一致。
+</Note>
+
+有时我们需要处理的样本维数很高，计算$(\boldsymbol{X}^\top\boldsymbol{X})^{-1}$比较困难；有时数据是以数据流的形式呈现（即在线学习）。对于这两种情形，可以考虑采用递归迭代的方式计算最小二乘估计。
++ 具体而言，记$A_n=(\boldsymbol{X}_n^\top\boldsymbol{X}_n)^{-1}$（$n\geq p$），则迭代公式：
+    $$
+    \begin{aligned}
+    \boldsymbol{b}_n &= \frac{A_n \boldsymbol{x}_{n+1}}{1+\boldsymbol{x}^\top_{n+1}A_n\boldsymbol{x}_{n+1}} \\
+    \hat{\boldsymbol{\beta}}_{n+1} &= \hat{\boldsymbol{\beta}}_n + (y_{n+1} - \boldsymbol{x}^\top_{n+1}\hat{\boldsymbol{\beta}}_n)\boldsymbol{b}_n \\
+    A_{n+1} &= A_n - \frac{A_n \boldsymbol{x}_{n+1}\boldsymbol{x}^\top_{n+1}A_n}{1+\boldsymbol{x}^\top_{n+1}A_n\boldsymbol{x}_{n+1}} = (\mathbf{I}_p - \boldsymbol{b}_n\boldsymbol{x}_{n+1})A_n.
+    \end{aligned}
+    $$
+    其中第三个公式来源于Sherman-Morrison公式，它是Woodbury矩阵公式的特殊情形（具体请见练习题集）。
+    + 另一方面，当$n$足够大时，$\boldsymbol{x}^\top_{n+1}A_n\boldsymbol{x}_{n+1}\to 0$，因此可以将第二个公式近似为
+        $$
+        \hat{\boldsymbol{\beta}}_{n+1} = \hat{\boldsymbol{\beta}}_n + (y_{n+1} - \boldsymbol{x}^\top_{n+1}\hat{\boldsymbol{\beta}}_n)A_n \boldsymbol{x}_{n+1}
+        $$
+        这实际上与随机梯度下降的参数更新公式形式类似：
+        $$
+        \hat{\boldsymbol{\beta}}_{n+1} = \hat{\boldsymbol{\beta}}_n + \alpha_n \boldsymbol{x}_{n+1}(y_{n+1} - \boldsymbol{x}^\top_{n+1}\hat{\boldsymbol{\beta}}_n),
+        $$
+        研究证明，当$\sum_{n=1}^\infty a_n=\infty,\sum_{n=1}^\infty a_n^2< \infty$时，上述迭代算法一定可以收敛到真实参数$\boldsymbol{\beta}$。

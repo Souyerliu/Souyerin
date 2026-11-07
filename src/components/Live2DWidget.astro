@@ -3,6 +3,7 @@ import { installCubism2ContextReset } from "../toolkit/live2d-context";
 import { installLive2DModelCompression } from "../toolkit/live2d-compression";
 import { installLive2DPointerTracking } from "../toolkit/live2d-pointer";
 import { installLive2DGazeRefresh } from "../toolkit/live2d-gaze";
+import { installLive2DPropsFilter } from "../toolkit/live2d-props";
 import { resolveLive2DWelcome } from "../toolkit/live2d-welcome";
 import { createLive2DCharacterTips } from "../toolkit/live2d-character-tips";
 
@@ -39,6 +40,7 @@ const initScript = `{
   const installModelCompression = ${installLive2DModelCompression.toString()};
   const installPointerTracking = ${installLive2DPointerTracking.toString()};
   const installGazeRefresh = ${installLive2DGazeRefresh.toString()};
+  const installPropsFilter = ${installLive2DPropsFilter.toString()};
   const resolveWelcome = ${resolveLive2DWelcome.toString()};
   const createCharacterTips = ${createLive2DCharacterTips.toString()};
   const tipsPath = config.waifuPath;
@@ -217,6 +219,7 @@ const initScript = `{
       const cubism3 = await import(state.loadedBase + "/chunk/index2.js");
       installPointerTracking(undefined, cubism3.AppDelegate.prototype);
       installGazeRefresh(cubism3.AppDelegate.prototype);
+      installPropsFilter(cubism3.AppDelegate.prototype);
       state.pointerRuntime = state.loadedBase;
     }
     // Cubism2 运行时与 waifu-tips 取自同一成功的 CDN
