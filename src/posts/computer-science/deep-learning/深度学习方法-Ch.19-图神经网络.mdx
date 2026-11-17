@@ -1,0 +1,108 @@
+---
+title: 深度学习方法 Ch.19 图神经网络
+date: 2026-11-08 09:33:50
+categories: [计算机科学,深度学习]
+tags:
+    - 深度学习
+    - 神经网络
+cover: ./dl.png
+---
+
+# 图神经网络（GNN）
+这一讲我们将介绍一种特殊的神经网络——图神经网络。前面我们接触的神经网络处理的数据都具有简单规则的结构（如CNN的像素空间数据，RNN的序列数据），而它们无法处理复杂结构的数据（如社交网络、交通路网、分子结构等）。因此，2005年Gori等人首次提出图神经网络概念，并在2009年发表论文[The graph neural network model](https://ieeexplore.ieee.org/abstract/document/4700287)正式提出GNN。
+
+在分析图神经网络的结构之前，首先需要引入一些图论的基本概念：
++ （关系）图的本质是无序的集合，通过节点和边表示（$G=(V,E)$，这里假定为无向无自环图）；每个节点的参数共享（类似CNN的卷积核与RNN的时间步）。
++ 定义度数矩阵$D=\{d_1,\cdots,d_{|v|}\}$，其中$d_i$表示第$i$个节点的度数（相连邻居节点$\mathcal{N}(v_i)$数量），$\displaystyle \text{tr}D=\sum_{v}d_v=2|E|$；邻接矩阵$A$（元素只有$0$和$1$）表示连接关系；节点之间的最短路径长度称为跳数。
++ 图的每个节点自身用特征表示，得到节点特征矩阵$X\in\R^{|V|\times d}$；图神经网络的任务就是基于这些特征预测节点的标签。
++ 图具有置换等变性与置换不变性：考虑任意置换矩阵$P\in\R^{|V|\times |V|}$，则节点输出预测$F_\theta(PX,PAP^\top)=PF_\theta(X,A)$，整图预测$g_\theta(PX,PAP^\top)=g_\theta(X,A)$。
+## GNN消息传递
+如何刻画图神经网络的前向传播？GNN的前向传播（也称为消息传递）主要分为三步（初始化$\boldsymbol{h}_v^{(0)}=\boldsymbol{x}_v$）：
+1. 收集：获取邻近节点信息（特征）$\boldsymbol{m}_{vu}^{(t)} = M_{\text{msg}}^{(t)}\left(\boldsymbol{x}_v^{(t)}, \boldsymbol{x}_u^{(t)}, \boldsymbol{e}_{vu}\right)$ 【$\boldsymbol{x}_v$为节点$v$的特征，$\boldsymbol{e}_{vu}$为边的输入特征】
+2. 聚合：将收集到的信息压缩为摘要 $\boldsymbol{m}_v^{(t)} = \text{AGG}^{(t)}\left\{\left\{\boldsymbol{m}_{vu}^{(t)} : u \in \mathcal{N}(v)\right\}\right\}$【保留重复特征】
+    + 聚合函数主要包括求和/均值/逐维最大值，它们的信息保留能力不尽相同。
+3. 更新：与自身已有信息结合得到新特征表示 $\boldsymbol{h}_v^{(t+1)} = \text{UPDATE}\left(\boldsymbol{h}_v^{(t)}, \boldsymbol{m}_v^{(t)}\right)$
+
+> 不过实际上，早期的GNN的迭代公式更接近RNN，可以概括为$\displaystyle\boldsymbol{h}_v^{(t)}=f_w\left(\boldsymbol{x}_v,\sum_{u\in\mathcal{N}(v)}\boldsymbol{h}_v^{(t-1)}\right)$，重复迭代直到$\boldsymbol{h}_v^{(t)}$收敛。上述框架是在2017年由Google团队总结归纳出的，称作消息传递神经网络，即MPNN。
+## 图卷积网络（GCN）
+早期的GNN计算效率低，且对超参数和网络结构极其敏感，因此并没有引起广泛关注。直到2017年Thomas N. Kipf和Max Welling提出图卷积网络才促成了GNN的爆发式发展（大概2019年开始）。下面我们就来简单了解其算法（原始论文里就较多复杂数学推导，这里就不详细展开了，感兴趣的可以看看这篇[知乎文章](https://zhuanlan.zhihu.com/p/54505069)）：
++ 首先，为了保留每个节点原始特征，GCN对图中所有节点“强行”引入了自环。此时记邻接矩阵$\tilde{A}=A+I$，度数矩阵$\tilde{D}=\text{diag}(\tilde{A}\boldsymbol{1}_n)=A+I$。
++ 然后，再考虑计算聚合函数时，考虑两种方案：
+    1. 行归一化：$R=\tilde{D}^{-1}A\Longrightarrow (RX)_v=\displaystyle\frac{1}{\tilde{d}_v}\sum_{u\in\mathcal{N}(v)\cup\{v\}}\boldsymbol{x}_u$
+    2. 对称归一化：$S=\tilde{D}^{-1/2}A\tilde{D}^{-1/2}\Longrightarrow (SX)_v = \displaystyle\sum_{u \in \mathcal{N}(v) \cup \{v\}} \frac{\boldsymbol{x}_u}{\sqrt{\tilde{d}_v \tilde{d}_u}}$
+        + 相比行归一化，对称归一化同时考虑了消息两端的度数，同时因为$S$是对称矩阵，因此相比$R$具有更好的性质（如可以进行正交对角化）。
++ GCN的前向传播矩阵形式（第$l$层到第$l+1$层）可以表示为：
+    $$
+    H^{(l+1)}=\sigma(SH^{(l)}W^{(l)})
+    $$
+    特别地，$H^{(0)}=X$，而$W^{(l)}$在第$l$层由所有节点共享。【此处省略了偏置，不过这在GCN中影响不大】
++ 在实际配置中，原始GCN只设置了2至3层前向传播，这也导致每个节点最多聚合其两至三跳邻居节点的信息（类似CNN的局部感受野）。
++ 最后我们讨论下GCN的算法复杂度。GCN的一层前向传播计算可以分解为特征变换（$T=HW$）和稀疏传播$ST$，两者复杂度分别为$O(n\cdot d_{in}\cdot d_{out})$和$O((2|E|+n)d_{out})=O((|E|+n)d_{out})$（$d_{in},d_{out}$分别为$W$的输入与输出维度），因此总复杂度为$O(n\cdot d_{in}\cdot d_{out}+(|E|+n)d_{out})$。
+    > 为什么$ST$称为稀疏传播？因为实际上处理的图数据中节点数往往远大于边数，这会使得$S$变为一个极度稀疏的矩阵。
+## GraphSAGE与SAT
+除了GCN之外，讨论图神经网络也离不开另外两个典型代表：GraphSAGE和SAT。它们都于2017年被提出，都在GCN的基础上进行了改进。
++ GraphSAGE中的SAGE表示采样（Sample）与聚合（Aggregate），其主要创新是对节点邻居进行随机采样，从而降低了处理大量节点图的计算量。具体的前向传播公式可表示为：
+    $$
+    \begin{aligned}
+    \boldsymbol{m}_v^{(\ell)} &= \frac{1}{|\mathcal{S}_\ell(v)|} \sum_{u \in \mathcal{S}_\ell(v)} \boldsymbol{h}_u^{(\ell)}\\
+    \boldsymbol{h}_v^{(\ell+1)} &= \sigma \left( [\boldsymbol{h}_v^{(\ell)} \| \boldsymbol{m}_v^{(\ell)}] W^{(\ell)} + b^{(\ell)} \right)
+    \end{aligned}
+    $$
+    其中$\mathcal{S}_\ell(v)$是本层采到的邻居集合，权重矩阵$W^{(\ell)}\in\R^{2d_{in}\times d_{out}}$。【自身特征与聚合邻居特征直接拼接，不叠加】
+    + 虽然模型可能会漏掉重要邻居，但由于多轮训练每次抽取的邻居不同，模型依然能学到泛化能力。
+    + 另一方面，与传统GCN训练目标为得到每个节点的表示（嵌入）不同，GraphSAGE的训练目标转变为权重$W^{(l)}$，这使得其更擅长处理在线学习场景（如动态图）。
++ GAT则从另一个角度进行优化：借鉴了Transformer的注意力机制，用注意力分数取代聚合权重。具体公式（省略偏置）：
+    $$
+    \begin{aligned}
+    \boldsymbol{z}_u &= \boldsymbol{h}_u^{(\ell)} W^{(\ell)} \\
+    \boldsymbol{e}_{vu} &= \operatorname{LeakyReLU}\left( [\boldsymbol{z}_v \| \boldsymbol{z}_u]\boldsymbol{a} \right) \\
+    \alpha_{vu} &= \operatorname{softmax}(\boldsymbol{e}_{vu})=\frac{\exp(\boldsymbol{e}_{vu})}{\sum_{k \in \mathcal{N}(v) \cup \{v\}} \exp(\boldsymbol{e}_{vk})} \\
+    \boldsymbol{h}_v^{(\ell+1)} &= \sigma \left( \sum_{u \in \mathcal{N}(v) \cup \{v\}} \alpha_{vu} \boldsymbol{z}_u \right)
+    \end{aligned}
+    $$
+    其中$\boldsymbol{a}$为注意力打分权重（本质是加性注意力，与Transformer的缩放点积注意力不同），$W$为可学习的特征变换矩阵。
+    + GAT也适用于多头注意力，只需将每个头的输出拼接在一起即可：
+        $$
+        \begin{aligned}
+        \boldsymbol{r}_v^{(k)} &= \sigma \left( \sum_{u} \alpha_{vu}^{(k)} \boldsymbol{h}_u W^{(k)} \right) \\
+        \boldsymbol{h}'_v &= \boldsymbol{r}_v^{(1)} \parallel \cdots \parallel \boldsymbol{r}_v^{(K)}
+        \end{aligned}
+        $$
+        当然输出也可以改为对每个头输出取平均。
+    > 2021年，另一团队提出了GATv2，在GAT的基础上将注意力打分权重$\boldsymbol{a}$放到了激活函数外面，从而变为动态注意力，模型更加灵活。
+## 预测任务与训练过程
+在了解了GNN的基本结构与算法之后，下面就来介绍GNN如何与下游预测任务进行对接。
++ GNN适用的预测任务主要有三种：对节点的预测（预测某个节点属于什么类别）、对链接的预测（预测两个节点之间是否存在某种关系）和图级预测（预测整张图的属性）。
+### 节点预测
+在节点预测中，GNN的预测头与Transformer非常类似，就是一个线性层 + softmax：
+    $$
+    \begin{aligned}
+    \boldsymbol{z}_v &= \boldsymbol{h}_v^{(L)} W_{\mathrm{cls}} + \boldsymbol{b}_{\mathrm{cls}} \in \mathbb{R}^{1 \times C} \\
+    p_{vc} &= \frac{\exp(z_{vc})}{\sum_{j=1}^C \exp(z_{vj})} \Longrightarrow \widehat{y}_v = \arg \max_c p_{vc}
+    \end{aligned}
+    $$
+    其中$W_{\text{cls}}\in\R^{d_{out}\times C}$，$C$为类别个数。
++ 对于监督分类预测任务，损失函数采用交叉熵损失即可。真实标签可以采用One-Hot编码，这样损失函数可转化为$\ell_v=-\log p_{v,y_v}$【$y_v$为真实类别】。
+    + 在实际训练中，可以将节点划分为训练/验证/测试集，那么损失函数就是训练节点损失函数的平均：
+        $$
+        \mathcal{L}=-\frac{1}{|\mathcal{T}|}\sum_{v\in\mathcal{T}}\ell_v
+        $$
+        不过在消息传递过程中非训练节点的信息仍然会传递到训练节点。【但不会导致标签泄漏，因为非训练标签不参与消息传递】
+### 链接预测
+在链接预测中，首先对链接两侧节点表示进行内积计算得到链接打分（满足对称性，故默认无向），然后经过Sigmoid函数转化为概率即可：
+$$
+s_{uv}=\boldsymbol{h}_u^{(L)}(\boldsymbol{h}_v^{(L)})^\top\Longrightarrow p_{uv}=\sigma(s_{uv})=\frac{1}{1+e^{-s_{uv}}}
+$$
+真实标签采用0-1标签，1表示两节点间存在链接，没有记录的链接中取一部分标签0。
++ 损失函数采用二元交叉熵：$\ell_{uv} = -y_{uv} \log p_{uv} - (1 - y_{uv}) \log(1 - p_{uv})$
+### 图级预测
+图级预测的关键是将节点汇总成一个聚合表示，如：
+$$
+\boldsymbol{h}_G^{\text{sum}}=\sum_{v\in V}\boldsymbol{h}_v,\quad \boldsymbol{h}_G^{\text{mean}}=\frac{1}{|V|}\sum_{v\in V}\boldsymbol{h}_v
+$$
+具体聚合指标与损失函数需要根据实际预测目标进行选择。
+## GNN的局限性
+最后我们讨论GNN模型的两个局限性，这也是目前研究的发展方向：
++ 关于节点间的连接，虽然相邻的节点往往在某些方面相似（称为同配性），但某些场景下相邻节点可能会有完全不同的特征（如争议网络中支持者与反对者的连接），此时直接进行邻居聚合会导致信息的中和丢失。
++ 另一方面，GNN并不是层数越多越好，因为随着聚合次数增加，每个节点的最终表示会趋于相同，即“过平滑”问题。
+

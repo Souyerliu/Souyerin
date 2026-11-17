@@ -441,7 +441,7 @@ $$
         $$
         \boldsymbol{P}=\boldsymbol{X}(\boldsymbol{X}^\top\boldsymbol{X})^{-}\boldsymbol{X}^\top
         $$
-        由前面的理论可知$\boldsymbol{P}$与广义逆的选取无关，且为对称幂等、秩与$\boldsymbol{X}$相同的矩阵。特别地，当$\boldsymbol{X}^\top\boldsymbol{X}$可逆时也称$\boldsymbol{P}$为帽子矩阵。实际上，正交投影$\boldsymbol{P}\boldsymbol{Y}\triangleq\hat{\boldsymbol{Y}}$就是最小二乘的拟合值。
+        由前面的理论可知$\boldsymbol{P}$与广义逆的选取无关，且为对称幂等、秩与$\boldsymbol{X}$相同的矩阵。也称$\boldsymbol{P}$为帽子矩阵。实际上，正交投影$\boldsymbol{P}\boldsymbol{Y}\triangleq\hat{\boldsymbol{Y}}$就是最小二乘的拟合值。
 <Note title="在简单线性回归的应用">
 下面介绍最小二乘估计在简单线性回归模型中的应用：考虑
 $$
@@ -488,3 +488,32 @@ $$
         \hat{\boldsymbol{\beta}}_{n+1} = \hat{\boldsymbol{\beta}}_n + \alpha_n \boldsymbol{x}_{n+1}(y_{n+1} - \boldsymbol{x}^\top_{n+1}\hat{\boldsymbol{\beta}}_n),
         $$
         研究证明，当$\sum_{n=1}^\infty a_n=\infty,\sum_{n=1}^\infty a_n^2< \infty$时，上述迭代算法一定可以收敛到真实参数$\boldsymbol{\beta}$。
+## 最小二乘估计性质
+首先明确这里会用到的概念：
+1. 残差矩阵：$\boldsymbol{N}=\mathbf{I}_n-\boldsymbol{P}$【$\boldsymbol{P}$定义见上】
+    + 性质：$\text{tr}(\boldsymbol{N})=n-\text{tr}(\boldsymbol{P})=n-\text{rank}(\boldsymbol{X})$
+2. 预测值矩阵：$\hat{\boldsymbol{Y}}= \boldsymbol{P}\boldsymbol{Y} = \boldsymbol{X}\hat{\boldsymbol{\beta}}_{LS} = 
+\begin{pmatrix}
+\boldsymbol{x}_1^\top \hat{\boldsymbol{\beta}}_{LS} \\
+\boldsymbol{x}_2^\top \hat{\boldsymbol{\beta}}_{LS} \\
+\vdots \\
+\boldsymbol{x}_n^\top \hat{\boldsymbol{\beta}}_{LS}
+\end{pmatrix} 
+\triangleq 
+\begin{pmatrix}
+\hat{Y}_1 \\
+\hat{Y}_2 \\
+\vdots \\
+\hat{Y}_n
+\end{pmatrix}$
+3. 残差向量$\boldsymbol{NY}=\boldsymbol{Y}-\boldsymbol{PY}\triangleq\hat{\boldsymbol{e}}$与残差平方和$\boldsymbol{Y}^\top\boldsymbol{NY}\triangleq\hat{\boldsymbol{e}}^\top\hat{\boldsymbol{e}}$【即RSS】
+### 线性估计与BLUE
++ 线性估计：对$\boldsymbol{\beta}$的任意线性函数$A\boldsymbol{\beta}$，其线性估计为$\boldsymbol{QY}+\boldsymbol{c}$（$\boldsymbol{Q},\boldsymbol{c}$为相容矩阵/向量）
++ 最优线性无偏估计（BLUE）：上述（无偏）线性估计中方差最小的估计。
+    + BLUE与UMVUE类似，主要区别在于估计量的范围。
++ 最小二乘与BLUE的关系：设$\boldsymbol{Y} = \boldsymbol{X\beta} + \boldsymbol{\epsilon}$，$\boldsymbol{\epsilon} \sim (0, \sigma^2 \mathbf{I}_n)$，且$\boldsymbol{P} = \boldsymbol{X}(\boldsymbol{X}^\top \boldsymbol{X})^- \boldsymbol{X}$。则：
+    1. $E(P\boldsymbol{Y}) = \boldsymbol{X\beta}$且$\mathrm{Var}(\boldsymbol{P}\boldsymbol{Y}) = \sigma^2 \boldsymbol{P}$。特别地，如果$\boldsymbol{X}$满列秩，则$\mathrm{Var}(\hat{\boldsymbol{\beta}}_{LS}) = \sigma^2(\boldsymbol{X}^\top \boldsymbol{X})^{-1}$。【本质是有效数据点越多，估计方差越小】
+    2. 对于任意矩阵$A$，$A\boldsymbol{X}\hat{\boldsymbol{\beta}}_{LS}$是$A\boldsymbol{X\beta}$的 BLUE。特别地，如果$\boldsymbol{X}$满列秩，那么$A\hat{\beta}_{LS}$是$A\beta$的 BLUE。【可看作高斯-马尔科夫定理的一般形式】
+    3. $S^2 = \dfrac{1}{n - r(\boldsymbol{X})} \boldsymbol{Y}^\top \boldsymbol{NY}$是$\sigma^2$的无偏估计；也记作$\hat{\sigma}^2_{LS} = S^2 = \dfrac{1}{n - r(\boldsymbol{X})} \boldsymbol{Y}^\top\boldsymbol{NY}=\dfrac{\hat{\boldsymbol{e}}^\top\hat{\boldsymbol{e}}}{n - r(\boldsymbol{X})}$。
+        + 当然，统计软件（如R语言）在进行线性回归时实际的输出往往是残差标准误，即$\text{RSE}=S=\sqrt{S^2}$；而更常用的则是均方误差$\text{RMSE}=\sqrt{\text{RSS}/n}$。
+        + 可以证明，对于满足$\mu_4=3\sigma^4$（类似正态）或者$\boldsymbol{P}$对角元素相同的样本，上述$S^2$是$\sigma^2$的非负二次无偏估计中唯一的最小方差估计。【这一定理由中国统计学家许宝騄提出】

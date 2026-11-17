@@ -94,14 +94,14 @@ $$
         \max \frac{(\mathbf{x}^\top\mathbf{d})^2}{\mathbf{x}^\top B\mathbf{x}} = \mathbf{d}^\top B^{-1}\mathbf{d}
         $$
         取得最大值条件：$\mathbf{x} = cB^{-1}\mathbf{d}$，其中$c$为非零常数。
-2. 二次型不等式：设$ B\in\R^{p\times p}$为正定矩阵，其特征值为$\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_p \geq 0$，对应的归一化特征向量为$\mathbf{e}_1, \mathbf{e}_2, \dots, \mathbf{e}_p$。则
+2. 二次型不等式：设$ B\in\R^{p\times p}$为正定矩阵，其特征值为$\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_p \geq 0$，对应的归一化特征向量为$\mathbf{e}_1, \mathbf{e}_2, \cdots, \mathbf{e}_p$。则
     $$
     \max_{\mathbf{x} \neq 0} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_1,\quad \min_{\mathbf{x} \neq 0} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_p
     $$
     最大最小值分别在$\mathbf{x} = \mathbf{e}_1$和$\mathbf{x} = \mathbf{e}_p$时取得。
     另有
     $$
-    \max_{\mathbf{x} \perp \mathbf{e}_1, \dots, \mathbf{e}_k} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_{k+1}
+    \max_{\mathbf{x} \perp \mathbf{e}_1, \cdots, \mathbf{e}_k} \frac{\mathbf{x}^\top B\mathbf{x}}{\mathbf{x}^\top\mathbf{x}} = \lambda_{k+1}
     $$
     最大值在$\mathbf{x} = \mathbf{e}_{k+1}, k = 1, 2, \cdots, p - 1$时取得。
 ### 分块矩阵
@@ -203,7 +203,7 @@ $$
     \end{pmatrix}
     $$
     则有$S = D^{1/2} R D^{1/2}, \quad R = D^{-1/2} S D^{-1/2}$。
-+ 协方差矩阵的线性变换：设$\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_n$为随机样本。构造线性变换$\mathbf{z}_i = A\mathbf{x}_i$，其中$A\in\R^{q \times p}$。则有
++ 协方差矩阵的线性变换：设$\mathbf{x}_1, \mathbf{x}_2, \cdots, \mathbf{x}_n$为随机样本。构造线性变换$\mathbf{z}_i = A\mathbf{x}_i$，其中$A\in\R^{q \times p}$。则有
     $$
     \overline{\mathbf{z}} = A\overline{\mathbf{x}},\quad S_z = AS_xA^\top.
     $$
@@ -237,7 +237,7 @@ $$
     $$
     基于这个特征函数可以得到随机变量的任意矩：
     $$
-    \mathrm{E}\left(\prod_{j=1}^k x_{ij}^{h_j}\right) = \left. \frac{\partial \phi_{\mathbf{x}}(\mathbf{t})}{\partial(it_{i_1})^{h_1} \dots \partial(it_{i_k})^{h_k}} \right|_{\mathbf{t}=0}.
+    \mathrm{E}\left(\prod_{j=1}^k x_{ij}^{h_j}\right) = \left. \frac{\partial \phi_{\mathbf{x}}(\mathbf{t})}{\partial(it_{i_1})^{h_1} \cdots \partial(it_{i_k})^{h_k}} \right|_{\mathbf{t}=0}.
     $$
 + 二次型分布：若$\mathbf{x}\sim N_p(\boldsymbol{\mu},\Sigma),\Sigma>0$，则有$(\mathbf{x} - \boldsymbol{\mu})^\top\Sigma^{-1}(\mathbf{x} - \boldsymbol{\mu}) \sim \chi^2_p$。
     + 这里的$(\mathbf{x} - \boldsymbol{\mu})^\top\Sigma^{-1}(\mathbf{x} - \boldsymbol{\mu})$实际上就是马氏距离的平方。
@@ -399,7 +399,7 @@ $$
             $$
             其中$C_j$表示置信区间包含$\mathbf{a}_j^\top\boldsymbol{\mu}$这一事件。由此，当我们取$\alpha_j=\dfrac{\alpha}{m}$和$\mathbf{a}_j=\mathbf{e}_j$，那么得到的同时置信区间
             $$
-            \overline{x}_j \pm t_{n-1} \left( \frac{\alpha}{2m} \right) \sqrt{\frac{S_{jj}}{n}}, \quad j = 1, \dots, p
+            \overline{x}_j \pm t_{n-1} \left( \frac{\alpha}{2m} \right) \sqrt{\frac{S_{jj}}{n}}, \quad j = 1, \cdots, p
             $$
             的置信水平就至少为$1-\alpha$。这个置信区间通常比Scheffé方法得到的置信区间更窄。
 ## 大样本均值推断
@@ -415,7 +415,7 @@ $$
     $$
     \mathbf{a}^\top\overline{\mathbf{x}} \pm \sqrt{\chi^2_p(\alpha)} \sqrt{\frac{\mathbf{a}^\top S\mathbf{a}}{n}}
     $$
-    从而得到$\mu_1,\cdots,\mu_p$的$1-\alpha$近似置信区间$\displaystyle\overline{x}_j \pm \sqrt{\chi^2_p(\alpha)} \sqrt{\frac{S_{jj}}{n}}, \quad j = 1, 2, \dots, p$。
+    从而得到$\mu_1,\cdots,\mu_p$的$1-\alpha$近似置信区间$\displaystyle\overline{x}_j \pm \sqrt{\chi^2_p(\alpha)} \sqrt{\frac{S_{jj}}{n}}, \quad j = 1, 2, \cdots, p$。
 + 而对于Bonferroni方法，当$n$足够大时（相对$p$而言），上述置信区间里的$t$分布可以替换为标准正态分布也能达到近似。
 ## 缺失值处理
 有时样本的观测值中会存在部分缺失（这在问卷调查中特别常见），这会对样本均值的估计产生阻碍。这里我们假定数据的缺失是一种随机缺失，即缺失概率不受变量值的影响。
@@ -439,3 +439,218 @@ $$
         \hat{\boldsymbol{\mu}}_k = \frac{\widetilde{T}_{1,k}}{n}, \qquad \hat{\Sigma}_k = \frac{1}{n}(\widetilde{T}_{2,k} - \frac{1}{n}\widetilde{T}_{1,k}\widetilde{T}_{1,k}^\top)
         $$
         可以证明$k\to\infty$时$\hat{\boldsymbol{\mu}}_k\to\hat{\boldsymbol{\mu}},\hat{\Sigma}_k\to\hat{\Sigma}$。
+# 多元方差分析
+> 这实际上可以看作试验设计里[方差分析](/posts/mathematics/试验设计-cheat-sheet/#方差分析anova)在多元的推广，许多概念都是相通的。
+
+这里我们主要检验的假设：$H_0:\boldsymbol{\mu}_1=\cdots=\boldsymbol{\mu}_k\quad\text{vs}\quad H_1: \text{not } H_0$
+## 配对检验
+首先考虑$k=2$的情形，此时两组样本往往是经过配对的（如同一处理前后两次观测，或匹配组设计，常见于临床试验等个体间可能差异很大的场景中）。此时采用配对检验相比普通的检验可以减少样本方差，并缓解个体间差异带来的影响。
++ 设$\mathbf{x}_{p\times 1}^{(1)}$和$\mathbf{x}_{p\times 1}^{(2)}$是来自配对个体的一组随机变量，定义$\mathbf{d}=\mathbf{x}^{(1)}-\mathbf{x}^{(2)}$，并假设其服从$N_p(\boldsymbol{\delta},\Sigma_d)$，其中$\boldsymbol{\delta}$表示总体差值均值向量。
++ 另假设$\mathbf{d}_1,\cdots\mathbf{d}_n\stackrel{i.i.d.}{\sim}\mathbf{d}$，需要检验的假设
+    $$
+    H_0:\boldsymbol{\delta}=\mathbf{0}\quad\text{vs}\quad H_1:\boldsymbol{\delta}\neq\mathbf{0}
+    $$
+    这样就转化为单样本均值检验，对应的检验统计量
+    $$
+    T^2 = n \overline{\mathbf{d}}^\top S_d^{-1} \overline{\mathbf{d}} > T_{p, n-1}^2(\alpha) = \frac{(n-1)p}{n-p} F_{p, n-p}(\alpha).
+    $$
+    相应地，置信域与同时置信区间（$T^2$ + Bonferroni）分别为
+    $$
+    \begin{aligned}
+    \{\delta &: n(\overline{\mathbf{d}} - \delta)^\top S_d^{-1} (\overline{\mathbf{d}} - \delta) \le T_{p, n-1}^2(\alpha)\}\\
+    \overline{d}_j &\pm \sqrt{T_{p, n-1}^2(\alpha)} \sqrt{\frac{s_{d_j}^2}{n}} \quad j = 1, 2, \cdots, p\\
+    \overline{d}_j &\pm t_{n-1, \frac{\alpha}{2p}} \sqrt{\frac{S_{d_j}^2}{n}} \quad j = 1, 2, \cdots, p.
+    \end{aligned}
+    $$
+    当然，当$n-p$和$n$都足够大时，$T_{p, n-1}^2(\alpha)\to\chi^2_p(\alpha),\ t_{n-1, \frac{\alpha}{2p}}\to z_{\frac{\alpha}{2p}}$。
++ 为了与后续重复测量设计统一，我们可以考虑用线性变换表示$\mathbf{d}$和$S_d$。令
+    $$
+    \mathbf{x} = \begin{pmatrix} \mathbf{x}^{(1)} \\ \mathbf{x}^{(2)} \end{pmatrix}_{2p \times 1} \quad , \quad C_{p \times 2p} = (I_p : -I_p).
+    $$
+    那么有$\mathbf{d}_i=C\mathbf{x}_i,\overline{\mathbf{d}}=C\overline{\mathbf{x}},S_d=CS_xC^\top$，于是有
+    $$
+    T^2 = n(C\overline{\mathbf{x}})^\top(CS_xC^\top)^{-1}(C\overline{\mathbf{x}}).
+    $$
+## 重复测量设计
+考虑对$n$个个体进行重复测量试验，每个个体在$q$个时间点被观测。设$x_{ij}$为第$i$个个体在第$j$个时间点的响应值，其中$i=1,\cdots,n$，$j=1,\cdots,q$。【这也被称为纵向数据】
++ 记第$i$个个体的观测向量为$\mathbf{x}_i=(x_{i1},\cdots,x_{iq})^\top$，令$\mathbb{E}(\mathbf{x}_i)=\boldsymbol{\mu}=(\mu_1,\cdots,\mu_q)^\top$，其中$\mu_j$是第$j$个时间点的总体均值。我们关心的是检验假设：
+    $$
+    H_0:\mu_1=\cdots=\mu_q\quad\text{vs}\quad H_1:\mu_j\neq\mu_k,\ \exists j\neq k.
+    $$
+    假设各观测向量$\mathbf{x}_1,\cdots,\mathbf{x}_n$独立同分布，且$\mathbf{x}_i\sim N_q(\boldsymbol{\mu},\Sigma)$，其中$\Sigma$是$q\times q$的未知协方差矩阵。
++ 下面我们对原假设进行等价转换：
+    $$
+    \begin{aligned}
+    H_0 : 
+    \begin{pmatrix}
+    \mu_1 - \mu_2 \\
+    \vdots \\
+    \mu_1 - \mu_q
+    \end{pmatrix}
+    = \mathbf{0}\quad \Longrightarrow\quad H_0 : C_1\boldsymbol{\mu} = \mathbf{0}
+    \end{aligned}
+    $$
+    其中$\begin{aligned}
+    C_1 =
+    \begin{pmatrix}
+    1 & -1 & 0 & \cdots & 0 \\
+    1 & 0 & -1 & \cdots & 0 \\
+    1 & 0 & 0 & \cdots & -1
+    \end{pmatrix}
+    = (\mathbf{1}_{q-1} : -\mathbf{I}_{q-1})
+    \end{aligned}$。实际上，这里的矩阵$C_1$可以推广到任意矩阵$C\in\R^{(q-1)\times q}$，只要满足$C\mathbf{1}=\mathbf{0}$即可，此时$C$也称为对照矩阵【和试验设计里的对照概念本质相同】。于是可以得到拒绝域、$C\boldsymbol{\mu}$置信域和$\mathbf{c}^\top\boldsymbol{\mu}$同时置信区间：
+    $$
+    \begin{aligned}
+    T^2 &= n\overline{\mathbf{x}}^\top C^\top(CSC^\top)^{-1}C\overline{\mathbf{x}} > T^2_{q-1, n-1}(\alpha)\\
+    \{C\boldsymbol{\mu} &: n(C\overline{\mathbf{x}} - C\boldsymbol{\mu})^\top(CSC^\top)^{-1}(C\overline{\mathbf{x}} - C\boldsymbol{\mu}) < T^2_{q-1, n-1}(\alpha)\}\\
+    \mathbf{c}^\top\overline{\mathbf{x}} &\pm \sqrt{T^2_{q-1, n-1}(\alpha)} \sqrt{\frac{\mathbf{c}^\top S\mathbf{c}}{n}}
+    \end{aligned}
+    $$
++ 当然，上述检验只适用于$\Sigma$正定且没有特殊结构的前提下（否则检验功效会降低）；另一方面，矩阵$C$的行数可以是任意小于$q$的值，只需包含希望检验的均值即可。【自由度也会相应变化】
+## 两独立样本检验
+考虑两组相互独立的随机变量
+$$
+\mathbf{x}_{11},\cdots,\mathbf{x}_{1n_1}\stackrel{i.i.d}{\sim}N_p(\boldsymbol{\mu}_1,\Sigma),\quad \mathbf{x}_{21},\cdots,\mathbf{x}_{2n_2}\stackrel{i.i.d}{\sim}N_p(\boldsymbol{\mu}_2,\Sigma)
+$$
+关注的检验假设：
+$$
+H_0:\boldsymbol{\mu}_1-\boldsymbol{\mu}_2=\boldsymbol{\delta}_0\quad\text{vs}\quad H_1:\boldsymbol{\mu}_1-\boldsymbol{\mu}_2\neq\boldsymbol{\delta}_0
+$$
+其中$\boldsymbol{\delta}_0$为已知常数向量。
++ $\boldsymbol{\mu}_1-\boldsymbol{\mu}_2$的MLE为$\overline{\mathbf{x}}_1-\overline{\mathbf{x}}_2$，方差$\mathrm{Var}(\overline{\mathbf{x}}_1-\overline{\mathbf{x}}_2)=\left(\dfrac{1}{n_1}+\dfrac{1}{n_2}\right)\Sigma$
++ $\Sigma$的无偏估计：$S_{\text{pooled}}=\dfrac{(n_1-1)S_1+(n_2-1)S_2}{n_1+n_2-2}=\dfrac{A_1+A_2}{n_1+n_2-2}$【$A_1+A_2\sim W_p(\Sigma,n_1+n_2-2)$】
++ 对上述假设的检验（似然比检验）：
+    $$
+    T^2 = \frac{n_1 n_2}{n_1 + n_2} (\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2 - \boldsymbol{\delta}_0)^\top S_{\text{pooled}}^{-1} (\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2 - \boldsymbol{\delta}_0) > T_{p,n_1+n_2-2}^2(\alpha). 
+    $$
++ $\boldsymbol{\mu}_1-\boldsymbol{\mu}_2$的置信域：
+    $$
+    \frac{n_1 n_2}{n_1 + n_2} \{ \overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2 - (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) \}^\top S_{\text{pooled}}^{-1} \{ \overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2 - (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) \} < T_{p,n_1+n_2-2}^2(\alpha).
+    $$
++ $\mathbf{a}^\top(\boldsymbol{\mu}_1-\boldsymbol{\mu}_2)$的$T^2$同时置信区间：
+    $$
+    \mathbf{a}^\top(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2) \pm \sqrt{T_{p,n_1+n_2-2}^2(\alpha) \cdot \left(\frac{1}{n_1} + \frac{1}{n_2}\right) \mathbf{a}^\top S_{\text{pooled}} \mathbf{a}}
+    $$
+    这同样基于上述矩阵不等式变体：
+    $$
+    \max_{\mathbf{a} \neq \mathbf{0}} \frac{[\mathbf{a}^\top \{\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2 - (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)\}]^2}{(\frac{1}{n_1} + \frac{1}{n_2})\mathbf{a}^\top S_{\text{pooled}}\mathbf{a}} = T^2
+    $$
+    等号条件：$\hat{\mathbf{a}} \propto S_{\text{pooled}}^{-1}(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2)$。
++ Bonferroni同时置信区间（考虑$\mu_{1i}-\mu_{2i},i=1,\cdots,p$）：
+    $$
+    \overline{x}_{1i} - \overline{x}_{2i} \pm t_{n_1+n_2-2}\left(\frac{\alpha}{2m}\right) \sqrt{\frac{n_1 + n_2}{n_1 n_2} s_{ii}}
+    $$
+
++ 当然，现实中也可能出现$\Sigma_1\neq\Sigma_2$（即两总体协方差不等）的情形，这也被称为（多元）Behrens-Fisher问题。
+    + 这里不详细展开（比较复杂），只讨论大样本情形：用$\dfrac{S_1}{n_1}+\dfrac{S_2}{n_2}$估计$\mathrm{Var}(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2)$，然后用卡方分布近似$T^2$分布即可。
+    + 由此可见，在进行上述检验之前最好先检验两总体（协）方差是否相等
+## One-Way MANOVA
+> 一元单因素方差分析请参见[试验设计 Cheat Sheet](/posts/mathematics/试验设计-cheat-sheet/#方差分析anova)，思路是类似的。
+
+假设$\mathbf{x}_{lj}\overset{indep}{\sim} N_p(\boldsymbol{\mu}_l,\Sigma),j=1,\cdots,n_l,l=1,\cdots,g$（$g$个处理，每个处理$n_l$个样本，每个样本$p$个观测值，一般按时间点记录），那么可以建立效应模型
+$$
+\mathbf{x}_{lj}=\boldsymbol{\mu}+\boldsymbol{\tau}_l+\boldsymbol{\epsilon}_{ij}
+$$
+其中$\boldsymbol{\mu}$为总均值，$\boldsymbol{\tau}_l$为第$l$个处理效应，$\boldsymbol{\epsilon}_{ij}$为随机误差，服从$N_p(\mathbf{0},\Sigma)$。检验假设：
+$$
+H_0:\boldsymbol{\mu}_1=\cdots=\boldsymbol{\mu}_g\quad\Longrightarrow\quad H_0:\boldsymbol{\tau}_1=\cdots=\boldsymbol{\tau}_g=\mathbf{0}
+$$
++ 构造MANOVA表：
+    | SS (平方和矩阵) | d.f. (自由度) |
+    | :--- | :--- |
+    | $B = \displaystyle\sum_{l=1}^g n_l(\overline{\mathbf{x}}_l - \overline{\mathbf{x}})(\overline{\mathbf{x}}_l - \overline{\mathbf{x}})^\top$ | $g - 1$ |
+    | $W = \displaystyle\sum_{l=1}^g \sum_{j=1}^{n_l}(\mathbf{x}_{l j} - \overline{\mathbf{x}}_l)(\mathbf{x}_{l j} - \overline{\mathbf{x}}_l)^\top$ | $n - g$ |
+    | $T = B + W = \displaystyle\sum_{l=1}^g \sum_{j=1}^{n_l}(\mathbf{x}_{l j} - \overline{\mathbf{x}})(\mathbf{x}_{l j} - \overline{\mathbf{x}})^\top$ | $n - 1$ |
+
+    其中$n=\displaystyle\sum_{l=1}^g n_l$。由此可以得到检验统计量：
+    $$
+    \text{Wilks'} \ \Lambda = \frac{|W|}{|T|} \overset{H_0}{\sim} \Lambda_{p,g-1,n-g}.
+    $$
+    当$\Lambda < \Lambda_{p,g-1,n-g}(\alpha)$时拒绝$H_0$。（$\text{Wilks'} \ \Lambda$分布在$p,g$满足一定条件下可以转换为F分布）
+    + 当$n$足够大时，可采用下述Bartlett修正：
+        $$
+        -\left(n - 1 - \frac{p + g}{2}\right) \log \Lambda \xrightarrow{L} \chi^2_{p(g-1)}.
+        $$
++ 下面考虑$\mu_{kj}-\mu_{lj},j=1,\cdots,p,\ 1\leq l< k\leq g$的Bonferroni同时置信区间：MLE为$\overline{x}_{kj}-\overline{x}_{lj}$，其满足
+    $$
+    \mathrm{Var}(\overline{x}_{kj}-\overline{x}_{lj})=\left(\frac{1}{n_k}+\frac{1}{n_l}\right)\sigma_{jj}
+    $$
+    又因为$\hat{\Sigma}=\dfrac{W}{n-g}\Longrightarrow\hat{\sigma}_{jj}=\dfrac{w_{jj}}{n-g}$，一共有$m=\dfrac{pg(g-1)}{2}$个均值差组合，因此SCI为
+    $$
+    \overline{x}_{kj} - \overline{x}_{l j} \pm t_{n-g}\left(\frac{\alpha}{2m}\right) \sqrt{\left(\frac{1}{n_k} + \frac{1}{n_l}\right) \frac{w_{jj}}{n-g}}.
+    $$
+## Two-Way MANOVA
+> 在试验设计的[RCBD](/posts/mathematics/试验设计-cheat-sheet/#随机完全区组设计)里我们已经接触到双因素方差分析，这里我们再将其推广到多元情形。
+
+设$\mathbf{x}_{l k r} \overset{indep}{\sim} N_p(\boldsymbol{\mu}_{l k}, \Sigma),l=1, \cdots, g,\ k=1,\cdots,b,\ r=1,2,\cdots,n$，其效应模型对应为
+$$
+\mathbf{x}_{l k r}=\boldsymbol{\mu} + \boldsymbol{\tau}_l + \boldsymbol{\beta}_k + \boldsymbol{\gamma}_{l k}+\boldsymbol{\epsilon}_{l k r},
+$$
+其中$\displaystyle\sum_{l=1}^g \boldsymbol{\tau}_l = \sum_{k=1}^b \boldsymbol{\beta}_k = \sum_{l=1}^g \boldsymbol{\gamma}_{l k} = \sum_{k=1}^b \boldsymbol{\gamma}_{l k} = \mathbf{0}$，$\boldsymbol{\tau}_l,\boldsymbol{\beta}_k$和$\boldsymbol{\gamma}_{lk}$分别代表两个因素的主效应和交互效应。
++ 首先考虑交互效应假设的检验：$H_{01}:\boldsymbol{\gamma}_{l k}=\mathbf{0},\ \forall l,k\quad\text{vs}\quad H_1: \text{Not }H_{11}$，如果不拒绝原假设，那么再检验两个主效应假设：
+    $$
+    \begin{aligned}
+    H_{02} &: \boldsymbol{\tau}_l = \mathbf{0} \ \forall l \quad \text{vs} \quad H_{12} : \text{Not } H_{02}, \\
+    H_{03} &: \boldsymbol{\beta}_k = \mathbf{0} \ \forall k \quad \text{vs} \quad H_{13} : \text{Not } H_{03},
+    \end{aligned}
+    $$
++ 平方和分解（从上到下分别为因素1平方和、因素2平方和、交互平方和与残差平方和）：
+    $$
+    \begin{aligned}
+    \text{SSP}_{\text{fac1}} &= \sum_{l=1}^g bn(\overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}})(\overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}})^\top \sim W_p(g - 1, \Sigma), \\
+    \text{SSP}_{\text{fac2}} &= \sum_{k=1}^b gn(\overline{\mathbf{x}}_{\cdot k} - \overline{\mathbf{x}})(\overline{\mathbf{x}}_{\cdot k} - \overline{\mathbf{x}})^\top \sim W_p(b - 1, \Sigma), \\
+    \text{SSP}_{\text{int}} &= \sum_{l=1}^g \sum_{k=1}^b (\overline{\mathbf{x}}_{lk} - \overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}}_{\cdot k} + \overline{\mathbf{x}})(\overline{\mathbf{x}}_{lk} - \overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}}_{\cdot k} + \overline{\mathbf{x}})^\top \sim W_p((g - 1)(b - 1), \Sigma), \\
+    \text{SSP}_{\text{res}} &= \sum_{l=1}^g \sum_{k=1}^b \sum_{r=1}^n (\mathbf{x}_{lkr} - \overline{\mathbf{x}}_{lk\cdot})(\mathbf{x}_{lkr} - \overline{\mathbf{x}}_{lk\cdot})^\top \sim W_p(gb(n - 1), \Sigma)
+    \end{aligned}
+    $$
+    由此得到上述三个检验的统计量与拒绝域：
+    $$
+    \begin{aligned}
+    \Lambda_{\text{int}} &= \frac{|\text{SSP}_{\text{res}}|}{|\text{SSP}_{\text{int}} + \text{SSP}_{\text{res}}|} \overset{d}{=} \Lambda_p((g - 1)(b - 1), gb(n - 1)), \\
+    \Lambda_{\text{fac1}} &= \frac{|\text{SSP}_{\text{res}}|}{|\text{SSP}_{\text{fac1}} + \text{SSP}_{\text{res}}|} \overset{d}{=} \Lambda_p((g - 1), gb(n - 1)), \\
+    \Lambda_{\text{fac2}} &= \frac{|\text{SSP}_{\text{res}}|}{|\text{SSP}_{\text{fac2}} + \text{SSP}_{\text{res}}|} \overset{d}{=} \Lambda_p((b - 1), gb(n - 1)).
+    \end{aligned}
+    $$
+    这里的分布在$nbg$足够大时可用$\displaystyle -\left(m_2 - \frac{p + 1 - m_1}{2}\right) \ln \Lambda_p(m_1, m_2) \overset{\cdot}{\sim} \chi^2_{pm_1}$近似。
++ Bonferroni同时置信区间（假设$H_{01}$成立）：
+    1. $\boldsymbol{\tau}_l-\boldsymbol{\tau}_m$（$m < l$）：$\displaystyle\overline{x}_{l \cdot i} - \overline{x}_{m \cdot i} \pm t_{gb(n-1)} \left( \frac{\alpha}{pg(g-1)} \right) \sqrt{\frac{E_{ii}}{gb(n-1)} \cdot \frac{2}{bn}}, \quad i = 1, \cdots, p$【$E_{ii}$是$\text{SSP}_{\text{res}}$的第$i$个对角线元素，下同】
+    2. $\boldsymbol{\beta}_k-\boldsymbol{\beta}_q$（$q < k$）：$\displaystyle \overline{x}_{\cdot k i} - \overline{x}_{\cdot q i} \pm t_{gb(n-1)} \left( \frac{\alpha}{pb(b-1)} \right) \sqrt{\frac{E_{ii}}{gb(n-1)} \cdot \frac{2}{gn}}, \quad i = 1, \cdots, p$
+
+    当然如果拒绝$H_{01}$，就只能固定一个因素固定水平下，计算另外一个因素两水平差异SCI。
+## 轮廓分析
+同样考虑$\mathbf{x}_{lj}\overset{indep}{\sim} N_p(\boldsymbol{\mu}_l,\Sigma),j=1,\cdots,n_l,l=1,\cdots,g$，那么对每个处理$l$，其均值向量$\boldsymbol{\mu}_l=(\mu_{l1},\mu_{l2},\cdots,\mu_{lp})^\top$各分量可以按序用折线连接，得到一张折线图（也被称为均值轮廓）。对于均值轮廓，我们可以提出下述检验问题：
+1. 不同处理的均值轮廓是否平行（相似）？这本质是检验是否有时间-处理交互作用；
+2. 如果不同处理均值轮廓平行，那么它们是否重合？即检验是否有处理效应；
+3. 如果不同处理均值轮廓平行，那么它们是否水平？即检验是否有时间效应。
+
+后两个假设可以在第一个假设不被拒绝时同时进行检验。下面我们对这些假设进行形式化：
+1. EQ（重合且水平）：$H_0:\mu_1=\cdots=\mu_p$（没有任何时间/处理/交互效应，退化为一个点）
+2. PR（平行）：$H_0 : \mu_{x,i} - \mu_{x,i-1} = \mu_{y,i} - \mu_{y,i-1}\quad i = 2, \cdots, p$
+3. LE（重合）：$H_0 : \mu_{x,i} = \mu_{y,i}, \quad i = 1, \cdots, p$
+4. FL（水平）：$H_0 : \mu_{x,1} = \mu_{x,2} = \cdots = \mu_{x,p},\quad \mu_{y,1} = \mu_{y,2} = \cdots = \mu_{y,p}$
+
+检验顺序一般为：是否平行（$H_{01}$）$\Longrightarrow$是否重合（$H_{02}$）$\Longrightarrow$是否水平（$H_{03}$）。具体的检验统计量如下：
+1. $H_{01}$等价形式：$H_{01}: C\boldsymbol{\mu}_1 = C\boldsymbol{\mu}_2$，其中$C_{(p-1) \times p} =
+    \begin{bmatrix}
+    -1 & 1 & 0 & 0 & \cdots & 0 & 0 \\
+    0 & -1 & 1 & 0 & \cdots & 0 & 0 \\
+    \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+    0 & 0 & 0 & 0 & \cdots & -1 & 1
+    \end{bmatrix}$。检验统计量与拒绝域：
+    $$
+    \begin{aligned}
+    T^2 &= (\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2)^\top C^\top \left[ \left( \frac{1}{n_1} + \frac{1}{n_2} \right)  C S_{\text{pooled}}  C^\top \right]^{-1}C(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2)\\
+    &> \frac{(n_1 + n_2 - 2)(p - 1)}{n_1 + n_2 - p} F_{p-1, n_1+n_2-p}(\alpha)
+    \end{aligned}
+    $$
+2. $H_{02}$等价形式：$H_{02}:\mathbf{1}^\top\boldsymbol{\mu}_1=\mathbf{1}^\top\boldsymbol{\mu}_2$。检验统计量与拒绝域：
+    $$
+    \begin{aligned}
+    T^2 &= \mathbf{1}^\top(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2) \left[ \left( \frac{1}{n_1} + \frac{1}{n_2} \right) \mathbf{1}^\top S_{\text{pooled}} \mathbf{1} \right]^{-1} \mathbf{1}^\top(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2) \\
+    &= \left( \frac{\mathbf{1}^\top(\overline{\mathbf{x}}_1 - \overline{\mathbf{x}}_2)}{\sqrt{\left( \frac{1}{n_1} + \frac{1}{n_2} \right) \mathbf{1}^\top S_{\text{pooled}} \mathbf{1}}} \right)^2 > t^2_{n_1+n_2-2}\left(\frac{\alpha}{2}\right) = F_{1, n_1+n_2-2}(\alpha)
+    \end{aligned}
+    $$
+3. $H_{03}$等价形式：$C\boldsymbol{\mu}=0$。检验统计量与拒绝域：
+    $$
+    (n_1 + n_2)\overline{\mathbf{x}}^\top C^\top \left[CSC^\top \right]^{-1}C\overline{\mathbf{x}} > \frac{(n_1 + n_2 - 1)(p - 1)}{n_1 + n_2 - p + 1} F_{p-1, n_1+n_2-p+1}(\alpha)
+    $$
