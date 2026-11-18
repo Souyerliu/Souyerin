@@ -132,7 +132,7 @@ sticky: true
         $$
         \boldsymbol{M}^*=\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-,\quad \boldsymbol{b}^*=\boldsymbol{\mu}_{\boldsymbol{Y}}-\Sigma_{\boldsymbol{YX}}\Sigma_{\boldsymbol{XX}}^-\boldsymbol{\mu}_{\boldsymbol{X}}
         $$
-        > 当$(\boldsymbol{X},\boldsymbol{Y})$服从联合正态分布时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$就对应$\mathbb{E}(\boldsymbol{Y}\mid\boldsymbol{X})$。
+        > 当$(\boldsymbol{X},\boldsymbol{Y})$服从联合正态分布时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$就对应$\mathbb{E}(\boldsymbol{Y}|\boldsymbol{X})$。
     + 特别地，当$\boldsymbol{X}$退化为定值时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$即为$\boldsymbol{Y}$的均值。
     + 当$\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})=\boldsymbol{M}^*\boldsymbol{X}+\boldsymbol{b}^*$时，$\text{proj}_{\boldsymbol{X}}(\boldsymbol{a}^\top\boldsymbol{Y})=\boldsymbol{a}^\top \boldsymbol{M}^*\boldsymbol{X}+\boldsymbol{a}^\top\boldsymbol{b}^*=\boldsymbol{a}^\top\text{proj}_{\boldsymbol{X}}(\boldsymbol{Y})$
     + $\hat{\boldsymbol{Y}}$满足的性质：$\mathbb{E}(\boldsymbol{Y}-\hat{\boldsymbol{Y}})=0,\mathbb{E}(\boldsymbol{X}^\top(\boldsymbol{Y}-\hat{\boldsymbol{Y}}))=0$
@@ -257,7 +257,7 @@ $$
 ## 现代（线性）回归模型定义
 前面我们提到了“回归”这个概念的历史来源，现在我们就对回归模型进行正式定义。现代回归模型一般有下述两种形式：
 1. 随机向量$\boldsymbol{Y}_{p\times 1}$由确定向量$\boldsymbol{x}$的函数与随机误差得到，即$\boldsymbol{Y}=f(\boldsymbol{x})+\epsilon$；
-2. $\boldsymbol{X}$和$\boldsymbol{Y}$都是随机向量，模型通过条件期望确定：$\boldsymbol{Y}=f(\boldsymbol{X})+\epsilon$，其中$f(\boldsymbol{x})=\mathbb{E}(\boldsymbol{Y}\mid\boldsymbol{X}=\boldsymbol{x})$，且$\mathbb{E}(\epsilon\mid\boldsymbol{X})=0$。
+2. $\boldsymbol{X}$和$\boldsymbol{Y}$都是随机向量，模型通过条件期望确定：$\boldsymbol{Y}=f(\boldsymbol{X})+\epsilon$，其中$f(\boldsymbol{x})=\mathbb{E}(\boldsymbol{Y}|\boldsymbol{X}=\boldsymbol{x})$，且$\mathbb{E}(\epsilon|\boldsymbol{X})=0$。
 
 上述随机误差$\epsilon$均假设均值为$0$，方差为$\sigma^2$（$\epsilon\sim(0,\sigma^2)$）。特别地，当$f(x_1,\cdots,x_p)=\beta_0+\beta_1x_1+\cdots+\beta_px_p$时，上述模型也称为线性回归模型。其中：
 + $\boldsymbol{Y}$称为响应变量/预测变量/隐变量，$\boldsymbol{x}$（或$\boldsymbol{X}$）称为解释变量/回归因子/协变量/自变量。
@@ -268,7 +268,7 @@ $$
 实际上，线性模型的一般形式可以表示为
 $$
 \begin{aligned}
-&\mathbb{E}(\boldsymbol{Y}\mid X_1 = x_1, X_2 = x_2, \dots, X_p = x_p)= f(x_1, x_2, \dots, x_p) \\
+&\mathbb{E}(\boldsymbol{Y}| X_1 = x_1, X_2 = x_2, \dots, X_p = x_p)= f(x_1, x_2, \dots, x_p) \\
 =&\beta_0 + \beta_1 g_1(x_1, x_2, \dots, x_p) + \beta_2 g_2(x_1, x_2, \dots, x_p) + \cdots+ \beta_m g_m(x_1, x_2, \dots, x_p),
 \end{aligned}
 $$
@@ -278,7 +278,7 @@ $$
 + 然而，这一结论仅适用于$x_j$非随机的情况；因为当$x_j$为随机变量时，任一变量的变化通常都会同时引起其他变量的变化，因此无法在保持其他变量不变的情况下进行考察。
 + 辛普森悖论就是一个典型的例子：在不同子群体中观察到的趋势，在将群体合并（聚合）后可能会发生反转。这本质还是因为存在未纳入回归模型的混杂因子。
 ## 线性回归的预测：最小二乘
-由上面的辛普森悖论可知，线性模型得到的条件均值$\mathbb{E}(\boldsymbol{Y}\mid\boldsymbol{X})$在很多情况下并不能准确反映真实规律。在这种情况下，线性回归承担的主要角色则会变为带约束的预测，并基于最小二乘得到最优系数。下面用数学表达式说明：
+由上面的辛普森悖论可知，线性模型得到的条件均值$\mathbb{E}(\boldsymbol{Y}|\boldsymbol{X})$在很多情况下并不能准确反映真实规律。在这种情况下，线性回归承担的主要角色则会变为带约束的预测，并基于最小二乘得到最优系数。下面用数学表达式说明：
 + 假设$\begin{pmatrix} \tilde{\boldsymbol{x}} \\ Y \end{pmatrix}$是一个均值为$\boldsymbol{\mu} = (\mu_{\boldsymbol{x}}, \mu_Y)^\top$、方差矩阵为$\Sigma = \begin{pmatrix} \Sigma_{\boldsymbol{xx}} & \Sigma_{\boldsymbol{x}Y} \\ \Sigma_{Y\boldsymbol{x}} & \Sigma_{YY} \end{pmatrix}$的$p$维随机向量，其中$\tilde{\boldsymbol{x}}=(x_1,\cdots,x_{p-1})^\top$和$Y$均为随机变量。那么目标就是通过构建线性模型$b_0 + \boldsymbol{x}^\top\boldsymbol{b}$预测$Y$，也就是最小化
     $$
     \text{MSE} = \mathbb{E}(Y - b_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{b})^2,\quad b_0\in\R,\boldsymbol{b}\in\R^{p-1}
@@ -300,7 +300,7 @@ $$
     Y=\beta_0+ \tilde{\boldsymbol{x}}^\top\boldsymbol{\beta}_c+\epsilon
     $$
     实际上，因为$\hat{Y}$就是$Y$在$\tilde{\boldsymbol{x}}$线性超平面上的正交投影，所以残差与自变量不相关（$\mathrm{Cov}(\tilde{\boldsymbol{x}},\epsilon)=0$）。
-+ 特别地，当$\begin{pmatrix} \tilde{\boldsymbol{x}} \\ Y \end{pmatrix}$服从联合正态分布，那么$\hat{Y}$就是条件均值$\mathbb{E}(Y\mid\tilde{\boldsymbol{x}})$。
++ 特别地，当$\begin{pmatrix} \tilde{\boldsymbol{x}} \\ Y \end{pmatrix}$服从联合正态分布，那么$\hat{Y}$就是条件均值$\mathbb{E}(Y|\tilde{\boldsymbol{x}})$。
 + 另一方面，将上述最优预测系数代入$\text{MSE}$公式中得到
     $$
     \min_{b_0,\boldsymbol{b}} \mathbb{E} \left( Y - b_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{b} \right)^2 = \mathbb{E} \left( Y - \beta_0 - \tilde{\boldsymbol{x}}^\top\boldsymbol{\beta}_c \right)^2 = \sigma^2 - \Sigma_{y\boldsymbol{x}}\Sigma_{\boldsymbol{xx}}^{-1}\Sigma_{\boldsymbol{x}y}.
@@ -507,6 +507,7 @@ $$
 \hat{Y}_n
 \end{pmatrix}$
 3. 残差向量$\boldsymbol{NY}=\boldsymbol{Y}-\boldsymbol{PY}\triangleq\hat{\boldsymbol{e}}$与残差平方和$\boldsymbol{Y}^\top\boldsymbol{NY}\triangleq\hat{\boldsymbol{e}}^\top\hat{\boldsymbol{e}}$【即RSS】
+    + 这里定义了RSS，相应地也可以定义TSS（总平方和）和ESS（解释平方和）：$\text{TSS}=\boldsymbol{Y}^\top\boldsymbol{N}_{\mathbf{1}_n}\boldsymbol{Y},\text{ESS}=\boldsymbol{Y}^\top(\boldsymbol{N}_{\mathbf{1}_n}-\boldsymbol{N})\boldsymbol{Y}$，其中$\boldsymbol{N}_{\mathbf{1}_n}=\mathbf{I}_n-\dfrac{1}{n}\mathbf{I}_n\mathbf{I}_n^\top$。那么便有经典等式$\text{TSS}=\text{RSS}+\text{ESS}$。又由Cochran定理（略）可以证明
 ### 线性估计与BLUE
 + 线性估计：对$\boldsymbol{\beta}$的任意线性函数$A\boldsymbol{\beta}$，其线性估计为$\boldsymbol{QY}+\boldsymbol{c}$（$\boldsymbol{Q},\boldsymbol{c}$为相容矩阵/向量）
 + 最优线性无偏估计（BLUE）：上述（无偏）线性估计中方差最小的估计。
@@ -516,4 +517,42 @@ $$
     2. 对于任意矩阵$A$，$A\boldsymbol{X}\hat{\boldsymbol{\beta}}_{LS}$是$A\boldsymbol{X\beta}$的 BLUE。特别地，如果$\boldsymbol{X}$满列秩，那么$A\hat{\beta}_{LS}$是$A\beta$的 BLUE。【可看作高斯-马尔科夫定理的一般形式】
     3. $S^2 = \dfrac{1}{n - r(\boldsymbol{X})} \boldsymbol{Y}^\top \boldsymbol{NY}$是$\sigma^2$的无偏估计；也记作$\hat{\sigma}^2_{LS} = S^2 = \dfrac{1}{n - r(\boldsymbol{X})} \boldsymbol{Y}^\top\boldsymbol{NY}=\dfrac{\hat{\boldsymbol{e}}^\top\hat{\boldsymbol{e}}}{n - r(\boldsymbol{X})}$。
         + 当然，统计软件（如R语言）在进行线性回归时实际的输出往往是残差标准误，即$\text{RSE}=S=\sqrt{S^2}$；而更常用的则是均方误差$\text{RMSE}=\sqrt{\text{RSS}/n}$。
-        + 可以证明，对于满足$\mu_4=3\sigma^4$（类似正态）或者$\boldsymbol{P}$对角元素相同的样本，上述$S^2$是$\sigma^2$的非负二次无偏估计中唯一的最小方差估计。【这一定理由中国统计学家许宝騄提出】
+        + 可以证明，对于满足$\mu_4=3\sigma^4$（类似正态）或者$\boldsymbol{P}$对角元素相同的样本，上述$S^2$是$\sigma^2$的非负二次无偏估计中唯一的最小方差估计，其方差为
+            $$
+            \operatorname{Var}(\hat{\sigma}_{\mathrm{LS}}^2)= \frac{\operatorname{Var}(\boldsymbol{Y}^\top\boldsymbol{NY})}{[n-\operatorname{rank}(\boldsymbol{X})]^2}= (\mu_4-3\sigma^4)\frac{\boldsymbol{r}^\top\boldsymbol{r}}{[n-\operatorname{rank}(\boldsymbol{X})]^2}+ \frac{2\sigma^4}{n-\operatorname{rank}(\boldsymbol{X})}
+            $$
+            其中$\boldsymbol{r}$为$\boldsymbol{N}$对角线元素组成向量。这一定理由中国统计学家许宝騄提出。
+### 正态分布下性质
+首先定义Fisher信息矩阵（[数理统计](https://souyerin.netlify.app/posts/mathematics/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1-cheat-sheet/#mle%E7%9A%84%E6%B8%90%E8%BF%91%E6%AD%A3%E6%80%81%E6%80%A7)概念推广）：对于$n$维随机向量$\boldsymbol{X}\sim f(\boldsymbol{x}|\boldsymbol{\theta}),\boldsymbol{\theta}\in\Theta$（$\Theta$为$\R^k$中开集），其Fisher信息矩阵为
+$$
+\mathcal{F}_n(\boldsymbol{\theta})
+= \mathrm{Cov}_{\boldsymbol{\theta}}\!\left(
+  \frac{\partial \log f(\boldsymbol{X}|\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}
+\right)
+= -\mathrm{E}_{\boldsymbol{\theta}}\!\left(
+  \frac{\partial^{2} \log f(\boldsymbol{X}|\boldsymbol{\theta})}
+       {\partial \boldsymbol{\theta}\,\partial \boldsymbol{\theta}^\top}
+\right)
+\succ 0,\quad \boldsymbol{\theta}\in\Theta .
+$$
+特别地，当$\boldsymbol{X}=(X_1,\cdots,X_n)^\top$且各分量独立同分布$h(\boldsymbol{x}|\boldsymbol{\theta})$，那么
+$$
+\begin{aligned}
+\mathcal{F}_n(\boldsymbol{\theta})
+&= \sum_{i=1}^{n} \mathrm{Cov}_{\boldsymbol{\theta}}\!\left(
+   \frac{\partial \log h(X_i|\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}
+   \right)
+ = n\mathrm{Cov}_{\boldsymbol{\theta}}\!\left(
+   \frac{\partial \log h(X_1|\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}
+   \right) \\[2mm]
+&= -n\mathrm{E}_{\boldsymbol{\theta}}\!\left(
+   \frac{\partial^{2} \log h(X_1|\boldsymbol{\theta})}
+        {\partial \boldsymbol{\theta}\,\partial \boldsymbol{\theta}'}
+   \right) > 0 .
+\end{aligned}
+$$
+相应地，我们也可以得到多元情形下的C-R不等式与C-R下界：设$T(\boldsymbol{X})$是$g(\boldsymbol{\theta}),\boldsymbol{\theta}\in\Theta$的任一无偏估计，且$\mathcal{M}(\dot{g}(\boldsymbol{\theta}))\subseteq\mathcal{M}(\mathcal{F}_n(\boldsymbol{\theta}))$，那么有
+$$
+\mathrm{Var}_{\boldsymbol{\theta}}(T(\boldsymbol{X}))\geq\dot{g}(\boldsymbol{\theta})\mathcal{F}_{n}(\boldsymbol{\theta})^-\dot{g}(\boldsymbol{\theta})^\top
+$$
+等号当且仅当$f(\boldsymbol{X}|\boldsymbol{\theta})$属于指数族分布。

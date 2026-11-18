@@ -407,9 +407,9 @@ $$
 $$
 T^2 = n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}) \xrightarrow{d}n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top \Sigma^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu})\sim\chi^2_p.
 $$
-于是假设检验时判定拒绝原假设就可以用$n(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0) > \chi_p^2(\alpha)$，而$\boldsymbol{\mu}$的$1-\alpha$置信区间则可近似表示为
+于是假设检验时判定拒绝原假设就可以用$n(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0) > \chi_p^2(\alpha)$，而$\boldsymbol{\mu}$的$1-\alpha$置信域则可近似表示为
 $$
-\{\boldsymbol{\mu}:n(\overline{\mathbf{x}} - \boldsymbol{\mu}_0)^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}_0) < \chi_p^2(\alpha)\}
+\{\boldsymbol{\mu}:n(\overline{\mathbf{x}} - \boldsymbol{\mu})^\top S^{-1}(\overline{\mathbf{x}} - \boldsymbol{\mu}) < \chi_p^2(\alpha)\}
 $$
 + 另一方面，利用$T^2_p$分布近似$\chi^2_p$，也可以得到$\mathbf{a}^\top\boldsymbol{\mu}$的近似$1-\alpha$置信区间（对应Scheffé方法）：
     $$
@@ -424,7 +424,7 @@ $$
     $$
     T_1 = \sum_{i=1}^{n} \mathbf{x}_i ,\qquad T_2 = \sum_{i=1}^{n} \mathbf{x}_i \mathbf{x}_i^\top
     $$
-    如果是完全数据，那么MLE即为$\displaystyle\hat{\boldsymbol{\mu}} = \frac{T_1}{n}, \hat{\Sigma} = \frac{1}{n}(T_2 - T_1^2)$。下面假设数据$\mathbf{x}_i = \begin{pmatrix} \mathbf{x}_i^{(1)} \\ \mathbf{x}_i^{(2)} \end{pmatrix},i=1,\cdots,n$，其中$\mathbf{x}_i^{(1)}$为缺失数据。EM算法的流程如下：
+    如果是完全数据，那么MLE即为$\displaystyle\hat{\boldsymbol{\mu}} = \frac{T_1}{n}, \hat{\Sigma} = \frac{T_2}{n}- \frac{T_1T_1^\top}{n^2}$。下面假设数据$\mathbf{x}_i = \begin{pmatrix} \mathbf{x}_i^{(1)} \\ \mathbf{x}_i^{(2)} \end{pmatrix},i=1,\cdots,n$，其中$\mathbf{x}_i^{(1)}$为缺失数据。EM算法的流程如下：
     1. 确定初始值$\hat{\boldsymbol{\mu}}_0$和$\hat{\Sigma}_0$（可以通过将缺失值用观测值平均填充后得到）
     2. E步：
         $$
@@ -438,7 +438,7 @@ $$
         $$
         \hat{\boldsymbol{\mu}}_k = \frac{\widetilde{T}_{1,k}}{n}, \qquad \hat{\Sigma}_k = \frac{1}{n}(\widetilde{T}_{2,k} - \frac{1}{n}\widetilde{T}_{1,k}\widetilde{T}_{1,k}^\top)
         $$
-        可以证明$k\to\infty$时$\hat{\boldsymbol{\mu}}_k\to\hat{\boldsymbol{\mu}},\hat{\Sigma}_k\to\hat{\Sigma}$。
+        可以证明在合适的初值条件下，$k\to\infty$时$\hat{\boldsymbol{\mu}}_k\to\hat{\boldsymbol{\mu}},\hat{\Sigma}_k\to\hat{\Sigma}$。
 # 多元方差分析
 > 这实际上可以看作试验设计里[方差分析](/posts/mathematics/试验设计-cheat-sheet/#方差分析anova)在多元的推广，许多概念都是相通的。
 
@@ -498,7 +498,7 @@ $$
     1 & 0 & 0 & \cdots & -1
     \end{pmatrix}
     = (\mathbf{1}_{q-1} : -\mathbf{I}_{q-1})
-    \end{aligned}$。实际上，这里的矩阵$C_1$可以推广到任意矩阵$C\in\R^{(q-1)\times q}$，只要满足$C\mathbf{1}=\mathbf{0}$即可，此时$C$也称为对照矩阵【和试验设计里的对照概念本质相同】。于是可以得到拒绝域、$C\boldsymbol{\mu}$置信域和$\mathbf{c}^\top\boldsymbol{\mu}$同时置信区间：
+    \end{aligned}$。实际上，这里的矩阵$C_1$可以推广到任意矩阵$C\in\R^{(q-1)\times q}$，只要满足$C\mathbf{1}=\mathbf{0}$且行满秩即可，此时$C$也称为对照矩阵【和试验设计里的对照概念本质相同】。于是可以得到拒绝域、$C\boldsymbol{\mu}$置信域和$\mathbf{c}^\top\boldsymbol{\mu}$同时置信区间：
     $$
     \begin{aligned}
     T^2 &= n\overline{\mathbf{x}}^\top C^\top(CSC^\top)^{-1}C\overline{\mathbf{x}} > T^2_{q-1, n-1}(\alpha)\\
@@ -587,19 +587,19 @@ $$
 \mathbf{x}_{l k r}=\boldsymbol{\mu} + \boldsymbol{\tau}_l + \boldsymbol{\beta}_k + \boldsymbol{\gamma}_{l k}+\boldsymbol{\epsilon}_{l k r},
 $$
 其中$\displaystyle\sum_{l=1}^g \boldsymbol{\tau}_l = \sum_{k=1}^b \boldsymbol{\beta}_k = \sum_{l=1}^g \boldsymbol{\gamma}_{l k} = \sum_{k=1}^b \boldsymbol{\gamma}_{l k} = \mathbf{0}$，$\boldsymbol{\tau}_l,\boldsymbol{\beta}_k$和$\boldsymbol{\gamma}_{lk}$分别代表两个因素的主效应和交互效应。
-+ 首先考虑交互效应假设的检验：$H_{01}:\boldsymbol{\gamma}_{l k}=\mathbf{0},\ \forall l,k\quad\text{vs}\quad H_1: \text{Not }H_{11}$，如果不拒绝原假设，那么再检验两个主效应假设：
++ 首先考虑交互效应假设的检验：$H_{01}:\boldsymbol{\gamma}_{l k}=\mathbf{0},\ \forall l,k\quad\text{vs}\quad H_1: \text{Not }H_{01}$，如果不拒绝原假设，那么再检验两个主效应假设：
     $$
     \begin{aligned}
     H_{02} &: \boldsymbol{\tau}_l = \mathbf{0} \ \forall l \quad \text{vs} \quad H_{12} : \text{Not } H_{02}, \\
     H_{03} &: \boldsymbol{\beta}_k = \mathbf{0} \ \forall k \quad \text{vs} \quad H_{13} : \text{Not } H_{03},
     \end{aligned}
     $$
-+ 平方和分解（从上到下分别为因素1平方和、因素2平方和、交互平方和与残差平方和）：
++ 平方和分解（从上到下分别为因素1平方和、因素2平方和、交互平方和与残差平方和）及在原假设下服从的分布：
     $$
     \begin{aligned}
     \text{SSP}_{\text{fac1}} &= \sum_{l=1}^g bn(\overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}})(\overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}})^\top \sim W_p(g - 1, \Sigma), \\
     \text{SSP}_{\text{fac2}} &= \sum_{k=1}^b gn(\overline{\mathbf{x}}_{\cdot k} - \overline{\mathbf{x}})(\overline{\mathbf{x}}_{\cdot k} - \overline{\mathbf{x}})^\top \sim W_p(b - 1, \Sigma), \\
-    \text{SSP}_{\text{int}} &= \sum_{l=1}^g \sum_{k=1}^b (\overline{\mathbf{x}}_{lk} - \overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}}_{\cdot k} + \overline{\mathbf{x}})(\overline{\mathbf{x}}_{lk} - \overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}}_{\cdot k} + \overline{\mathbf{x}})^\top \sim W_p((g - 1)(b - 1), \Sigma), \\
+    \text{SSP}_{\text{int}} &= \sum_{l=1}^g \sum_{k=1}^b n(\overline{\mathbf{x}}_{lk} - \overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}}_{\cdot k} + \overline{\mathbf{x}})(\overline{\mathbf{x}}_{lk} - \overline{\mathbf{x}}_{l\cdot} - \overline{\mathbf{x}}_{\cdot k} + \overline{\mathbf{x}})^\top \sim W_p((g - 1)(b - 1), \Sigma), \\
     \text{SSP}_{\text{res}} &= \sum_{l=1}^g \sum_{k=1}^b \sum_{r=1}^n (\mathbf{x}_{lkr} - \overline{\mathbf{x}}_{lk\cdot})(\mathbf{x}_{lkr} - \overline{\mathbf{x}}_{lk\cdot})^\top \sim W_p(gb(n - 1), \Sigma)
     \end{aligned}
     $$
