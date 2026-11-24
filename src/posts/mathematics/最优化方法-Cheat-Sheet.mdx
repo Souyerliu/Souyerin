@@ -12,7 +12,7 @@ sticky: true
 # 引言
 什么是优化？其本质是在将问题进行数学建模后求出最优解的过程。一般的优化问题包括：目标函数、不等式/等式约束函数（可选）、优化（决策）变量与变量空间。
 + 最优化理论主要研究的内容包括解决的方法（算法），为什么方法有效（理论）以及如何实现（软件/编程）。
-+ 在本课程中，主要研究凸优化问题，主要因为：
++ 在本课程中，主要研究凸优化问题，因为：
     + 凸优化理论已得到较为充分的研究，有很多高效且可靠的算法
     + 很多现实问题可以转化为凸优化问题
     + 对凸优化问题的解决思路可以指导解决更一般的问题（非凸优化）
@@ -198,11 +198,11 @@ $$
         + 特别地，对于$\ell_2$范数$\|\cdot\|_2$得到的范数锥也称为二阶锥。
     + 法向锥：对于凸集$C$和点$x_0 \in C$，法向锥定义为$N_C(x_0) = \{y : y^\top (x - x_0) \le 0, \forall x \in C\}$
     + 半正定锥：首先定义
-        + $n \times n$对称矩阵集 $\boldsymbol{S}^n = \{\boldsymbol{X} \in \mathbb{R}^{n \times n} : \boldsymbol{X} = \boldsymbol{X}^\top\}$
-        + $n \times n$对称半正定矩阵集（$\forall \boldsymbol{z} \in \mathbb{R}^n, \boldsymbol{z}^\top \boldsymbol{X} \boldsymbol{z} \ge 0$）: $\boldsymbol{S}_+^n = \{\boldsymbol{X} \in \boldsymbol{S}^n : \boldsymbol{X} \succeq 0\}$
-        + $n \times n$对称正定矩阵集 $\boldsymbol{S}_{++}^n = \{\boldsymbol{X} \in \boldsymbol{S}^n : \boldsymbol{X} \succ 0\}$
+        + $n \times n$对称矩阵集 $\mathbb{S}^n = \{\boldsymbol{X} \in \mathbb{R}^{n \times n} : \boldsymbol{X} = \boldsymbol{X}^\top\}$
+        + $n \times n$对称半正定矩阵集（$\forall \boldsymbol{z} \in \mathbb{R}^n, \boldsymbol{z}^\top \boldsymbol{X} \boldsymbol{z} \ge 0$）: $\mathbb{S}_+^n = \{\boldsymbol{X} \in \mathbb{S}^n : \boldsymbol{X} \succeq 0\}$
+        + $n \times n$对称正定矩阵集 $\mathbb{S}_{++}^n = \{\boldsymbol{X} \in \mathbb{S}^n : \boldsymbol{X} \succ 0\}$
 
-        可以证明$\boldsymbol{S}_+^n$是凸锥。
+        可以证明$\mathbb{S}_+^n$是凸锥。
 ### 凸集与超平面
 + 超平面分割定理：假设凸集$C, D$非空且$C \cap D = \varnothing$，则有一个超平面分割它们，即存在$\boldsymbol{a} \neq 0, b$，使得
     $$
@@ -601,3 +601,189 @@ $$
 由此可见，加速近端梯度下降中，趋势的权重随迭代步数变化（逐渐趋向$1$）
 + 第一步迭代为普通的近端梯度下降，而之后的$\boldsymbol{v}$都携带了部分上一步迭代的趋势（动量）
 + 当$h = 0$时，算法称为加速的梯度下降算法。
+
+# 典型凸优化问题
+这里我们将介绍一系列典型的凸优化问题，它们都可以称作“xx规划”，并且呈现层层包含的关系。
+## 线性规划（LP）
+线性规划问题一般具有如下形式：
+$$
+\begin{aligned}
+\min_{\boldsymbol{x}}\quad&\boldsymbol{c}^\top\boldsymbol{x}\\
+\text{s.t.}\quad & G\boldsymbol{x}\preceq\boldsymbol{h}\\
+&A\boldsymbol{x}=\boldsymbol{b}
+\end{aligned}
+$$
+其可行域可以看作一个多面体，从而可以通过单纯形法解决（由Dantzig提出），即在一个凸多面体的顶点上，顺着边一步步迭代得到最优解。
++ 线性规划的标准形式为
+    $$
+    \begin{aligned}
+    \min_{\boldsymbol{x}}\quad&\boldsymbol{c}^\top\boldsymbol{x}\\
+    \text{s.t.}\quad&A\boldsymbol{x}=\boldsymbol{b}\\
+    &\boldsymbol{x}\succeq 0
+    \end{aligned}
+    $$
+    任何线性规划都可以转化为上述标准形式。具体方法为加入非负松弛变量，并将原有变量分为正部与负部之差。
+## 二次规划（QP）
+（凸）二次规划的一般形式如下：
+$$
+\begin{aligned}
+\min_{\boldsymbol{x}} \quad & \frac{1}{2}\boldsymbol{x}^{\top}P\boldsymbol{x} + \boldsymbol{q}^{\top}\boldsymbol{x} \\
+\text{s.t.} \quad & G\boldsymbol{x} \preceq \boldsymbol{h} \\
+& A\boldsymbol{x} = \boldsymbol{b}
+\end{aligned}
+$$
+其中$P\in\mathbb{S}_+^n$，这样目标函数就是凸函数。几何上可以理解为在多面体中找二次凸函数的最小值点。
++ 二次规划的标准形式与线性规划的标准形式类似，只需将后者的目标函数换为二次凸函数即可。
+## 半正定规划（SDP）
+在介绍半正定规划之前，首先需要引入基于矩阵的内积和偏序关系：
++ Frobenius内积：对任意$\boldsymbol{X},\boldsymbol{Y}\in\mathbb{S}_+^n$，其Frobenius内积定义为
+    $$
+    \boldsymbol{X}\bullet\boldsymbol{Y}=\sum_{i=1}^n\sum_{j=1}^nx_{ij}y_{ij}=\text{tr}(\boldsymbol{XY})
+    $$
++ Loewner偏序：对任意$\boldsymbol{X},\boldsymbol{Y}\in\mathbb{S}_+^n$，有
+    $$
+    \boldsymbol{X}\succeq\boldsymbol{Y}\iff\boldsymbol{X}-\boldsymbol{Y}\in\mathbb{S}_+^n
+    $$
+
+由此我们就能定义半正定规划的一般形式：
+$$
+\begin{aligned}
+\min_{\boldsymbol{x}} \quad & \boldsymbol{c}^{\top} \boldsymbol{x} \\
+\text{s.t.} \quad & x_1 F_1 + \cdots + x_n F_n \preceq F_0 \\
+& A\boldsymbol{x} = \boldsymbol{b}
+\end{aligned}
+$$
+其中$F_i\in\mathbb{S}^d,i=0,\cdots,n,A\in\R^{m\times n}$。可以证明线性规划和凸二次规划都是半正定规划的特例。
++ 半正定规划的标准形式：
+$$
+\begin{aligned}
+\min_{\boldsymbol{X}} \quad & C \bullet \boldsymbol{X} \\
+\text{s.t.} \quad & A_i \bullet \boldsymbol{X} = b_i, \quad i = 1, \dots, m \\
+& \boldsymbol{X} \succeq 0
+\end{aligned}
+$$
+其中$C,A_i,\boldsymbol{X}\in\mathbb{S}^d$。
+## 锥规划（CP）
+锥规划的一般形式为
+$$
+\begin{aligned}
+\min_{\boldsymbol{x}} \quad & \boldsymbol{c}^{\top} \boldsymbol{x} \\
+\text{s.t.} \quad & A\boldsymbol{x} = \boldsymbol{b} \\
+& D(\boldsymbol{x})+d\in K
+\end{aligned}
+$$
+其中
++ $\boldsymbol{x}, \boldsymbol{c} \in \mathbb{R}^n, A \in \mathbb{R}^{m \times n}, \boldsymbol{b} \in \mathbb{R}^m$
++ 对于欧式空间$Y$，$D: \mathbb{R}^n \to Y$是一个线性映射，$d \in Y$
++ $K \subseteq Y$是一个闭的凸锥
+
+特别的，当$Y=\R^r,K=\R_+^r$时即为线性规划，当$Y=\mathbb{S}^d,K=\mathbb{S}_+^d$时即为半正定规划。
++ 另外，在锥规划与凸二次规划之间还有一种规划称作二次锥规划（SOCP），这里不详细展开。【可参见CS 127笔记】
+
+# 对偶性
+对偶性是凸优化理论中另一个非常重要的概念，是许多优化算法的理论基础。
+## 线性规划中的对偶
+给定$\boldsymbol{c} \in \mathbb{R}^n, A \in \mathbb{R}^{m \times n}, \boldsymbol{b} \in \mathbb{R}^m, G \in \mathbb{R}^{r \times n}, \boldsymbol{h} \in \mathbb{R}^r$，可以将下述线性规划问题（左边）转化为右边的对偶问题：
+$$
+\begin{array}{cc}
+\begin{aligned}
+\min_{\boldsymbol{x} \in \mathbb{R}^n} \quad & \boldsymbol{c}^\top \boldsymbol{x} \\
+\text{s.t.} \quad & A\boldsymbol{x} = \boldsymbol{b} \\
+& G\boldsymbol{x} \preceq \boldsymbol{h}
+\end{aligned}
+&\quad\Longrightarrow\quad
+\begin{aligned}
+\max_{\boldsymbol{u}, \boldsymbol{v}} \quad & -\boldsymbol{b}^\top \boldsymbol{u} - \boldsymbol{h}^\top \boldsymbol{v} \\
+\text{s.t.} \quad & -A^\top \boldsymbol{u} - G^\top \boldsymbol{v} = \boldsymbol{c} \\
+& \boldsymbol{v} \succeq 0
+\end{aligned}
+\end{array}
+$$
+对这一转换可以从两种角度理解：
+1. 对任意$\boldsymbol{u}\in\R^{m},\boldsymbol{v}\in\R_+^r$，只要$\boldsymbol{x}$属于可行域，就有
+    $$
+    \boldsymbol{u}^{\top}(A\boldsymbol{x} - \boldsymbol{b}) + \boldsymbol{v}^{\top}(G\boldsymbol{x} - \boldsymbol{h}) \leq 0 \iff (-A^{\top}\boldsymbol{u} - G^{\top}\boldsymbol{v})^{\top}\boldsymbol{x} \geq -\boldsymbol{b}^{\top}\boldsymbol{u} - \boldsymbol{h}^{\top}\boldsymbol{v}
+    $$
+    取$-A^{\top}\boldsymbol{u} - G^{\top}\boldsymbol{v}=\boldsymbol{c}$时对应的$\boldsymbol{u},\boldsymbol{v}$，此时得到的$-\boldsymbol{b}^{\top}\boldsymbol{u} - \boldsymbol{h}^{\top}\boldsymbol{v}$就是原问题的一个下界，也是对偶问题的目标函数。
+2. （可引出后续拉格朗日函数）对任意$\boldsymbol{u}\in\R^{m},\boldsymbol{v}\in\R_+^r$，以及可行域中的$\boldsymbol{x}$，有
+    $$
+    \boldsymbol{c}^{\top} \boldsymbol{x} \geq \boldsymbol{c}^{\top} \boldsymbol{x} + \boldsymbol{u}^{\top}(A\boldsymbol{x} - \boldsymbol{b}) + \boldsymbol{v}^{\top}(G\boldsymbol{x} - \boldsymbol{h}) \triangleq L(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{v})
+    $$
+    现在我们对$L(\boldsymbol{x}, \boldsymbol{u}, \boldsymbol{v})$关于$\boldsymbol{x}$最小化，记作$g(\boldsymbol{u},\boldsymbol{v})$（可以证明原始问题最优解$f^*\geq g(\boldsymbol{u},\boldsymbol{v})$）。而
+    $$
+    \begin{aligned}
+    g(\boldsymbol{u}, \boldsymbol{v}) &= \min_{\boldsymbol{x} \in \mathbb{R}^n} \left\{ (\boldsymbol{c} + A^{\top} \boldsymbol{u} + G^{\top} \boldsymbol{v})^{\top} \boldsymbol{x} - \boldsymbol{b}^{\top} \boldsymbol{u} - \boldsymbol{h}^{\top} \boldsymbol{v} \right\} \\
+    &= \begin{cases} -\boldsymbol{b}^{\top} \boldsymbol{u} - \boldsymbol{h}^{\top} \boldsymbol{v}, & \text{if } \boldsymbol{c} + A^{\top} \boldsymbol{u} + G^{\top} \boldsymbol{v} = 0, \\ -\infty, & \text{otherwise.} \end{cases}
+    \end{aligned}
+    $$
+    因此对$g(\boldsymbol{u},\boldsymbol{v})$关于$(\boldsymbol{u},\boldsymbol{v})$最大化就是上面的对偶问题。其最优值满足$g^*\leq f^*$（即弱对偶性，下面会详细阐述）
+## 一般问题的对偶
++ 首先我们定义拉格朗日函数：考虑优化问题（不一定凸）
+    $$
+        \begin{aligned}
+        \min_{\boldsymbol{x}} \quad & f_0(\boldsymbol{x}) \\
+        \text{s.t.} \quad & f_i(\boldsymbol{x}) \leq 0, \quad i = 1, \dots, m, \\
+        & h_j(\boldsymbol{x}) = 0, \quad j = 1, \dots, p
+        \end{aligned}
+    $$
+    其拉格朗日函数定义为
+    $$
+    L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}) = f_0(\boldsymbol{x}) + \sum_{i=1}^{m} \lambda_i f_i(\boldsymbol{x}) + \sum_{j=1}^{p} \nu_j h_j(\boldsymbol{x})
+    $$
+    其中$\boldsymbol{\lambda}\in\R_+,\boldsymbol{\nu}\in\R^p$。
+    + 拉格朗日函数具有下述重要性质：对于每个可行点$\tilde{\boldsymbol{x}}$和任意$\boldsymbol{\lambda}\succeq 0,\boldsymbol{\nu}$，
+        $$
+        f_0(\tilde{\boldsymbol{x}})\geq L(\tilde{\boldsymbol{x}}, \boldsymbol{\lambda}, \boldsymbol{\nu})
+        $$
++ 基于拉格朗日函数，我们可以定义拉格朗日对偶函数：记$f^*$为上述问题最优解，$C$为可行域，那么有
+    $$
+    f^* \geq \min_{\boldsymbol{x} \in C} L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}) \geq \min_{\boldsymbol{x}} L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}) \triangleq g(\boldsymbol{\lambda}, \boldsymbol{\nu})
+    $$
+    称$g(\boldsymbol{\lambda}, \boldsymbol{\nu})$为拉格朗日对偶函数。而满足$\boldsymbol{\lambda}\succeq 0$和$g(\boldsymbol{\lambda}, \boldsymbol{\nu})>-\infty$的$(\boldsymbol{\lambda}, \boldsymbol{\nu})$称为对偶可行点。
++ 由此我们便能定义一般优化问题的对偶问题：
+    $$
+    \begin{aligned}
+    \max_{\boldsymbol{\lambda},\boldsymbol{\nu}}\quad &g(\boldsymbol{\lambda},\boldsymbol{\nu})\\
+    \text{s.t.}\quad &\boldsymbol{\lambda}\succeq 0
+    \end{aligned}
+    $$
++ 弱对偶性：对于上述对偶问题，记其最优解为$g^*$，则有$g^*\leq f^*$。其推导如下：
+    + 因为对任意$\boldsymbol{x}$，拉格朗日函数$L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu})$关于$\boldsymbol{\lambda}, \boldsymbol{\nu}$极大化可得
+        $$
+        \max_{\boldsymbol{\lambda} \succeq 0, \boldsymbol{\nu}} L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}) = 
+        \begin{cases} 
+        f_0(\boldsymbol{x}) & \text{if } \boldsymbol{x} \in C \\ 
+        +\infty & \text{otherwise} 
+        \end{cases}
+        $$
+        因此$f^*$和$g^*$都可以用拉格朗日函数表示：
+        $$
+        f^* = \min_{\boldsymbol{x}} \max_{\boldsymbol{\lambda} \succeq 0, \boldsymbol{\nu}} L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}), 
+        \qquad 
+        g^* = \max_{\boldsymbol{\lambda} \succeq 0, \boldsymbol{\nu}} \min_{\boldsymbol{x}} L(\boldsymbol{x}, \boldsymbol{\lambda}, \boldsymbol{\nu})
+        $$
+        而根据min-max不等式即可得到弱对偶性。
++ 另一方面，由定义可得
+    $$
+    \begin{aligned}
+    g(\boldsymbol{\lambda}, \boldsymbol{\nu}) &= \min_{\boldsymbol{x}} \left\{ f_0(\boldsymbol{x}) + \sum_{i=1}^m \lambda_i f_i(\boldsymbol{x}) + \sum_{j=1}^p \nu_j h_j(\boldsymbol{x}) \right\} \\
+    &= - \max_{\boldsymbol{x}} \left\{ -f_0(\boldsymbol{x}) - \sum_{i=1}^m \lambda_i f_i(\boldsymbol{x}) - \sum_{j=1}^p \nu_j h_j(\boldsymbol{x}) \right\}
+    \end{aligned}
+    $$
+    而括号内函数是$(\boldsymbol{\lambda}, \boldsymbol{\nu})$的仿射函数，所以是凸函数。又由逐点最大值保凸性，可以得到$g$为凹函数，从而得到对偶问题一定是凸优化问题（即使原始问题非凸）。
++ 强对偶性：如果在某些问题中$f^*=g^*$，那么就称其具有强对偶性。
+    + Slater条件（强对偶性充分条件）：若原问题是凸优化问题，且至少存在一个严格可行点$\boldsymbol{x}\in\R^n$，即
+        $$
+        \begin{cases}
+        f_i(\boldsymbol{x}) < 0, \quad i = 1, \dots, m, \\
+        h_j(\boldsymbol{x}) = 0, \quad j = 1, \dots, p
+        \end{cases}
+        $$
+        那么强对偶性成立。
+        > 当然，上述条件也可以弱化为非仿射不等式约束严格（即仿射不等式约束可以取等号），此时称为精细Slater条件。
+    + 可以证明，线性规划问题几乎都是强对偶的（除非其原问题与对偶问题均不可行）
++ 对偶间隔：给定原问题可行点$\boldsymbol{x}$和对偶问题可行点$\boldsymbol{\lambda},\boldsymbol{\nu}$，定义其对偶间隔为
+    $$
+    f_0(\boldsymbol{x})-g(\boldsymbol{\lambda},\boldsymbol{\nu})
+    $$
+    由弱对偶性可知：$f_0(\boldsymbol{x})-f^*\leq f_0(\boldsymbol{x})-g(\boldsymbol{\lambda},\boldsymbol{\nu})$，这可以为迭代算法的停机准则提供参考（让对偶间隔小于$\epsilon$即可）。

@@ -60,6 +60,46 @@ const mdxAutoImports = [
 import { installProcessWarningFilter } from "./src/toolkit/suppressWatcherWarning.ts";
 import themeConfig from "./src/theme.config.ts";
 
+import {
+  normalizeIndentedDisplayMath,
+  normalizeIndentedMdxDisplayMath,
+} from "./src/toolkit/normalizeIndentedDisplayMath.ts";
+
+function withLegacyIndentedMath(processor) {
+  return {
+    ...processor,
+    async createRenderer(shared) {
+      const renderer = await processor.createRenderer(shared);
+
+      return {
+        ...renderer,
+        render(content, options) {
+          return renderer.render(normalizeIndentedDisplayMath(content), options);
+        },
+      };
+    },
+  };
+}
+
+function legacyIndentedMdxMathPlugin() {
+  return {
+    name: "legacy-indented-mdx-math",
+    enforce: "pre",
+    transform(code, id) {
+      const pathname = id.split("?", 1)[0];
+      if (!pathname.endsWith(".mdx")) return undefined;
+
+      const normalized = normalizeIndentedMdxDisplayMath(code);
+      if (normalized === code) return undefined;
+
+      return {
+        code: normalized,
+        map: null,
+      };
+    },
+  };
+}
+
 // ── sitemap 排除加密文章 ────────────────────────────────────────────────
 // 加密文章内容构建后为密文，不应被搜索引擎收录（页面自身也带 noindex）。
 // sitemap integration 的 filter 拿不到 content collection，这里在配置期
@@ -169,7 +209,7 @@ export default defineConfig({
         "@": new URL("./src", import.meta.url).toString(),
       },
     },
-    plugins: [esToolkitPlugin()],
+    plugins: [legacyIndentedMdxMathPlugin(), esToolkitPlugin()],
   },
   markdown: {
     shikiConfig: {
@@ -186,26 +226,28 @@ export default defineConfig({
         transformerColorizedBrackets(),
       ],
     },
-    processor: satteri({
-      features: {
-        gfm: true,
-        math: true,
-        directive: true,
-        headingAttributes: true,
-      },
-      mdastPlugins: [
-        satteriAutoImport(mdxAutoImports),
-        satteriBreaks(),
-        satteriIns(),
-        satteriKatex(),
-        satteriEmoji(),
-        satteriRubyDirective(),
-        noteDirective(),
-        spanDirective(),
-        codeGroup(),
-        [spoiler, { title: "..." }],
-      ],
-      hastPlugins: [satteriAutolinkHeadings()],
-    }),
+    processor: withLegacyIndentedMath(
+      satteri({
+        features: {
+          gfm: true,
+          math: true,
+          directive: true,
+          headingAttributes: true,
+        },
+        mdastPlugins: [
+          satteriAutoImport(mdxAutoImports),
+          satteriBreaks(),
+          satteriIns(),
+          satteriKatex(),
+          satteriEmoji(),
+          satteriRubyDirective(),
+          noteDirective(),
+          spanDirective(),
+          codeGroup(),
+          [spoiler, { title: "..." }],
+        ],
+        hastPlugins: [satteriAutolinkHeadings()],
+      }),
+    ),
   },
 });

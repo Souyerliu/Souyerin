@@ -1,5 +1,8 @@
 // @vitest-environment jsdom
 
+import { readFileSync } from "node:fs";
+import { normalizeIndentedMdxDisplayMath } from "./normalizeIndentedDisplayMath";
+
 import { markdownToHtml, mdxToJs } from "satteri";
 import { describe, expect, it } from "vitest";
 
@@ -31,5 +34,32 @@ describe("math 代码围栏渲染", () => {
     expect(code).not.toContain("language-math");
     expect(code).not.toContain("katex-html");
     expect(code).toContain("language-js");
+  });
+  it("renders the multivariate statistics article without dollar delimiters", async () => {
+    const source = readFileSync(
+      "src/posts/mathematics/\u591a\u5143\u7edf\u8ba1\u5206\u6790-Cheat-Sheet.mdx",
+      "utf8",
+    ).replace(/^---[\s\S]*?---/, "");
+    const { code } = await mdxToJs(normalizeIndentedMdxDisplayMath(source), {
+      features: { math: true, gfm: true },
+      mdastPlugins: [katex()],
+    });
+    expect(code).not.toContain("$$");
+    expect(code).toContain("valueBase64");
+    expect(code).toContain("displayMode");
+  });
+
+  it("renders the linear models article without dollar delimiters", async () => {
+    const source = readFileSync(
+      "src/posts/mathematics/\u7ebf\u6027\u6a21\u578b-Cheat-Sheet.mdx",
+      "utf8",
+    ).replace(/^---[\s\S]*?---/, "");
+    const { code } = await mdxToJs(normalizeIndentedMdxDisplayMath(source), {
+      features: { math: true, gfm: true },
+      mdastPlugins: [katex()],
+    });
+    expect(code).not.toContain("$$");
+    expect(code).toContain("valueBase64");
+    expect(code).toContain("displayMode");
   });
 });

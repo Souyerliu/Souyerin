@@ -1,17 +1,22 @@
 ---
+import { Buffer } from "node:buffer";
 import katex from "katex";
 
 interface Props {
-  value: string;
+  value?: string;
+  valueBase64?: string;
   displayMode?: boolean;
   throwOnError?: boolean;
 }
 
-const { value, displayMode = false, throwOnError = false } = Astro.props;
+const { value = "", valueBase64, displayMode = false, throwOnError = false } = Astro.props;
+const mathValue = valueBase64
+  ? Buffer.from(valueBase64, "base64").toString("utf8")
+  : value;
 
 let html: string;
 try {
-  html = katex.renderToString(value, {
+  html = katex.renderToString(mathValue, {
     displayMode,
     throwOnError,
   });
