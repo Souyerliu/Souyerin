@@ -512,7 +512,41 @@ cover: ./线性模型-练习题集/lm.png
       <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
         <summary class="mdx-collapse__summary">点击查看答案</summary>
         <div class="mdx-collapse__content">
-
+        1. 记$\displaystyle S_{xx}=\sum_{i=1}^n(x_i-\overline{x})^2,S_{xy}=\sum_{i=1}^n(x_i-\overline{x})(Y_i-\overline{Y})$，则
+            $$
+            \hat{\beta}_1^{\text{LS}}=\frac{S_{xy}}{S_{xx}},\quad \hat{\beta}_0^{\text{LS}}=\overline{Y}-\hat{\beta}_1^{\text{LS}}\overline{x}
+            $$
+            于是
+            $$
+            \begin{aligned}
+            \mathrm{Var}(\hat{\beta}_1^{\text{LS}})&=\mathrm{Var}\left(\frac{\sum_{i=1}^n(x_i-\overline{x})Y_i}{S_{xx}}\right)=\sigma^2\sum_{i=1}^n\frac{(x_i-\overline{x})^2}{S_{xx}^2}=\frac{\sigma^2}{S_{xx}},\\
+            \mathrm{Var}(\hat{\beta}_0^{\text{LS}})&=\sum_i\left[\frac{1}{n}-\frac{\overline{x}(x_i-\overline{x})}{S_{xx}}\right]Y_i\\
+            &=\sigma^2\sum_i\left[\frac{1}{n^{2}}-\frac{2\overline{x}(x_i-\overline{x})}{nS_{xx}}+\frac{\overline{x}^{2}(x_i-\overline{x})^{2}}{S_{xx}^{2}}\right]\\
+            &=\sigma^{2}\left(\frac{1}{n}+\frac{\overline{x}^{2}}{S_{xx}}\right),\\
+            \mathrm{Var}(\hat{\beta}_0^{\text{LS}}+x_m\hat{\beta}_1^{\text{LS}})&=\mathrm{Var}(\overline{Y}+\hat{\beta}_1(x_m-\overline{x}))\\
+            &=\mathrm{Var}(\overline{Y})+\mathrm{Var}\left(\hat{\beta}_1(x_m-\overline{x})\right)+\underbrace{\mathrm{Cov}(\overline{Y},\hat{\beta}_1)}_{=0}(x_m-\overline{x})\\
+            &=\frac{\sigma^{2}}{n}+\frac{\sigma^{2}(x_m-\overline{x})^{2}}{S_{xx}}.
+            \end{aligned}
+            $$
+            而当$n\to\infty$时，
+            $$
+            \overline{x}=\frac{1}{n}\sum_{i=1}^n x_i\to x_m,\quad S_{xx}\to\sum_{i=1}^{m-1}(x_i-x_m)^2\triangleq D.
+            $$
+            因此
+            $$
+            \begin{aligned}
+            &\lim_{n\to\infty}\mathrm{Var}(\hat{\beta}_0^{\text{LS}})=\frac{\sigma^2x_m^2}{D},\quad \lim_{n\to\infty}\mathrm{Var}(\hat{\beta}_1^{\text{LS}})=\frac{\sigma^2}{D},\\
+            &\lim_{n\to\infty}\mathrm{Var}(\hat{\beta}_0^{\text{LS}}+x_m\hat{\beta}_1^{\text{LS}})=0.
+            \end{aligned}
+            $$
+        2. 由上一问结果可得
+            $$
+            \lim_{n\to\infty}\operatorname{Var}(\hat{\beta}_0^{LS})
+            =\lim_{n\to\infty}\operatorname{Var}(\hat{\beta}_1^{LS})=0
+            \iff S_{xx,n}\to\infty,\ 
+            \frac{\overline{x}_n^{2}}{S_{xx,n}}\to 0
+            $$
+            实际上，$S_{xx,n}$反映了样本点的信息量，而$\dfrac{\overline{x}_n^{2}}{S_{xx,n}}$则控制了样本中心偏离原点的速度。
         </div>
       </details>
     </div>
@@ -522,18 +556,66 @@ cover: ./线性模型-练习题集/lm.png
       考虑线性回归模型
       $$
       \begin{cases}
-      \boldsymbol{Y}=\boldsymbol{X}\boldsymbol{\beta}+\epsilon,\quad \epsilon\sim(0,\sigma^2 I_n);\\
+      \boldsymbol{Y}=\boldsymbol{X}\boldsymbol{\beta}+\epsilon,\quad \epsilon\sim(0,\sigma^2\mathbf{I}_n);\\
       A\boldsymbol{\beta}=\boldsymbol{c},
       \end{cases}
       $$
-      记$\hat{\boldsymbol{Y}}_R=\boldsymbol{X}\hat{\boldsymbol{\beta}}_R$为线性约束下最小二乘估计对应的拟合值，$\hat{\boldsymbol{Y}}=\boldsymbol{X}\hat{\boldsymbol{\beta}}_{\mathrm{LS}}$为无约束最小二乘估计对应的拟合值。若$\boldsymbol{X}$列满秩，试证明：
-      1. $\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}_R\|^2=\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2+\|\hat{\boldsymbol{Y}}-\hat{\boldsymbol{Y}}_R\|^2$；
-      2. 若$\epsilon$服从正态分布，则$\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2$与$\|\hat{\boldsymbol{Y}}-\hat{\boldsymbol{Y}}_R\|^2$相互独立。
+      其中$A$行满秩。记$\hat{\boldsymbol{Y}}_R=\boldsymbol{X}\hat{\boldsymbol{\beta}}_R$为线性约束下最小二乘估计对应的拟合值，$\hat{\boldsymbol{Y}}=\boldsymbol{X}\hat{\boldsymbol{\beta}}_{\mathrm{LS}}$为无约束最小二乘估计对应的拟合值。若$\boldsymbol{X}$列满秩，试证明：
+      1. $\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}_R\|^2=\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2+\|\hat{\boldsymbol{Y}}-\hat{\boldsymbol{Y}}_R\|^2$；【这里$\|\cdot\|$表示Frobenius范数】
+      2. 若$\epsilon$服从正态分布，则$\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2$与$\|\hat{\boldsymbol{Y}}-\hat{\boldsymbol{Y}}_R\|^2$相互独立；
+      3. $\dfrac{\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}_R\|^2}{\sigma^2}\sim\chi^2(\text{rank}(A))$。
       </div>
       <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
         <summary class="mdx-collapse__summary">点击查看答案</summary>
         <div class="mdx-collapse__content">
-
+        1. 证明：线性回归的约束最小二乘法得到的参数估计为
+            $$
+            \hat{\boldsymbol{\beta}}_R = \hat{\boldsymbol{\beta}}_{\text{LS}} - (\boldsymbol{X}^\top \boldsymbol{X})^{-1} A^\top [A(\boldsymbol{X}^\top \boldsymbol{X})^{-1} A^\top]^{-1} (A\hat{\boldsymbol{\beta}} - \boldsymbol{c})
+            $$
+            因此
+            $$
+            \begin{aligned}
+            \boldsymbol{Y} - \hat{\boldsymbol{Y}}_R &= \boldsymbol{Y} - \boldsymbol{X}\hat{\boldsymbol{\beta}}_R \\
+            &= \boldsymbol{Y} - \boldsymbol{X}\hat{\boldsymbol{\beta}}_{\text{LS}} + \boldsymbol{X}(\boldsymbol{X}^\top \boldsymbol{X})^{-1} A^\top [A(\boldsymbol{X}^\top \boldsymbol{X})^{-1} A^\top]^{-1} (A\hat{\boldsymbol{\beta}} - \boldsymbol{c}) \\
+            &= \boldsymbol{Y} - \hat{\boldsymbol{Y}} + \hat{\boldsymbol{Y}} - \hat{\boldsymbol{Y}}_R
+            \end{aligned}
+            $$
+            又因为$\boldsymbol{Y} - \hat{\boldsymbol{Y}}=\boldsymbol{NY}$，于是
+            $$
+            (\boldsymbol{Y} - \hat{\boldsymbol{Y}})^\top (\hat{\boldsymbol{Y}} - \hat{\boldsymbol{Y}}_R) = \boldsymbol{Y}^\top \boldsymbol{N} \boldsymbol{X} (\boldsymbol{X}^\top \boldsymbol{X})^{-1} A^\top [A(\boldsymbol{X}^\top \boldsymbol{X})^{-1} A^\top]^{-1} (A\hat{\boldsymbol{\beta}} - \boldsymbol{c}) = 0.
+            $$
+            因此$\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}_R\|^2=\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2+\|\hat{\boldsymbol{Y}}-\hat{\boldsymbol{Y}}_R\|^2$。
+        2. 因为
+            $$
+            \begin{aligned}
+            \boldsymbol{Y} - \hat{\boldsymbol{Y}} &= \boldsymbol{N}\boldsymbol{Y} = \boldsymbol{N}(\boldsymbol{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}) = \boldsymbol{N}\boldsymbol{\epsilon}\\
+            \Longrightarrow \|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2&=\boldsymbol{\epsilon}^\top \boldsymbol{N}^\top \boldsymbol{N} \boldsymbol{\epsilon} = \boldsymbol{\epsilon}^\top \boldsymbol{N} \boldsymbol{\epsilon}\\
+            \hat{\boldsymbol{Y}} - \hat{\boldsymbol{Y}}_R &= (\boldsymbol{P} - \boldsymbol{P}_R)\boldsymbol{Y} = (\boldsymbol{P} - \boldsymbol{P}_R)(\boldsymbol{X}\boldsymbol{\beta} + \boldsymbol{\epsilon})\\
+            \Longrightarrow\|\hat{\boldsymbol{Y}} - \hat{\boldsymbol{Y}}_R\|^2 &= \boldsymbol{\epsilon}^\top (\boldsymbol{P} - \boldsymbol{P}_R)^\top (\boldsymbol{P} - \boldsymbol{P}_R) \boldsymbol{\epsilon} = \boldsymbol{\epsilon}^\top (\boldsymbol{P} - \boldsymbol{P}_R) \boldsymbol{\epsilon}
+            \end{aligned}
+            $$
+            而
+            $$
+            \begin{aligned}
+            \boldsymbol{N}(\boldsymbol{P} - \boldsymbol{P}_R) &= (\boldsymbol{I} - \boldsymbol{P})(\boldsymbol{P} - \boldsymbol{P}_R) \\[1ex]
+            &= \boldsymbol{P} - \boldsymbol{P}_R - \boldsymbol{P}^2 + \boldsymbol{P}\boldsymbol{P}_R \\[1ex]
+            &= \boldsymbol{P} - \boldsymbol{P}_R - \boldsymbol{P} + \boldsymbol{P}_R = \boldsymbol{0}
+            \end{aligned}
+            $$
+            由正态分布下二次型独立性定理，$\|\boldsymbol{Y}-\hat{\boldsymbol{Y}}\|^2$与$\|\hat{\boldsymbol{Y}}-\hat{\boldsymbol{Y}}_R\|^2$相互独立。
+        3. 因为
+            $$
+            \|\hat{\boldsymbol{Y}} - \hat{\boldsymbol{Y}}_R\|^2 = (A\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{c})^\top \left[A(\boldsymbol{X}^\top \boldsymbol{X})^{-1}A^\top\right]^{-1} (A\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{c}),
+            $$
+            而
+            $$
+            A\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{c} \sim N(0, \sigma^2 A(\boldsymbol{X}^\top \boldsymbol{X})^{-1}A^\top),
+            $$
+            所以
+            $$
+            \left[\sigma^2 A(\boldsymbol{X}^\top \boldsymbol{X})^{-1}A^\top\right]^{-1/2} (A\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{c}) \sim N(0, \mathbf{I}_{\text{rank}(A)}).
+            $$
+            于是命题得证。
         </div>
       </details>
     </div>
@@ -548,14 +630,420 @@ cover: ./线性模型-练习题集/lm.png
       <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
         <summary class="mdx-collapse__summary">点击查看答案</summary>
         <div class="mdx-collapse__content">
-
+        证明：记矩阵$\boldsymbol{A}= \boldsymbol{P}_{\mathbf{1}_n} + \boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}} $，下面我们证明$\boldsymbol{A}$为对称幂等矩阵，且$\mathcal{M}(\boldsymbol{A})=\mathcal{M}(\boldsymbol{X})$（这样由正交子空间唯一性可得$\boldsymbol{A}=\boldsymbol{P_X}$）：
+        1. 对称性：显然满足；
+        2. 幂等性：$\boldsymbol{A}^2=\left(\boldsymbol{P}_{\mathbf{1}_n}+\boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}\right)^{2}=\boldsymbol{P}_{\mathbf{1}_n}+\boldsymbol{P}_{\mathbf{1}_n}\boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}+\boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}\boldsymbol{P}_{\mathbf{1}_n}+\boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}=\boldsymbol{P}_{\mathbf{1}_n}+\boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}=\boldsymbol{A}$
+        3. 列空间相等：
+            $$
+            \begin{aligned}
+            \boldsymbol{A}\mathbf{1}_n
+            &= \mathbf{1}_n + \boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}\mathbf{1}_n
+            = \mathbf{1}_n + \boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}\big(\tilde{\boldsymbol{X}}^{\top}\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}\big)^{-1}
+            \underbrace{\tilde{\boldsymbol{X}}^{\top}\boldsymbol{N}_{\mathbf{1}_n}\mathbf{1}_n}_{=\,0}
+            = \mathbf{1}_n,\\
+            \boldsymbol{A}\tilde{\boldsymbol{X}}
+            &= \boldsymbol{P}_{\mathbf{1}_n}\tilde{\boldsymbol{X}} + \boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}\tilde{\boldsymbol{X}}
+            = \boldsymbol{P}_{\mathbf{1}_n}\tilde{\boldsymbol{X}} + \boldsymbol{P}_{\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}}\big(\boldsymbol{P}_{\mathbf{1}_n}\tilde{\boldsymbol{X}} + \boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}\big)\\
+            &= \boldsymbol{P}_{\mathbf{1}_n}\tilde{\boldsymbol{X}} + \mathbf{0} + \boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}
+            = \tilde{\boldsymbol{X}}
+            \end{aligned}
+            $$
+            于是$\boldsymbol{AX}=\boldsymbol{X}\Longrightarrow\mathcal{M}(\boldsymbol{X})\subseteq\mathcal{M}(\boldsymbol{A})$。另一方面，对任意$\boldsymbol{y}\in\R^n$，
+            $$
+            \boldsymbol{Ay}=\mathbf{1}_n\boldsymbol{y}+\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}}\boldsymbol{y}\Longrightarrow\mathcal{M}(\boldsymbol{A})\subseteq\mathcal{M}(\mathbf{1}_n)+\mathcal{M}(\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}})
+            $$
+            又因为
+            $$
+            \begin{aligned}
+            \mathbf{1} &= \boldsymbol{X}\boldsymbol{e}_1
+            = \boldsymbol{X}\begin{pmatrix}1\\ \mathbf{0}\end{pmatrix}
+            \in \mathcal{M}(\boldsymbol{X}),\\[2mm]
+            \boldsymbol{N}_{\mathbf{1}}\tilde{\boldsymbol{X}}
+            &= \tilde{\boldsymbol{X}} - \boldsymbol{P}_{\mathbf{1}}\tilde{\boldsymbol{X}}
+            = \tilde{\boldsymbol{X}} - \mathbf{1}\cdot\tfrac{1}{n}\mathbf{1}^{\top}\tilde{\boldsymbol{X}}
+            = \boldsymbol{X}\begin{pmatrix}-\tfrac{1}{n}\mathbf{1}^{\top}\tilde{\boldsymbol{X}}\\[1mm] \boldsymbol{I}_{p-1}\end{pmatrix}
+            \in \mathcal{M}(\boldsymbol{X}).
+            \end{aligned}
+            $$
+            于是$\mathcal{M}(\mathbf{1}_n)+\mathcal{M}(\boldsymbol{N}_{\mathbf{1}_n}\tilde{\boldsymbol{X}})\subseteq\mathcal{M}(\boldsymbol{X})\Longrightarrow\mathcal{M}(\boldsymbol{A})=\mathcal{M}(\boldsymbol{X})$。
+            
+        综上，命题得证。
         </div>
       </details>
     </div>
 
     <div class="quiz-item">
       <div class="quiz-question">
+      考虑包含截距项的多元线性回归模型：
+      $$
+      \boldsymbol{Y} = \boldsymbol{X}\boldsymbol{\beta} + \epsilon
+      $$
+      其中$\boldsymbol{X} \in \mathbb{R}^{n \times p}$列满秩，随机误差向量满足$\mathbb{E}(\epsilon) = 0$，$\mathrm{Cov}(\epsilon) = \sigma^2 \mathbf{I}_n$。请证明或推导：
+
+      1. 证明$\hat{\boldsymbol{\beta}}_{\text{LS}}$是$\boldsymbol{\beta}$的无偏估计量，并求其协方差矩阵$\mathrm{Cov}(\hat{\boldsymbol{\beta}}_{\text{LS}})$。
+      2. 证明解释变量与残差正交：$\boldsymbol{X}^\top e = 0$；
+      3. 证明拟合值与残差正交：$\displaystyle\hat{\boldsymbol{Y}}^\top e = \sum_{i=1}^n \hat{Y}_i(Y_i - \hat{Y}_i) = 0$；
+      4. 证明残差和为零：$\displaystyle\sum_{i=1}^n e_i=\sum_{i=1}^n(Y_i - \hat{Y}_i)  = 0$，并由此推得$\displaystyle\sum_{i=1}^n Y_i = \sum_{i=1}^n \hat{Y}_i$。
+      5. 证明残差平方和满足$\text{RSS} = e^\top e = \epsilon^\top \boldsymbol{N}_{\boldsymbol{X}} \epsilon$；计算$\mathbb{E}(\text{RSS})$，并构造$\sigma^2$的一个无偏估计量$\hat{\sigma}^2$。
+      6. （Gauss-Markov 定理）：对任意常数矩阵$A \in \mathbb{R}^{q \times p}$，证明$A\hat{\boldsymbol{\beta}}_{\text{LS}}$是$A\boldsymbol{\beta}$的最佳线性无偏估计量（BLUE）。
       
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
+        <summary class="mdx-collapse__summary">点击查看1~3答案</summary>
+        <div class="mdx-collapse__content">
+        证明：
+        （1）由$\mathbb{E}(\epsilon)=0$知$\mathbb{E}(\boldsymbol{Y})=\boldsymbol{X}\boldsymbol{\beta}$，因此
+            $$
+            \mathbb{E}(\hat{\boldsymbol{\beta}})=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top \mathbb{E}(\boldsymbol{Y})=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{X}\boldsymbol{\beta}=\boldsymbol{\beta}
+            $$
+            故$\hat{\boldsymbol{\beta}}$是$\boldsymbol{\beta}$的无偏估计量。
+            由$\mathrm{Cov}(\boldsymbol{Y})=\mathrm{Cov}(\epsilon)=\sigma^2 \mathbf{I}_n$，有
+            $$
+            \begin{aligned}
+            \mathrm{Cov}(\hat{\boldsymbol{\beta}}) &= (\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\mathrm{Cov}(\boldsymbol{Y})\boldsymbol{X}(\boldsymbol{X}^\top\boldsymbol{X})^{-1} \\
+            &= \sigma^2(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{X}(\boldsymbol{X}^\top\boldsymbol{X})^{-1} \\
+            &= \sigma^2(\boldsymbol{X}^\top\boldsymbol{X})^{-1}
+            \end{aligned}
+            $$
+        （2）记$\boldsymbol{P}_{\boldsymbol{X}}=\boldsymbol{X}(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top$，$\boldsymbol{N}_{\boldsymbol{X}}=\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}}$，则
+            $$
+            \hat{\boldsymbol{Y}}=\boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{Y},\quad e=\boldsymbol{Y}-\hat{\boldsymbol{Y}}=\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y}
+            $$
+            容易验证$\boldsymbol{P}_{\boldsymbol{X}}$和$\boldsymbol{N}_{\boldsymbol{X}}$均为对称幂等矩阵，且满足：
+            $$
+            \boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{X}=\boldsymbol{X},\quad \boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{X}=0,\quad\boldsymbol{X}^\top \boldsymbol{N}_{\boldsymbol{X}}=0,\quad \boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{N}_{\boldsymbol{X}}=0
+            $$
+            那么拟合值与解释变量：
+            $$
+            \boldsymbol{X}^\top e=\boldsymbol{X}^\top \boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y}=0
+            $$
+        （3）拟合值与残差：
+            $$
+            \sum_{i=1}^n\hat{Y}_i(Y_i-\hat{Y}_i)=\hat{\boldsymbol{Y}}^\top e=(\boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{Y})^\top(\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y})=\boldsymbol{Y}^\top \boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y}=0.
+            $$
+        </div>
+      </details>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
+        <summary class="mdx-collapse__summary">点击查看4~6答案</summary>
+        <div class="mdx-collapse__content">
+        （4）由于模型包含截距项，全$1$向量$\mathbf{1}_n$是$\boldsymbol{X}$的一列（位于$\boldsymbol{X}$的列空间中），因此$\boldsymbol{P}_{\boldsymbol{X}}\mathbf{1}_n=\mathbf{1}_n$，进而$\boldsymbol{N}_{\boldsymbol{X}}\mathbf{1}_n=(\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}})\mathbf{1}_n=0$。于是：
+            $$
+            \sum_{i=1}^n e_i=e^\top\mathbf{1}_n=\boldsymbol{Y}^\top \boldsymbol{N}_{\boldsymbol{X}}\mathbf{1}_n=0
+            $$
+            且
+            $$
+            \sum_{i=1}^n\hat{Y}_i=\mathbf{1}_n^\top\hat{\boldsymbol{Y}}=\mathbf{1}_n^\top \boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{Y}=\mathbf{1}_n^\top\boldsymbol{Y}=\sum_{i=1}^n Y_i
+            $$
+        （5）由$\boldsymbol{N}_{\boldsymbol{X}}$对称幂等且$\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{X}=0$，残差向量可化为：
+            $$
+            e=\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y}=\boldsymbol{N}_{\boldsymbol{X}}(\boldsymbol{X}\boldsymbol{\beta}+\epsilon)=\boldsymbol{N}_{\boldsymbol{X}}\epsilon
+            $$
+            从而残差平方和满足：
+            $$
+            \text{RSS}=e^\top e=\epsilon^\top \boldsymbol{N}_{\boldsymbol{X}}^\top \boldsymbol{N}_{\boldsymbol{X}}\epsilon=\epsilon^\top \boldsymbol{N}_{\boldsymbol{X}}\epsilon
+            $$
+            对$\text{RSS}$取数学期望，利用标量等于其迹以及迹的循环不变性：
+            $$
+            \begin{aligned}
+            \mathbb{E}(e^\top e) &= \mathbb{E}(\epsilon^\top \boldsymbol{N}_{\boldsymbol{X}}\epsilon)=\mathbb{E}\big[\mathrm{tr}(\epsilon^\top \boldsymbol{N}_{\boldsymbol{X}}\epsilon)\big] \\
+            &= E\big[\mathrm{tr}(\boldsymbol{N}_{\boldsymbol{X}}\epsilon\epsilon^\top)\big]=\mathrm{tr}\big[\boldsymbol{N}_{\boldsymbol{X}}\mathbb{E}(\epsilon\epsilon^\top)\big] \\
+            &= \sigma^2\mathrm{tr}(\boldsymbol{N}_{\boldsymbol{X}})
+            \end{aligned}
+            $$
+            计算$\boldsymbol{N}_{\boldsymbol{X}}$的迹：
+            $$
+            \begin{aligned}
+            \mathrm{tr}(\boldsymbol{N}_{\boldsymbol{X}}) &= \mathrm{tr}(\mathbf{I}_n)-\mathrm{tr}\big(\boldsymbol{X}(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\big) \\
+            &= n-\mathrm{tr}\big((\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{X}\big) \\
+            &= n-\mathrm{tr}(\mathbf{I}_p)=n-p
+            \end{aligned}
+            $$
+            因此$\mathbb{E}(e^\top e)=(n-p)\sigma^2$，从而$\sigma^2$的一个无偏估计量为：
+            $$
+            \hat{\sigma}^2=\frac{e^\top e}{n-p}
+            $$
+        （6）先对任意常数矩阵$\tilde{A}\in\mathbb{R}^{q\times n}$，证明$\tilde{A}\boldsymbol{X}\hat{\boldsymbol{\beta}}_{\text{LS}}$是$\tilde{A}\boldsymbol{X}\boldsymbol{\beta}$的最佳线性无偏估计量（BLUE）。
+            设$D\boldsymbol{Y}+c$（$D\in\mathbb{R}^{q\times n}$，$c\in\mathbb{R}^q$为常数）是$\tilde{A}\boldsymbol{X}\boldsymbol{\beta}$的任意线性无偏估计。
+            + （无偏性条件）对任意$\boldsymbol{\beta}\in\mathbb{R}^p$，均有
+                $$
+                \mathbb{E}(D\boldsymbol{Y}+c)=D\boldsymbol{X}\boldsymbol{\beta}+c=\tilde{A}\boldsymbol{X}\boldsymbol{\beta}
+                $$
+                由此可得$c=0$且$D\boldsymbol{X}=\tilde{A}\boldsymbol{X}$。两边右乘$(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top$，得
+                $$
+                D\boldsymbol{P}_{\boldsymbol{X}}=\tilde{A}\boldsymbol{P}_{\boldsymbol{X}}
+                $$
+            + （方差分解与比较）：利用$\boldsymbol{P}_{\boldsymbol{X}}$和$\boldsymbol{N}_{\boldsymbol{X}}=\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}}$的对称幂等性（$\boldsymbol{P}_{\boldsymbol{X}}=\boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{P}_{\boldsymbol{X}}^\top$，$\boldsymbol{N}_{\boldsymbol{X}}=\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{N}_{\boldsymbol{X}}^\top\ge 0$），有
+                $$
+                \begin{aligned}
+                \mathrm{Cov}(D\boldsymbol{Y}) &= \sigma^2 DD^\top \\
+                &= \sigma^2 D\boldsymbol{P}_{\boldsymbol{X}}D^\top+\sigma^2 D(\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}})D^\top \\
+                &= \sigma^2 (D\boldsymbol{P}_{\boldsymbol{X}})(D\boldsymbol{P}_{\boldsymbol{X}})^\top+\sigma^2 (D\boldsymbol{N}_{\boldsymbol{X}})(D\boldsymbol{N}_{\boldsymbol{X}})^\top \\
+                &= \sigma^2 (\tilde{A}\boldsymbol{P}_{\boldsymbol{X}})(\tilde{A}\boldsymbol{P}_{\boldsymbol{X}})^\top+\sigma^2 (D\boldsymbol{N}_{\boldsymbol{X}})(D\boldsymbol{N}_{\boldsymbol{X}})^\top \\
+                &= \sigma^2 \tilde{A}\boldsymbol{P}_{\boldsymbol{X}}\tilde{A}^\top+\sigma^2 D(\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}})D^\top \\
+                &\ge \sigma^2 \tilde{A}\boldsymbol{P}_{\boldsymbol{X}}\tilde{A}^\top=\mathrm{Cov}(\tilde{A}\boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{Y})=\mathrm{Cov}(\tilde{A}\boldsymbol{X}\hat{\boldsymbol{\beta}}_{\text{LS}})
+                \end{aligned}
+                $$
+              （不等式在半正定矩阵意义下成立，因为$(D\boldsymbol{N}_{\boldsymbol{X}})(D\boldsymbol{N}_{\boldsymbol{X}})^\top\ge 0$。）
+            + （推广至$A\boldsymbol{\beta}$）：由于$\boldsymbol{X}$列满秩，对任意$A\in\mathbb{R}^{q\times p}$，令$\tilde{A}=A(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top$，则有
+                $$
+                A\boldsymbol{\beta}=A(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{X}\boldsymbol{\beta}=\tilde{A}\boldsymbol{X}\boldsymbol{\beta},\quad \tilde{A}\boldsymbol{X}\hat{\boldsymbol{\beta}}_{\text{LS}}=A\hat{\boldsymbol{\beta}}_{\text{LS}}
+                $$
+                代入上述结论即得$\mathrm{Cov}(A\hat{\boldsymbol{\beta}}_{\text{LS}})\le\mathrm{Cov}(D\boldsymbol{Y}+c)$，故$A\hat{\boldsymbol{\beta}}_{\text{LS}}$是$A\boldsymbol{\beta}$的 BLUE，证毕。
+        </div>
+      </details>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">
+      在上一题的模型设定下，进一步假设随机误差项服从多元正态分布：$\epsilon \sim N(0, \sigma^2 \mathbf{I}_n)$。请证明或推导以下结论：
+      1. 推导$\hat{\boldsymbol{\beta}}_{\text{LS}}$的精确分布，并证明此时$\hat{\boldsymbol{\beta}}_{\text{LS}}$也是$\boldsymbol{\beta}$的UMVUE；
+      2. 证明拟合向量$\hat{\mathbf{Y}}$与残差向量$e$相互独立；
+      3. 证明$\hat{\boldsymbol{\beta}}_{\text{LS}}$与残差向量$e$相互独立（进而说明$\hat{\boldsymbol{\beta}}_{\text{LS}}$与$\text{RSS}$相互独立）；
+      4. 证明样本均值$\overline{Y}$与$\hat{\boldsymbol{\beta}}_{\text{LS}}$的非截距项相互独立；
+      5. 证明：
+          $$
+          \frac{(\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{\beta})^\top (\mathbf{X}^\top \mathbf{X}) (\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{\beta})}{\sigma^2} \sim \chi^2(p),\quad \frac{e^\top e}{\sigma^2} \sim \chi^2(n - p)
+          $$
+      6. 由上一小问结论，证明：
+          $$
+          \frac{(\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{\beta})^\top (\mathbf{X}^\top \mathbf{X}) (\hat{\boldsymbol{\beta}}_{\text{LS}} - \boldsymbol{\beta}) / p}{e^\top e / (n - p)} \sim F(p, n - p)
+          $$
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
+        <summary class="mdx-collapse__summary">点击查看1~3答案</summary>
+        <div class="mdx-collapse__content">
+        （1）$\hat{\boldsymbol{\beta}}$的精确分布：在多元正态假设下，$\boldsymbol{Y}=\boldsymbol{X}\boldsymbol{\beta}+\epsilon\sim N(\boldsymbol{X}\boldsymbol{\beta},\sigma^2 \mathbf{I}_n)$。因为$\hat{\boldsymbol{\beta}}=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{Y}$是$\boldsymbol{Y}$的线性变换，所以$\hat{\boldsymbol{\beta}}$仍服从多元正态分布。结合上一题求得的均值与协方差矩阵，有：
+            $$
+            \hat{\boldsymbol{\beta}}\sim N\big(\boldsymbol{\beta},\sigma^2(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\big)
+            $$
+            另一方面，由于$\hat{\boldsymbol{\beta}}$的方差达到了C-R下界（推导留给读者），因此此时其也是$\boldsymbol{\beta}$的UMVUE。
+        （2）由于$\hat{\boldsymbol{Y}}=\boldsymbol{P}_{\boldsymbol{X}}\boldsymbol{Y}$，$e=\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y}$，二者均可表示为正态随机向量$\boldsymbol{Y}$的线性变换，因此$(\hat{\boldsymbol{Y}}^\top,e^\top)^\top$服从联合正态分布。计算二者的协方差矩阵：
+            $$
+            \mathrm{Cov}(e,\hat{\boldsymbol{Y}})=\boldsymbol{N}_{\boldsymbol{X}}\mathrm{Cov}(\boldsymbol{Y})\boldsymbol{P}_{\boldsymbol{X}}^\top=\sigma^2 \boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{P}_{\boldsymbol{X}}=0
+            $$
+            联合正态分布且协方差矩阵为零，故$\hat{\boldsymbol{Y}}$与$e$相互独立。
+        （3）同理，$\hat{\boldsymbol{\beta}}=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{Y}$与$e=\boldsymbol{N}_{\boldsymbol{X}}\boldsymbol{Y}$也是$\boldsymbol{Y}$的线性变换，故$(\hat{\boldsymbol{\beta}}^\top,e^\top)^\top$服从联合正态分布。计算二者的协方差矩阵：
+            $$
+            \mathrm{Cov}(\hat{\boldsymbol{\beta}},e)=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\mathrm{Cov}(\boldsymbol{Y})\boldsymbol{N}_{\boldsymbol{X}}^\top=\sigma^2(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top \boldsymbol{N}_{\boldsymbol{X}}=0
+            $$
+            （最后一步利用了$\boldsymbol{X}^\top \boldsymbol{N}_{\boldsymbol{X}}=0$）。联合正态且协方差为零，故$\hat{\boldsymbol{\beta}}$与$e$相互独立。进一步，因为$e^\top e$是$e$的可测函数，所以$\hat{\boldsymbol{\beta}}$与残差平方和$e^\top e$也相互独立。 
+        </div>
+      </details>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
+        <summary class="mdx-collapse__summary">点击查看4~6答案</summary>
+        <div class="mdx-collapse__content">
+        （4） 将设计矩阵与参数按截距项和非截距项分块为$\boldsymbol{X}=(\mathbf{1}_n,\boldsymbol{X}_1)$，$\hat{\boldsymbol{\beta}}_{\text{LS}}=(\hat{\beta}_0,\hat{\boldsymbol{\beta}}_1^\top)^\top$，其中$\hat{\boldsymbol{\beta}}_1\in\mathbb{R}^{p-1}$为非截距项估计；记样本均值$\overline{Y}=\frac{1}{n}\mathbf{1}_n^\top\boldsymbol{Y}$。  
+        + 法一：因为$\hat{\boldsymbol{\beta}}_{\text{LS}}=(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{Y}$与$\overline{Y}=\frac{1}{n}\mathbf{1}_n^\top\boldsymbol{Y}$均为正态向量$\boldsymbol{Y}$的线性变换，所以$(\hat{\boldsymbol{\beta}}_{\text{LS}}^\top,\overline{Y})^\top$服从联合正态分布。取第一单位基向量$e_1=(1,0,\dots,0)^\top\in\mathbb{R}^p$，由$\mathbf{1}_n=\boldsymbol{X}e_1$可得：
+            $$
+            \begin{aligned}
+            \mathrm{Cov}(\hat{\boldsymbol{\beta}}_{\text{LS}},\overline{Y}) &= (\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\mathrm{Cov}(\boldsymbol{Y})\left(\frac{1}{n}\mathbf{1}_n\right) \\
+            &= \frac{\sigma^2}{n}(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\boldsymbol{X}^\top\boldsymbol{X}e_1 \\
+            &= \frac{\sigma^2}{n}e_1 = \begin{pmatrix}\dfrac{\sigma^2}{n}\\ \mathbf{0}_{p-1}\end{pmatrix}
+            \end{aligned}
+            $$
+            由此可知$\mathrm{Cov}(\hat{\boldsymbol{\beta}}_1,\overline{Y})=\mathbf{0}_{p-1}$。由联合正态性，协方差为零即得$\overline{Y}$（从而$\overline{\boldsymbol{Y}}=\overline{Y}\mathbf{1}_n$）与$\hat{\boldsymbol{\beta}}_1$相互独立。
+        + 法二：定义中心化矩阵$\boldsymbol{N}_{\mathbf{1}}=\mathbf{I}_n-\frac{1}{n}\mathbf{1}_n\mathbf{1}_n^\top$，易知$\boldsymbol{N}_{\mathbf{1}}$对称幂等且满足$\boldsymbol{N}_{\mathbf{1}}\mathbf{1}_n=0,\mathbf{1}_n^\top \boldsymbol{N}_{\mathbf{1}}=0$。将回归模型改写为：
+            $$
+            \boldsymbol{Y}=\mathbf{1}_n\alpha+\boldsymbol{N}_{\mathbf{1}}\boldsymbol{X}_1\boldsymbol{\beta}_1+\epsilon,\quad \alpha=\beta_0+\frac{1}{n}\mathbf{1}_n^\top\boldsymbol{X}_1\boldsymbol{\beta}_1
+            $$
+            由于$\mathbf{1}_n^\top(\boldsymbol{N}_{\mathbf{1}}\boldsymbol{X}_1)=0$，两部分解释变量正交，由分块正规方程（残差化回归公式）可得非截距项的最小二乘估计为：
+            $$
+            \hat{\boldsymbol{\beta}}_1=(\boldsymbol{X}_1^\top \boldsymbol{N}_{\mathbf{1}}\boldsymbol{X}_1)^{-1}\boldsymbol{X}_1^\top \boldsymbol{N}_{\mathbf{1}}\boldsymbol{Y}
+            $$
+            因为$\hat{\boldsymbol{\beta}}_1$与$\overline{Y}=\frac{1}{n}\mathbf{1}_n^\top\boldsymbol{Y}$均为正态向量$\boldsymbol{Y}$的线性变换，故$(\hat{\boldsymbol{\beta}}_1^\top,\overline{Y})^\top$服从联合正态分布。计算二者的协方差：
+            $$
+            \begin{aligned}
+            \mathrm{Cov}(\hat{\boldsymbol{\beta}}_1,\overline{Y}) &= (\boldsymbol{X}_1^\top \boldsymbol{N}_{\mathbf{1}}\boldsymbol{X}_1)^{-1}\boldsymbol{X}_1^\top \boldsymbol{N}_{\mathbf{1}}\mathrm{Cov}(\boldsymbol{Y})\left(\frac{1}{n}\mathbf{1}_n\right) \\
+            &= \frac{\sigma^2}{n}(\boldsymbol{X}_1^\top \boldsymbol{N}_{\mathbf{1}}\boldsymbol{X}_1)^{-1}\boldsymbol{X}_1^\top \boldsymbol{N}_{\mathbf{1}}\mathbf{1}_n = \mathbf{0}_{p-1}
+            \end{aligned}
+            $$
+            联合正态且协方差为零，故$\overline{Y}$与$\hat{\boldsymbol{\beta}}_1$相互独立。
+        
+        （5）由于$\boldsymbol{X}$列满秩，$\boldsymbol{X}^\top\boldsymbol{X}$为$p\times p$对称正定矩阵，故存在唯一的对称正定平方根矩阵$(\boldsymbol{X}^\top\boldsymbol{X})^{1/2}$。由$\hat{\boldsymbol{\beta}}\sim N(\boldsymbol{\beta},\sigma^2(\boldsymbol{X}^\top\boldsymbol{X})^{-1})$，作标准化线性变换：
+            $$
+            Z=\frac{1}{\sigma}(\boldsymbol{X}^\top\boldsymbol{X})^{1/2}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})
+            $$
+            显然$Z$服从多元正态分布，且$\mathbb{E}(Z)=0$，协方差矩阵为：
+            $$
+            \mathrm{Cov}(Z)=\frac{1}{\sigma^2}(\boldsymbol{X}^\top\boldsymbol{X})^{1/2}\cdot\sigma^2(\boldsymbol{X}^\top\boldsymbol{X})^{-1}\cdot(\boldsymbol{X}^\top\boldsymbol{X})^{1/2}=\mathbf{I}_p
+            $$
+            即$Z\sim N(0,\mathbf{I}_p)$。因此$Z$的各分量独立同分布于$N(0,1)$，其平方和服从自由度为$p$的卡方分布：
+            $$
+            Z^\top Z=\frac{(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})^\top(\boldsymbol{X}^\top\boldsymbol{X})(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})}{\sigma^2}\sim\chi^2(p)
+            $$
+            
+            $\boldsymbol{N}_{\boldsymbol{X}}$为对称幂等矩阵，其特征值只能为$0$或$1$，且特征值$1$的重数等于$\mathrm{rank}(\boldsymbol{N}_{\boldsymbol{X}})=\mathrm{tr}(\boldsymbol{N}_{\boldsymbol{X}})=n-p$，特征值$0$的重数为$p$。对$\boldsymbol{N}_{\boldsymbol{X}}$作正交特征分解：
+            $$
+            \boldsymbol{N}_{\boldsymbol{X}}=Q\begin{pmatrix}\mathbf{I}_{n-p} & 0\\ 0 & 0\end{pmatrix}Q^\top=Q_1 Q_1^\top
+            $$
+            其中正交矩阵$Q=(Q_1,Q_2)$满足$Q_1\in\mathbb{R}^{n\times(n-p)}$，$Q_1^\top Q_1=\mathbf{I}_{n-p}$，$Q_2^\top Q_2=\mathbf{I}_p$，$Q_1^\top Q_2=0$。
+            因为$\epsilon\sim N(0,\sigma^2 \mathbf{I}_n)$，线性变换$Q_1^\top\epsilon$服从多元正态分布，均值为$0$，协方差矩阵为$\mathrm{Cov}(Q_1^\top\epsilon)=\sigma^2 Q_1^\top Q_1=\sigma^2 \mathbf{I}_{n-p}$，即：
+            $$
+            \frac{1}{\sigma}Q_1^\top\epsilon\sim N(0,\mathbf{I}_{n-p})
+            $$
+            结合上一题第5问的结论$e^\top e=\epsilon^\top \boldsymbol{N}_{\boldsymbol{X}}\epsilon$，有：
+            $$
+            \frac{e^\top e}{\sigma^2}=\frac{\epsilon^\top \boldsymbol{N}_{\boldsymbol{X}}\epsilon}{\sigma^2}=\frac{\epsilon^\top Q_1 Q_1^\top\epsilon}{\sigma^2}=\left(\frac{1}{\sigma}Q_1^\top\epsilon\right)^\top\left(\frac{1}{\sigma}Q_1^\top\epsilon\right)\sim\chi^2(n-p)
+            $$
+          （6）记两个统计量：
+            $$
+            U=\frac{(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})^\top(\boldsymbol{X}^\top\boldsymbol{X})(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})}{\sigma^2},\quad V=\frac{e^\top e}{\sigma^2}
+            $$
+            由第2问知$\hat{\boldsymbol{\beta}}$与$e$相互独立，而$U$是$\hat{\boldsymbol{\beta}}$的函数、$V$是$e$的函数，因此$U$与$V$相互独立。
+
+            再结合上一问的结论，得到：
+            $$
+            \frac{U/p}{V/(n-p)}=\frac{(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})^\top(\boldsymbol{X}^\top\boldsymbol{X})(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})/p}{e^\top e/(n-p)}\sim F(p,n-p)
+            $$
+            证毕。
+        </div>
+      </details>
+    </div>
+
+
+    <div class="quiz-item">
+      <div class="quiz-question">
+      假设有两组独立样本：
+      - Sample 1：$(y_1,\dots,y_n)$，$(x_1,\dots,x_n)$
+      - Sample 2：$(y_{n+1},\dots,y_{n+m})$，$(x_{n+1},\dots,x_{n+m})$
+
+      可以对两组样本分别拟合以下模型：
+      $$
+      \begin{aligned}
+      y_i &= \beta_0 + \beta_1 x_i + \epsilon_i, & i &= 1,\dots,n \\
+      y_i &= \beta_0 + \gamma x_i + \epsilon_i, & i &= n+1,\dots,n+m
+      \end{aligned}
+      $$
+      其中$\epsilon_i$独立同分布，均值为$0$，方差为$\sigma^2$。说明如何将两个分开的模型写成一个矩阵形式的多元线性回归模型。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
+        <summary class="mdx-collapse__summary">点击查看答案</summary>
+        <div class="mdx-collapse__content">
+        令响应向量、误差向量、参数向量与解释变量向量分别为：
+        $$
+        \begin{aligned}
+        \boldsymbol{Y}&=(y_1,\dots,y_{n+m})^\top,\quad \epsilon=(\epsilon_1,\dots,\epsilon_{n+m})^\top,\quad \boldsymbol{\theta}=(\beta_0,\beta_1,\gamma)^\top\\
+        \boldsymbol{X}_1&=(x_1,\dots,x_n)^\top,\quad \boldsymbol{X}_2=(x_{n+1},\dots,x_{n+m})^\top
+        \end{aligned}
+        $$
+        将设计矩阵$\boldsymbol{X}\in\mathbb{R}^{(n+m)\times 3}$按行分块构造为：
+        $$
+        \boldsymbol{X}=\begin{pmatrix}
+        \mathbf{1}_n & \boldsymbol{X}_1 & \mathbf{0}_n \\
+        \mathbf{1}_m & \mathbf{0}_m & \boldsymbol{X}_2
+        \end{pmatrix}
+        $$
+        则上述两个独立模型可统一写为如下多元线性回归模型：
+        $$
+        \boldsymbol{Y}=\boldsymbol{X}\boldsymbol{\theta}+\epsilon,\quad \epsilon\sim(0,\sigma^2\mathbf{I}_{n+m})
+        $$
+        </div>
+      </details>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">
+      考虑以下两个模型，其中$\epsilon \sim N(0, \sigma^2 \mathbf{I}_n)$：
+      - 模型 A：$\boldsymbol{Y} = \boldsymbol{X}_{n \times p}\boldsymbol{\beta} + \epsilon = \boldsymbol{X}_j \beta_j + \boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j} + \epsilon$
+      - 模型 B：$\boldsymbol{Y} = \boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j} + \epsilon$
+
+      这里$\boldsymbol{X}_j$是$\boldsymbol{X}$的第$j$列，$\beta_j$是$\boldsymbol{\beta}$的第$j$个分量；$\boldsymbol{X}_{-j}$是删去$\boldsymbol{X}_j$后的矩阵，$\boldsymbol{\beta}_{-j}$同理。
+
+      1. 证明模型 A 下的最小二乘估计为：
+          $$
+          \hat{\boldsymbol{\beta}}_{-j} = (\boldsymbol{X}_{-j}^\top \boldsymbol{N}_{\boldsymbol{X}_j} \boldsymbol{X}_{-j})^{-1} \boldsymbol{X}_{-j}^\top \boldsymbol{N}_{\boldsymbol{X}_j} \boldsymbol{Y}
+          $$
+      2. 证明模型 A 下：
+          $$
+          \hat{\boldsymbol{\beta}}_{-j} \sim N\big(\boldsymbol{\beta}_{-j}, \sigma^2(\boldsymbol{X}_{-j}^\top \boldsymbol{N}_{\boldsymbol{X}_j} \boldsymbol{X}_{-j})^{-1}\big)
+          $$
+      3. 假设真实模型为 A，却拟合模型 B，所得到的估计在什么条件下是无偏的？
+      4. 记模型 B 下的最小二乘估计为$\tilde{\boldsymbol{\beta}}_{-j}$，证明$\mathrm{Var}(\hat{\boldsymbol{\beta}}_{-j}) \ge \mathrm{Var}(\tilde{\boldsymbol{\beta}}_{-j})$。
+      </div>
+      <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
+        <summary class="mdx-collapse__summary">点击查看答案</summary>
+        <div class="mdx-collapse__content">
+        1. 记$\boldsymbol{X}_j$列空间上的投影矩阵与正交补投影矩阵分别为：
+            $$
+            \boldsymbol{P}_{\boldsymbol{X}_j}=\boldsymbol{X}_j(\boldsymbol{X}_j^\top\boldsymbol{X}_j)^{-1}\boldsymbol{X}_j^\top,\quad \boldsymbol{N}_{\boldsymbol{X}_j}=\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}_j}
+            $$
+            易知$\boldsymbol{N}_{\boldsymbol{X}_j}$为对称幂等矩阵，且满足$\boldsymbol{X}_j^\top\boldsymbol{N}_{\boldsymbol{X}_j}=0$。利用分解$\boldsymbol{X}_{-j}=\boldsymbol{P}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j}+\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j}$，将模型 A 改写为：
+            $$
+            \boldsymbol{Y}=\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j}+\boldsymbol{X}_j\alpha+\epsilon
+            $$
+            其中
+            $$
+            \alpha=\beta_j+(\boldsymbol{X}_j^\top\boldsymbol{X}_j)^{-1}\boldsymbol{X}_j^\top\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j}
+            $$
+            由于$\boldsymbol{X}_j^\top(\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})=0$，两部分解释变量正交，由分块正规方程（残差化回归公式）及$\boldsymbol{N}_{\boldsymbol{X}_j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}=\boldsymbol{N}_{\boldsymbol{X}_j}$，可得$\boldsymbol{\beta}_{-j}$的最小二乘估计为：
+            $$
+            \begin{aligned}
+            \hat{\boldsymbol{\beta}}_{-j} &= \big((\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^\top(\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})\big)^{-1}(\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^\top\boldsymbol{Y} \\
+            &= (\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{Y}
+            \end{aligned}
+            $$
+        2. 在模型 A 下，$\boldsymbol{Y}\sim N(\boldsymbol{X}_j\beta_j+\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j},\sigma^2\mathbf{I}_n)$。因为$\hat{\boldsymbol{\beta}}_{-j}$是多元正态随机向量$\boldsymbol{Y}$的线性变换，故$\hat{\boldsymbol{\beta}}_{-j}$服从多元正态分布。
+            利用$\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_j=0$计算数学期望：
+            $$
+            \begin{aligned}
+            \mathbb{E}(\hat{\boldsymbol{\beta}}_{-j}) &= (\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}(\boldsymbol{X}_j\beta_j+\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j}) \\
+            &= (\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j} \\
+            &= \boldsymbol{\beta}_{-j}
+            \end{aligned}
+            $$
+            利用$\boldsymbol{N}_{\boldsymbol{X}_j}$的对称幂等性计算协方差矩阵：
+            $$
+            \begin{aligned}
+            \mathrm{Var}(\hat{\boldsymbol{\beta}}_{-j}) &= (\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}(\sigma^2\mathbf{I}_n)\boldsymbol{N}_{\boldsymbol{X}_j}^\top\boldsymbol{X}_{-j}(\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1} \\
+            &= \sigma^2(\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j}(\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1} \\
+            &= \sigma^2(\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}
+            \end{aligned}
+            $$
+            综上，
+            $$
+            \hat{\boldsymbol{\beta}}_{-j}\sim N\big(\boldsymbol{\beta}_{-j},\sigma^2(\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\big)
+            $$
+        3. 拟合模型 B 得到的最小二乘估计为：
+            $$
+            \tilde{\boldsymbol{\beta}}_{-j}=(\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{Y}
+            $$
+            在真实模型 A（$\mathbb{E}(\boldsymbol{Y})=\boldsymbol{X}_j\beta_j+\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j}$）下取期望：
+            $$
+            \begin{aligned}
+            \mathbb{E}(\tilde{\boldsymbol{\beta}}_{-j}) &= (\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top(\boldsymbol{X}_j\beta_j+\boldsymbol{X}_{-j}\boldsymbol{\beta}_{-j}) \\
+            &= \boldsymbol{\beta}_{-j}+(\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j})^{-1}\boldsymbol{X}_{-j}^\top\boldsymbol{X}_j\beta_j
+            \end{aligned}
+            $$
+            由于$(\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j})^{-1}$可逆，$\tilde{\boldsymbol{\beta}}_{-j}$无偏的充要条件为：
+            $$
+            \boldsymbol{X}_{-j}^\top\boldsymbol{X}_j\beta_j=\mathbf{0}_{p-1}
+            $$
+            即以下两个条件至少满足其一：
+            - $\boldsymbol{X}_{-j}^\top\boldsymbol{X}_j=\mathbf{0}_{p-1}$（遗漏变量$\boldsymbol{X}_j$与保留变量$\boldsymbol{X}_{-j}$正交）；
+            - $\beta_j=0$（遗漏变量的真实回归系数为零）。
+        4. 在模型 B 下，$\tilde{\boldsymbol{\beta}}_{-j}$的协方差矩阵为：
+            $$
+            \mathrm{Var}(\tilde{\boldsymbol{\beta}}_{-j})=\sigma^2(\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j})^{-1}
+            $$
+            由于$\boldsymbol{P}_{\boldsymbol{X}_j}$是对称幂等矩阵，有$\boldsymbol{P}_{\boldsymbol{X}_j}=\boldsymbol{P}_{\boldsymbol{X}_j}^\top\boldsymbol{P}_{\boldsymbol{X}_j}\ge 0$，从而在半正定矩阵意义下满足$\boldsymbol{N}_{\boldsymbol{X}_j}=\mathbf{I}_n-\boldsymbol{P}_{\boldsymbol{X}_j}\le\mathbf{I}_n$。两边分别左乘$\boldsymbol{X}_{-j}^\top$、右乘$\boldsymbol{X}_{-j}$，得：
+            $$
+            \boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j}\le\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j}
+            $$
+            又因为$\boldsymbol{X}$列满秩，上述两个矩阵均为对称正定矩阵，由正定矩阵求逆的反序性可得：
+            $$
+            (\boldsymbol{X}_{-j}^\top\boldsymbol{N}_{\boldsymbol{X}_j}\boldsymbol{X}_{-j})^{-1}\ge(\boldsymbol{X}_{-j}^\top\boldsymbol{X}_{-j})^{-1}
+            $$
+            两侧同乘$\sigma^2>0$，即得：
+            $$
+            \mathrm{Var}(\hat{\boldsymbol{\beta}}_{-j})\ge\mathrm{Var}(\tilde{\boldsymbol{\beta}}_{-j})
+            $$
+            证毕。
+        </div>
+      </details>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">
       
       </div>
       <details class="mdx-collapse primary" style="--note-border: var(--color-orange);--note-bg: oklch(0.95 0.04 42.4);--note-text: var(--color-orange);--note-hover: oklch(0.75 0.18 42.4);">
